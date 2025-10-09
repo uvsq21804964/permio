@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { sql } from "@/lib/db"
 
 const timeToMinutes = (time: string): number => {
   const [hours, minutes] = time.split(":").map(Number)
@@ -12,7 +12,6 @@ const doRangesOverlapOrAdjacent = (start1: string, end1: string, start2: string,
   const start2Min = timeToMinutes(start2)
   const end2Min = timeToMinutes(end2)
 
-  // Check if ranges overlap or are adjacent (touching)
   return start1Min <= end2Min && start2Min <= end1Min
 }
 
@@ -21,20 +20,39 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
     const userId = searchParams.get("userId")
 
-    const whereClause = userId ? { userId } : {}
-
-    const availabilities = await prisma.availability.findMany({
-      where: whereClause,
-      include: {
-        user: {
-          select: {
-            name: true,
-            role: true,
-          },
-        },
-      },
-      orderBy: [{ dayOfWeek: "asc" }, { startTime: "asc" }],
-    })
+    let availabilities
+    if (userId) {
+      availabilities = await sql`
+        SELECT 
+          a.id, 
+          a."userId", 
+          a."dayOfWeek", 
+          a."startTime", 
+          a."endTime", 
+          a."createdAt", 
+          a."updatedAt",
+          json_build_object('name', u.name, 'role', u.role) as user
+        FROM "Availability" a
+        JOIN "User" u ON a."userId" = u.id
+        WHERE a."userId" = ${userId}
+        ORDER BY a."dayOfWeek" ASC, a."startTime" ASC
+      `
+    } else {
+      availabilities = await sql`
+        SELECT 
+          a.id, 
+          a."userId", 
+          a."dayOfWeek", 
+          a."startTime", 
+          a."endTime", 
+          a."createdAt", 
+          a."updatedAt",
+          json_build_object('name', u.name, 'role', u.role) as user
+        FROM "Availability" a
+        JOIN "User" u ON a."userId" = u.id
+        ORDER BY a."dayOfWeek" ASC, a."startTime" ASC
+      `
+    }
 
     return NextResponse.json(availabilities)
   } catch (error) {
@@ -59,20 +77,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Les horaires doivent être entre 8h00 et 20h00" }, { status: 400 })
     }
 
-    const existingAvailabilities = await prisma.availability.findMany({
-      where: {
-        userId,
-        dayOfWeek,
-      },
-    })
+    const existingAvailabilities = await sql`
+      SELECT id, "userId", "dayOfWeek", "startTime", "endTime"
+      FROM "Availability"
+      WHERE "userId" = ${userId} AND "dayOfWeek" = ${dayOfWeek}
+    `
 
-    console.log("[v0] Found existing availabilities:", existingAvailabilities.length)
-
-    const overlapping = existingAvailabilities.filter((avail) =>
+    const overlapping = existingAvailabilities.filter((avail: any) =>
       doRangesOverlapOrAdjacent(startTime, endTime, avail.startTime, avail.endTime),
     )
-
-    console.log("[v0] Found overlapping availabilities:", overlapping.length)
 
     let finalStartTime = startTime
     let finalEndTime = endTime
@@ -80,7 +93,7 @@ export async function POST(request: NextRequest) {
     if (overlapping.length > 0) {
       const allTimes = [
         { start: startTime, end: endTime },
-        ...overlapping.map((a) => ({ start: a.startTime, end: a.endTime })),
+        ...overlapping.map((a: any) => ({ start: a.startTime, end: a.endTime })),
       ]
 
       const startMinutes = Math.min(...allTimes.map((t) => timeToMinutes(t.start)))
@@ -94,36 +107,22 @@ export async function POST(request: NextRequest) {
       finalStartTime = `${startHours.toString().padStart(2, "0")}:${startMins.toString().padStart(2, "0")}`
       finalEndTime = `${endHours.toString().padStart(2, "0")}:${endMins.toString().padStart(2, "0")}`
 
-      console.log(
-        "[v0] Deleting overlapping availabilities:",
-        overlapping.map((a) => a.id),
-      )
       for (const avail of overlapping) {
-        await prisma.availability.delete({ where: { id: avail.id } })
-        console.log("[v0] Deleted availability:", avail.id)
+        await sql`DELETE FROM "Availability" WHERE id = ${avail.id}`
       }
     }
 
-    const availability = await prisma.availability.create({
-      data: {
-        userId,
-        dayOfWeek,
-        startTime: finalStartTime,
-        endTime: finalEndTime,
-      },
-      include: {
-        user: {
-          select: {
-            name: true,
-            role: true,
-          },
-        },
-      },
-    })
+    const [availability] = await sql`
+      INSERT INTO "Availability" (id, "userId", "dayOfWeek", "startTime", "endTime", "createdAt", "updatedAt")
+      VALUES (gen_random_uuid(), ${userId}, ${dayOfWeek}, ${finalStartTime}, ${finalEndTime}, NOW(), NOW())
+      RETURNING *
+    `
 
-    console.log("[v0] Created merged availability:", availability.id)
+    const [user] = await sql`
+      SELECT name, role FROM "User" WHERE id = ${userId}
+    `
 
-    return NextResponse.json(availability, { status: 201 })
+    return NextResponse.json({ ...availability, user }, { status: 201 })
   } catch (error) {
     console.error("[v0] Error creating availability:", error)
     return NextResponse.json({ error: "Failed to create availability" }, { status: 500 })

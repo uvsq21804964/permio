@@ -12,29 +12,25 @@ type Availability = {
   endTime: string
 }
 
-type LessonSlot = {
-  id: string
-  instructorId: string // Changed from userId to instructorId
+type Match = {
+  studentId: string
+  studentName: string
+  instructorId: string
+  instructorName: string
   dayOfWeek: number
   startTime: string
-  endTime: string // Changed from duration to endTime
-  status: string
-}
-
-type Assignment = {
-  studentId: string
-  slotId: string
-  instructorId: string
+  endTime: string
+  duration: number
 }
 
 type ScheduleResult = {
-  assignments: Assignment[]
+  matches: Match[]
   unmatchedStudents: Array<{ id: string; name: string }>
   stats: {
     totalStudents: number
     matchedStudents: number
-    totalSlots: number
-    usedSlots: number
+    totalInstructors: number
+    totalMatches: number
   }
 }
 
@@ -46,40 +42,53 @@ function timeToMinutes(time: string): number {
   return hours * 60 + minutes
 }
 
-function calculateDuration(startTime: string, endTime: string): number {
-  return timeToMinutes(endTime) - timeToMinutes(startTime)
-}
-
 /**
- * Check if a student's availability overlaps with an instructor's slot
+ * Calculate overlap between two time ranges
+ * Returns null if no overlap, or { start, end } if there is overlap
  */
-function hasOverlap(studentAvail: Availability, slot: LessonSlot): boolean {
-  // Must be same day of week
-  if (studentAvail.dayOfWeek !== slot.dayOfWeek) {
-    return false
+function calculateOverlap(
+  start1: string,
+  end1: string,
+  start2: string,
+  end2: string,
+): { start: string; end: string; duration: number } | null {
+  const start1Min = timeToMinutes(start1)
+  const end1Min = timeToMinutes(end1)
+  const start2Min = timeToMinutes(start2)
+  const end2Min = timeToMinutes(end2)
+
+  // Find overlap
+  const overlapStart = Math.max(start1Min, start2Min)
+  const overlapEnd = Math.min(end1Min, end2Min)
+
+  // No overlap if start >= end
+  if (overlapStart >= overlapEnd) {
+    return null
   }
 
-  const studentStart = timeToMinutes(studentAvail.startTime)
-  const studentEnd = timeToMinutes(studentAvail.endTime)
-  const slotStart = timeToMinutes(slot.startTime)
-  const slotEnd = timeToMinutes(slot.endTime) // Use endTime instead of calculating from duration
+  // Convert back to time string
+  const startHours = Math.floor(overlapStart / 60)
+  const startMinutes = overlapStart % 60
+  const endHours = Math.floor(overlapEnd / 60)
+  const endMinutes = overlapEnd % 60
 
-  // Check if there's any overlap
-  return studentStart < slotEnd && studentEnd > slotStart
+  return {
+    start: `${String(startHours).padStart(2, "0")}:${String(startMinutes).padStart(2, "0")}`,
+    end: `${String(endHours).padStart(2, "0")}:${String(endMinutes).padStart(2, "0")}`,
+    duration: overlapEnd - overlapStart,
+  }
 }
 
 /**
- * Generate optimal schedule using greedy matching algorithm
+ * Generate optimal schedule by matching students with instructors based on overlapping availabilities
  */
 export function generateOptimalSchedule(
   students: User[],
   instructors: User[],
   availabilities: Availability[],
-  slots: LessonSlot[],
 ): ScheduleResult {
-  const assignments: Assignment[] = []
+  const matches: Match[] = []
   const matchedStudentIds = new Set<string>()
-  const usedSlotIds = new Set<string>()
 
   // Group availabilities by user
   const availabilityMap = new Map<string, Availability[]>()
@@ -97,34 +106,51 @@ export function generateOptimalSchedule(
     return aAvails - bAvails
   })
 
-  // Try to match each student to a slot
+  // Try to match each student with instructors
   for (const student of sortedStudents) {
     const studentAvails = availabilityMap.get(student.id) || []
 
-    // Try to find a matching slot
-    let matched = false
-    for (const slot of slots) {
-      // Skip if slot already used
-      if (usedSlotIds.has(slot.id)) {
-        continue
+    // Try each instructor
+    for (const instructor of instructors) {
+      const instructorAvails = availabilityMap.get(instructor.id) || []
+
+      // Check for overlapping availabilities
+      for (const studentAvail of studentAvails) {
+        for (const instructorAvail of instructorAvails) {
+          // Must be same day
+          if (studentAvail.dayOfWeek !== instructorAvail.dayOfWeek) {
+            continue
+          }
+
+          // Calculate overlap
+          const overlap = calculateOverlap(
+            studentAvail.startTime,
+            studentAvail.endTime,
+            instructorAvail.startTime,
+            instructorAvail.endTime,
+          )
+
+          if (overlap) {
+            // Found a match!
+            matches.push({
+              studentId: student.id,
+              studentName: student.name,
+              instructorId: instructor.id,
+              instructorName: instructor.name,
+              dayOfWeek: studentAvail.dayOfWeek,
+              startTime: overlap.start,
+              endTime: overlap.end,
+              duration: overlap.duration,
+            })
+
+            matchedStudentIds.add(student.id)
+            // Break after first match for this student
+            break
+          }
+        }
+        if (matchedStudentIds.has(student.id)) break
       }
-
-      // Check if student has availability that overlaps with this slot
-      const hasMatch = studentAvails.some((avail) => hasOverlap(avail, slot))
-
-      if (hasMatch) {
-        // Create assignment
-        assignments.push({
-          studentId: student.id,
-          slotId: slot.id,
-          instructorId: slot.instructorId, // Use instructorId from slot
-        })
-
-        matchedStudentIds.add(student.id)
-        usedSlotIds.add(slot.id)
-        matched = true
-        break
-      }
+      if (matchedStudentIds.has(student.id)) break
     }
   }
 
@@ -140,12 +166,12 @@ export function generateOptimalSchedule(
   const stats = {
     totalStudents: students.length,
     matchedStudents: matchedStudentIds.size,
-    totalSlots: slots.length,
-    usedSlots: usedSlotIds.size,
+    totalInstructors: instructors.length,
+    totalMatches: matches.length,
   }
 
   return {
-    assignments,
+    matches,
     unmatchedStudents,
     stats,
   }
