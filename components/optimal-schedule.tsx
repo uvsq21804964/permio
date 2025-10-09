@@ -9,33 +9,25 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 
 const DAYS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
 
-type Assignment = {
-  id: string
+type Match = {
   studentId: string
-  slotId: string
+  studentName: string
   instructorId: string
-  status: string
-  student: {
-    name: string
-  }
-  slot: {
-    dayOfWeek: number
-    startTime: string
-    duration: number
-    user: {
-      name: string
-    }
-  }
+  instructorName: string
+  dayOfWeek: number
+  startTime: string
+  endTime: string
+  duration: number
 }
 
 type ScheduleResult = {
-  assignments: Assignment[]
+  matches: Match[]
   unmatchedStudents: Array<{ id: string; name: string }>
   stats: {
     totalStudents: number
     matchedStudents: number
-    totalSlots: number
-    usedSlots: number
+    totalInstructors: number
+    totalMatches: number
   }
 }
 
@@ -105,24 +97,24 @@ export function OptimalSchedule() {
 
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Créneaux disponibles</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Moniteurs</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-2xl font-bold">{result.stats.totalSlots}</span>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                  <span className="text-2xl font-bold">{result.stats.totalInstructors}</span>
                 </div>
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Créneaux utilisés</CardTitle>
+                <CardTitle className="text-sm font-medium text-muted-foreground">Correspondances</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-blue-600" />
-                  <span className="text-2xl font-bold text-blue-600">{result.stats.usedSlots}</span>
+                  <span className="text-2xl font-bold text-blue-600">{result.stats.totalMatches}</span>
                 </div>
               </CardContent>
             </Card>
@@ -139,33 +131,30 @@ export function OptimalSchedule() {
             </Alert>
           )}
 
-          {/* Assignments */}
+          {/* Matches */}
           <Card>
             <CardHeader>
-              <CardTitle>Attributions des créneaux</CardTitle>
-              <CardDescription>{result.assignments.length} cours planifiés</CardDescription>
+              <CardTitle>Correspondances trouvées</CardTitle>
+              <CardDescription>{result.matches.length} cours planifiés</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                {result.assignments.length === 0 ? (
-                  <p className="text-muted-foreground text-sm">Aucune attribution générée</p>
+                {result.matches.length === 0 ? (
+                  <p className="text-muted-foreground text-sm">Aucune correspondance trouvée</p>
                 ) : (
-                  result.assignments.map((assignment) => (
-                    <div key={assignment.id} className="flex items-center justify-between rounded-lg border p-4">
+                  result.matches.map((match, index) => (
+                    <div key={index} className="flex items-center justify-between rounded-lg border p-4">
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium">{assignment.student.name}</span>
+                          <span className="font-medium">{match.studentName}</span>
                           <span className="text-muted-foreground">→</span>
-                          <span className="font-medium">{assignment.slot.user.name}</span>
+                          <span className="font-medium">{match.instructorName}</span>
                         </div>
                         <p className="text-muted-foreground text-sm">
-                          {DAYS[assignment.slot.dayOfWeek]} • {assignment.slot.startTime} ({assignment.slot.duration}{" "}
-                          min)
+                          {DAYS[match.dayOfWeek]} • {match.startTime} - {match.endTime} ({match.duration} min)
                         </p>
                       </div>
-                      <Badge variant={assignment.status === "confirmed" ? "default" : "secondary"}>
-                        {assignment.status === "confirmed" ? "Confirmé" : "En attente"}
-                      </Badge>
+                      <Badge variant="default">Disponible</Badge>
                     </div>
                   ))
                 )}
