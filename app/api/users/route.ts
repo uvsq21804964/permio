@@ -1,12 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { mockDb } from "@/lib/mock-db"
+import { prisma } from "@/lib/prisma"
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const role = searchParams.get("role")
 
-    const users = await mockDb.user.findMany({
+    const users = await prisma.user.findMany({
       where: role ? { role } : undefined,
       orderBy: { name: "asc" },
     })
@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { name, role } = body
 
-    const user = await mockDb.user.create({
+    const user = await prisma.user.create({
       data: {
         name,
         role,

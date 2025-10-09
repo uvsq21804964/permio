@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { mockDb } from "@/lib/mock-db"
+import { prisma } from "@/lib/prisma"
 
 const timeToMinutes = (time: string): number => {
   const [hours, minutes] = time.split(":").map(Number)
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 
     const whereClause = userId ? { userId } : {}
 
-    const availabilities = await mockDb.availability.findMany({
+    const availabilities = await prisma.availability.findMany({
       where: whereClause,
       include: {
         user: {
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Les horaires doivent être entre 8h00 et 20h00" }, { status: 400 })
     }
 
-    const existingAvailabilities = await mockDb.availability.findMany({
+    const existingAvailabilities = await prisma.availability.findMany({
       where: {
         userId,
         dayOfWeek,
@@ -78,7 +78,6 @@ export async function POST(request: NextRequest) {
     let finalEndTime = endTime
 
     if (overlapping.length > 0) {
-      // Find the earliest start time and latest end time
       const allTimes = [
         { start: startTime, end: endTime },
         ...overlapping.map((a) => ({ start: a.startTime, end: a.endTime })),
@@ -100,12 +99,12 @@ export async function POST(request: NextRequest) {
         overlapping.map((a) => a.id),
       )
       for (const avail of overlapping) {
-        await mockDb.availability.delete({ where: { id: avail.id } })
+        await prisma.availability.delete({ where: { id: avail.id } })
         console.log("[v0] Deleted availability:", avail.id)
       }
     }
 
-    const availability = await mockDb.availability.create({
+    const availability = await prisma.availability.create({
       data: {
         userId,
         dayOfWeek,

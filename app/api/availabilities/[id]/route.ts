@@ -1,17 +1,20 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { mockDb } from "@/lib/mock-db"
+import { prisma } from "@/lib/prisma"
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
 
-    const existing = mockDb.availabilities.find((a) => a.id === id)
+    const existing = await prisma.availability.findUnique({
+      where: { id },
+    })
+
     if (!existing) {
       console.error("[v0] Error deleting availability: Availability not found")
       return NextResponse.json({ error: "Availability not found" }, { status: 404 })
     }
 
-    await mockDb.availability.delete({
+    await prisma.availability.delete({
       where: { id },
     })
 

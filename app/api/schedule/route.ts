@@ -1,17 +1,16 @@
 import { NextResponse } from "next/server"
-import { mockDb } from "@/lib/mock-db"
+import { prisma } from "@/lib/prisma"
 import { generateOptimalSchedule } from "@/lib/scheduler"
 
 export async function POST() {
   try {
     console.log("[v0] Starting schedule generation...")
 
-    // Fetch all data needed for scheduling
     const [students, instructors, availabilities, slots] = await Promise.all([
-      mockDb.user.findMany({ where: { role: "student" } }),
-      mockDb.user.findMany({ where: { role: "instructor" } }),
-      mockDb.availability.findMany(),
-      mockDb.lessonSlot.findMany(),
+      prisma.user.findMany({ where: { role: "student" } }),
+      prisma.user.findMany({ where: { role: "instructor" } }),
+      prisma.availability.findMany(),
+      prisma.lessonSlot.findMany(),
     ])
 
     console.log("[v0] Fetched data:", {
@@ -21,33 +20,51 @@ export async function POST() {
       slots: slots.length,
     })
 
-    // Filter available slots
     const availableSlots = slots.filter((s) => s.status === "available")
     console.log("[v0] Available slots:", availableSlots.length)
 
-    // Run the scheduling algorithm
     const result = generateOptimalSchedule(students, instructors, availabilities, availableSlots)
     console.log("[v0] Schedule generated:", {
       assignments: result.assignments.length,
       unmatched: result.unmatchedStudents.length,
     })
 
-    // Clear existing assignments
-    await mockDb.assignment.deleteMany()
+    await prisma.assignment.deleteMany()
 
-    // Create new assignments and fetch full data
     const createdAssignments = await Promise.all(
       result.assignments.map((assignment) =>
-        mockDb.assignment.create({
+        prisma.assignment.create({
           data: {
             studentId: assignment.studentId,
             slotId: assignment.slotId,
+            instructorId: assignment.instructorId,
           },
         }),
       ),
     )
 
-    const assignmentsWithRelations = await mockDb.assignment.findMany({ include: true })
+    const assignmentsWithRelations = await prisma.assignment.findMany({
+      include: {
+        student: {
+          select: {
+            id: true,
+            name: true,
+            role: true,
+          },
+        },
+        slot: {
+          include: {
+            user: {
+              select: {
+                id: true,
+                name: true,
+                role: true,
+              },
+            },
+          },
+        },
+      },
+    })
 
     console.log("[v0] Assignments created:", assignmentsWithRelations.length)
 
