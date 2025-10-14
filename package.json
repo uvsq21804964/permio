@@ -9,6 +9,8 @@
     "start": "next start"
   },
   "dependencies": {
+    "@clerk/localizations": "^3.26.0",
+    "@clerk/nextjs": "^6.33.3",
     "@neondatabase/serverless": "latest",
     "@prisma/client": "latest",
     "@radix-ui/react-dialog": "^1.1.2",

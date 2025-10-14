@@ -1,3 +1,5 @@
+import { ClerkProvider } from '@clerk/nextjs';
+import { frFR } from '@clerk/localizations';
 import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
@@ -19,11 +21,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        {children}
-        <Analytics />
-      </body>
-    </html>
+    <ClerkProvider
+      localization={frFR}
+      signInUrl="/sign-in"
+      signUpUrl="/sign-up"
+      afterSignOutUrl="/sign-in"
+      taskUrls={{
+        'choose-organization': '/onboarding/choose-organization',
+      }}
+    >
+      <html lang="fr">
+        <body
+          className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}
+        >
+          {children}
+          <Analytics />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

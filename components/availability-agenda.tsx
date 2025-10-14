@@ -88,7 +88,7 @@ const getDurationColor = (startTime: string, endTime: string) => {
 
 export function AvailabilityAgenda() {
   const [users, setUsers] = useState<User[]>([]);
-  const [selectedUserId, setSelectedUserId] = useState<string>('');
+  const [selectedUserId, setSelectedUserId] = useState('');
   const [availabilities, setAvailabilities] = useState<Availability[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -99,22 +99,40 @@ export function AvailabilityAgenda() {
   const [error, setError] = useState<string>('');
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [loadingAvail, setLoadingAvail] = useState(false);
+  const [usersError, setUsersError] = useState<string | null>(null);
 
   // 1) Charger les users
   useEffect(() => {
     const fetchUsers = async () => {
       setLoadingUsers(true);
+      setUsersError(null);
       try {
-        const res = await fetch('/api/users');
-        const data: User[] = await res.json();
-        setUsers(data);
-        if (data.length > 0) {
-          setSelectedUserId(data[0].id);
+        const res = await fetch('/api/users', { credentials: 'include' });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({} as any));
+          const msg = err?.error || `Erreur API /api/users (${res.status})`;
+          setUsers([]);
+          setSelectedUserId('');
+          setUsersError(msg);
+          return;
         }
-      } catch (e) {
-        console.error('[v0] Error fetching users:', e);
+        const data = await res.json();
+        // normalisation en tableau
+        const list: User[] = Array.isArray(data)
+          ? data
+          : Array.isArray((data as any)?.users)
+          ? (data as any).users
+          : [];
+
+        setUsers(list);
+        setSelectedUserId(list[0]?.id ?? '');
+      } catch (error) {
+        console.error('[v0] Error fetching users:', error);
+        setUsers([]);
+        setSelectedUserId('');
+        setUsersError('Impossible de charger les utilisateurs');
       } finally {
-        setLoadingUsers(false); // <-- on sort enfin du chargement même si 0 user
+        setLoadingUsers(false);
       }
     };
     fetchUsers();
@@ -271,8 +289,38 @@ export function AvailabilityAgenda() {
     );
   }
 
+  if (usersError) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <p className="text-sm text-red-600">{usersError}</p>
+          <p className="text-sm mt-2 text-muted-foreground">
+            Astuce : assurez-vous d’être connecté via Clerk.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (users.length === 0) {
+    return (
+      <Card>
+        <CardContent className="p-6">
+          <p className="text-sm">Aucun utilisateur disponible.</p>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
     <>
+      {usersError && (
+        <Alert variant="destructive" className="mb-3">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{usersError}</AlertDescription>
+        </Alert>
+      )}
+
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
@@ -283,12 +331,20 @@ export function AvailabilityAgenda() {
                   <SelectValue placeholder="Sélectionner un utilisateur" />
                 </SelectTrigger>
                 <SelectContent>
-                  {users.map((user) => (
-                    <SelectItem key={user.id} value={user.id}>
-                      {user.name} (
-                      {user.role === 'instructor' ? 'Moniteur' : 'Élève'})
-                    </SelectItem>
-                  ))}
+                  {users.length === 0 ? (
+                    <div className="px-3 py-2 text-sm text-muted-foreground">
+                      {usersError
+                        ? 'Accès refusé ou session expirée. Connectez-vous.'
+                        : 'Aucun utilisateur disponible.'}
+                    </div>
+                  ) : (
+                    users.map((user) => (
+                      <SelectItem key={user.id} value={user.id}>
+                        {user.name} (
+                        {user.role === 'instructor' ? 'Moniteur' : 'Élève'})
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
             </div>
