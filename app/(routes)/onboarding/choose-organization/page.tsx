@@ -48,7 +48,7 @@ export default async function Page({
   //  - setActive({ organization: <id> })
   //  - router.refresh() → ce composant se re-rendera, verra orgId et redirigera
   return (
-    <main className="p-6">
+    <div className="p-6">
       <h1 className="text-xl font-semibold mb-3">Associer votre agence</h1>
       <p className="text-sm text-gray-600 mb-4">
         Saisissez le code agence pour rejoindre votre organisation.
@@ -56,6 +56,6 @@ export default async function Page({
       <AssociateAgency className="mt-2" />
       {/* Optionnel: lien de secours */}
       {/* <p className="mt-6 text-sm text-gray-500">Problème ? <a href="/support" className="underline">Contactez-nous</a>.</p> */}
-    </main>
+    </div>
   );
 }

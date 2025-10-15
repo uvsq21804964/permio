@@ -1,5 +1,17 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
+import { getAuth } from '@clerk/nextjs/server';
+
+type AvailabilityRow = {
+  id: string;
+  userId: string;
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+  createdAt: string;
+  updatedAt: string;
+  user: { name: string | null; role: string | null } | null;
+};
 
 const timeToMinutes = (time: string): number => {
   const [hours, minutes] = time.split(':').map(Number);
@@ -20,50 +32,37 @@ const doRangesOverlapOrAdjacent = (
   return start1Min <= end2Min && start2Min <= end1Min;
 };
 
-export async function GET(request: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const userId = searchParams.get('userId');
-
-    let availabilities;
-    if (userId) {
-      availabilities = await sql`
-        SELECT 
-          a.id, 
-          a."userId", 
-          a."dayOfWeek", 
-          a."startTime", 
-          a."endTime", 
-          a."createdAt", 
-          a."updatedAt",
-          json_build_object('name', u.name, 'role', u.role) as user
-        FROM "Availability" a
-        JOIN "User" u ON a."userId" = u.id
-        WHERE a."userId" = ${userId}
-        ORDER BY a."dayOfWeek" ASC, a."startTime" ASC
-      `;
-    } else {
-      availabilities = await sql`
-        SELECT 
-          a.id, 
-          a."userId", 
-          a."dayOfWeek", 
-          a."startTime", 
-          a."endTime", 
-          a."createdAt", 
-          a."updatedAt",
-          json_build_object('name', u.name, 'role', u.role) as user
-        FROM "Availability" a
-        JOIN "User" u ON a."userId" = u.id
-        ORDER BY a."dayOfWeek" ASC, a."startTime" ASC
-      `;
+    // ⚠️ Bien récupérer userId (et pas seulement l'objet)
+    const { userId } = getAuth(req, { treatPendingAsSignedOut: false });
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    return NextResponse.json(availabilities);
-  } catch (error) {
-    console.error('[v0] Error fetching availabilities:', error);
+    // ✅ PAS de quotes autour de ${userId}
+    const rows = await sql`
+      SELECT
+        a.id,
+        a."userId",
+        a."dayOfWeek",
+        a."startTime",
+        a."endTime",
+        a."createdAt",
+        a."updatedAt",
+        json_build_object('name', u.name, 'role', u.role) AS user
+      FROM "Availability" a
+      LEFT JOIN "User" u ON u.id = a."userId"
+      WHERE a."userId" = ${userId}
+      ORDER BY a."dayOfWeek", a."startTime"
+    `;
+
+    // ✅ Même sans lignes, on renvoie [] avec 200
+    return NextResponse.json(rows, { status: 200 });
+  } catch (err: any) {
+    console.error('[GET /api/availabilities] error:', err);
     return NextResponse.json(
-      { error: 'Failed to fetch availabilities' },
+      { error: 'Failed to fetch availabilities', detail: err?.message },
       { status: 500 }
     );
   }
@@ -71,8 +70,13 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const { userId } = getAuth(request, { treatPendingAsSignedOut: false });
+    if (!userId) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json();
-    const { userId, dayOfWeek, startTime, endTime } = body;
+    const { dayOfWeek, startTime, endTime } = body; // ⬅️ plus de userId lu dans le body
 
     const startMinutes = timeToMinutes(startTime);
     const endMinutes = timeToMinutes(endTime);

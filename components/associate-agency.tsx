@@ -18,7 +18,6 @@ export function AssociateAgency({ onSuccess, className }: Props) {
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { isSignedIn } = useAuth();
   const { setActive } = useOrganizationList();
   const router = useRouter();
 

@@ -1,0 +1,232 @@
+'use client';
+
+import React, { useState } from 'react';
+import Image from 'next/image';
+import Link from 'next/link';
+
+import { useAuth } from '@clerk/nextjs';
+import { useUser } from '@clerk/nextjs';
+
+import { useEffect } from 'react';
+
+type Page = { name: string; link: string; student: boolean; cta?: boolean };
+
+function DesktopNavbar({
+  logo,
+  pages,
+  activeLink, // ex: "/accueil"
+}: {
+  logo: string;
+  pages: Page[];
+  activeLink?: string;
+}) {
+  const [open, setOpen] = useState(false);
+
+  const { isLoaded, isSignedIn, userId } = useAuth();
+  const { user } = useUser();
+
+  const [meRole, setMeRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isLoaded) return; // attendre Clerk
+    if (!isSignedIn || !userId) {
+      return;
+    }
+
+    (async () => {
+      try {
+        const res = await fetch('/api/me/role', { credentials: 'include' });
+        if (!res.ok) {
+          const msg = await res.text().catch(() => '');
+          throw new Error(msg || `HTTP ${res.status}`);
+        }
+        const me: { id: string; name?: string; role: string } =
+          await res.json();
+
+        setMeRole('student');
+      } catch (e) {
+        console.error('/api/me/role failed:', e);
+        setMeRole(null);
+      }
+    })();
+  }, [isLoaded, isSignedIn, userId, user]);
+
+  return (
+    <nav className="fixed inset-x-0 top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/90 dark:bg-neutral-900/80 border-b border-neutral-200 dark:border-neutral-800">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        {/* parent relatif -> permet le centrage absolu du logo */}
+        <div className="relative h-16 flex items-center justify-between">
+          {/* G A U C H E */}
+          <div className="flex items-center gap-3">
+            {/* {typeof window !== 'undefined' && <ShowSwitcherWhenOrg />} */}
+            <Link
+              href="/accueil"
+              className="h-10 w-[12rem]
+                       focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 dark:focus:ring-neutral-600 rounded"
+            >
+              <span className="sr-only">Aller à l’accueil</span>
+              <div className="relative h-full w-full">
+                <Image
+                  src={logo}
+                  alt="Logo"
+                  fill
+                  sizes="(max-width: 640px) 160px, 192px"
+                  className="object-contain"
+                  priority
+                />
+              </div>
+            </Link>
+          </div>
+
+          {/* D R O I T E (liens desktop) */}
+          <div className="hidden md:flex items-center gap-2">
+            {pages.map((p) => {
+              if (meRole === 'student' && p.student === false) return null; // ⬅️ masque pour student
+              const isActive = activeLink === p.link;
+              if (p.cta) {
+                return (
+                  <Link
+                    key={p.name}
+                    href={p.link}
+                    className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold
+                               bg-navbar text-white shadow-sm transition hover:brightness-110 active:translate-y-px
+                               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navbar/60"
+                  >
+                    {p.name}
+                  </Link>
+                );
+              }
+              return (
+                <Link
+                  key={p.name}
+                  href={p.link}
+                  className={`group relative rounded-md px-3 py-2 text-sm font-medium transition
+                              hover:bg-neutral-100/60 dark:hover:bg-neutral-800/60
+                              focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700
+                              ${
+                                isActive
+                                  ? 'text-neutral-900 dark:text-white'
+                                  : 'text-neutral-600 dark:text-neutral-300'
+                              }`}
+                >
+                  {p.name}
+                  <span
+                    className={`pointer-events-none absolute inset-x-2 -bottom-0.5 h-px origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100
+                                ${
+                                  isActive
+                                    ? 'scale-x-100 bg-neutral-900 dark:bg-neutral-100'
+                                    : 'bg-neutral-400/60 dark:bg-neutral-500/60'
+                                }`}
+                  />
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* B U R G E R  (mobile, à droite) */}
+          <button
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+            className="md:hidden inline-flex items-center justify-center rounded-md p-2
+                       hover:bg-neutral-100/60 dark:hover:bg-neutral-800/60
+                       focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700"
+          >
+            <span className="sr-only">Ouvrir le menu</span>
+            <svg
+              className="h-6 w-6"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              {open ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
+
+          {/* L O G O  C E N T R É  (absolute) */}
+          {/* <Link
+            href="/accueil"
+            className="absolute left-1/2 -translate-x-1/2 block h-10 w-[12rem] sm:w-[10rem]
+                       focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 dark:focus:ring-neutral-600 rounded"
+          >
+            <span className="sr-only">Aller à l’accueil</span>
+            <div className="relative h-full w-full">
+              <Image
+                src={logo}
+                alt="Logo"
+                fill
+                sizes="(max-width: 640px) 160px, 192px"
+                className="object-contain"
+                priority
+              />
+            </div>
+          </Link> */}
+        </div>
+      </div>
+
+      {/* Menu mobile */}
+      <div
+        id="mobile-menu"
+        className={`md:hidden origin-top overflow-hidden transition-[max-height,opacity] duration-300 ease-out
+                    ${open ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
+      >
+        <div className="px-4 pb-4 pt-2 shadow-sm border-t border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-900/95">
+          <div className="flex flex-col gap-1">
+            {pages.map((p) => {
+              const isActive = activeLink === p.link;
+              const base =
+                'w-full rounded-lg px-3 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700';
+              if (p.cta) {
+                return (
+                  <Link
+                    key={p.name}
+                    href={p.link}
+                    className={`${base} bg-navbar text-white shadow-sm hover:brightness-110 active:translate-y-px`}
+                    onClick={() => setOpen(false)}
+                  >
+                    {p.name}
+                  </Link>
+                );
+              }
+              return (
+                <Link
+                  key={p.name}
+                  href={p.link}
+                  className={`${base} hover:bg-neutral-100 dark:hover:bg-neutral-800 ${
+                    isActive
+                      ? 'text-neutral-900 dark:text-white'
+                      : 'text-neutral-600 dark:text-neutral-300'
+                  }`}
+                  onClick={() => setOpen(false)}
+                >
+                  {p.name}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+export default DesktopNavbar;
+
+// function ShowSwitcherWhenOrg() {
+//   const { organization } = useOrganization();
+//   if (!organization) return null;
+//   return <OrganizationSwitcher />;
+// }

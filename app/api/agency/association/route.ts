@@ -95,6 +95,48 @@ export async function POST(req: NextRequest) {
     // ignorer les erreurs metadata
   }
 
+  // 5bis) Upsert automatique du user applicatif dans Neon → table "User"
+  //       - on utilise l'id Clerk comme id de "User"
+  //       - name : dérivé du profil Clerk
+  //       - role : 'member' par défaut (adapte à 'student'/'instructor' si tu préfères)
+  try {
+    const clerkUser = await clerk.users.getUser(userId);
+    const displayName =
+      [clerkUser?.firstName, clerkUser?.lastName]
+        .filter(Boolean)
+        .join(' ')
+        .trim() ||
+      clerkUser?.username ||
+      clerkUser?.emailAddresses?.[0]?.emailAddress ||
+      'Utilisateur';
+
+    const appRole = 'student'; // <-- change en 'student' ou 'instructor' si besoin
+
+    // IMPORTANT : colonnes sensibles à la casse → quote "createdAt"/"updatedAt"/"agencyId"
+    await sql/* sql */ `
+      INSERT INTO "User" (id, name, role, "createdAt", "updatedAt", "agencyId")
+      VALUES (
+        ${userId},
+        ${displayName},
+        ${appRole},
+        NOW(),
+        NOW(),
+        ${agency.id}
+      )
+      ON CONFLICT (id)
+      DO UPDATE SET
+        name = EXCLUDED.name,
+        role = COALESCE("User".role, EXCLUDED.role),
+        "agencyId" = EXCLUDED."agencyId",
+        "updatedAt" = NOW()
+    `;
+  } catch (e: any) {
+    // Si l'upsert échoue, on log mais on n'empêche pas la réponse (à toi de décider)
+    console.error('Upsert "User" failed:', e?.message || e);
+    // Tu peux décommenter pour rendre bloquant :
+    // return NextResponse.json({ error: 'User upsert failed' }, { status: 500 });
+  }
+
   // 6) Réponse : renvoie explicitement user_id et organization_id
   return NextResponse.json({
     ok: true,

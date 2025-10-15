@@ -1,5 +1,8 @@
 'use client';
 
+import { useAuth } from '@clerk/nextjs';
+import { useUser } from '@clerk/nextjs';
+
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -90,71 +93,101 @@ export function AvailabilityAgenda() {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUserId, setSelectedUserId] = useState('');
   const [availabilities, setAvailabilities] = useState<Availability[]>([]);
-  const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [timeRanges, setTimeRanges] = useState<TimeRange[]>([
     { startTime: '08:00', endTime: '09:00' },
   ]);
   const [error, setError] = useState<string>('');
-  const [loadingUsers, setLoadingUsers] = useState(true);
   const [loadingAvail, setLoadingAvail] = useState(false);
   const [usersError, setUsersError] = useState<string | null>(null);
 
-  // 1) Charger les users
+  const { isLoaded, isSignedIn, userId } = useAuth();
+  const { user } = useUser();
+
+  const [roleReady, setRoleReady] = useState(false);
+  const [availReady, setAvailReady] = useState(false);
+  const [meRole, setMeRole] = useState<string | null>(null);
+
+  // 1) Ne plus charger la liste des users : on fixe l'utilisateur sélectionné = userId Clerk
   useEffect(() => {
-    const fetchUsers = async () => {
-      setLoadingUsers(true);
-      setUsersError(null);
+    setUsersError(null);
+
+    if (!isLoaded) return; // attendre Clerk
+    if (!isSignedIn || !userId) {
+      setSelectedUserId('');
+      setUsers([]);
+      setRoleReady(false); // pas prêt si pas connecté
+      return;
+    }
+
+    const fallbackDisplayName =
+      [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() ||
+      user?.username ||
+      user?.primaryEmailAddress?.emailAddress ||
+      'Moi';
+
+    (async () => {
       try {
-        const res = await fetch('/api/users', { credentials: 'include' });
+        setRoleReady(false); // ⬅︎ on (re)passe en “loading rôle”
+        const res = await fetch('/api/me/role', { credentials: 'include' });
         if (!res.ok) {
-          const err = await res.json().catch(() => ({} as any));
-          const msg = err?.error || `Erreur API /api/users (${res.status})`;
-          setUsers([]);
-          setSelectedUserId('');
-          setUsersError(msg);
-          return;
+          const msg = await res.text().catch(() => '');
+          throw new Error(msg || `HTTP ${res.status}`);
         }
-        const data = await res.json();
-        // normalisation en tableau
-        const list: User[] = Array.isArray(data)
-          ? data
-          : Array.isArray((data as any)?.users)
-          ? (data as any).users
-          : [];
+        const me: { id: string; name?: string; role: string } =
+          await res.json();
 
-        setUsers(list);
-        setSelectedUserId(list[0]?.id ?? '');
-      } catch (error) {
-        console.error('[v0] Error fetching users:', error);
-        setUsers([]);
-        setSelectedUserId('');
-        setUsersError('Impossible de charger les utilisateurs');
-      } finally {
-        setLoadingUsers(false);
+        setUsers([
+          { id: me.id, name: me.name || fallbackDisplayName, role: me.role },
+        ]);
+        setSelectedUserId(me.id);
+        setMeRole(me.role); // optionnel
+        setRoleReady(true); // ✅ rôle prêt
+      } catch (e) {
+        console.error('/api/me/role failed:', e);
+        setUsersError("Impossible de charger l'utilisateur courant");
+        setSelectedUserId(userId); // fallback
+        setMeRole(null);
+        setRoleReady(true); // ✅ on “débloque” quand même l’UI
       }
-    };
-    fetchUsers();
-  }, []);
+    })();
+  }, [isLoaded, isSignedIn, userId, user]);
 
-  // 2) Charger les disponibilités (seulement si un user est sélectionné)
+  // 2) Charger les disponibilités UNIQUEMENT pour l'utilisateur connecté
   useEffect(() => {
-    if (!selectedUserId) return;
+    if (!isLoaded || !isSignedIn || !userId) return;
+    if (!roleReady) return; // ⬅︎ attend le rôle
+
     const fetchAvailabilities = async () => {
       setLoadingAvail(true);
+      setAvailReady(false); // ⬅︎ passe en “loading dispos”
       try {
-        const res = await fetch(`/api/availabilities?userId=${selectedUserId}`);
+        const res = await fetch(`/api/availabilities`, {
+          credentials: 'include',
+        });
+        if (!res.ok)
+          throw new Error(`Erreur API /api/availabilities (${res.status})`);
         const data = await res.json();
-        setAvailabilities(data);
+        const list = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.availabilities)
+          ? data.availabilities
+          : Array.isArray(data?.data)
+          ? data.data
+          : [];
+        setAvailabilities(list);
       } catch (e) {
         console.error('[v0] Error fetching availabilities:', e);
+        setAvailabilities([]); // ✅ pas d’erreur bloquante
       } finally {
         setLoadingAvail(false);
+        setAvailReady(true); // ✅ dispos prêtes (même si vide)
       }
     };
+
     fetchAvailabilities();
-  }, [selectedUserId]);
+  }, [isLoaded, isSignedIn, userId, roleReady]);
 
   const handleCellClick = (day: number, hour: number) => {
     setSelectedDay(day);
@@ -192,18 +225,18 @@ export function AvailabilityAgenda() {
     if (selectedDay === null || !selectedUserId) return;
 
     setError('');
-    for (let i = 0; i < timeRanges.length; i++) {
-      const range = timeRanges[i];
-      const startMinutes = timeToMinutes(range.startTime);
-      const endMinutes = timeToMinutes(range.endTime);
 
+    // validations locales
+    for (let i = 0; i < timeRanges.length; i++) {
+      const { startTime, endTime } = timeRanges[i];
+      const startMinutes = timeToMinutes(startTime);
+      const endMinutes = timeToMinutes(endTime);
       if (endMinutes <= startMinutes) {
         setError(
           `Plage ${i + 1}: L'heure de fin doit être après l'heure de début`
         );
         return;
       }
-
       if (startMinutes < START_HOUR * 60 || endMinutes > 20 * 60) {
         setError(
           `Plage ${i + 1}: Les horaires doivent être entre 8h00 et 20h00`
@@ -213,32 +246,48 @@ export function AvailabilityAgenda() {
     }
 
     try {
-      const promises = timeRanges.map((range) =>
-        fetch('/api/availabilities', {
+      // ✅ envoi SÉQUENTIEL pour éviter les races en base
+      for (const range of timeRanges) {
+        const res = await fetch('/api/availabilities', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({
-            userId: selectedUserId,
             dayOfWeek: selectedDay,
             startTime: range.startTime,
             endTime: range.endTime,
           }),
-        })
-      );
+        });
+        if (!res.ok) {
+          const msg = await res.text().catch(() => '');
+          throw new Error(`POST /api/availabilities ${res.status} ${msg}`);
+        }
+      }
 
-      await Promise.all(promises);
-
-      const response = await fetch(
-        `/api/availabilities?userId=${selectedUserId}`
-      );
+      // rafraîchir la liste
+      const response = await fetch('/api/availabilities', {
+        credentials: 'include',
+      });
+      if (!response.ok) {
+        const msg = await response.text().catch(() => '');
+        throw new Error(`GET /api/availabilities ${response.status} ${msg}`);
+      }
       const data = await response.json();
-      setAvailabilities(data);
+      const list = Array.isArray(data)
+        ? data
+        : Array.isArray(data?.availabilities)
+        ? data.availabilities
+        : Array.isArray(data?.data)
+        ? data.data
+        : [];
+      setAvailabilities(list);
 
+      // reset UI
       setDialogOpen(false);
       setTimeRanges([{ startTime: '08:00', endTime: '09:00' }]);
       setError('');
-    } catch (error) {
-      console.error('[v0] Error creating availabilities:', error);
+    } catch (err) {
+      console.error('[v0] Error creating availabilities:', err);
       setError('Erreur lors de la création des disponibilités');
     }
   };
@@ -246,17 +295,33 @@ export function AvailabilityAgenda() {
   const handleDelete = async (id: string) => {
     try {
       const response = await fetch(`/api/availabilities/${id}`, {
+        credentials: 'include',
         method: 'DELETE',
       });
 
       if (response.ok) {
-        const refreshResponse = await fetch(
-          `/api/availabilities?userId=${selectedUserId}`
-        );
-        const data = await refreshResponse.json();
-        setAvailabilities(data);
+        const refresh = await fetch('/api/availabilities', {
+          credentials: 'include',
+        });
+        if (!refresh.ok) {
+          console.error('Refresh failed', await refresh.text().catch(() => ''));
+          return;
+        }
+        const data = await refresh.json();
+        const list = Array.isArray(data)
+          ? data
+          : Array.isArray(data?.availabilities)
+          ? data.availabilities
+          : Array.isArray(data?.data)
+          ? data.data
+          : [];
+        setAvailabilities(list);
       } else {
-        console.error('[v0] Error deleting availability: Response not OK');
+        console.error(
+          '[v0] Error deleting availability:',
+          response.status,
+          await response.text().catch(() => '')
+        );
       }
     } catch (error) {
       console.error('[v0] Error deleting availability:', error);
@@ -267,181 +332,141 @@ export function AvailabilityAgenda() {
     return availabilities.filter((avail) => avail.dayOfWeek === day);
   };
 
-  if (loadingUsers) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <p className="text-muted-foreground text-sm">Chargement…</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (!loadingUsers && users.length === 0) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <p className="text-sm">
-            Aucun utilisateur dans cette agence. Ajoutez-en un pour commencer.
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (usersError) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <p className="text-sm text-red-600">{usersError}</p>
-          <p className="text-sm mt-2 text-muted-foreground">
-            Astuce : assurez-vous d’être connecté via Clerk.
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (users.length === 0) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <p className="text-sm">Aucun utilisateur disponible.</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
     <>
-      {usersError && (
-        <Alert variant="destructive" className="mb-3">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{usersError}</AlertDescription>
-        </Alert>
-      )}
-
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle>Disponibilités hebdomadaires</CardTitle>
-            <div className="w-64">
-              <Select value={selectedUserId} onValueChange={setSelectedUserId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionner un utilisateur" />
-                </SelectTrigger>
-                <SelectContent>
-                  {users.length === 0 ? (
-                    <div className="px-3 py-2 text-sm text-muted-foreground">
-                      {usersError
-                        ? 'Accès refusé ou session expirée. Connectez-vous.'
-                        : 'Aucun utilisateur disponible.'}
-                    </div>
-                  ) : (
-                    users.map((user) => (
-                      <SelectItem key={user.id} value={user.id}>
-                        {user.name} (
-                        {user.role === 'instructor' ? 'Moniteur' : 'Élève'})
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <p className="text-muted-foreground text-sm mt-2">
-            Cliquez sur une case vide pour ajouter des disponibilités, ou sur
-            une disponibilité existante pour la supprimer
-          </p>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <div className="min-w-[800px]">
-              {/* Header row */}
-              <div className="grid grid-cols-8 gap-0">
-                <div className="font-medium text-sm text-muted-foreground p-2 border-b">
-                  Heure
-                </div>
-                {DAYS.map((day) => (
-                  <div
-                    key={day}
-                    className="font-medium text-sm text-center p-2 border-b border-r"
-                  >
-                    {day}
-                  </div>
-                ))}
+      {roleReady && availReady ? (
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle>Disponibilités hebdomadaires</CardTitle>
+              <div className="w-64">
+                <Select
+                  value={selectedUserId}
+                  onValueChange={setSelectedUserId}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionner un utilisateur" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {users.length === 0 ? (
+                      <div className="px-3 py-2 text-sm text-muted-foreground">
+                        {usersError
+                          ? 'Accès refusé ou session expirée. Connectez-vous.'
+                          : 'Aucun utilisateur disponible.'}
+                      </div>
+                    ) : (
+                      users.map((user) => (
+                        <SelectItem key={user.id} value={user.id}>
+                          {user.name} (
+                          {user.role === 'instructor' ? 'Moniteur' : 'Élève'})
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
               </div>
-
-              {/* Time slots grid */}
-              <div className="grid grid-cols-8 gap-0">
-                {/* Hour labels column */}
-                <div>
-                  {HOURS.map((hour) => (
+            </div>
+            <p className="text-muted-foreground text-sm mt-2">
+              Cliquez sur une case vide pour ajouter des disponibilités, ou sur
+              une disponibilité existante pour la supprimer
+            </p>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <div className="min-w-[800px]">
+                {/* Header row */}
+                <div className="grid grid-cols-8 gap-0">
+                  <div className="font-medium text-sm text-muted-foreground p-2 border-b">
+                    Heure
+                  </div>
+                  {DAYS.map((day) => (
                     <div
-                      key={`hour-${hour}`}
-                      className="text-sm text-muted-foreground p-2 border-r border-b"
-                      style={{ height: `${PIXELS_PER_HOUR}px` }}
+                      key={day}
+                      className="font-medium text-sm text-center p-2 border-b border-r"
                     >
-                      {hour}:00
+                      {day}
                     </div>
                   ))}
                 </div>
 
-                {/* Day columns */}
-                {DAYS.map((_, dayIndex) => (
-                  <div key={`day-${dayIndex}`} className="relative border-r">
-                    {/* Hour cells */}
+                {/* Time slots grid */}
+                <div className="grid grid-cols-8 gap-0">
+                  {/* Hour labels column */}
+                  <div>
                     {HOURS.map((hour) => (
                       <div
-                        key={`${dayIndex}-${hour}`}
-                        className="border-b cursor-pointer hover:bg-muted/50 transition-colors"
+                        key={`hour-${hour}`}
+                        className="text-sm text-muted-foreground p-2 border-r border-b"
                         style={{ height: `${PIXELS_PER_HOUR}px` }}
-                        onClick={() => handleCellClick(dayIndex, hour)}
-                      />
+                      >
+                        {hour}:00
+                      </div>
                     ))}
-
-                    {/* Availability blocks positioned absolutely within the day column */}
-                    {getAvailabilitiesForDay(dayIndex).map((avail) => {
-                      const { top, height } = getAvailabilityStyle(
-                        avail.startTime,
-                        avail.endTime
-                      );
-                      const colorClass = getDurationColor(
-                        avail.startTime,
-                        avail.endTime
-                      );
-                      return (
-                        <div
-                          key={avail.id}
-                          className={`absolute left-1 right-1 text-xs p-2 rounded border group cursor-pointer transition-colors ${colorClass}`}
-                          style={{
-                            top: `${top}px`,
-                            height: `${height}px`,
-                            minHeight: '24px',
-                          }}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(avail.id);
-                          }}
-                        >
-                          <div className="flex items-start justify-between gap-1 h-full">
-                            <div className="flex-1 min-w-0">
-                              <div className="text-[10px] font-medium leading-tight">
-                                {avail.startTime} - {avail.endTime}
-                              </div>
-                            </div>
-                            <Trash2 className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
-                          </div>
-                        </div>
-                      );
-                    })}
                   </div>
-                ))}
+
+                  {/* Day columns */}
+                  {DAYS.map((_, dayIndex) => (
+                    <div key={`day-${dayIndex}`} className="relative border-r">
+                      {/* Hour cells */}
+                      {HOURS.map((hour) => (
+                        <div
+                          key={`${dayIndex}-${hour}`}
+                          className="border-b cursor-pointer hover:bg-muted/50 transition-colors"
+                          style={{ height: `${PIXELS_PER_HOUR}px` }}
+                          onClick={() => handleCellClick(dayIndex, hour)}
+                        />
+                      ))}
+
+                      {/* Availability blocks positioned absolutely within the day column */}
+                      {getAvailabilitiesForDay(dayIndex).map((avail) => {
+                        const { top, height } = getAvailabilityStyle(
+                          avail.startTime,
+                          avail.endTime
+                        );
+                        const colorClass = getDurationColor(
+                          avail.startTime,
+                          avail.endTime
+                        );
+                        return (
+                          <div
+                            key={avail.id}
+                            className={`absolute left-1 right-1 text-xs p-2 rounded border group cursor-pointer transition-colors ${colorClass}`}
+                            style={{
+                              top: `${top}px`,
+                              height: `${height}px`,
+                              minHeight: '24px',
+                            }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDelete(avail.id);
+                            }}
+                          >
+                            <div className="flex items-start justify-between gap-1 h-full">
+                              <div className="flex-1 min-w-0">
+                                <div className="text-[10px] font-medium leading-tight">
+                                  {avail.startTime} - {avail.endTime}
+                                </div>
+                              </div>
+                              <Trash2 className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      ) : (
+        // Placeholder très simple pendant le chargement
+        <div className="rounded-lg border p-6 text-sm text-muted-foreground">
+          {usersError
+            ? 'Impossible de récupérer votre statut ou vos disponibilités.'
+            : 'Chargement de vos disponibilités…'}
+        </div>
+      )}
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-md">

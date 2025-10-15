@@ -1,14 +1,6 @@
 'use client';
 
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  OrganizationSwitcher,
-  useOrganization,
-} from '@clerk/nextjs';
 import { AvailabilityAgenda } from '@/components/availability-agenda';
-import { AssociateAgency } from '@/components/associate-agency';
 
 export default function AgendaPage() {
   return (

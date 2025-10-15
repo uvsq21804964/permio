@@ -34,7 +34,9 @@ export default function RootLayout({
         <body
           className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}
         >
-          {children}
+          <div className="flex h-screen w-screen justify-center items-center">
+            {children}
+          </div>
           <Analytics />
         </body>
       </html>

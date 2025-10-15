@@ -1,7 +1,6 @@
 // middleware.ts
 import { NextResponse } from 'next/server';
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
 
 // Déclare les routes publiques (pas de redirection même si la session est "pending")
 const isPublicRoute = createRouteMatcher([
