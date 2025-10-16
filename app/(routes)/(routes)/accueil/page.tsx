@@ -13,9 +13,10 @@ export default async function Home() {
     <div className="min-h-screen bg-background p-6">
       <div className="mx-auto max-w-4xl space-y-8">
         <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold text-foreground">
-            Auto-école Scheduler
-          </h1>
+          <h1 className="text-4xl font-bold text-foreground">Permio</h1>
+          <h2 className="text-xl font-bold text-foreground">
+            Le permis à toute vitesse !
+          </h2>
           <p className="text-muted-foreground text-lg">
             Système de planification pour auto-écoles
           </p>

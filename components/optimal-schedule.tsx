@@ -18,15 +18,33 @@ import type { ScheduleResult } from '@/types/schedule';
 import { DAYS } from '@/types/schedule';
 import { AssignedSlotsSection } from '@/components/schedule/AssignedSlotsSection';
 import { CalculatedAgendaSection } from '@/components/schedule/CalculatedAgendaSection';
+import { useAuth, useOrganization } from '@clerk/nextjs';
+
+type Role = 'student' | 'instructor' | 'admin';
+type UserRow = {
+  id: string;
+  name: string | null;
+  role: Role;
+  createdAt?: string;
+  updatedAt?: string;
+};
 
 export function OptimalSchedule() {
   const [result, setResult] = useState<ScheduleResult | null>(null);
   const [loading, setLoading] = useState(false);
 
+  const { orgId: authOrgId } = useAuth();
+  const { organization } = useOrganization();
+  const orgId = organization?.id ?? authOrgId ?? '';
+
   const handleGenerateSchedule = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/schedule', { method: 'POST' });
+      const response = await fetch('/api/schedule', {
+        method: 'POST',
+        credentials: 'include',
+        headers: orgId ? { 'x-org-id': orgId } : {},
+      });
       const data = await response.json();
       setResult(data);
     } catch (error) {

@@ -4,65 +4,35 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { useAuth } from '@clerk/nextjs';
-import { useUser } from '@clerk/nextjs';
-
-import { useEffect } from 'react';
-
 type Page = { name: string; link: string; student: boolean; cta?: boolean };
 
 function DesktopNavbar({
   logo,
   pages,
-  activeLink, // ex: "/accueil"
+  activeLink,
+  meRole, // ⬅️ rôle reçu du serveur
 }: {
   logo: string;
   pages: Page[];
   activeLink?: string;
+  meRole: 'student' | 'instructor' | 'admin' | string | null;
 }) {
   const [open, setOpen] = useState(false);
 
-  const { isLoaded, isSignedIn, userId } = useAuth();
-  const { user } = useUser();
-
-  const [meRole, setMeRole] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!isLoaded) return; // attendre Clerk
-    if (!isSignedIn || !userId) {
-      return;
-    }
-
-    (async () => {
-      try {
-        const res = await fetch('/api/me/role', { credentials: 'include' });
-        if (!res.ok) {
-          const msg = await res.text().catch(() => '');
-          throw new Error(msg || `HTTP ${res.status}`);
-        }
-        const me: { id: string; name?: string; role: string } =
-          await res.json();
-
-        setMeRole('student');
-      } catch (e) {
-        console.error('/api/me/role failed:', e);
-        setMeRole(null);
-      }
-    })();
-  }, [isLoaded, isSignedIn, userId, user]);
+  // Filtre : si student ⇒ masquer pages avec p.student === false
+  const visiblePages = pages.filter((p) =>
+    meRole === 'student' ? p.student !== false : true
+  );
 
   return (
     <nav className="fixed inset-x-0 top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/90 dark:bg-neutral-900/80 border-b border-neutral-200 dark:border-neutral-800">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        {/* parent relatif -> permet le centrage absolu du logo */}
         <div className="relative h-16 flex items-center justify-between">
           {/* G A U C H E */}
           <div className="flex items-center gap-3">
-            {/* {typeof window !== 'undefined' && <ShowSwitcherWhenOrg />} */}
             <Link
               href="/accueil"
-              className="h-10 w-[12rem]
-                       focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 dark:focus:ring-neutral-600 rounded"
+              className="h-10 w-[12rem] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 dark:focus:ring-neutral-600 rounded"
             >
               <span className="sr-only">Aller à l’accueil</span>
               <div className="relative h-full w-full">
@@ -80,9 +50,9 @@ function DesktopNavbar({
 
           {/* D R O I T E (liens desktop) */}
           <div className="hidden md:flex items-center gap-2">
-            {pages.map((p) => {
-              if (meRole === 'student' && p.student === false) return null; // ⬅️ masque pour student
+            {visiblePages.map((p) => {
               const isActive = activeLink === p.link;
+
               if (p.cta) {
                 return (
                   <Link
@@ -96,6 +66,7 @@ function DesktopNavbar({
                   </Link>
                 );
               }
+
               return (
                 <Link
                   key={p.name}
@@ -123,7 +94,7 @@ function DesktopNavbar({
             })}
           </div>
 
-          {/* B U R G E R  (mobile, à droite) */}
+          {/* B U R G E R (mobile) */}
           <button
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
@@ -155,25 +126,6 @@ function DesktopNavbar({
               )}
             </svg>
           </button>
-
-          {/* L O G O  C E N T R É  (absolute) */}
-          {/* <Link
-            href="/accueil"
-            className="absolute left-1/2 -translate-x-1/2 block h-10 w-[12rem] sm:w-[10rem]
-                       focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 dark:focus:ring-neutral-600 rounded"
-          >
-            <span className="sr-only">Aller à l’accueil</span>
-            <div className="relative h-full w-full">
-              <Image
-                src={logo}
-                alt="Logo"
-                fill
-                sizes="(max-width: 640px) 160px, 192px"
-                className="object-contain"
-                priority
-              />
-            </div>
-          </Link> */}
         </div>
       </div>
 
@@ -185,10 +137,11 @@ function DesktopNavbar({
       >
         <div className="px-4 pb-4 pt-2 shadow-sm border-t border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-900/95">
           <div className="flex flex-col gap-1">
-            {pages.map((p) => {
+            {visiblePages.map((p) => {
               const isActive = activeLink === p.link;
               const base =
                 'w-full rounded-lg px-3 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700';
+
               if (p.cta) {
                 return (
                   <Link
@@ -201,6 +154,7 @@ function DesktopNavbar({
                   </Link>
                 );
               }
+
               return (
                 <Link
                   key={p.name}
@@ -224,9 +178,3 @@ function DesktopNavbar({
 }
 
 export default DesktopNavbar;
-
-// function ShowSwitcherWhenOrg() {
-//   const { organization } = useOrganization();
-//   if (!organization) return null;
-//   return <OrganizationSwitcher />;
-// }

@@ -6,15 +6,28 @@ import Image from 'next/image';
 import { OrganizationSwitcher, useOrganization } from '@clerk/nextjs';
 import Link from 'next/link';
 
+type Page = { name: string; link: string; student: boolean; cta?: boolean };
+
 interface NavbarProps {
   logo: string;
-  pages: { name: string; link: string }[];
+  pages: Page[];
   activeLink?: string;
+  meRole: 'student' | 'instructor' | 'admin' | string | null; // ⬅️ rôle passé depuis le layout serveur
 }
 
-const MobileNavbar: React.FC<NavbarProps> = ({ logo, pages, activeLink }) => {
+const MobileNavbar: React.FC<NavbarProps> = ({
+  logo,
+  pages,
+  activeLink,
+  meRole,
+}) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleMenu = () => setIsMenuOpen((v) => !v);
+
+  // Filtre : si role = student, ne pas afficher les pages où p.student === false
+  const visiblePages = pages.filter((p) =>
+    meRole === 'student' ? p.student !== false : true
+  );
 
   return (
     <nav className="fixed inset-x-0 top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/90 dark:bg-neutral-900/80 border-b border-neutral-200 dark:border-neutral-800">
@@ -35,16 +48,27 @@ const MobileNavbar: React.FC<NavbarProps> = ({ logo, pages, activeLink }) => {
                 priority
               />
             </Link>
-
-            <div className="hidden md:flex items-center">
-              {typeof window !== 'undefined' && <ShowSwitcherWhenOrg />}
-            </div>
           </div>
 
           {/* Liens desktop (sans hook de path) */}
           <div className="hidden md:flex items-center gap-1">
-            {pages.map((p) => {
+            {visiblePages.map((p) => {
               const isActive = activeLink ? activeLink === p.link : false;
+
+              if (p.cta) {
+                return (
+                  <Link
+                    key={p.name}
+                    href={p.link}
+                    className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold
+                               bg-navbar text-white shadow-sm transition hover:brightness-110 active:translate-y-px
+                               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navbar/60"
+                  >
+                    {p.name}
+                  </Link>
+                );
+              }
+
               return (
                 <Link
                   key={p.name}
@@ -59,7 +83,6 @@ const MobileNavbar: React.FC<NavbarProps> = ({ logo, pages, activeLink }) => {
                   }`}
                 >
                   {p.name}
-                  {/* soulignement animé (reste purement visuel, pas basé sur un hook) */}
                   <span
                     className={`pointer-events-none absolute inset-x-2 -bottom-0.5 h-px origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100 
                     ${
@@ -71,11 +94,6 @@ const MobileNavbar: React.FC<NavbarProps> = ({ logo, pages, activeLink }) => {
                 </Link>
               );
             })}
-          </div>
-
-          {/* Actions à droite (mobile) */}
-          <div className="flex items-center gap-3 md:hidden">
-            {typeof window !== 'undefined' && <ShowSwitcherWhenOrg />}
           </div>
 
           {/* Burger */}
@@ -115,8 +133,23 @@ const MobileNavbar: React.FC<NavbarProps> = ({ logo, pages, activeLink }) => {
       >
         <div className="px-4 pb-4 pt-2 shadow-sm border-t border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-900/95">
           <div className="flex flex-col gap-1">
-            {pages.map((p) => {
+            {visiblePages.map((p) => {
               const isActive = activeLink ? activeLink === p.link : false;
+
+              if (p.cta) {
+                return (
+                  <Link
+                    key={p.name}
+                    href={p.link}
+                    className="w-full rounded-lg px-3 py-2 text-sm font-medium transition 
+                               bg-navbar text-white shadow-sm hover:brightness-110 active:translate-y-px
+                               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700"
+                  >
+                    {p.name}
+                  </Link>
+                );
+              }
+
               return (
                 <Link
                   key={p.name}
@@ -143,9 +176,3 @@ const MobileNavbar: React.FC<NavbarProps> = ({ logo, pages, activeLink }) => {
 };
 
 export default MobileNavbar;
-
-function ShowSwitcherWhenOrg() {
-  const { organization } = useOrganization();
-  if (!organization) return null;
-  return <OrganizationSwitcher />;
-}

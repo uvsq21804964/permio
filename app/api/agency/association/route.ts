@@ -10,18 +10,19 @@ type AgencyRow = {
   join_code: string;
 };
 
-// Rôle par défaut pour la membership (adapter si tu utilises des rôles custom)
+// Utilise un rôle d'org Clerk valide (ex: 'org:member', 'org:admin', ou un slug existant)
 const DEFAULT_ORG_ROLE =
   process.env.CLERK_DEFAULT_ORG_ROLE?.trim() || 'org:member';
 
 export async function POST(req: NextRequest) {
-  // 1) Auth Clerk → récupère l'user_id
   const { userId } = getAuth(req, { treatPendingAsSignedOut: false });
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // 2) Body → code agence (normalisé)
+  const clerk = await clerkClient();
+
+  // Parse body
   let body: any = {};
   try {
     body = await req.json();
@@ -33,17 +34,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Missing code' }, { status: 400 });
   }
 
-  // 3) Lookup agence par code → récupère organization_id
-  let agency: AgencyRow | undefined;
+  // Lookup agence
+  let agency;
   try {
-    const rows: AgencyRow[] = await sql/* sql */ `
+    const rows = await sql/* sql */ `
       SELECT id, name, clerk_org_id, join_code
       FROM "Agency"
       WHERE UPPER(join_code) = ${normalized}
       LIMIT 1
     `;
     agency = rows?.[0];
-  } catch {
+  } catch (e) {
+    console.error('DB error:', e);
     return NextResponse.json({ error: 'DB error' }, { status: 500 });
   }
 
@@ -53,14 +55,12 @@ export async function POST(req: NextRequest) {
 
   const organizationId = agency.clerk_org_id;
 
-  const clerk = await clerkClient();
-
-  // 4) Crée (idempotent) la membership user ↔ organization
+  // 1) Création idempotente de la membership
   try {
     await clerk.organizations.createOrganizationMembership({
       organizationId,
       userId,
-      role: DEFAULT_ORG_ROLE, // ex: 'org:member'
+      role: DEFAULT_ORG_ROLE, // ⚠️ rôle valide côté Clerk
     });
   } catch (e: any) {
     const status = e?.status || e?.statusCode;
@@ -72,17 +72,34 @@ export async function POST(req: NextRequest) {
       /already.*member/i.test(msg) ||
       /membership.*exists/i.test(msg);
 
+    // Si le rôle est invalide, Clerk renvoie 400
+    const roleInvalid =
+      status === 400 &&
+      (/role/i.test(msg) ||
+        /invalid.*role/i.test(msg) ||
+        /does not exist/i.test(msg));
+
+    if (roleInvalid) {
+      return NextResponse.json(
+        {
+          error: 'Invalid organization role',
+          details: `Use a Clerk org role like "org:member" or set CLERK_DEFAULT_ORG_ROLE.`,
+        },
+        { status: 400 }
+      );
+    }
+
     if (!alreadyMember) {
-      // remonte l’erreur Clerk pour faciliter le debug (role invalide, org not found, etc.)
+      // Autres cas: org inexistante, restrictions, etc.
       return NextResponse.json(
         { error: 'Join failed', details: msg || 'unknown' },
         { status: 400 }
       );
     }
-    // sinon, on considère que c’est OK (idempotent)
+    // sinon on continue (idempotent)
   }
 
-  // 5) (Optionnel) enrichit le profil Clerk (non bloquant)
+  // 2) Enrichit le profil (non bloquant)
   try {
     await clerk.users.updateUser(userId, {
       publicMetadata: {
@@ -91,14 +108,11 @@ export async function POST(req: NextRequest) {
         clerkOrgId: organizationId,
       },
     });
-  } catch {
-    // ignorer les erreurs metadata
+  } catch (e) {
+    console.warn('Metadata update skipped:', e);
   }
 
-  // 5bis) Upsert automatique du user applicatif dans Neon → table "User"
-  //       - on utilise l'id Clerk comme id de "User"
-  //       - name : dérivé du profil Clerk
-  //       - role : 'member' par défaut (adapte à 'student'/'instructor' si tu préfères)
+  // 3) Upsert dans ta table "User"
   try {
     const clerkUser = await clerk.users.getUser(userId);
     const displayName =
@@ -110,9 +124,9 @@ export async function POST(req: NextRequest) {
       clerkUser?.emailAddresses?.[0]?.emailAddress ||
       'Utilisateur';
 
-    const appRole = 'student'; // <-- change en 'student' ou 'instructor' si besoin
+    // Rôle applicatif : sans rapport avec le rôle d’org Clerk !
+    const appRole = 'student'; // adapte si besoin
 
-    // IMPORTANT : colonnes sensibles à la casse → quote "createdAt"/"updatedAt"/"agencyId"
     await sql/* sql */ `
       INSERT INTO "User" (id, name, role, "createdAt", "updatedAt", "agencyId")
       VALUES (
@@ -131,13 +145,10 @@ export async function POST(req: NextRequest) {
         "updatedAt" = NOW()
     `;
   } catch (e: any) {
-    // Si l'upsert échoue, on log mais on n'empêche pas la réponse (à toi de décider)
     console.error('Upsert "User" failed:', e?.message || e);
-    // Tu peux décommenter pour rendre bloquant :
-    // return NextResponse.json({ error: 'User upsert failed' }, { status: 500 });
+    // à toi de décider si tu veux rendre bloquant
   }
 
-  // 6) Réponse : renvoie explicitement user_id et organization_id
   return NextResponse.json({
     ok: true,
     userId,
