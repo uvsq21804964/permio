@@ -1,0 +1,40 @@
+{
+  "Nav": {
+    "myAvailabilities": "My availabilities",
+    "configuration": "Settings"
+  },
+  "SignOut": {
+    "title": "Sign out",
+    "question": "Do you really want to sign out?",
+    "confirm": "Yes, sign me out",
+    "cancel": "Cancel"
+  },
+  "Auth": {
+    "SignIn": {
+      "title": "Sign in",
+      "cta": "Sign in",
+      "redirecting": "Redirecting…"
+    },
+    "SignUp": {
+      "title": "Create an account",
+      "cta": "Sign up"
+    }
+  },
+  "Onboarding": {
+    "chooseOrganization": {
+      "title": "Choose an organization",
+      "subtitle": "Select the organization to continue"
+    }
+  },
+  "Availabilities": {
+    "title": "My availabilities",
+    "empty": "No availabilities yet.",
+    "confirm": "Confirm my availabilities",
+    "lastChange": "Last change {relativeTime}"
+  },
+  "Common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "language": "Language"
+  }
+}

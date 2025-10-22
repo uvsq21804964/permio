@@ -2,6 +2,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardContent,
@@ -162,22 +163,29 @@ export function CalculatedAgendaSection({
               sélectionné.
             </CardDescription>
           </div>
-          <div className="w-64">
-            <Select value={selectedUserId} onValueChange={setSelectedUserId}>
-              <SelectTrigger>
-                <SelectValue placeholder="Sélectionner un membre" />
-              </SelectTrigger>
-              <SelectContent>
-                {derivedUsers.map((u) => (
-                  <SelectItem key={u.id} value={u.id}>
-                    {u.name ?? u.id}{' '}
-                    {u.role
-                      ? `(${u.role === 'instructor' ? 'Moniteur' : 'Élève'})`
-                      : ''}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+
+          <div className="flex items-center gap-3">
+            {/* Bouton Valider l'agenda */}
+            <ValidateAllInstructorsButton matches={result.matches} />
+
+            {/* Sélecteur de membre */}
+            <div className="w-64">
+              <Select value={selectedUserId} onValueChange={setSelectedUserId}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionner un membre" />
+                </SelectTrigger>
+                <SelectContent>
+                  {derivedUsers.map((u) => (
+                    <SelectItem key={u.id} value={u.id}>
+                      {u.name ?? u.id}{' '}
+                      {u.role
+                        ? `(${u.role === 'instructor' ? 'Moniteur' : 'Élève'})`
+                        : ''}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </div>
       </CardHeader>
@@ -254,7 +262,7 @@ export function CalculatedAgendaSection({
                       return (
                         <div
                           key={`${dayIndex}-${i}`}
-                          className={`absolute left-1 right-1 text-xs p-2 rounded border ${colorClass}`}
+                          className={`absolute left-1 right-1 text-xs p-2 rounded-md border ${colorClass}`}
                           style={{ top, height, minHeight: '24px' }}
                         >
                           <div className="flex items-start justify-between gap-1 h-full">
@@ -278,5 +286,50 @@ export function CalculatedAgendaSection({
         )}
       </CardContent>
     </Card>
+  );
+}
+
+function ValidateAllInstructorsButton({ matches }: { matches: Match[] }) {
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState<string | null>(null);
+
+  const onValidate = async () => {
+    setSaving(true);
+    setMsg(null);
+    try {
+      // Option : passer un lundi précis en YYYY-MM-DD
+      // const weekStart = '2025-10-13';
+
+      // ✅ on envoie TOUS les matches (tous les moniteurs)
+      const res = await fetch('/api/schedule/commit', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          matches,
+          // weekStart,
+          scope: 'instructors', // hint pour l’API (voir ci-dessous)
+        }),
+      });
+      if (!res.ok) {
+        const txt = await res.text().catch(() => '');
+        throw new Error(txt || `HTTP ${res.status}`);
+      }
+      setMsg('Agendas moniteurs validés ✅');
+    } catch (e: any) {
+      console.error('commit error', e);
+      setMsg(`Erreur: ${e?.message || 'échec de l’enregistrement'}`);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <Button onClick={onValidate} disabled={saving || matches.length === 0}>
+        {saving ? 'Validation…' : 'Valider tous les moniteurs'}
+      </Button>
+      {msg && <span className="text-xs text-neutral-600">{msg}</span>}
+    </div>
   );
 }

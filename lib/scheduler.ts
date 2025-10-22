@@ -1,4 +1,3 @@
-// lib/scheduler.ts
 import { loadPlanningInput } from './get-data';
 
 export type Match = {
@@ -25,10 +24,9 @@ export type ScheduleResult = {
 
 const PY_SERVICE_URL =
   process.env.PY_SERVICE_URL || 'http://localhost:8000/solve';
-const PY_SERVICE_KEY = process.env.PY_SERVICE_KEY || ''; // ← même valeur que API_KEY côté solver
+const PY_SERVICE_KEY = process.env.PY_SERVICE_KEY || '';
 const FETCH_TIMEOUT_MS = Number(process.env.SOLVER_TIMEOUT_MS || 25000);
 
-/** Appelle le microservice FastAPI avec le payload de l’agence. */
 export async function runPythonScheduler(
   agencyId: string
 ): Promise<ScheduleResult> {
@@ -36,7 +34,10 @@ export async function runPythonScheduler(
 
   const input = await loadPlanningInput(agencyId);
 
-  // Timeout propre via AbortController
+  // ✅ on extrait les noms et on n’envoie pas ce champ au solver
+  const { names, ...payloadForSolver } = input as any;
+  const nameById: Record<string, string> = names ?? {};
+
   const controller = new AbortController();
   const to = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
@@ -50,9 +51,8 @@ export async function runPythonScheduler(
     const res = await fetch(PY_SERVICE_URL, {
       method: 'POST',
       headers,
-      body: JSON.stringify(input),
+      body: JSON.stringify(payloadForSolver),
       signal: controller.signal,
-      // Evite le cache côté Next/Node pour ce type d’appel
       cache: 'no-store',
     });
 
@@ -62,9 +62,24 @@ export async function runPythonScheduler(
     }
 
     const data = (await res.json()) as ScheduleResult;
-    return data;
+
+    // ✅ ENRICHISSEMENT : remplace les IDs par les noms pour le front
+    const withNames: ScheduleResult = {
+      ...data,
+      matches: (data.matches || []).map((m) => ({
+        ...m,
+        studentName: nameById[m.studentId] ?? m.studentName ?? m.studentId,
+        instructorName:
+          nameById[m.instructorId] ?? m.instructorName ?? m.instructorId,
+      })),
+      unmatchedStudents: (data.unmatchedStudents || []).map((s) => ({
+        ...s,
+        name: nameById[s.id] ?? s.name ?? s.id,
+      })),
+    };
+
+    return withNames;
   } catch (err: any) {
-    // Message clair en cas d’abandon (timeout)
     if (err?.name === 'AbortError') {
       throw new Error(`Solver timeout after ${FETCH_TIMEOUT_MS} ms`);
     }

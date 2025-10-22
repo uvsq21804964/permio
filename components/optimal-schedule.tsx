@@ -1,7 +1,8 @@
 // components/optimal-schedule.tsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
 import {
   Card,
   CardContent,
@@ -19,15 +20,10 @@ import { DAYS } from '@/types/schedule';
 import { AssignedSlotsSection } from '@/components/schedule/AssignedSlotsSection';
 import { CalculatedAgendaSection } from '@/components/schedule/CalculatedAgendaSection';
 import { useAuth, useOrganization } from '@clerk/nextjs';
+import StudentsAvailabilityHeatmap from './gestion/StudentsAvailabilityHeatmap';
 
 type Role = 'student' | 'instructor' | 'admin';
-type UserRow = {
-  id: string;
-  name: string | null;
-  role: Role;
-  createdAt?: string;
-  updatedAt?: string;
-};
+type Student = { id: string; name: string | null };
 
 export function OptimalSchedule() {
   const [result, setResult] = useState<ScheduleResult | null>(null);
@@ -36,6 +32,39 @@ export function OptimalSchedule() {
   const { orgId: authOrgId } = useAuth();
   const { organization } = useOrganization();
   const orgId = organization?.id ?? authOrgId ?? '';
+  const [students, setStudents] = useState<Student[]>([]);
+  const [studentsErr, setStudentsErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        setStudentsErr(null);
+        const res = await fetch('/api/users?role=student', {
+          credentials: 'include',
+          headers: orgId ? { 'x-org-id': orgId } : {},
+        });
+        if (!res.ok)
+          throw new Error(await res.text().catch(() => `HTTP ${res.status}`));
+        const data = await res.json();
+        const list: Array<{ id: string; name: string | null; role: string }> =
+          Array.isArray(data) ? data : data?.data ?? [];
+        const mapped = list
+          .filter((u) => u.role === 'student')
+          .map((u) => ({ id: u.id, name: u.name ?? 'Élève sans nom' }));
+        if (!cancelled) setStudents(mapped);
+      } catch (e: any) {
+        console.error('[OptimalSchedule] /api/users?role=student failed', e);
+        if (!cancelled) {
+          setStudents([]);
+          setStudentsErr(e?.message ?? 'Erreur de chargement des élèves');
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [orgId]);
 
   const handleGenerateSchedule = async () => {
     setLoading(true);
@@ -46,6 +75,7 @@ export function OptimalSchedule() {
         headers: orgId ? { 'x-org-id': orgId } : {},
       });
       const data = await response.json();
+
       setResult(data);
     } catch (error) {
       console.error('[v0] Error generating schedule:', error);
@@ -202,6 +232,7 @@ export function OptimalSchedule() {
             </CardContent>
           </Card>
           <CalculatedAgendaSection result={result} />
+          <StudentsAvailabilityHeatmap students={students} />
         </>
       )}
     </div>

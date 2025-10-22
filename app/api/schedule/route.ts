@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await runPythonScheduler(agencyId);
+    console.log('result', result);
     return NextResponse.json(result);
   } catch (err: any) {
     console.error('[schedule] error:', err);

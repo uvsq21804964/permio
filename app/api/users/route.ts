@@ -20,6 +20,11 @@ async function getAgencyIdFromClerkOrgId(
   return rows.length ? rows[0].id : null;
 }
 
+/**
+ * GET /api/users
+ * Retourne tous les users de l'agence (ou filtrés par role=student|instructor|admin)
+ * Pour les élèves: expose plannedMinutes / remainingMinutes (alias depuis planned_minutes / remaining_minutes)
+ */
 export async function GET(request: NextRequest) {
   try {
     const { userId, orgId } = getAuth(request, {
@@ -38,7 +43,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // IMPORTANT : on convertit le clerk_org_id -> Agency."Id"
+    // Convertit clerk_org_id -> Agency.id
     const agencyId = await getAgencyIdFromClerkOrgId(orgId);
     if (!agencyId) {
       return NextResponse.json(
@@ -51,17 +56,33 @@ export async function GET(request: NextRequest) {
 
     const rows = roleParam
       ? await sql`
-          SELECT u.id, u.name, u.role, u."createdAt", u."updatedAt", u."agencyId"
+          SELECT
+            u.id,
+            u.name,
+            u.role,
+            u."createdAt",
+            u."updatedAt",
+            u."agencyId",
+            CASE WHEN u.role = 'student' THEN u.planned_minutes   ELSE NULL END AS "plannedMinutes",
+            CASE WHEN u.role = 'student' THEN u.remaining_minutes ELSE NULL END AS "remainingMinutes"
           FROM "User" u
           WHERE u."agencyId" = ${agencyId}
             AND u.role = ${roleParam}
-          ORDER BY u.name ASC
+          ORDER BY u.name ASC NULLS LAST
         `
       : await sql`
-          SELECT u.id, u.name, u.role, u."createdAt", u."updatedAt", u."agencyId"
+          SELECT
+            u.id,
+            u.name,
+            u.role,
+            u."createdAt",
+            u."updatedAt",
+            u."agencyId",
+            CASE WHEN u.role = 'student' THEN u.planned_minutes   ELSE NULL END AS "plannedMinutes",
+            CASE WHEN u.role = 'student' THEN u.remaining_minutes ELSE NULL END AS "remainingMinutes"
           FROM "User" u
           WHERE u."agencyId" = ${agencyId}
-          ORDER BY u.name ASC
+          ORDER BY u.name ASC NULLS LAST
         `;
 
     return NextResponse.json(rows);
@@ -74,6 +95,11 @@ export async function GET(request: NextRequest) {
   }
 }
 
+/**
+ * POST /api/users
+ * Crée un user. Si role === 'student', on accepte plannedMinutes / remainingMinutes (entiers ≥ 0).
+ * Les colonnes DB sont planned_minutes / remaining_minutes (snake_case) et on mappe depuis le body camelCase.
+ */
 export async function POST(request: NextRequest) {
   try {
     const { userId, orgId } = getAuth(request, {
@@ -92,7 +118,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // IMPORTANT : on convertit le clerk_org_id -> Agency."Id"
     const agencyId = await getAgencyIdFromClerkOrgId(orgId);
     if (!agencyId) {
       return NextResponse.json(
@@ -112,11 +137,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const rows = await sql`
-      INSERT INTO "User" (id, name, role, "agencyId", "createdAt", "updatedAt")
-      VALUES (gen_random_uuid(), ${name}, ${role}, ${agencyId}, NOW(), NOW())
-      RETURNING id, name, role, "agencyId", "createdAt", "updatedAt"
-    `;
+    // Par défaut 0; on ne les utilisera que si role === 'student'
+    let plannedMinutes = Number.isFinite(Number(body?.plannedMinutes))
+      ? Math.max(0, Math.trunc(Number(body.plannedMinutes)))
+      : 0;
+    let remainingMinutes = Number.isFinite(Number(body?.remainingMinutes))
+      ? Math.max(0, Math.trunc(Number(body.remainingMinutes)))
+      : plannedMinutes; // par défaut: restant = total prévu
+
+    if (role !== 'student') {
+      // On ignore toute valeur envoyée si ce n'est pas un élève
+      plannedMinutes = 0;
+      remainingMinutes = 0;
+    }
+
+    // Insertion
+    const rows =
+      role === 'student'
+        ? await sql`
+            INSERT INTO "User" (
+              id, name, role, "agencyId", "createdAt", "updatedAt",
+              planned_minutes, remaining_minutes
+            )
+            VALUES (
+              gen_random_uuid(), ${name}, ${role}, ${agencyId}, NOW(), NOW(),
+              ${plannedMinutes}, ${remainingMinutes}
+            )
+            RETURNING
+              id, name, role, "agencyId", "createdAt", "updatedAt",
+              planned_minutes AS "plannedMinutes",
+              remaining_minutes AS "remainingMinutes"
+          `
+        : await sql`
+            INSERT INTO "User" (
+              id, name, role, "agencyId", "createdAt", "updatedAt"
+            )
+            VALUES (
+              gen_random_uuid(), ${name}, ${role}, ${agencyId}, NOW(), NOW()
+            )
+            RETURNING id, name, role, "agencyId", "createdAt", "updatedAt",
+              NULL::int AS "plannedMinutes",
+              NULL::int AS "remainingMinutes"
+          `;
 
     return NextResponse.json(rows[0], { status: 201 });
   } catch (error) {

@@ -1,0 +1,40 @@
+{
+  "Nav": {
+    "myAvailabilities": "Disponibilitățile mele",
+    "configuration": "Setări"
+  },
+  "SignOut": {
+    "title": "Deconectare",
+    "question": "Sigur vrei să te deconectezi?",
+    "confirm": "Da, deconectează-mă",
+    "cancel": "Anulează"
+  },
+  "Auth": {
+    "SignIn": {
+      "title": "Autentificare",
+      "cta": "Autentifică-te",
+      "redirecting": "Redirecționare…"
+    },
+    "SignUp": {
+      "title": "Creează un cont",
+      "cta": "Înregistrează-te"
+    }
+  },
+  "Onboarding": {
+    "chooseOrganization": {
+      "title": "Alege o organizație",
+      "subtitle": "Selectează organizația pentru a continua"
+    }
+  },
+  "Availabilities": {
+    "title": "Disponibilitățile mele",
+    "empty": "Nicio disponibilitate deocamdată.",
+    "confirm": "Confirmă disponibilitățile",
+    "lastChange": "Ultima modificare {relativeTime}"
+  },
+  "Common": {
+    "cancel": "Anulează",
+    "confirm": "Confirmă",
+    "language": "Limbă"
+  }
+}

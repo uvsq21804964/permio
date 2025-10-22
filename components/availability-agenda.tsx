@@ -4,16 +4,9 @@ import { useAuth } from '@clerk/nextjs';
 import { useUser } from '@clerk/nextjs';
 
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   Dialog,
   DialogContent,
@@ -22,7 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Trash2, Plus, AlertCircle } from 'lucide-react';
+import { Trash2, Plus, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const DAYS = [
@@ -34,9 +27,9 @@ const DAYS = [
   'Samedi',
   'Dimanche',
 ];
-const HOURS = Array.from({ length: 12 }, (_, i) => i + 8); // 8:00 to 19:00 (representing up to 20:00)
+const HOURS = Array.from({ length: 12 }, (_, i) => i + 8); // 8:00 → 19:00
 const START_HOUR = 8;
-const PIXELS_PER_HOUR = 80; // Height of each hour row in pixels
+const PIXELS_PER_HOUR = 80;
 
 type User = {
   id: string;
@@ -56,6 +49,11 @@ type Availability = {
 type TimeRange = {
   startTime: string;
   endTime: string;
+};
+
+type UserHours = {
+  plannedMinutes: number | null;
+  remainingMinutes: number | null;
 };
 
 const timeToMinutes = (time: string): number => {
@@ -89,6 +87,40 @@ const getDurationColor = (startTime: string, endTime: string) => {
   }
 };
 
+/** Affiche en heures si multiple de 30 min (X h / X.5 h), sinon en minutes */
+function formatQty(m?: number | null): string {
+  if (typeof m !== 'number' || !Number.isFinite(m)) return '—';
+  if (m < 0) return '0 min';
+  if (m % 30 === 0) {
+    const h = m / 60;
+    return Number.isInteger(h) ? `${h} h` : `${h.toFixed(1)} h`;
+  }
+  return `${m} min`;
+}
+
+/** Lundi prochain (S+1) — côté client, pour affichage & envoi */
+function nextMondayISO(): string {
+  const now = new Date();
+  const dow = now.getDay(); // 0..6 (0=Dimanche)
+  // Convertir en ISO lundi=1..dimanche=7
+  const isoDow = dow === 0 ? 7 : dow;
+  const delta = (8 - isoDow) % 7 || 7; // nb de jours à ajouter pour arriver au prochain lundi
+  const d = new Date(now);
+  d.setDate(now.getDate() + delta);
+  d.setHours(0, 0, 0, 0);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+function fmtDDMM(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  const date = new Date(y, (m || 1) - 1, d || 1);
+  return `${String(date.getDate()).padStart(2, '0')}/${String(
+    date.getMonth() + 1
+  ).padStart(2, '0')}`;
+}
+
 export function AvailabilityAgenda() {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUserId, setSelectedUserId] = useState('');
@@ -109,15 +141,53 @@ export function AvailabilityAgenda() {
   const [availReady, setAvailReady] = useState(false);
   const [meRole, setMeRole] = useState<string | null>(null);
 
-  // 1) Ne plus charger la liste des users : on fixe l'utilisateur sélectionné = userId Clerk
+  // NEW: heures par utilisateur (clé = userId)
+  const [userHours, setUserHours] = useState<Record<string, UserHours>>({});
+
+  // NEW: état confirmation S+1
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [confirmOk, setConfirmOk] = useState<string | null>(null); // weekStart ISO quand ok
+  const [confirmErr, setConfirmErr] = useState<string | null>(null);
+
+  // --- NOTIFS + "dernière modif" ---
+  const [notice, setNotice] = useState<string | null>(null);
+  const [lastChangeAt, setLastChangeAt] = useState<Date | null>(null);
+
+  // Affiche une notif pendant 5s
+  const showNotice = (msg: string) => {
+    setNotice(msg);
+    window.setTimeout(() => setNotice(null), 5000);
+  };
+
+  // Format relatif FR ("il y a 2 min", etc.)
+  const rtf = new Intl.RelativeTimeFormat('fr', { numeric: 'auto' });
+  const formatRelativeFrom = (d: Date) => {
+    const diffSec = Math.round((Date.now() - d.getTime()) / 1000);
+    if (Math.abs(diffSec) < 60) return rtf.format(-diffSec, 'second');
+    const diffMin = Math.round(diffSec / 60);
+    if (Math.abs(diffMin) < 60) return rtf.format(-diffMin, 'minute');
+    const diffHour = Math.round(diffMin / 60);
+    if (Math.abs(diffHour) < 24) return rtf.format(-diffHour, 'hour');
+    const diffDay = Math.round(diffHour / 24);
+    return rtf.format(-diffDay, 'day');
+  };
+
+  // petit tick pour rafraîchir l'affichage relatif automatiquement
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    const id = window.setInterval(() => setTick((x) => x + 1), 30_000);
+    return () => clearInterval(id);
+  }, []);
+
+  // 1) Charger l’utilisateur courant (id/nom/rôle)
   useEffect(() => {
     setUsersError(null);
 
-    if (!isLoaded) return; // attendre Clerk
+    if (!isLoaded) return;
     if (!isSignedIn || !userId) {
       setSelectedUserId('');
       setUsers([]);
-      setRoleReady(false); // pas prêt si pas connecté
+      setRoleReady(false);
       return;
     }
 
@@ -129,7 +199,7 @@ export function AvailabilityAgenda() {
 
     (async () => {
       try {
-        setRoleReady(false); // ⬅︎ on (re)passe en “loading rôle”
+        setRoleReady(false);
         const res = await fetch('/api/me/role', { credentials: 'include' });
         if (!res.ok) {
           const msg = await res.text().catch(() => '');
@@ -142,26 +212,61 @@ export function AvailabilityAgenda() {
           { id: me.id, name: me.name || fallbackDisplayName, role: me.role },
         ]);
         setSelectedUserId(me.id);
-        setMeRole(me.role); // optionnel
-        setRoleReady(true); // ✅ rôle prêt
+        setMeRole(me.role);
+        setRoleReady(true);
       } catch (e) {
         console.error('/api/me/role failed:', e);
         setUsersError("Impossible de charger l'utilisateur courant");
-        setSelectedUserId(userId); // fallback
+        setUsers([{ id: userId, name: fallbackDisplayName, role: 'student' }]);
+        setSelectedUserId(userId);
         setMeRole(null);
-        setRoleReady(true); // ✅ on “débloque” quand même l’UI
+        setRoleReady(true);
       }
     })();
   }, [isLoaded, isSignedIn, userId, user]);
 
-  // 2) Charger les disponibilités UNIQUEMENT pour l'utilisateur connecté
+  // 1.b heures (restant/planifiées)
+  useEffect(() => {
+    if (!roleReady || !selectedUserId) return;
+
+    (async () => {
+      try {
+        const res = await fetch('/api/me/hours', { credentials: 'include' });
+        if (!res.ok)
+          throw new Error(await res.text().catch(() => `HTTP ${res.status}`));
+        const data: {
+          plannedMinutes: number | null;
+          remainingMinutes: number | null;
+          role?: string | null;
+        } = await res.json();
+
+        setUserHours((prev) => ({
+          ...prev,
+          [selectedUserId]: {
+            plannedMinutes:
+              typeof data.plannedMinutes === 'number'
+                ? data.plannedMinutes
+                : null,
+            remainingMinutes:
+              typeof data.remainingMinutes === 'number'
+                ? data.remainingMinutes
+                : null,
+          },
+        }));
+      } catch (e) {
+        console.warn('/api/me/hours failed', e);
+      }
+    })();
+  }, [roleReady, selectedUserId]);
+
+  // 2) Charger les dispos de l’utilisateur
   useEffect(() => {
     if (!isLoaded || !isSignedIn || !userId) return;
-    if (!roleReady) return; // ⬅︎ attend le rôle
+    if (!roleReady) return;
 
     const fetchAvailabilities = async () => {
       setLoadingAvail(true);
-      setAvailReady(false); // ⬅︎ passe en “loading dispos”
+      setAvailReady(false);
       try {
         const res = await fetch(`/api/availabilities`, {
           credentials: 'include',
@@ -179,10 +284,10 @@ export function AvailabilityAgenda() {
         setAvailabilities(list);
       } catch (e) {
         console.error('[v0] Error fetching availabilities:', e);
-        setAvailabilities([]); // ✅ pas d’erreur bloquante
+        setAvailabilities([]);
       } finally {
         setLoadingAvail(false);
-        setAvailReady(true); // ✅ dispos prêtes (même si vide)
+        setAvailReady(true);
       }
     };
 
@@ -226,7 +331,7 @@ export function AvailabilityAgenda() {
 
     setError('');
 
-    // validations locales
+    // validations
     for (let i = 0; i < timeRanges.length; i++) {
       const { startTime, endTime } = timeRanges[i];
       const startMinutes = timeToMinutes(startTime);
@@ -246,7 +351,6 @@ export function AvailabilityAgenda() {
     }
 
     try {
-      // ✅ envoi SÉQUENTIEL pour éviter les races en base
       for (const range of timeRanges) {
         const res = await fetch('/api/availabilities', {
           method: 'POST',
@@ -264,7 +368,6 @@ export function AvailabilityAgenda() {
         }
       }
 
-      // rafraîchir la liste
       const response = await fetch('/api/availabilities', {
         credentials: 'include',
       });
@@ -282,9 +385,15 @@ export function AvailabilityAgenda() {
         : [];
       setAvailabilities(list);
 
-      // reset UI
       setDialogOpen(false);
       setTimeRanges([{ startTime: '08:00', endTime: '09:00' }]);
+      setLastChangeAt(new Date());
+      showNotice(
+        timeRanges.length > 1
+          ? `${timeRanges.length} plages ajoutées`
+          : `Plage ajoutée (${timeRanges[0].startTime}–${timeRanges[0].endTime})`
+      );
+
       setError('');
     } catch (err) {
       console.error('[v0] Error creating availabilities:', err);
@@ -316,6 +425,8 @@ export function AvailabilityAgenda() {
           ? data.data
           : [];
         setAvailabilities(list);
+        setLastChangeAt(new Date());
+        showNotice('Plage supprimée');
       } else {
         console.error(
           '[v0] Error deleting availability:',
@@ -332,45 +443,181 @@ export function AvailabilityAgenda() {
     return availabilities.filter((avail) => avail.dayOfWeek === day);
   };
 
+  // === NEW: confirmation des dispos pour S+1 ===
+  const weekStartNext = useMemo(() => nextMondayISO(), []);
+  const prettyWeekStartNext = useMemo(
+    () => fmtDDMM(weekStartNext),
+    [weekStartNext]
+  );
+
+  const canConfirm = useMemo(() => {
+    // on autorise la confirmation s'il y a au moins 1 dispo
+    return availabilities.length > 0;
+  }, [availabilities]);
+
+  const confirmNextWeek = async () => {
+    setConfirmErr(null);
+    setConfirmOk(null);
+    setConfirmLoading(true);
+    try {
+      const res = await fetch('/api/me/validate-next-week', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ expectedWeekStart: weekStartNext }), // facultatif; utile pour guard serveur
+      });
+      if (!res.ok) {
+        const txt = await res.text().catch(() => '');
+        throw new Error(txt || `HTTP ${res.status}`);
+      }
+      // On suppose que l’API renvoie { ok: true, weekStart: 'YYYY-MM-DD' }
+      const j = await res.json().catch(() => ({}));
+      setConfirmOk(j?.weekStart || weekStartNext);
+    } catch (e: any) {
+      setConfirmErr(
+        e?.message ||
+          'Impossible de confirmer vos disponibilités pour la semaine prochaine.'
+      );
+    } finally {
+      setConfirmLoading(false);
+    }
+  };
+
+  // Libellé utilisateur
+  const renderUserLabel = (u: User) => {
+    const roleLabel = u.role === 'instructor' ? 'Moniteur' : 'Élève';
+    return `${u.name} (${roleLabel})`;
+  };
+
   return (
     <>
       {roleReady && availReady ? (
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Disponibilités hebdomadaires</CardTitle>
-              <div className="w-64">
-                <Select
-                  value={selectedUserId}
-                  onValueChange={setSelectedUserId}
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <CardTitle>Disponibilités pour la semaine prochaine</CardTitle>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Les créneaux que vous ajoutez/supprimez ici seront pris en
+                  compte pour la semaine du{' '}
+                  <span className="font-medium">{prettyWeekStartNext}</span>.
+                </p>
+
+                {/* Heures restant/total si élève */}
+                {selectedUserId &&
+                  users.length > 0 &&
+                  (() => {
+                    const u = users.find((x) => x.id === selectedUserId);
+                    if (!u) return null;
+                    if (u.role !== 'student') return null;
+                    const hrs = userHours[u.id];
+                    if (
+                      !hrs ||
+                      typeof hrs.remainingMinutes !== 'number' ||
+                      typeof hrs.plannedMinutes !== 'number'
+                    )
+                      return null;
+                    return (
+                      <p className="text-muted-foreground text-sm mt-2">
+                        Heures (rest./tot.) :{' '}
+                        <span className="text-xs rounded px-1.5 py-0.5 border bg-amber-200 border-amber-400 text-amber-900">
+                          {formatQty(hrs.remainingMinutes)}
+                        </span>
+                        <span className="text-xs text-neutral-500"> / </span>
+                        <span className="text-xs rounded px-1.5 py-0.5 border bg-green-200 border-green-500 text-neutral-800">
+                          {formatQty(hrs.plannedMinutes)}
+                        </span>
+                      </p>
+                    );
+                  })()}
+
+                <p className="text-muted-foreground text-sm mt-2">
+                  Cliquez sur une case vide pour ajouter des disponibilités, ou
+                  sur une disponibilité existante pour la supprimer.
+                </p>
+              </div>
+
+              {/* Bouton CONFIRMER S+1 */}
+              <div className="flex flex-col items-end gap-2">
+                <div className="text-sm">
+                  <span className="font-medium">{users[0]?.name ?? 'Moi'}</span>{' '}
+                  <span className="text-neutral-500">
+                    (
+                    {users[0]?.role === 'instructor'
+                      ? 'Moniteur'
+                      : users[0]?.role === 'student'
+                      ? 'Élève'
+                      : 'Admin'}
+                    )
+                  </span>
+                </div>
+
+                <Button
+                  onClick={async () => {
+                    try {
+                      await confirmNextWeek();
+                      showNotice('Disponibilités confirmées.');
+                    } catch (err) {
+                      // optionnel : afficher une notif d'erreur
+                      // showNotice("Échec de la confirmation.");
+                      console.error(err);
+                    }
+                  }}
+                  disabled={!canConfirm || confirmLoading}
+                  className="mt-2 whitespace-nowrap"
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Sélectionner un utilisateur" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {users.length === 0 ? (
-                      <div className="px-3 py-2 text-sm text-muted-foreground">
-                        {usersError
-                          ? 'Accès refusé ou session expirée. Connectez-vous.'
-                          : 'Aucun utilisateur disponible.'}
-                      </div>
-                    ) : (
-                      users.map((user) => (
-                        <SelectItem key={user.id} value={user.id}>
-                          {user.name} (
-                          {user.role === 'instructor' ? 'Moniteur' : 'Élève'})
-                        </SelectItem>
-                      ))
-                    )}
-                  </SelectContent>
-                </Select>
+                  {confirmLoading
+                    ? 'Mise à jour…'
+                    : 'Mettre à jour mes disponibilités'}
+                  {!confirmLoading && lastChangeAt && (
+                    <span className="ml-2 text-xs text-neutral-600">
+                      • Dernière modif {formatRelativeFrom(lastChangeAt)}
+                    </span>
+                  )}
+                </Button>
+
+                <div className="text-xs text-neutral-500">
+                  Semaine du {prettyWeekStartNext}
+                </div>
               </div>
             </div>
-            <p className="text-muted-foreground text-sm mt-2">
-              Cliquez sur une case vide pour ajouter des disponibilités, ou sur
-              une disponibilité existante pour la supprimer
-            </p>
+
+            {/* Messages confirmation */}
+            {confirmErr && (
+              <Alert variant="destructive" className="mt-3">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{confirmErr}</AlertDescription>
+              </Alert>
+            )}
+            {confirmOk && (
+              <Alert className="mt-3 border-green-300 bg-green-50 text-green-900">
+                <CheckCircle2 className="h-4 w-4" />
+                <AlertDescription>
+                  Disponibilités confirmées pour la semaine du{' '}
+                  <b>{fmtDDMM(confirmOk)}</b>.
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {!canConfirm && (
+              <p className="text-xs text-amber-700 mt-2">
+                Ajoutez au moins une disponibilité avant de confirmer la
+                semaine.
+              </p>
+            )}
           </CardHeader>
+
+          {notice && (
+            <div className="px-6">
+              <Alert className="mb-3">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription className="text-sm">
+                  {notice}
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
+
           <CardContent>
             <div className="overflow-x-auto">
               <div className="min-w-[800px]">
@@ -391,7 +638,7 @@ export function AvailabilityAgenda() {
 
                 {/* Time slots grid */}
                 <div className="grid grid-cols-8 gap-0">
-                  {/* Hour labels column */}
+                  {/* Hours column */}
                   <div>
                     {HOURS.map((hour) => (
                       <div
@@ -417,7 +664,7 @@ export function AvailabilityAgenda() {
                         />
                       ))}
 
-                      {/* Availability blocks positioned absolutely within the day column */}
+                      {/* Availability blocks */}
                       {getAvailabilitiesForDay(dayIndex).map((avail) => {
                         const { top, height } = getAvailabilityStyle(
                           avail.startTime,
@@ -430,7 +677,7 @@ export function AvailabilityAgenda() {
                         return (
                           <div
                             key={avail.id}
-                            className={`absolute left-1 right-1 text-xs p-2 rounded border group cursor-pointer transition-colors ${colorClass}`}
+                            className={`absolute left-1 right-1 text-xs p-2 rounded-md border group cursor-pointer transition-colors ${colorClass}`}
                             style={{
                               top: `${top}px`,
                               height: `${height}px`,
@@ -440,6 +687,7 @@ export function AvailabilityAgenda() {
                               e.stopPropagation();
                               handleDelete(avail.id);
                             }}
+                            title={`${avail.startTime}–${avail.endTime}`}
                           >
                             <div className="flex items-start justify-between gap-1 h-full">
                               <div className="flex-1 min-w-0">
@@ -460,7 +708,6 @@ export function AvailabilityAgenda() {
           </CardContent>
         </Card>
       ) : (
-        // Placeholder très simple pendant le chargement
         <div className="rounded-lg border p-6 text-sm text-muted-foreground">
           {usersError
             ? 'Impossible de récupérer votre statut ou vos disponibilités.'
@@ -468,6 +715,7 @@ export function AvailabilityAgenda() {
         </div>
       )}
 
+      {/* Dialog ajout plage */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>

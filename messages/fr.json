@@ -1,0 +1,40 @@
+{
+  "Nav": {
+    "myAvailabilities": "Mes disponibilités",
+    "configuration": "Configuration"
+  },
+  "SignOut": {
+    "title": "Se déconnecter",
+    "question": "Voulez-vous vraiment vous déconnecter ?",
+    "confirm": "Oui, me déconnecter",
+    "cancel": "Annuler"
+  },
+  "Auth": {
+    "SignIn": {
+      "title": "Connexion",
+      "cta": "Se connecter",
+      "redirecting": "Redirection…"
+    },
+    "SignUp": {
+      "title": "Créer un compte",
+      "cta": "S'inscrire"
+    }
+  },
+  "Onboarding": {
+    "chooseOrganization": {
+      "title": "Choisir une organisation",
+      "subtitle": "Sélectionnez l'organisation pour continuer"
+    }
+  },
+  "Availabilities": {
+    "title": "Mes disponibilités",
+    "empty": "Aucune disponibilité pour le moment.",
+    "confirm": "Confirmer mes disponibilités",
+    "lastChange": "Dernière modification {relativeTime}"
+  },
+  "Common": {
+    "cancel": "Annuler",
+    "confirm": "Confirmer",
+    "language": "Langue"
+  }
+}
