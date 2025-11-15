@@ -11,12 +11,10 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Sparkles, Users, Calendar, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 import type { ScheduleResult } from '@/types/schedule';
-import { DAYS } from '@/types/schedule';
 import { AssignedSlotsSection } from '@/components/schedule/AssignedSlotsSection';
 import { CalculatedAgendaSection } from '@/components/schedule/CalculatedAgendaSection';
 import { useAuth, useOrganization } from '@clerk/nextjs';
@@ -83,7 +81,6 @@ export function OptimalSchedule() {
       setLoading(false);
     }
   };
-
   return (
     <div className="space-y-6">
       <Card>
@@ -118,7 +115,7 @@ export function OptimalSchedule() {
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-muted-foreground" />
                   <span className="text-2xl font-bold">
-                    {result.stats.totalStudents}
+                    {result.stats?.totalStudents}
                   </span>
                 </div>
               </CardContent>
@@ -134,7 +131,7 @@ export function OptimalSchedule() {
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-green-600" />
                   <span className="text-2xl font-bold text-green-600">
-                    {result.stats.matchedStudents}
+                    {result.stats?.matchedStudents}
                   </span>
                 </div>
               </CardContent>
@@ -150,7 +147,7 @@ export function OptimalSchedule() {
                 <div className="flex items-center gap-2">
                   <Users className="h-4 w-4 text-muted-foreground" />
                   <span className="text-2xl font-bold">
-                    {result.stats.totalInstructors}
+                    {result.stats?.totalInstructors}
                   </span>
                 </div>
               </CardContent>
@@ -166,7 +163,7 @@ export function OptimalSchedule() {
                 <div className="flex items-center gap-2">
                   <Calendar className="h-4 w-4 text-blue-600" />
                   <span className="text-2xl font-bold text-blue-600">
-                    {result.stats.totalMatches}
+                    {result.stats?.totalMatches}
                   </span>
                 </div>
               </CardContent>
@@ -174,63 +171,21 @@ export function OptimalSchedule() {
           </div>
 
           {/* Élèves non assignés */}
-          {result.unmatchedStudents.length > 0 && (
+          {result.unmatchedStudents?.length > 0 && (
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
                 <strong>
-                  {result.unmatchedStudents.length} élève(s) non assigné(s):
+                  {result.unmatchedStudents?.length} élève(s) non assigné(s):
                 </strong>{' '}
-                {result.unmatchedStudents.map((s) => s.name).join(', ')}
+                {result.unmatchedStudents?.map((s) => s.name).join(', ')}
               </AlertDescription>
             </Alert>
           )}
 
           {/* Nouvelle section décomposée en composants */}
           <AssignedSlotsSection result={result} />
-
-          {/* Vue globale existante */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Correspondances trouvées</CardTitle>
-              <CardDescription>
-                {result.matches.length} cours planifiés
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {result.matches.length === 0 ? (
-                  <p className="text-muted-foreground text-sm">
-                    Aucune correspondance trouvée
-                  </p>
-                ) : (
-                  result.matches.map((match, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between rounded-lg border p-4"
-                    >
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium">
-                            {match.studentName}
-                          </span>
-                          <span className="text-muted-foreground">→</span>
-                          <span className="font-medium">
-                            {match.instructorName}
-                          </span>
-                        </div>
-                        <p className="text-muted-foreground text-sm">
-                          {DAYS[match.dayOfWeek]} • {match.startTime} -{' '}
-                          {match.endTime} ({match.duration} min)
-                        </p>
-                      </div>
-                      <Badge variant="default">Disponible</Badge>
-                    </div>
-                  ))
-                )}
-              </div>
-            </CardContent>
-          </Card>
+          {/* <MatchesCard matches={result.matches} /> */}
           <CalculatedAgendaSection result={result} />
           <StudentsAvailabilityHeatmap students={students} />
         </>

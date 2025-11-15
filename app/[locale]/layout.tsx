@@ -30,7 +30,7 @@ export default async function LocaleLayout({
       }}
     >
       <NextIntlClientProvider locale={locale} messages={messages}>
-        {children}
+        <div className="w-full h-full">{children}</div>
       </NextIntlClientProvider>
     </ClerkProvider>
   );

@@ -6,10 +6,10 @@ import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Permio - Le permis à toute vitesse',
+  title: 'Magic Hango - Create time together, magically',
   description: 'Created with v0',
   generator: 'v0.app',
-  icons: { icon: { url: '/logo_tab.png', type: 'image/png' } },
+  icons: { icon: { url: '/iconeOfficiel.png', type: 'image/png' } },
 };
 
 export default function RootLayout({

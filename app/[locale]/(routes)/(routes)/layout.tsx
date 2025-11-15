@@ -2,7 +2,7 @@ import { SignedIn, SignedOut, SignIn } from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { sql } from '@/lib/db'; // ⬅️ on interroge la DB côté serveur
-
+import { Toaster } from '@/components/ui/sonner';
 import DesktopNavbar from '@/components/navbar/navbar_desktop';
 import MobileNavbar from '@/components/navbar/navbar_mobile';
 
@@ -26,13 +26,15 @@ export default async function RootLayout({
     meRole = null;
   }
 
-  const logo = '/logo_tab.png';
+  const logo = '/IconeAvecTitreLoin.png';
+  const logo_mobile = '/IconeMobile.png';
 
   const pages = [
     { name: 'Gestion', link: '/gestion', student: false },
     { name: 'Mes dispos', link: '/myavailabilities', student: true },
     { name: 'Ma semaine', link: '/myweek', student: true },
     { name: 'Configuration', link: '/configuration', student: true },
+    { name: 'Subscribe', link: '/plans', student: true },
     { name: 'Se déconnecter', link: '/sign-out', student: true },
   ] as const;
 
@@ -40,6 +42,17 @@ export default async function RootLayout({
 
   return (
     <>
+      <Toaster
+        position="top-right"
+        theme="system"
+        richColors
+        toastOptions={{
+          classNames: {
+            toast: 'border-brand/40',
+            actionButton: 'bg-brand-gradient text-white',
+          },
+        }}
+      />
       <SignedOut>
         <div className="p-6">
           <p className="mb-4">Veuillez vous connecter</p>
@@ -49,7 +62,7 @@ export default async function RootLayout({
 
       <SignedIn>
         <div className="w-full h-screen flex flex-col">
-          <div className="hidden md:flex flex-none inset-y-0 w-full h-[8%] z-50">
+          <div className="hidden md:flex flex-none inset-y-0 w-full h-12 z-50">
             <DesktopNavbar
               logo={logo}
               pages={pages as any}
@@ -59,7 +72,7 @@ export default async function RootLayout({
           </div>
           <div className="md:hidden h-[40px] fixed inset-y-0 w-full z-50">
             <MobileNavbar
-              logo={logo}
+              logo={logo_mobile}
               pages={pages as any}
               activeLink={activeLink}
               meRole={meRole}
