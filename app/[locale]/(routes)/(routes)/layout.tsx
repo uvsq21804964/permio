@@ -35,6 +35,7 @@ export default async function RootLayout({
     { name: 'Ma semaine', link: '/myweek', student: true },
     { name: 'Configuration', link: '/configuration', student: true },
     { name: 'Subscribe', link: '/plans', student: true },
+    { name: 'Paramètres', link: '/profile', student: true },
     { name: 'Se déconnecter', link: '/sign-out', student: true },
   ] as const;
 

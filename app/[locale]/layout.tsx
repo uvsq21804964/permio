@@ -1,19 +1,18 @@
+// app/[locale]/layout.tsx
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 import { ClerkProvider } from '@clerk/nextjs';
 import { frFR, enUS } from '@clerk/localizations';
 import { roRO } from '@/src/i18n/clerk.ro';
 
-export default async function LocaleLayout({
-  children,
-  params,
-}: {
+type Props = {
   children: React.ReactNode;
-  params: Promise<{ locale: 'fr' | 'en' | 'ro' }>; // <= ajoute 'ro'
-}) {
-  const { locale } = await params;
+  params: { locale: 'fr' | 'en' | 'ro' };
+};
 
-  // Clerk n'a pas (à date) de pack ro prêt-à-l’emploi → fallback enUS ou objet custom.
+export default async function LocaleLayout({ children, params }: Props) {
+  const { locale } = params;
+
   const clerkLocalization =
     locale === 'fr' ? frFR : locale === 'ro' ? roRO : enUS;
 
@@ -37,5 +36,5 @@ export default async function LocaleLayout({
 }
 
 export function generateStaticParams() {
-  return [{ locale: 'fr' }, { locale: 'en' }, { locale: 'ro' }]; // <= ajoute ro
+  return [{ locale: 'fr' }, { locale: 'en' }, { locale: 'ro' }];
 }

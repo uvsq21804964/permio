@@ -31,6 +31,7 @@ export default function DesktopNavbar({
     'Gestion',
     'Configuration',
     'Subscribe',
+    'Paramètres',
     'Se déconnecter',
   ]);
   const profileItems = useMemo(

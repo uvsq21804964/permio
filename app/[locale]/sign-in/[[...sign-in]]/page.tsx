@@ -1,26 +1,14 @@
-// app/[locale]/sign-in/page.tsx
-'use client';
-
-import { useLocale } from 'next-intl';
+// app/[locale]/sign-in/[[...sign-in]]/page.tsx
 import type { Locale } from '@/src/lib/i18n';
 import { withLocale } from '@/src/lib/i18n';
-import { SignIn } from '@clerk/nextjs';
-import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
+import SignInClient from './SignInClient';
 
-export default function SignInPage() {
-  const locale = useLocale() as Locale;
+type Props = {
+  params: { locale: Locale };
+};
 
-  return (
-    <>
-      <div className="fixed top-4 right-8 z-50">
-        <LocaleSwitcher />
-      </div>
-      <div className="max-w-md mx-auto p-8">
-        <SignIn
-          fallbackRedirectUrl={withLocale('/myavailabilities', locale)}
-          forceRedirectUrl={withLocale('/myavailabilities', locale)}
-        />
-      </div>
-    </>
-  );
+export default function SignInPage({ params: { locale } }: Props) {
+  const redirectUrl = withLocale('/myavailabilities', locale);
+
+  return <SignInClient locale={locale} redirectUrl={redirectUrl} />;
 }
