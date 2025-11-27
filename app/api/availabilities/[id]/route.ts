@@ -1,3 +1,5 @@
+// api/availabilities/[id]
+
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { getAuth } from '@clerk/nextjs/server';

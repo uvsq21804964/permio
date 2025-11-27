@@ -1,17 +1,7 @@
+// app/api/availabilities/route.ts
 import { type NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { getAuth } from '@clerk/nextjs/server';
-
-type AvailabilityRow = {
-  id: string;
-  userId: string;
-  dayOfWeek: number;
-  startTime: string;
-  endTime: string;
-  createdAt: string;
-  updatedAt: string;
-  user: { name: string | null; role: string | null } | null;
-};
 
 const timeToMinutes = (time: string): number => {
   const [hours, minutes] = time.split(':').map(Number);
@@ -29,18 +19,17 @@ const doRangesOverlapOrAdjacent = (
   const start2Min = timeToMinutes(start2);
   const end2Min = timeToMinutes(end2);
 
+  // chevauchement ou juste collés (ex: 09:00–10:00 et 10:00–11:00)
   return start1Min <= end2Min && start2Min <= end1Min;
 };
 
 export async function GET(req: NextRequest) {
   try {
-    // ⚠️ Bien récupérer userId (et pas seulement l'objet)
     const { userId } = getAuth(req, { treatPendingAsSignedOut: false });
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // ✅ PAS de quotes autour de ${userId}
     const rows = await sql`
       SELECT
         a.id,
@@ -57,7 +46,6 @@ export async function GET(req: NextRequest) {
       ORDER BY a."dayOfWeek", a."startTime"
     `;
 
-    // ✅ Même sans lignes, on renvoie [] avec 200
     return NextResponse.json(rows, { status: 200 });
   } catch (err: any) {
     console.error('[GET /api/availabilities] error:', err);
@@ -76,7 +64,24 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { dayOfWeek, startTime, endTime } = body; // ⬅️ plus de userId lu dans le body
+    const { dayOfWeek, startTime, endTime } = body as {
+      dayOfWeek: number;
+      startTime: string;
+      endTime: string;
+    };
+
+    if (
+      typeof dayOfWeek !== 'number' ||
+      dayOfWeek < 0 ||
+      dayOfWeek > 6 ||
+      !startTime ||
+      !endTime
+    ) {
+      return NextResponse.json(
+        { error: 'Missing or invalid dayOfWeek, startTime or endTime' },
+        { status: 400 }
+      );
+    }
 
     const startMinutes = timeToMinutes(startTime);
     const endMinutes = timeToMinutes(endTime);
@@ -95,19 +100,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const existingAvailabilities = await sql`
-      SELECT id, "userId", "dayOfWeek", "startTime", "endTime"
+    // On récupère les créneaux existants pour ce jour
+    const existing = await sql`
+      SELECT id, "startTime", "endTime"
       FROM "Availability"
-      WHERE "userId" = ${userId} AND "dayOfWeek" = ${dayOfWeek}
+      WHERE "userId" = ${userId}
+        AND "dayOfWeek" = ${dayOfWeek}
     `;
 
-    const overlapping = existingAvailabilities.filter((avail: any) =>
-      doRangesOverlapOrAdjacent(
-        startTime,
-        endTime,
-        avail.startTime,
-        avail.endTime
-      )
+    // On cherche les chevauchements
+    const overlapping = existing.filter((a) =>
+      doRangesOverlapOrAdjacent(startTime, endTime, a.startTime, a.endTime)
     );
 
     let finalStartTime = startTime;
@@ -116,37 +119,40 @@ export async function POST(request: NextRequest) {
     if (overlapping.length > 0) {
       const allTimes = [
         { start: startTime, end: endTime },
-        ...overlapping.map((a: any) => ({
-          start: a.startTime,
-          end: a.endTime,
-        })),
+        ...overlapping.map((a) => ({ start: a.startTime, end: a.endTime })),
       ];
 
-      const startMinutes = Math.min(
-        ...allTimes.map((t) => timeToMinutes(t.start))
-      );
-      const endMinutes = Math.max(...allTimes.map((t) => timeToMinutes(t.end)));
+      const startMin = Math.min(...allTimes.map((t) => timeToMinutes(t.start)));
+      const endMin = Math.max(...allTimes.map((t) => timeToMinutes(t.end)));
 
-      const startHours = Math.floor(startMinutes / 60);
-      const startMins = startMinutes % 60;
-      const endHours = Math.floor(endMinutes / 60);
-      const endMins = endMinutes % 60;
+      const sh = Math.floor(startMin / 60);
+      const sm = startMin % 60;
+      const eh = Math.floor(endMin / 60);
+      const em = endMin % 60;
 
-      finalStartTime = `${startHours.toString().padStart(2, '0')}:${startMins
-        .toString()
-        .padStart(2, '0')}`;
-      finalEndTime = `${endHours.toString().padStart(2, '0')}:${endMins
-        .toString()
-        .padStart(2, '0')}`;
+      finalStartTime = `${String(sh).padStart(2, '0')}:${String(sm).padStart(
+        2,
+        '0'
+      )}`;
+      finalEndTime = `${String(eh).padStart(2, '0')}:${String(em).padStart(
+        2,
+        '0'
+      )}`;
 
-      for (const avail of overlapping) {
-        await sql`DELETE FROM "Availability" WHERE id = ${avail.id}`;
+      // on supprime les anciens créneaux fusionnés
+      for (const a of overlapping) {
+        await sql`
+          DELETE FROM "Availability"
+          WHERE id = ${a.id} AND "userId" = ${userId}
+        `;
       }
     }
 
     const [availability] = await sql`
-      INSERT INTO "Availability" (id, "userId", "dayOfWeek", "startTime", "endTime", "createdAt", "updatedAt")
-      VALUES (gen_random_uuid(), ${userId}, ${dayOfWeek}, ${finalStartTime}, ${finalEndTime}, NOW(), NOW())
+      INSERT INTO "Availability"
+        (id, "userId", "dayOfWeek", "startTime", "endTime", "createdAt", "updatedAt")
+      VALUES
+        (gen_random_uuid(), ${userId}, ${dayOfWeek}, ${finalStartTime}, ${finalEndTime}, NOW(), NOW())
       RETURNING *
     `;
 
@@ -155,10 +161,10 @@ export async function POST(request: NextRequest) {
     `;
 
     return NextResponse.json({ ...availability, user }, { status: 201 });
-  } catch (error) {
-    console.error('[v0] Error creating availability:', error);
+  } catch (err: any) {
+    console.error('[POST /api/availabilities] error:', err);
     return NextResponse.json(
-      { error: 'Failed to create availability' },
+      { error: 'Failed to create availability', detail: err?.message },
       { status: 500 }
     );
   }

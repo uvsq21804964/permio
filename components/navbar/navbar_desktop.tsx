@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
-type Page = { name: string; link: string; student: boolean; cta?: boolean };
+type Page = { name: string; link: string; visible: number; cta?: boolean };
 
 export default function DesktopNavbar({
   logo,
@@ -23,8 +23,7 @@ export default function DesktopNavbar({
   const profilePanelRef = useRef<HTMLDivElement | null>(null);
 
   const filteredPages = useMemo(
-    () =>
-      pages.filter((p) => (meRole === 'student' ? p.student !== false : true)),
+    () => pages.filter((p) => (meRole === 'student' ? p.visible !== 0 : 2)),
     [pages, meRole]
   );
   const PROFILE_NAMES = new Set([

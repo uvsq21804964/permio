@@ -30,13 +30,15 @@ export default async function RootLayout({
   const logo_mobile = '/IconeMobile.png';
 
   const pages = [
-    { name: 'Gestion', link: '/gestion', student: false },
-    { name: 'Mes dispos', link: '/myavailabilities', student: true },
-    { name: 'Ma semaine', link: '/myweek', student: true },
-    { name: 'Configuration', link: '/configuration', student: true },
-    { name: 'Subscribe', link: '/plans', student: true },
-    { name: 'Paramètres', link: '/profile', student: true },
-    { name: 'Se déconnecter', link: '/sign-out', student: true },
+    { name: 'Gestion', link: '/gestion', visible: 0 },
+    { name: 'Mes dispos', link: '/myavailabilities', visible: 0 },
+    { name: 'Ma semaine', link: '/myweek', visible: 2 },
+    { name: 'Réserver', link: '/book/services', visible: 2 },
+    // { name: 'Configuration', link: '/configuration', visible: 2 },
+    { name: 'Subscribe', link: '/plans', visible: 0 },
+    { name: 'Mes services', link: '/services', visible: 0 },
+    { name: 'Paramètres', link: '/profile', visible: 2 },
+    { name: 'Se déconnecter', link: '/sign-out', visible: 2 },
   ] as const;
 
   const activeLink = '/accueil';

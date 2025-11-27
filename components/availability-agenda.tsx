@@ -4,7 +4,7 @@ import { useAuth } from '@clerk/nextjs';
 import { useUser } from '@clerk/nextjs';
 
 import type React from 'react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Trash2, Plus, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Trash2, Plus, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const DAYS = [
@@ -98,29 +98,6 @@ function formatQty(m?: number | null): string {
   return `${m} min`;
 }
 
-/** Lundi prochain (S+1) — côté client, pour affichage & envoi */
-function nextMondayISO(): string {
-  const now = new Date();
-  const dow = now.getDay(); // 0..6 (0=Dimanche)
-  // Convertir en ISO lundi=1..dimanche=7
-  const isoDow = dow === 0 ? 7 : dow;
-  const delta = (8 - isoDow) % 7 || 7; // nb de jours à ajouter pour arriver au prochain lundi
-  const d = new Date(now);
-  d.setDate(now.getDate() + delta);
-  d.setHours(0, 0, 0, 0);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${day}`;
-}
-function fmtDDMM(iso: string): string {
-  const [y, m, d] = iso.split('-').map(Number);
-  const date = new Date(y, (m || 1) - 1, d || 1);
-  return `${String(date.getDate()).padStart(2, '0')}/${String(
-    date.getMonth() + 1
-  ).padStart(2, '0')}`;
-}
-
 export function AvailabilityAgenda() {
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUserId, setSelectedUserId] = useState('');
@@ -139,17 +116,13 @@ export function AvailabilityAgenda() {
 
   const [roleReady, setRoleReady] = useState(false);
   const [availReady, setAvailReady] = useState(false);
-  const [meRole, setMeRole] = useState<string | null>(null);
 
-  // NEW: heures par utilisateur (clé = userId)
+  const [isEditing, setIsEditing] = useState(false);
+
+  // heures par utilisateur (clé = userId)
   const [userHours, setUserHours] = useState<Record<string, UserHours>>({});
 
-  // NEW: état confirmation S+1
-  const [confirmLoading, setConfirmLoading] = useState(false);
-  const [confirmOk, setConfirmOk] = useState<string | null>(null); // weekStart ISO quand ok
-  const [confirmErr, setConfirmErr] = useState<string | null>(null);
-
-  // --- NOTIFS + "dernière modif" ---
+  // NOTIFS + "dernière modif"
   const [notice, setNotice] = useState<string | null>(null);
   const [lastChangeAt, setLastChangeAt] = useState<Date | null>(null);
 
@@ -212,14 +185,12 @@ export function AvailabilityAgenda() {
           { id: me.id, name: me.name || fallbackDisplayName, role: me.role },
         ]);
         setSelectedUserId(me.id);
-        setMeRole(me.role);
         setRoleReady(true);
       } catch (e) {
         console.error('/api/me/role failed:', e);
         setUsersError("Impossible de charger l'utilisateur courant");
         setUsers([{ id: userId, name: fallbackDisplayName, role: 'student' }]);
         setSelectedUserId(userId);
-        setMeRole(null);
         setRoleReady(true);
       }
     })();
@@ -259,7 +230,7 @@ export function AvailabilityAgenda() {
     })();
   }, [roleReady, selectedUserId]);
 
-  // 2) Charger les dispos de l’utilisateur
+  // 2) Charger les dispos de l’utilisateur (semaine "par défaut")
   useEffect(() => {
     if (!isLoaded || !isSignedIn || !userId) return;
     if (!roleReady) return;
@@ -295,6 +266,8 @@ export function AvailabilityAgenda() {
   }, [isLoaded, isSignedIn, userId, roleReady]);
 
   const handleCellClick = (day: number, hour: number) => {
+    if (!isEditing) return; // 👈 bloque en mode lecture
+
     setSelectedDay(day);
     setTimeRanges([
       {
@@ -443,46 +416,6 @@ export function AvailabilityAgenda() {
     return availabilities.filter((avail) => avail.dayOfWeek === day);
   };
 
-  // === NEW: confirmation des dispos pour S+1 ===
-  const weekStartNext = useMemo(() => nextMondayISO(), []);
-  const prettyWeekStartNext = useMemo(
-    () => fmtDDMM(weekStartNext),
-    [weekStartNext]
-  );
-
-  const canConfirm = useMemo(() => {
-    // on autorise la confirmation s'il y a au moins 1 dispo
-    return availabilities.length > 0;
-  }, [availabilities]);
-
-  const confirmNextWeek = async () => {
-    setConfirmErr(null);
-    setConfirmOk(null);
-    setConfirmLoading(true);
-    try {
-      const res = await fetch('/api/me/validate-next-week', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ expectedWeekStart: weekStartNext }), // facultatif; utile pour guard serveur
-      });
-      if (!res.ok) {
-        const txt = await res.text().catch(() => '');
-        throw new Error(txt || `HTTP ${res.status}`);
-      }
-      // On suppose que l’API renvoie { ok: true, weekStart: 'YYYY-MM-DD' }
-      const j = await res.json().catch(() => ({}));
-      setConfirmOk(j?.weekStart || weekStartNext);
-    } catch (e: any) {
-      setConfirmErr(
-        e?.message ||
-          'Impossible de confirmer vos disponibilités pour la semaine prochaine.'
-      );
-    } finally {
-      setConfirmLoading(false);
-    }
-  };
-
   // Libellé utilisateur
   const renderUserLabel = (u: User) => {
     const roleLabel = u.role === 'instructor' ? 'Moniteur' : 'Élève';
@@ -496,11 +429,11 @@ export function AvailabilityAgenda() {
           <CardHeader>
             <div className="flex items-start justify-between gap-4">
               <div>
-                <CardTitle>Disponibilités pour la semaine prochaine</CardTitle>
+                <CardTitle>Disponibilités par défaut (Semaine type)</CardTitle>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Les créneaux que vous ajoutez/supprimez ici seront pris en
-                  compte pour la semaine du{' '}
-                  <span className="font-medium">{prettyWeekStartNext}</span>.
+                  Les créneaux que vous ajoutez ou supprimez ici définissent
+                  votre semaine type (disponibilités récurrentes). Ils seront
+                  utilisés comme base pour vos futurs plannings.
                 </p>
 
                 {/* Heures restant/total si élève */}
@@ -532,79 +465,45 @@ export function AvailabilityAgenda() {
                   })()}
 
                 <p className="text-muted-foreground text-sm mt-2">
-                  Cliquez sur une case vide pour ajouter des disponibilités, ou
-                  sur une disponibilité existante pour la supprimer.
+                  {isEditing ? (
+                    <>
+                      Cliquez sur une case vide pour ajouter des disponibilités,
+                      ou sur une disponibilité existante pour la supprimer.
+                    </>
+                  ) : (
+                    <>
+                      Mode lecture : activez le mode édition pour modifier votre
+                      semaine type.
+                    </>
+                  )}
                 </p>
               </div>
 
-              {/* Bouton CONFIRMER S+1 */}
-              <div className="flex flex-col items-end gap-2">
+              <div className="flex flex-col items-end gap-1">
                 <div className="text-sm">
-                  <span className="font-medium">{users[0]?.name ?? 'Moi'}</span>{' '}
-                  <span className="text-neutral-500">
-                    (
-                    {users[0]?.role === 'instructor'
-                      ? 'Moniteur'
-                      : users[0]?.role === 'student'
-                      ? 'Élève'
-                      : 'Admin'}
-                    )
+                  <span className="font-medium">
+                    {users[0] ? renderUserLabel(users[0]) : 'Moi'}
                   </span>
                 </div>
+                {lastChangeAt && (
+                  <div className="text-xs text-neutral-500">
+                    Dernière modification {formatRelativeFrom(lastChangeAt)}
+                  </div>
+                )}
 
                 <Button
-                  onClick={async () => {
-                    try {
-                      await confirmNextWeek();
-                      showNotice('Disponibilités confirmées.');
-                    } catch (err) {
-                      // optionnel : afficher une notif d'erreur
-                      // showNotice("Échec de la confirmation.");
-                      console.error(err);
-                    }
-                  }}
-                  disabled={!canConfirm || confirmLoading}
-                  className="mt-2 whitespace-nowrap"
+                  type="button"
+                  size="sm"
+                  variant={isEditing ? 'default' : 'outline'}
+                  className="mt-1"
+                  onClick={() => setIsEditing((prev) => !prev)}
                 >
-                  {confirmLoading
-                    ? 'Mise à jour…'
-                    : 'Mettre à jour mes disponibilités'}
-                  {!confirmLoading && lastChangeAt && (
-                    <span className="ml-2 text-xs text-neutral-600">
-                      • Dernière modif {formatRelativeFrom(lastChangeAt)}
-                    </span>
-                  )}
+                  {isEditing
+                    ? 'Terminer les modifications'
+                    : 'Modifier la semaine type'}
                 </Button>
-
-                <div className="text-xs text-neutral-500">
-                  Semaine du {prettyWeekStartNext}
-                </div>
               </div>
             </div>
-
-            {/* Messages confirmation */}
-            {confirmErr && (
-              <Alert variant="destructive" className="mt-3">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{confirmErr}</AlertDescription>
-              </Alert>
-            )}
-            {confirmOk && (
-              <Alert className="mt-3 border-green-300 bg-green-50 text-green-900">
-                <CheckCircle2 className="h-4 w-4" />
-                <AlertDescription>
-                  Disponibilités confirmées pour la semaine du{' '}
-                  <b>{fmtDDMM(confirmOk)}</b>.
-                </AlertDescription>
-              </Alert>
-            )}
-
-            {!canConfirm && (
-              <p className="text-xs text-amber-700 mt-2">
-                Ajoutez au moins une disponibilité avant de confirmer la
-                semaine.
-              </p>
-            )}
           </CardHeader>
 
           {notice && (
@@ -652,15 +551,25 @@ export function AvailabilityAgenda() {
                   </div>
 
                   {/* Day columns */}
+                  {/* Day columns */}
                   {DAYS.map((_, dayIndex) => (
                     <div key={`day-${dayIndex}`} className="relative border-r">
                       {/* Hour cells */}
                       {HOURS.map((hour) => (
                         <div
                           key={`${dayIndex}-${hour}`}
-                          className="border-b cursor-pointer hover:bg-muted/50 transition-colors"
+                          className={
+                            'border-b transition-colors ' +
+                            (isEditing
+                              ? 'cursor-pointer hover:bg-muted/50'
+                              : '')
+                          }
                           style={{ height: `${PIXELS_PER_HOUR}px` }}
-                          onClick={() => handleCellClick(dayIndex, hour)}
+                          onClick={
+                            isEditing
+                              ? () => handleCellClick(dayIndex, hour)
+                              : undefined
+                          }
                         />
                       ))}
 
@@ -674,28 +583,40 @@ export function AvailabilityAgenda() {
                           avail.startTime,
                           avail.endTime
                         );
+
                         return (
                           <div
                             key={avail.id}
-                            className={`absolute left-1 right-1 text-xs p-2 rounded-md border group cursor-pointer transition-colors ${colorClass}`}
+                            className={`absolute left-1 right-1 text-xs p-1.5 rounded-md border group transition-colors ${
+                              isEditing ? 'cursor-pointer' : 'cursor-default'
+                            } ${colorClass}`}
                             style={{
                               top: `${top}px`,
                               height: `${height}px`,
                               minHeight: '24px',
                             }}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDelete(avail.id);
-                            }}
+                            onClick={
+                              isEditing
+                                ? (e) => {
+                                    e.stopPropagation();
+                                    handleDelete(avail.id);
+                                  }
+                                : undefined
+                            }
                             title={`${avail.startTime}–${avail.endTime}`}
                           >
                             <div className="flex items-start justify-between gap-1 h-full">
-                              <div className="flex-1 min-w-0">
-                                <div className="text-[10px] font-medium leading-tight">
-                                  {avail.startTime} - {avail.endTime}
+                              <div className="flex-1 min-w-0 flex flex-col justify-center">
+                                {/* 👇 LE TEXTE DES HEURES */}
+                                <div className="text-[10px] font-medium leading-tight truncate">
+                                  {avail.startTime} – {avail.endTime}
                                 </div>
                               </div>
-                              <Trash2 className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+
+                              {/* Icône poubelle uniquement utile en mode édition */}
+                              {isEditing && (
+                                <Trash2 className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
+                              )}
                             </div>
                           </div>
                         );
@@ -711,7 +632,9 @@ export function AvailabilityAgenda() {
         <div className="rounded-lg border p-6 text-sm text-muted-foreground">
           {usersError
             ? 'Impossible de récupérer votre statut ou vos disponibilités.'
-            : 'Chargement de vos disponibilités…'}
+            : loadingAvail
+            ? 'Chargement de vos disponibilités…'
+            : 'Chargement…'}
         </div>
       )}
 

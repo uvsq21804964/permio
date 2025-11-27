@@ -3,10 +3,9 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { OrganizationSwitcher, useOrganization } from '@clerk/nextjs';
 import Link from 'next/link';
 
-type Page = { name: string; link: string; student: boolean; cta?: boolean };
+type Page = { name: string; link: string; visible: number; cta?: boolean };
 
 interface NavbarProps {
   logo: string;
@@ -26,7 +25,7 @@ const MobileNavbar: React.FC<NavbarProps> = ({
 
   // Filtre : si role = student, ne pas afficher les pages où p.student === false
   const visiblePages = pages.filter((p) =>
-    meRole === 'student' ? p.student !== false : true
+    meRole === 'student' ? p.visible !== 0 : 2
   );
 
   return (
