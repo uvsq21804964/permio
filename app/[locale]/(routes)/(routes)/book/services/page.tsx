@@ -70,8 +70,11 @@ export default function SelectServicePage() {
   }, []);
 
   const handleSelectService = (service: ServicePricing) => {
-    // Tu peux aussi ajouter d’autres query params (nom, durée, etc.) si tu veux
-    router.push(`/book?serviceId=${service.id}`);
+    const params = new URLSearchParams({
+      serviceId: String(service.id),
+    });
+
+    router.push(`/book/address?${params.toString()}`);
   };
 
   if (loading) {

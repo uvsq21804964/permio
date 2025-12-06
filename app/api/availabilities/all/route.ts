@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { getAuth } from '@clerk/nextjs/server';
+import { timeToMinutes, doRangesOverlapOrAdjacent } from '@/lib/api/time';
 
 type AvailabilityRow = {
   id: string;
@@ -11,24 +12,6 @@ type AvailabilityRow = {
   createdAt: string;
   updatedAt: string;
   user: { name: string | null; role: string | null } | null;
-};
-
-const timeToMinutes = (time: string): number => {
-  const [hours, minutes] = time.split(':').map(Number);
-  return hours * 60 + minutes;
-};
-
-const doRangesOverlapOrAdjacent = (
-  start1: string,
-  end1: string,
-  start2: string,
-  end2: string
-): boolean => {
-  const start1Min = timeToMinutes(start1);
-  const end1Min = timeToMinutes(end1);
-  const start2Min = timeToMinutes(start2);
-  const end2Min = timeToMinutes(end2);
-  return start1Min <= end2Min && start2Min <= end1Min;
 };
 
 // 👇 helper : map Clerk org → Agency.id

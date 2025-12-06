@@ -26,7 +26,7 @@ export default async function GestionPage() {
     <div className="max-w-5xl mx-auto p-6">
       <h1 className="text-2xl font-semibold mb-2">Gestion des utilisateurs</h1>
       <p className="text-sm text-muted-foreground mb-6">
-        Promouvoir un élève en moniteur ou supprimer un élève.
+        Contacter l'un de vos clients par mail.
       </p>
       <UserManagement meRole={meRole as 'student' | 'instructor' | 'admin'} />
     </div>

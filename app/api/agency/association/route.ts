@@ -1,6 +1,7 @@
 // app/api/agency/association/route.ts
 import { type NextRequest, NextResponse } from 'next/server';
-import { getAuth, clerkClient } from '@clerk/nextjs/server';
+import { requireAuth } from '@/lib/api/auth';
+import { clerkClient } from '@clerk/nextjs/server';
 import { sql } from '@/lib/db';
 
 type AgencyRow = {
@@ -29,10 +30,11 @@ const DEFAULT_ORG_ROLE =
   process.env.CLERK_DEFAULT_ORG_ROLE?.trim() || 'org:member';
 
 export async function POST(req: NextRequest) {
-  const { userId } = getAuth(req, { treatPendingAsSignedOut: false });
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const { auth, response } = requireAuth(req, {
+    treatPendingAsSignedOut: false,
+  });
+  if (!auth) return response;
+  const { userId } = auth;
 
   const clerk = await clerkClient();
 

@@ -1,14 +1,15 @@
 // app/api/me/profile/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
-import { getAuth } from '@clerk/nextjs/server';
+import { requireAuth } from '@/lib/api/auth';
 
 export async function GET(req: NextRequest) {
   try {
-    const { userId } = getAuth(req, { treatPendingAsSignedOut: false });
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { auth, response } = requireAuth(req, {
+      treatPendingAsSignedOut: false,
+    });
+    if (!auth) return response;
+    const { userId } = auth;
 
     const rows = await sql`
       SELECT
@@ -56,10 +57,11 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
-    const { userId } = getAuth(req, { treatPendingAsSignedOut: false });
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { auth, response } = requireAuth(req, {
+      treatPendingAsSignedOut: false,
+    });
+    if (!auth) return response;
+    const { userId } = auth;
 
     const body = await req.json().catch(() => null);
     if (!body) {

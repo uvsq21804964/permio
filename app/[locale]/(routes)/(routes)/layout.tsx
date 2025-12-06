@@ -21,6 +21,7 @@ export default async function RootLayout({
       SELECT role FROM "User" WHERE id = ${userId} LIMIT 1
     `;
     meRole = rows[0]?.role ?? null;
+    console.log('MeRole', meRole);
   } catch (e) {
     console.error('[layout] error fetching role:', e);
     meRole = null;
@@ -30,13 +31,14 @@ export default async function RootLayout({
   const logo_mobile = '/IconeMobile.png';
 
   const pages = [
-    { name: 'Gestion', link: '/gestion', visible: 0 },
-    { name: 'Mes dispos', link: '/myavailabilities', visible: 0 },
     { name: 'Ma semaine', link: '/myweek', visible: 2 },
-    { name: 'Réserver', link: '/book/services', visible: 2 },
+    { name: 'Mes clients', link: '/gestion', visible: 0 },
+    { name: 'Mes services', link: '/services', visible: 0 },
+    { name: 'Mes dispos', link: '/myavailabilities', visible: 0 },
+    { name: 'Mes factures', link: '/billing', visible: 0 },
+    { name: 'Réserver', link: '/book/services', visible: 1 },
     // { name: 'Configuration', link: '/configuration', visible: 2 },
     { name: 'Subscribe', link: '/plans', visible: 0 },
-    { name: 'Mes services', link: '/services', visible: 0 },
     { name: 'Paramètres', link: '/profile', visible: 2 },
     { name: 'Se déconnecter', link: '/sign-out', visible: 2 },
   ] as const;

@@ -23,10 +23,29 @@ export default function DesktopNavbar({
   const profilePanelRef = useRef<HTMLDivElement | null>(null);
 
   const filteredPages = useMemo(
-    () => pages.filter((p) => (meRole === 'student' ? p.visible !== 0 : 2)),
+    () =>
+      pages.filter((p) => {
+        if (meRole === 'instructor') {
+          // 0 = instructeur, 2 = les deux
+          return p.visible === 0 || p.visible === 2;
+        }
+        if (meRole === 'student') {
+          // 1 = client, 2 = les deux
+          return p.visible === 1 || p.visible === 2;
+        }
+        if (meRole === 'admin') {
+          // admin voit tout
+          return true;
+        }
+        // rôle inconnu / non connecté → seulement les pages visibles par les deux
+        return p.visible === 2;
+      }),
     [pages, meRole]
   );
+
   const PROFILE_NAMES = new Set([
+    'Mes services',
+    'Mes factures',
     'Gestion',
     'Configuration',
     'Subscribe',
@@ -139,7 +158,7 @@ export default function DesktopNavbar({
                       aria-haspopup="menu"
                       className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white transition hover:bg-neutral-100/60 focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:ring-offset-2 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:focus:ring-neutral-700"
                     >
-                      <span>Mon profil</span>
+                      <span>Mon compte</span>
                       <svg
                         className={`h-4 w-4 transition-transform ${
                           profileOpen ? 'rotate-180' : ''

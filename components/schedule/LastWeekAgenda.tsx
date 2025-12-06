@@ -1,6 +1,8 @@
+// app/(...)/LastWeekAgenda.tsx
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 const DAYS = [
   'Lundi',
@@ -31,17 +33,67 @@ const PARTNER_PALETTE = [
   'bg-blue-50 border-blue-300 text-blue-900',
 ];
 
+type Role = 'student' | 'instructor' | 'admin';
+
+type Slot = {
+  startTime: string;
+  endTime: string;
+  studentName?: string | null;
+  instructorName?: string | null;
+
+  serviceName?: string | null;
+  servicePrice?: number | string | null;
+  formattedAddress?: string | null;
+};
+
+type ApiDay =
+  | { dayOfWeek: number; dayDate?: string | null; slots: Slot[] }
+  | { dayOfWeek: number; dayDate?: string | null; slots: [] };
+
+type NextSlot = {
+  date: string; // "YYYY-MM-DD"
+  startTime: string;
+  endTime: string;
+  counterpartName: string | null;
+};
+
+type ApiResponse = {
+  weekShown: string;
+  user: { id: string; name: string | null; role: Role };
+  days: ApiDay[];
+  hasDetailedSlots: boolean;
+  nextSlots?: NextSlot[];
+};
+
+// ---------- Utils ----------
+
+function formatServicePrice(
+  price: number | string | null | undefined
+): string | null {
+  if (price === null || price === undefined) return null;
+  const n = typeof price === 'string' ? Number(price) : price;
+  if (!Number.isFinite(n)) return String(price);
+  try {
+    return new Intl.NumberFormat('fr-FR', {
+      style: 'currency',
+      currency: 'EUR',
+      maximumFractionDigits: 2,
+    }).format(n);
+  } catch {
+    return n.toFixed(2);
+  }
+}
+
 // Clé partenaire stable: privilégie un identifiant si dispo
 function getPartnerKey(slot: Slot) {
-  // côté moniteur: studentId est présent; côté élève: on n’a que instructorName
   return slot.studentName && slot.instructorName
-    ? `${slot.studentName}↔${slot.instructorName}` // cas théorique si les deux remontent
+    ? `${slot.studentName}↔${slot.instructorName}`
     : slot.studentName
     ? slot.studentName
     : slot.instructorName || '—';
 }
 
-// Hash déterministe simple pour indexer la palette
+// Hash déterministe pour indexer la palette
 function hashStringToIndex(s: string, modulo: number) {
   let h = 0;
   for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0;
@@ -54,28 +106,6 @@ function getPartnerColor(slot: Slot) {
   const idx = hashStringToIndex(key, PARTNER_PALETTE.length);
   return PARTNER_PALETTE[idx];
 }
-
-type Role = 'student' | 'instructor' | 'admin';
-
-type Slot = {
-  startTime: string; // "HH:MM" ou "HH:MM:SS"
-  endTime: string; // "HH:MM" ou "HH:MM:SS"
-  studentName?: string | null;
-  instructorName?: string | null;
-};
-
-type ApiDay =
-  | { dayOfWeek: number; dayDate?: string; slots: Slot[] }
-  | { dayOfWeek: number; dayDate?: string; slots: [] };
-
-type ApiResponse = {
-  weekShown: string; // "YYYY-MM-DD" (lundi de la semaine affichée = S)
-  gatedOn: string; // "YYYY-MM-DD" (lundi de S+1 exigé pour validation)
-  user: { id: string; name: string | null; role: Role };
-  days: ApiDay[];
-  hasDetailedSlots: boolean;
-  note?: string;
-};
 
 function timeToMinutes(t: string) {
   const [h, m] = t.split(':').map(Number);
@@ -91,16 +121,6 @@ function getBlockStyle(startTime: string, endTime: string) {
     top: (offset / 60) * PIXELS_PER_HOUR,
     height: (dur / 60) * PIXELS_PER_HOUR,
   };
-}
-
-function getDurationColor(startTime: string, endTime: string) {
-  const dur =
-    timeToMinutes(stripSeconds(endTime)) -
-    timeToMinutes(stripSeconds(startTime));
-  if (dur < 45) return 'bg-emerald-50 border-emerald-300 text-emerald-900';
-  if (dur < 75) return 'bg-blue-50 border-blue-300 text-blue-900';
-  if (dur < 135) return 'bg-indigo-50 border-indigo-300 text-indigo-900';
-  return 'bg-purple-50 border-purple-300 text-purple-900';
 }
 
 /** Supprime les secondes si présentes ("HH:MM:SS" -> "HH:MM"). */
@@ -132,14 +152,42 @@ function toISO(date: Date): string {
   return `${y}-${m}-${d}`;
 }
 
+/** Lundi de la semaine d'une date donnée (en local). */
+function getMondayOfWeek(date: Date): Date {
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const day = d.getDay(); // 0=dim,1=lun,...6=sam
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+/** Ajoute delta jours à un ISO "YYYY-MM-DD". */
+function addDaysToISO(iso: string, delta: number): string {
+  const d = parseISODateLocal(iso);
+  d.setDate(d.getDate() + delta);
+  return toISO(d);
+}
+
+/** Détecte a minima qu'on a la bonne forme de payload. */
+function looksLikeAgendaPayload(p: any): p is Partial<ApiResponse> {
+  return !!p && typeof p === 'object' && Array.isArray(p.days) && !!p.weekShown;
+}
+
+// ---------- Composant ----------
+
 export default function LastWeekAgenda({ userId }: { userId?: string }) {
+  const router = useRouter();
+
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
-  const [needsValidation, setNeedsValidation] = useState(false);
-  const [requiredWeekStart, setRequiredWeekStart] = useState<string | null>(
-    null
+  const [currentWeekStartISO, setCurrentWeekStartISO] = useState<string | null>(
+    () => {
+      const monday = getMondayOfWeek(new Date());
+      return toISO(monday);
+    }
   );
 
   useEffect(() => {
@@ -147,36 +195,46 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
       setLoading(true);
       setErr(null);
       try {
-        const qs = userId ? `?userId=${encodeURIComponent(userId)}` : '';
-        // Aligne l’URL avec la route serveur: /api/me/last-week
-        const res = await fetch(`/api/me/last-week${qs}`, {
+        const params = new URLSearchParams();
+        if (userId) params.set('userId', userId);
+        if (currentWeekStartISO) params.set('weekStart', currentWeekStartISO);
+
+        const qs = params.toString();
+        const res = await fetch(`/api/me/weeks${qs ? `?${qs}` : ''}`, {
           credentials: 'include',
         });
 
-        if (res.status === 428) {
-          const payload = await res.json().catch(() => ({}));
-          setNeedsValidation(true);
-          setRequiredWeekStart(payload?.requireValidationFor ?? null);
-          setData(null);
-          return; // on n’affiche pas l’agenda
-        }
+        const payload = await res
+          .json()
+          .catch(() => null as unknown as ApiResponse | null);
 
         if (!res.ok) {
-          const txt = await res.text().catch(() => '');
-          throw new Error(txt || `HTTP ${res.status}`);
+          throw new Error(
+            (payload as any)?.error ||
+              (payload as any)?.detail ||
+              `Erreur HTTP ${res.status}`
+          );
         }
 
-        const json = (await res.json()) as ApiResponse;
+        if (!looksLikeAgendaPayload(payload)) {
+          throw new Error("Réponse inattendue de l'API agenda.");
+        }
+
+        const json = payload as ApiResponse;
         setData(json);
-        setNeedsValidation(false);
-        setRequiredWeekStart(null);
+
+        // On se cale sur le lundi renvoyé par l'API (au cas où).
+        if (json.weekShown) {
+          setCurrentWeekStartISO(json.weekShown);
+        }
       } catch (e: any) {
         setErr(e?.message ?? 'Erreur de chargement');
+        setData(null);
       } finally {
         setLoading(false);
       }
     })();
-  }, [userId]);
+  }, [userId, currentWeekStartISO]);
 
   const daysMap = useMemo(() => {
     const m = new Map<number, ApiDay>();
@@ -242,10 +300,33 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
     return Array.from(set.entries()); // [ [name, class], ... ]
   }, [data?.days]);
 
+  const upcoming = data?.nextSlots ?? [];
+  const viewerRole: Role | undefined = data?.user.role;
+
+  const handlePrevWeek = () => {
+    setCurrentWeekStartISO((prev) => {
+      if (!prev) {
+        const monday = getMondayOfWeek(new Date());
+        return toISO(monday);
+      }
+      return addDaysToISO(prev, -7);
+    });
+  };
+
+  const handleNextWeek = () => {
+    setCurrentWeekStartISO((prev) => {
+      if (!prev) {
+        const monday = getMondayOfWeek(new Date());
+        return toISO(monday);
+      }
+      return addDaysToISO(prev, 7);
+    });
+  };
+
   return (
     <div className="rounded-lg border bg-card">
       <div className="p-4 border-b">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div className="text-sm font-medium">
             Programme de la semaine{' '}
             {headerRange && (
@@ -259,66 +340,116 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                     className={`inline-flex items-center gap-2 rounded-md border px-2 py-1 text-xs ${klass}`}
                     title={name}
                   >
-                    <span
-                      className={`inline-block h-2 w-2 rounded-full border`}
-                    />
+                    <span className="inline-block h-2 w-2 rounded-full border" />
                     <span className="truncate max-w-[160px]">{name}</span>
                   </div>
                 ))}
               </div>
             )}
           </div>
-          {data?.user && (
-            <div className="text-sm">
-              <span className="font-medium">
-                {data.user.name ?? data.user.id}
-              </span>{' '}
-              <span className="text-neutral-500">
-                (
-                {data.user.role === 'instructor'
-                  ? 'Moniteur'
-                  : data.user.role === 'student'
-                  ? 'Élève'
-                  : 'Admin'}
-                )
-              </span>
+
+          <div className="flex flex-col items-end gap-2">
+            {data?.user && (
+              <div className="text-sm">
+                <span className="font-medium">
+                  {data.user.name ?? data.user.id}
+                </span>{' '}
+                <span className="text-neutral-500">
+                  (
+                  {data.user.role === 'instructor'
+                    ? 'Moniteur'
+                    : data.user.role === 'student'
+                    ? 'Élève'
+                    : 'Admin'}
+                  )
+                </span>
+              </div>
+            )}
+
+            {/* Navigation semaine */}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={handlePrevWeek}
+                className="text-xs px-2 py-1 border rounded-md hover:bg-muted"
+              >
+                ← Semaine précédente
+              </button>
+              <button
+                type="button"
+                onClick={handleNextWeek}
+                className="text-xs px-2 py-1 border rounded-md hover:bg-muted"
+              >
+                Semaine suivante →
+              </button>
             </div>
-          )}
+          </div>
         </div>
 
-        {data?.note && (
-          <div className="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded p-2">
-            {data.note}
+        {/* Section "Prochains cours réservés" */}
+        {data?.user.role === 'student' && (
+          <div className="mt-3 text-xs text-neutral-800">
+            <div className="font-semibold mb-1">
+              Prochains cours réservés (sur 5 semaines max)
+            </div>
+
+            {upcoming.length === 0 ? (
+              <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between rounded-md border border-dashed bg-muted/50 px-3 py-2">
+                <span>Aucun cours réservé dans les 5 prochaines semaines.</span>
+                <button
+                  type="button"
+                  onClick={() => router.push('/book/services')}
+                  className="mt-2 sm:mt-0 inline-flex items-center justify-center rounded-md border border-primary px-2 py-1 text-[11px] font-medium text-primary hover:bg-primary/5"
+                >
+                  Réserver un créneau
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {upcoming.map((s, idx) => {
+                  const d = parseISODateLocal(s.date);
+                  const dateLabel = fmtDDMM(d);
+                  const weekday = d.toLocaleDateString('fr-FR', {
+                    weekday: 'short',
+                  });
+                  return (
+                    <div
+                      key={`${s.date}-${s.startTime}-${idx}`}
+                      className="inline-flex flex-col rounded-md border bg-muted px-2 py-1"
+                    >
+                      <span className="text-[11px] font-medium">
+                        {weekday} {dateLabel}
+                      </span>
+                      <span className="text-[11px]">
+                        {stripSeconds(s.startTime)} – {stripSeconds(s.endTime)}
+                      </span>
+                      {s.counterpartName && (
+                        <span className="text-[11px] text-neutral-600">
+                          avec {s.counterpartName}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
-        {err && <div className="mt-2 text-xs text-red-600">Erreur : {err}</div>}
-      </div>
 
-      {needsValidation && (
-        <div className="p-4">
-          <div className="rounded-md border border-amber-300 bg-amber-50 p-3">
-            <div className="text-sm text-amber-900">
-              Vous devez valider vos disponibilités pour la semaine du{' '}
-              <span className="font-medium">{requiredWeekStart ?? '—'}</span>{' '}
-              avant d’accéder à votre agenda.
-            </div>
-            <div className="mt-2">
-              <a
-                href={`/myavailabilities`}
-                className="inline-flex items-center rounded-md border px-3 py-1.5 text-sm font-medium bg-amber-600 text-white hover:bg-amber-700"
-              >
-                Valider mes disponibilités
-              </a>
-            </div>
+        {err && (
+          <div className="mt-2 text-xs text-red-600">
+            Erreur de chargement : {err}
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       <div className="p-4 overflow-x-auto">
         {loading ? (
           <div className="text-sm text-neutral-500">Chargement…</div>
         ) : !data ? (
-          <div className="text-sm text-neutral-500">Aucune donnée.</div>
+          <div className="text-sm text-neutral-500">
+            Impossible de charger l’agenda.
+          </div>
         ) : (
           <div className="min-w-[800px]">
             {/* Header row */}
@@ -366,6 +497,7 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                 const d = daysMap.get(dayIndex);
                 const slots = (d as any)?.slots ?? [];
                 const isToday = dayHeaders[dayIndex]?.isToday;
+                const isInstructorView = viewerRole === 'instructor';
 
                 return (
                   <div
@@ -397,25 +529,107 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                         const end = stripSeconds(s.endTime);
                         const counterpart = getCounterpartName(s);
 
+                        const labelCounterpart =
+                          viewerRole === 'student'
+                            ? 'Moniteur'
+                            : viewerRole === 'instructor'
+                            ? 'Élève'
+                            : 'Intervenant';
+
+                        const priceLabel =
+                          isInstructorView && s.servicePrice != null
+                            ? formatServicePrice(s.servicePrice)
+                            : null;
+
+                        const tooltipLines: string[] = [];
+                        tooltipLines.push(`${start}–${end}`);
+
+                        if (counterpart) {
+                          tooltipLines.push(
+                            `${labelCounterpart} : ${counterpart}`
+                          );
+                        }
+
+                        if (s.serviceName) {
+                          const base = `Service : ${s.serviceName}`;
+                          tooltipLines.push(
+                            priceLabel ? `${base} (${priceLabel})` : base
+                          );
+                        } else if (priceLabel) {
+                          tooltipLines.push(`Prix : ${priceLabel}`);
+                        }
+
+                        if (s.formattedAddress) {
+                          tooltipLines.push(`Adresse : ${s.formattedAddress}`);
+                        }
+
+                        const tooltip = tooltipLines.join('\n');
+
+                        // Contenu multi-ligne dans le bloc
+                        const contentLines: React.ReactNode[] = [];
+
+                        contentLines.push(
+                          <span
+                            key="time"
+                            className="text-[9px] leading-tight truncate font-mono"
+                          >
+                            {start} – {end}
+                          </span>
+                        );
+
+                        if (counterpart) {
+                          contentLines.push(
+                            <span
+                              key="name"
+                              className="text-[10px] leading-tight font-medium truncate"
+                            >
+                              {counterpart}
+                            </span>
+                          );
+                        }
+
+                        if (s.serviceName) {
+                          contentLines.push(
+                            <span
+                              key="service"
+                              className="text-[8px] leading-tight opacity-85 truncate"
+                            >
+                              {s.serviceName}
+                            </span>
+                          );
+                        }
+
+                        if (priceLabel) {
+                          contentLines.push(
+                            <span
+                              key="price"
+                              className="text-[9px] leading-tight opacity-85 truncate"
+                            >
+                              {priceLabel}
+                            </span>
+                          );
+                        }
+
+                        const APPROX_LINE_HEIGHT = 11; // px
+                        const VERTICAL_PADDING = 4; // px
+                        const maxLinesRaw = Math.floor(
+                          (height - VERTICAL_PADDING) / APPROX_LINE_HEIGHT
+                        );
+                        const maxLines =
+                          maxLinesRaw < 1
+                            ? 1
+                            : Math.min(maxLinesRaw, contentLines.length);
+
                         return (
                           <div
                             key={`${dayIndex}-${i}`}
-                            className={`absolute left-1 right-1 text-xs p-2 rounded-md border ${cc}`}
+                            className={`absolute left-1 right-1 text-xs rounded-md border ${cc}`}
                             style={{ top, height, minHeight: '24px' }}
-                            title={
-                              counterpart
-                                ? `${start}–${end} avec ${counterpart}`
-                                : `${start}–${end}`
-                            }
+                            title={tooltip}
                           >
-                            <div className="text-[10px] font-medium">
-                              {start} - {end}
+                            <div className="flex h-full flex-col items-start justify-center px-1 py-0.5 gap-0.5">
+                              {contentLines.slice(0, maxLines)}
                             </div>
-                            {counterpart && (
-                              <div className="text-[10px] text-neutral-600 truncate">
-                                avec {counterpart}
-                              </div>
-                            )}
                           </div>
                         );
                       })}

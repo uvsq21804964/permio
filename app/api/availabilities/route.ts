@@ -2,26 +2,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { getAuth } from '@clerk/nextjs/server';
-
-const timeToMinutes = (time: string): number => {
-  const [hours, minutes] = time.split(':').map(Number);
-  return hours * 60 + minutes;
-};
-
-const doRangesOverlapOrAdjacent = (
-  start1: string,
-  end1: string,
-  start2: string,
-  end2: string
-): boolean => {
-  const start1Min = timeToMinutes(start1);
-  const end1Min = timeToMinutes(end1);
-  const start2Min = timeToMinutes(start2);
-  const end2Min = timeToMinutes(end2);
-
-  // chevauchement ou juste collés (ex: 09:00–10:00 et 10:00–11:00)
-  return start1Min <= end2Min && start2Min <= end1Min;
-};
+import { timeToMinutes, doRangesOverlapOrAdjacent } from '@/lib/api/time';
 
 export async function GET(req: NextRequest) {
   try {

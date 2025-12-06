@@ -9,6 +9,7 @@ type UserRow = {
   id: string;
   name: string | null;
   role: Role;
+  email?: string | null;
   createdAt?: string;
   updatedAt?: string;
   plannedMinutes?: number; // total prévu (en minutes)
@@ -82,7 +83,6 @@ export default function UserManagement({ meRole }: { meRole: Role }) {
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
-  const [busyIds, setBusyIds] = useState<Record<string, boolean>>({});
 
   const { organization } = useOrganization();
   const orgId = organization?.id ?? authOrgId ?? '';
@@ -156,7 +156,6 @@ export default function UserManagement({ meRole }: { meRole: Role }) {
 
   const addOneHour = async (id: string) => {
     try {
-      setBusyIds((m) => ({ ...m, [id]: true }));
       const res = await fetch(`/api/users/${id}/hours`, {
         method: 'PATCH',
         credentials: 'include',
@@ -172,8 +171,6 @@ export default function UserManagement({ meRole }: { meRole: Role }) {
     } catch (e) {
       console.error('add hour error', e);
       alert('Impossible d’ajouter 1h (droits insuffisants ou erreur serveur).');
-    } finally {
-      setBusyIds((m) => ({ ...m, [id]: false }));
     }
   };
 
@@ -211,7 +208,6 @@ export default function UserManagement({ meRole }: { meRole: Role }) {
     const boundedRemaining = Math.min(remaining, planned);
 
     try {
-      setBusyIds((m) => ({ ...m, [u.id]: true }));
       const res = await fetch(`/api/users/${u.id}/hours`, {
         method: 'PUT',
         credentials: 'include',
@@ -230,8 +226,6 @@ export default function UserManagement({ meRole }: { meRole: Role }) {
     } catch (e) {
       console.error('edit hours error', e);
       alert('Impossible de mettre à jour les heures.');
-    } finally {
-      setBusyIds((m) => ({ ...m, [u.id]: false }));
     }
   };
 
@@ -254,22 +248,12 @@ export default function UserManagement({ meRole }: { meRole: Role }) {
             <tr className="text-left text-neutral-500">
               <th className="py-2 pr-4">Nom</th>
               <th className="py-2 pr-4">Rôle</th>
-              <th className="py-2 pr-4">Heures (rest./tot.)</th>
-              <th className="py-2 pr-4">Actions</th>
+              <th className="py-2 pr-4">Email</th>
             </tr>
           </thead>
           <tbody>
             {users.map((u) => {
               const isSelf = !!userId && u.id === userId;
-
-              const remainingMin =
-                typeof u.remainingMinutes === 'number'
-                  ? u.remainingMinutes
-                  : undefined;
-              const totalMin =
-                typeof u.plannedMinutes === 'number'
-                  ? u.plannedMinutes
-                  : undefined;
 
               return (
                 <tr key={u.id} className="border-t">
@@ -300,74 +284,16 @@ export default function UserManagement({ meRole }: { meRole: Role }) {
                     </span>
                   </td>
 
-                  {/* Colonne Heures (rest./tot.) — STUDENT seulement */}
                   <td className="py-2 pr-4">
-                    {u.role === 'student' ? (
-                      typeof remainingMin === 'number' &&
-                      typeof totalMin === 'number' ? (
-                        <div className="inline-flex items-center gap-2">
-                          <span className="text-xs rounded px-1.5 py-0.5 border bg-amber-50 border-amber-200 text-amber-900">
-                            {formatQty(remainingMin)}
-                          </span>
-                          <span className="text-xs text-neutral-500">/</span>
-                          <span className="text-xs rounded px-1.5 py-0.5 border bg-neutral-50 border-neutral-200 text-neutral-800">
-                            {formatQty(totalMin)}
-                          </span>
-                        </div>
-                      ) : (
-                        <span className="text-neutral-400">—</span>
-                      )
+                    {u.role === 'student' && u.email ? (
+                      <a
+                        href={`mailto:${encodeURIComponent(u.email)}`}
+                        className="text-blue-600 hover:underline"
+                      >
+                        {u.email}
+                      </a>
                     ) : (
-                      <span className="text-neutral-300">—</span>
-                    )}
-                  </td>
-
-                  <td className="py-2 pr-4 space-x-2">
-                    {isSelf ? (
-                      <span className="text-xs text-neutral-400 select-none">
-                        Aucune action sur votre propre compte
-                      </span>
-                    ) : (
-                      <>
-                        {u.role === 'student' && (
-                          <>
-                            <button
-                              onClick={() => editHours(u)}
-                              disabled={!!busyIds[u.id]}
-                              className="px-3 py-1.5 text-xs rounded border bg-indigo-600 text-white hover:brightness-110 disabled:opacity-60"
-                            >
-                              Éditer heures
-                            </button>
-                            <button
-                              onClick={() => addOneHour(u.id)}
-                              disabled={!!busyIds[u.id]}
-                              className="px-3 py-1.5 text-xs rounded border bg-blue-600 text-white hover:brightness-110 disabled:opacity-60"
-                            >
-                              {busyIds[u.id] ? 'Ajout…' : 'Ajouter 1h'}
-                            </button>
-                            <button
-                              onClick={() => promote(u.id)}
-                              className="px-3 py-1.5 text-xs rounded border bg-emerald-600 text-white hover:brightness-110"
-                            >
-                              Promouvoir moniteur
-                            </button>
-                            <button
-                              onClick={() => remove(u.id, u.name ?? '')}
-                              className="px-3 py-1.5 text-xs rounded border hover:bg-neutral-50"
-                            >
-                              Supprimer
-                            </button>
-                          </>
-                        )}
-                        {u.role === 'instructor' && (
-                          <button
-                            onClick={() => demote(u.id)}
-                            className="px-3 py-1.5 text-xs rounded border bg-amber-600 text-white hover:brightness-110"
-                          >
-                            Rétrograder en élève
-                          </button>
-                        )}
-                      </>
+                      <span className="text-neutral-400">—</span>
                     )}
                   </td>
                 </tr>
@@ -375,7 +301,7 @@ export default function UserManagement({ meRole }: { meRole: Role }) {
             })}
             {users.length === 0 && !loading && (
               <tr>
-                <td className="py-6 text-neutral-500" colSpan={4}>
+                <td className="py-6 text-neutral-500" colSpan={3}>
                   Aucun utilisateur.
                 </td>
               </tr>

@@ -24,9 +24,19 @@ const MobileNavbar: React.FC<NavbarProps> = ({
   const toggleMenu = () => setIsMenuOpen((v) => !v);
 
   // Filtre : si role = student, ne pas afficher les pages où p.student === false
-  const visiblePages = pages.filter((p) =>
-    meRole === 'student' ? p.visible !== 0 : 2
-  );
+  const visiblePages = pages.filter((p) => {
+    if (meRole === 'instructor') {
+      return p.visible === 0 || p.visible === 2;
+    }
+    if (meRole === 'student') {
+      return p.visible === 1 || p.visible === 2;
+    }
+    if (meRole === 'admin') {
+      return true;
+    }
+    // rôle inconnu / non connecté → seulement les pages pour les deux
+    return p.visible === 2;
+  });
 
   return (
     <nav className="fixed inset-x-0 top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/90 dark:bg-neutral-900/80 border-b border-neutral-200 dark:border-neutral-800">

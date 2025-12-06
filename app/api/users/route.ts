@@ -1,7 +1,7 @@
 // app/api/users/route.ts
 import { type NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
-import { getAuth } from '@clerk/nextjs/server';
+import { getAuth, clerkClient } from '@clerk/nextjs/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -54,6 +54,7 @@ export async function GET(request: NextRequest) {
 
     const roleParam = request.nextUrl.searchParams.get('role') as Role | null;
 
+    // 1) On récupère les users de la BDD + leur clerk_user_id
     const rows = roleParam
       ? await sql`
           SELECT
@@ -63,6 +64,7 @@ export async function GET(request: NextRequest) {
             u."createdAt",
             u."updatedAt",
             u."agencyId",
+            u.id AS "clerkUserId",  -- 👈 IMPORTANT
             CASE WHEN u.role = 'student' THEN u.planned_minutes   ELSE NULL END AS "plannedMinutes",
             CASE WHEN u.role = 'student' THEN u.remaining_minutes ELSE NULL END AS "remainingMinutes"
           FROM "User" u
@@ -78,6 +80,7 @@ export async function GET(request: NextRequest) {
             u."createdAt",
             u."updatedAt",
             u."agencyId",
+            u.id AS "clerkUserId",  -- 👈 IMPORTANT
             CASE WHEN u.role = 'student' THEN u.planned_minutes   ELSE NULL END AS "plannedMinutes",
             CASE WHEN u.role = 'student' THEN u.remaining_minutes ELSE NULL END AS "remainingMinutes"
           FROM "User" u
@@ -85,7 +88,43 @@ export async function GET(request: NextRequest) {
           ORDER BY u.name ASC NULLS LAST
         `;
 
-    return NextResponse.json(rows);
+    // 2) On récupère tous les clerkUserId non nuls/uniques
+    const clerkIds = Array.from(
+      new Set(
+        rows
+          .map((r: any) => r.clerkUserId as string | null)
+          .filter((id): id is string => !!id)
+      )
+    );
+
+    // 3) On va chercher les users Clerk correspondants en un seul appel
+    const emailByClerkId: Record<string, string | null> = {};
+
+    if (clerkIds.length > 0) {
+      const clerk = await clerkClient();
+      const clerkUsers = await clerk.users.getUserList({
+        userId: clerkIds,
+        limit: clerkIds.length,
+      });
+
+      for (const cu of clerkUsers.data) {
+        const primary =
+          cu.emailAddresses.find((e) => e.id === cu.primaryEmailAddressId)
+            ?.emailAddress ??
+          cu.emailAddresses[0]?.emailAddress ??
+          null;
+
+        emailByClerkId[cu.id] = primary;
+      }
+    }
+
+    // 4) On enrichit chaque ligne avec l'email venant de Clerk
+    const enriched = rows.map((r: any) => ({
+      ...r,
+      email: r.clerkUserId ? emailByClerkId[r.clerkUserId] ?? null : null,
+    }));
+
+    return NextResponse.json(enriched);
   } catch (error) {
     console.error('[api/users] GET error:', error);
     return NextResponse.json(
