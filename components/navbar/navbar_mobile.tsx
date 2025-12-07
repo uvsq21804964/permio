@@ -4,6 +4,7 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
 
 type Page = { name: string; link: string; visible: number; cta?: boolean };
 
@@ -103,6 +104,10 @@ const MobileNavbar: React.FC<NavbarProps> = ({
                 </Link>
               );
             })}
+          </div>
+
+          <div className="z-50">
+            <LocaleSwitcher />
           </div>
 
           {/* Burger */}

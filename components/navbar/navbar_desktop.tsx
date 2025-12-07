@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
 
 type Page = { name: string; link: string; visible: number; cta?: boolean };
 
@@ -111,6 +112,9 @@ export default function DesktopNavbar({
         <div className="flex-1">
           <div className="mx-auto max-w-7xl pr-4 sm:pr-6">
             <div className="flex h-16 items-center justify-end gap-2">
+              <div className="fixed right-2 top-1 z-50 text-black">
+                <LocaleSwitcher />
+              </div>
               {/* Liens desktop */}
               <div className="hidden md:flex items-center gap-2">
                 {mainNavPages.map((p) => {

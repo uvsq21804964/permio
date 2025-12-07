@@ -8,7 +8,7 @@ type Props = {
 };
 
 export default function SignInPage({ params: { locale } }: Props) {
-  const redirectUrl = withLocale('/myavailabilities', locale);
+  const redirectUrl = withLocale('/myweek', locale);
 
   return <SignInClient locale={locale} redirectUrl={redirectUrl} />;
 }

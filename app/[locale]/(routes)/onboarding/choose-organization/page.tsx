@@ -196,7 +196,7 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
       onSuccess?.(data);
 
       // Redirection vers l'accueil après succès
-      router.push('/myavailabilities');
+      router.push('/myweek');
     } catch (e: any) {
       setError(e?.details || e?.message || 'Erreur inconnue');
     } finally {

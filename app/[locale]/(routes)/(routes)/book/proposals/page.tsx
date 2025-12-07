@@ -31,6 +31,29 @@ type ApiResponse = {
 
 type ServiceAlignment = 'start' | 'end';
 
+type ClientSlot = {
+  startTime: string;
+  endTime: string;
+  travelBeforeMinutes: number;
+  travelAfterMinutes: number;
+  fromLabel: string;
+  toLabel: string;
+};
+
+type BookedSlotLite = {
+  date: string;
+  startTime: string;
+  endTime: string;
+};
+
+type WeeklyAgendaResponse = {
+  weekStart: string;
+  weekEnd: string;
+  clientSlotsByDate: Record<string, ClientSlot[]>;
+  // renvoyé par l'API /api/me/instructor-weekly-agenda-proposals
+  bookedSlots?: BookedSlotLite[];
+};
+
 type SuggestedSlot = {
   id: string;
   date: string; // YYYY-MM-DD
@@ -45,21 +68,13 @@ type SuggestedSlot = {
 
   alignment: ServiceAlignment;
   score?: number;
-};
 
-type ClientSlot = {
-  startTime: string;
-  endTime: string;
-  travelBeforeMinutes: number;
-  travelAfterMinutes: number;
-  fromLabel: string;
-  toLabel: string;
-};
-
-type WeeklyAgendaResponse = {
-  weekStart: string;
-  weekEnd: string;
-  clientSlotsByDate: Record<string, ClientSlot[]>;
+  // Métadonnées utilisées pour le scoring et l'explication
+  travelBeforeMinutes?: number;
+  travelAfterMinutes?: number;
+  fromLabel?: string;
+  toLabel?: string;
+  hasBookingsToday?: boolean;
 };
 
 type BookingAddress = {
@@ -114,18 +129,6 @@ function addMinutesToTime(time: string, minutes: number): string {
   const hh = Math.floor(total / 60) % 24;
   const mm = total % 60;
   return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
-}
-
-function startOfWeekMondayISO(base?: Date): string {
-  const d = base ? new Date(base) : new Date();
-  const day = d.getDay(); // 0 (dim) -> 6 (sam)
-  const diff = day === 0 ? -6 : 1 - day; // remet sur lundi
-  d.setDate(d.getDate() + diff);
-  d.setHours(0, 0, 0, 0);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const dd = String(d.getDate()).padStart(2, '0');
-  return `${y}-${m}-${dd}`;
 }
 
 /**
@@ -190,12 +193,167 @@ function getEarliestAllowedDateTime(now: Date = new Date()): Date {
 }
 
 /**
- * Fabrique 3 suggestions à partir de l'agenda réel (clientSlotsByDate)
- * en tenant compte de la durée du service.
- *
- * Heuristique simple pour éviter les trous : on aligne par défaut
- * au début de la fenêtre ("start") → le dogsitter commence le cours
- * dès son arrivée, sans attendre.
+ * Scoring d'un créneau :
+ * - privilégie les jours déjà travaillés (évite d’ouvrir un jour off)
+ * - minimise les trajets
+ * - comble les trous entre deux interventions
+ * - garde une petite préférence pour ce qui est proche dans le temps
+ */
+function scoreSlot(slot: SuggestedSlot, earliestAllowed: Date): number {
+  const before = slot.travelBeforeMinutes ?? 0;
+  const after = slot.travelAfterMinutes ?? 0;
+  const totalTravel = before + after;
+
+  const hasBookingsToday = !!slot.hasBookingsToday;
+
+  // 1) Score "jour déjà travaillé"
+  const dayGroupScore = hasBookingsToday ? 1 : 0;
+
+  // 2) Proximité temporelle par rapport à earliestAllowed
+  let timeScore = 0.5;
+  try {
+    const [y, m, d] = slot.date.split('-').map(Number);
+    const [sh, sm] = slot.serviceStartTime
+      .split(':')
+      .map((v) => Number(v) || 0);
+    const slotDateTime = new Date(
+      y || earliestAllowed.getFullYear(),
+      (m || 1) - 1,
+      d || 1,
+      sh,
+      sm,
+      0,
+      0
+    );
+    const deltaMs = slotDateTime.getTime() - earliestAllowed.getTime();
+    const deltaMinutes = Math.max(0, Math.round(deltaMs / 60000));
+    const MAX_DELTA_MIN = 42 * 24 * 60; // 42 jours
+    const cappedDelta = Math.min(deltaMinutes, MAX_DELTA_MIN);
+    timeScore = 1 - cappedDelta / MAX_DELTA_MIN;
+  } catch {
+    // on laisse 0.5
+  }
+
+  // 3) Score déplacement
+  const MAX_TRAVEL = 60; // au-delà de 60 min = très mauvais
+  const cappedTravel = Math.min(totalTravel, MAX_TRAVEL);
+  const travelScore = 1 - cappedTravel / MAX_TRAVEL;
+
+  // 4) Bonus "créneau qui comble un trou"
+  let holeScore = 0;
+  if (before > 0 && after > 0 && hasBookingsToday) {
+    const worstSide = Math.max(before, after);
+    if (worstSide <= 15) {
+      holeScore = 1;
+    } else if (worstSide <= 25) {
+      holeScore = 0.7;
+    } else if (worstSide <= 40) {
+      holeScore = 0.4;
+    } else {
+      holeScore = 0.1;
+    }
+  }
+
+  // pondérations
+  const W_DAY_GROUP = 0.5; // très important de rester sur un jour déjà travaillé
+  const W_HOLE = 0.25;
+  const W_TRAVEL = 0.15;
+  const W_TIME = 0.1;
+
+  const finalScore =
+    (W_DAY_GROUP * dayGroupScore +
+      W_HOLE * holeScore +
+      W_TRAVEL * travelScore +
+      W_TIME * timeScore) /
+    (W_DAY_GROUP + W_HOLE + W_TRAVEL + W_TIME);
+
+  return finalScore;
+}
+
+/**
+ * Texte d'explication lisible pour l'utilisateur,
+ * basé sur les mêmes critères que le score.
+ * ⚠️ On ne montre pas les durées chiffrées, juste la logique.
+ */
+function buildSuggestionExplanation(slot: SuggestedSlot): string {
+  const before = slot.travelBeforeMinutes ?? 0;
+  const after = slot.travelAfterMinutes ?? 0;
+  const totalTravel = before + after;
+  const hasBookingsToday = !!slot.hasBookingsToday;
+
+  const reasons: string[] = [];
+
+  // 1) Journée déjà travaillée vs ouverture d'une nouvelle journée
+  if (hasBookingsToday) {
+    reasons.push('se cale sur une journée où votre dogsitter a déjà des cours');
+  } else {
+    reasons.push(
+      'reste compatible avec les autres jours de repos de votre dogsitter'
+    );
+  }
+
+  // 2) Qualité des déplacements
+  if (totalTravel > 0) {
+    if (totalTravel <= 20) {
+      reasons.push('limite fortement les déplacements de votre dogsitter');
+    } else if (totalTravel <= 40) {
+      reasons.push('réduit les temps de trajet par rapport à d’autres options');
+    } else {
+      reasons.push(
+        'respecte tout de même les contraintes de déplacement de votre dogsitter'
+      );
+    }
+  }
+
+  // 3) Position par rapport aux autres interventions
+  if (hasBookingsToday) {
+    if (before > 0 && after > 0) {
+      reasons.push('remplit un trou entre deux cours déjà prévus');
+    } else if (before > 0 && after === 0) {
+      reasons.push('s’enchaîne juste après un cours déjà prévu');
+    } else if (after > 0 && before === 0) {
+      reasons.push('prépare le cours suivant dans la journée');
+    }
+  }
+
+  // 4) Proximité temporelle (par rapport à aujourd’hui)
+  try {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const [y, m, d] = slot.date.split('-').map(Number);
+    const slotDate = new Date(y || today.getFullYear(), (m || 1) - 1, d || 1);
+    slotDate.setHours(0, 0, 0, 0);
+    const diffDays = Math.round(
+      (slotDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
+    );
+
+    if (diffDays <= 1) {
+      reasons.push('est proposé très rapidement');
+    } else if (diffDays <= 7) {
+      reasons.push('est situé dans les prochains jours');
+    } else {
+      reasons.push('reste dans une période relativement proche');
+    }
+  } catch {
+    // ignore
+  }
+
+  if (!reasons.length) {
+    return 'Ce créneau est suggéré car il s’intègre bien dans le planning de votre dogsitter.';
+  }
+
+  if (reasons.length === 1) {
+    return `Ce créneau est suggéré car il ${reasons[0]}.`;
+  }
+
+  const last = reasons.pop();
+  return `Ce créneau est suggéré car il ${reasons.join(', ')} et ${last}.`;
+}
+
+/**
+ * Fabrique des suggestions à partir de l'agenda réel (clientSlotsByDate)
+ * en tenant compte de la durée du service et en privilégiant
+ * les jours où le dogsitter travaille déjà.
  */
 function computeSuggestionsFromAgenda(
   agenda: WeeklyAgendaResponse,
@@ -210,12 +368,17 @@ function computeSuggestionsFromAgenda(
   const now = new Date();
   const earliestAllowed = getEarliestAllowedDateTime(now);
 
+  const bookedSlots = agenda.bookedSlots ?? [];
+
   for (const date of dates) {
+    const slots = agenda.clientSlotsByDate[date] || [];
+    if (!slots.length) continue;
+
+    const hasBookingsToday = bookedSlots.some((b) => b.date === date);
+
     const [y, m, d] = date.split('-').map(Number);
 
-    const slots = agenda.clientSlotsByDate[date] || [];
     for (const slot of slots) {
-      // → date/heure du début de la fenêtre chez le client
       const [hStr, minStr] = slot.startTime.split(':');
       const h = Number(hStr) || 0;
       const min = Number(minStr) || 0;
@@ -229,10 +392,8 @@ function computeSuggestionsFromAgenda(
         0
       );
 
-      // ⛔ On ignore tous les créneaux qui ne respectent pas les règles (trop tôt / passé)
-      if (slotDateTime < earliestAllowed) {
-        continue;
-      }
+      // ⛔ on ignore les créneaux dans le passé ou trop tôt vs règles métier
+      if (slotDateTime < earliestAllowed) continue;
 
       const slotDur =
         timeToMinutes(slot.endTime) - timeToMinutes(slot.startTime);
@@ -246,7 +407,7 @@ function computeSuggestionsFromAgenda(
         alignment
       );
 
-      results.push({
+      const base: SuggestedSlot = {
         id: `${date}-${slot.startTime}-${slot.endTime}`,
         date,
         windowStartTime: slot.startTime,
@@ -254,70 +415,42 @@ function computeSuggestionsFromAgenda(
         serviceStartTime,
         serviceEndTime,
         alignment,
-      });
+        travelBeforeMinutes: slot.travelBeforeMinutes,
+        travelAfterMinutes: slot.travelAfterMinutes,
+        fromLabel: slot.fromLabel,
+        toLabel: slot.toLabel,
+        hasBookingsToday,
+      };
 
-      if (results.length >= count) break;
+      const score = scoreSlot(base, earliestAllowed);
+      results.push({ ...base, score });
     }
-    if (results.length >= count) break;
   }
 
-  // On donne un score décroissant
-  return results.map((s, i) => ({
-    ...s,
-    score: 1 - i * 0.1,
-  }));
-}
+  if (!results.length) return [];
 
-/**
- * Fallback mock si jamais on ne trouve rien côté backend / agenda.
- */
-function generateMockSuggestions(
-  durationMinutes: number | null,
-  count = 3
-): SuggestedSlot[] {
-  const dur = durationMinutes && durationMinutes > 0 ? durationMinutes : 60;
+  // 1) séparer les créneaux sur jours déjà travaillés vs jours off
+  const withBookings = results.filter((s) => s.hasBookingsToday);
+  const withoutBookings = results.filter((s) => !s.hasBookingsToday);
 
-  const now = new Date();
-  now.setSeconds(0, 0);
+  const sortByScoreDesc = (a: SuggestedSlot, b: SuggestedSlot) =>
+    (b.score ?? 0) - (a.score ?? 0);
 
-  // On réutilise exactement les mêmes règles que pour l’agenda réel
-  const base = getEarliestAllowedDateTime(now);
+  withBookings.sort(sortByScoreDesc);
+  withoutBookings.sort(sortByScoreDesc);
 
-  const slots: SuggestedSlot[] = [];
+  let ordered: SuggestedSlot[] = [];
 
-  for (let i = 0; i < count; i++) {
-    const dateObj = new Date(base);
-
-    // 2 premiers créneaux le même jour, les suivants les jours d’après
-    dateObj.setDate(base.getDate() + Math.floor(i / 2));
-
-    // Exemple : 10:00 / 13:00 ou 12:00 / 15:00 selon "base"
-    const hourOffset = i % 2 === 0 ? 0 : 3;
-    dateObj.setHours(base.getHours() + hourOffset, base.getMinutes(), 0, 0);
-
-    const y = dateObj.getFullYear();
-    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const d = String(dateObj.getDate()).padStart(2, '0');
-    const dateIso = `${y}-${m}-${d}`;
-
-    const startTime = dateObj.toTimeString().slice(0, 5);
-    const endTime = addMinutesToTime(startTime, dur);
-
-    const alignment: ServiceAlignment = 'start';
-
-    slots.push({
-      id: `mock-${i}-${dateIso}-${startTime}`,
-      date: dateIso,
-      windowStartTime: startTime,
-      windowEndTime: endTime,
-      serviceStartTime: startTime,
-      serviceEndTime: endTime,
-      alignment,
-      score: 1 - i * 0.1,
-    });
+  if (withBookings.length >= count) {
+    ordered = withBookings.slice(0, count);
+  } else {
+    ordered = [
+      ...withBookings,
+      ...withoutBookings.slice(0, count - withBookings.length),
+    ];
   }
 
-  return slots;
+  return ordered;
 }
 
 export default function ProposalsPage() {
@@ -400,7 +533,7 @@ export default function ProposalsPage() {
     return services.find((s) => s.id === idNum) || null;
   }, [services, serviceIdParam]);
 
-  // Charger les suggestions à partir de l'agenda hebdo + adresse
+  // Charger les suggestions à partir de l'agenda (42 jours) + adresse
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (!selectedService || !instructorId || !bookingAddress) return;
@@ -409,13 +542,12 @@ export default function ProposalsPage() {
       setError(null);
 
       try {
-        const weekStart = startOfWeekMondayISO();
-
         const url = new URL(
-          `/api/me/instructor-weekly-agenda`,
+          `/api/me/instructor-weekly-agenda-proposals`,
           window.location.origin
         );
-        url.searchParams.set('weekStart', weekStart);
+
+        // on laisse l’API choisir la plage : 21 jours à partir d’aujourd’hui
         url.searchParams.set('clientLat', String(bookingAddress.lat));
         url.searchParams.set('clientLng', String(bookingAddress.lng));
         url.searchParams.set(
@@ -433,16 +565,11 @@ export default function ProposalsPage() {
         }
 
         const agenda = (await res.json()) as WeeklyAgendaResponse;
-        let slots = computeSuggestionsFromAgenda(
+        const slots = computeSuggestionsFromAgenda(
           agenda,
           selectedService.duration_minutes,
           3
         );
-
-        // Fallback mock si jamais on ne trouve rien
-        if (!slots.length) {
-          slots = generateMockSuggestions(selectedService.duration_minutes, 3);
-        }
 
         setSuggestions(slots);
       } catch (e: any) {
@@ -450,14 +577,7 @@ export default function ProposalsPage() {
         setError(
           e?.message || 'Erreur lors de la génération des créneaux proposés.'
         );
-        // Fallback mock pour ne pas bloquer l'utilisateur
-        if (selectedService) {
-          const mock = generateMockSuggestions(
-            selectedService.duration_minutes,
-            3
-          );
-          setSuggestions(mock);
-        }
+        setSuggestions([]);
       } finally {
         setLoadingSuggestions(false);
       }
@@ -620,8 +740,8 @@ export default function ProposalsPage() {
             </h1>
             <p className="text-xs md:text-sm text-muted-foreground">
               Ces créneaux tiennent compte de votre adresse et de l’agenda de
-              votre dogsitter, avec un placement optimisé pour enchaîner les
-              cours.
+              votre dogsitter, avec un placement optimisé pour limiter les
+              déplacements et éviter de casser ses jours de repos.
             </p>
           </div>
 
@@ -717,15 +837,14 @@ export default function ProposalsPage() {
                     <p className="text-xs uppercase tracking-wide text-muted-foreground">
                       {formatDateFR(slot.date)}
                     </p>
-                    {/* Horaire du cours (aligné) */}
+                    {/* Horaire du cours */}
                     <p className="text-sm font-semibold">
                       {slot.serviceStartTime} – {slot.serviceEndTime}
                     </p>
 
+                    {/* Explication qualitative (pas de détails chiffrés) */}
                     <p className="text-[11px] text-muted-foreground">
-                      Cours aligné au{' '}
-                      {slot.alignment === 'start' ? 'début' : 'fin'} du créneau
-                      pour limiter les trous entre deux interventions.
+                      {buildSuggestionExplanation(slot)}
                     </p>
                   </div>
 

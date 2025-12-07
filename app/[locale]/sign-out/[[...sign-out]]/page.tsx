@@ -20,7 +20,7 @@ export default async function SignOutPage({ params: { locale } }: Props) {
 
   // URLs déjà localisées
   const redirectUrl = withLocale('/sign-in', locale);
-  const cancelUrl = withLocale('/myavailabilities', locale);
+  const cancelUrl = withLocale('/myweek', locale);
 
   return (
     <SignOutClient

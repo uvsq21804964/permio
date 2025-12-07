@@ -57,12 +57,24 @@ type NextSlot = {
   counterpartName: string | null;
 };
 
+/** Trajet calculé entre deux créneaux pour un jour donné. */
+type TravelSlot = {
+  date: string;
+  startTime: string;
+  endTime: string;
+  fromLabel: string | null;
+  toLabel: string | null;
+};
+
 type ApiResponse = {
   weekShown: string;
   user: { id: string; name: string | null; role: Role };
   days: ApiDay[];
   hasDetailedSlots: boolean;
   nextSlots?: NextSlot[];
+
+  // 🔶 map date ISO -> trajets calculés (présent pour instructor/admin uniquement)
+  travelsByDate?: Record<string, TravelSlot[]>;
 };
 
 // ---------- Utils ----------
@@ -172,6 +184,24 @@ function addDaysToISO(iso: string, delta: number): string {
 /** Détecte a minima qu'on a la bonne forme de payload. */
 function looksLikeAgendaPayload(p: any): p is Partial<ApiResponse> {
   return !!p && typeof p === 'object' && Array.isArray(p.days) && !!p.weekShown;
+}
+
+/** Construit l'URL Google Maps pour un trajet, à partir des labels. */
+function buildTravelMapsUrl(travel: TravelSlot): string | null {
+  let origin: string | null = travel.fromLabel ?? null;
+  let destination: string | null = travel.toLabel ?? null;
+
+  if (!origin && !destination) return null;
+
+  const params: string[] = ['api=1'];
+  if (origin) {
+    params.push(`origin=${encodeURIComponent(origin)}`);
+  }
+  if (destination) {
+    params.push(`destination=${encodeURIComponent(destination)}`);
+  }
+
+  return `https://www.google.com/maps/dir/?${params.join('&')}`;
 }
 
 // ---------- Composant ----------
@@ -302,6 +332,7 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
 
   const upcoming = data?.nextSlots ?? [];
   const viewerRole: Role | undefined = data?.user.role;
+  const travelsByDate = data?.travelsByDate ?? {};
 
   const handlePrevWeek = () => {
     setCurrentWeekStartISO((prev) => {
@@ -322,6 +353,8 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
       return addDaysToISO(prev, 7);
     });
   };
+
+  const showTravels = viewerRole && viewerRole !== 'student';
 
   return (
     <div className="rounded-lg border bg-card">
@@ -497,6 +530,12 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                 const d = daysMap.get(dayIndex);
                 const slots = (d as any)?.slots ?? [];
                 const isToday = dayHeaders[dayIndex]?.isToday;
+                const isoDate = dayHeaders[dayIndex]?.iso;
+                const travelsForDay: TravelSlot[] =
+                  isoDate && travelsByDate[isoDate]
+                    ? travelsByDate[isoDate]
+                    : [];
+
                 const isInstructorView = viewerRole === 'instructor';
 
                 return (
@@ -515,7 +554,65 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                       />
                     ))}
 
-                    {/* blocks */}
+                    {/* 🔶 Trajets (travel slots) : blocs orange, seulement pour roles ≠ student */}
+                    {showTravels &&
+                      isoDate &&
+                      Array.isArray(travelsForDay) &&
+                      travelsForDay.map((t, i) => {
+                        const { top, height } = getBlockStyle(
+                          t.startTime,
+                          t.endTime
+                        );
+
+                        const tooltipLines: string[] = [];
+                        tooltipLines.push(
+                          `Trajet ${stripSeconds(t.startTime)}–${stripSeconds(
+                            t.endTime
+                          )}`
+                        );
+                        if (t.fromLabel) {
+                          tooltipLines.push(`De : ${t.fromLabel}`);
+                        }
+                        if (t.toLabel) {
+                          tooltipLines.push(`Vers : ${t.toLabel}`);
+                        }
+
+                        const tooltip = tooltipLines.join('\n');
+
+                        const handleClickTravel = () => {
+                          const url = buildTravelMapsUrl(t);
+                          if (!url) return;
+                          window.open(url, '_blank', 'noopener,noreferrer');
+                        };
+
+                        return (
+                          <button
+                            key={`travel-${isoDate}-${i}`}
+                            type="button"
+                            onClick={handleClickTravel}
+                            title={tooltip}
+                            className="absolute left-2 right-2 rounded-md border shadow-sm bg-amber-100/80 border-amber-300 cursor-pointer hover:bg-amber-200/90 hover:border-amber-400 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            style={{
+                              top,
+                              height,
+                              minHeight: '20px',
+                              zIndex: 5,
+                            }}
+                          >
+                            <div className="flex h-full flex-col items-start justify-center px-1 py-0.5 gap-0.5">
+                              <span className="text-[9px] leading-tight font-mono truncate">
+                                {stripSeconds(t.startTime)} –{' '}
+                                {stripSeconds(t.endTime)}
+                              </span>
+                              <span className="text-[8px] leading-tight uppercase tracking-wide opacity-80 truncate">
+                                Trajet
+                              </span>
+                            </div>
+                          </button>
+                        );
+                      })}
+
+                    {/* blocks (créneaux réservés) */}
                     {Array.isArray(slots) &&
                       slots.length > 0 &&
                       slots.map((s: Slot, i: number) => {
@@ -624,7 +721,12 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                           <div
                             key={`${dayIndex}-${i}`}
                             className={`absolute left-1 right-1 text-xs rounded-md border ${cc}`}
-                            style={{ top, height, minHeight: '24px' }}
+                            style={{
+                              top,
+                              height,
+                              minHeight: '24px',
+                              zIndex: 10,
+                            }}
                             title={tooltip}
                           >
                             <div className="flex h-full flex-col items-start justify-center px-1 py-0.5 gap-0.5">
