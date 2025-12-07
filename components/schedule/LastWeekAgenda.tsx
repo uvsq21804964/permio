@@ -18,19 +18,20 @@ const START_HOUR = 8;
 const PIXELS_PER_HOUR = 80;
 
 // Palette de classes Tailwind {bg + border + text}
+// Palette de classes Tailwind {bg + border + text} plus contrastée
 const PARTNER_PALETTE = [
-  'bg-emerald-50 border-emerald-300 text-emerald-900',
-  'bg-sky-50 border-sky-300 text-sky-900',
-  'bg-violet-50 border-violet-300 text-violet-900',
-  'bg-amber-50 border-amber-300 text-amber-900',
-  'bg-rose-50 border-rose-300 text-rose-900',
-  'bg-teal-50 border-teal-300 text-teal-900',
-  'bg-indigo-50 border-indigo-300 text-indigo-900',
-  'bg-lime-50 border-lime-300 text-lime-900',
-  'bg-fuchsia-50 border-fuchsia-300 text-fuchsia-900',
-  'bg-cyan-50 border-cyan-300 text-cyan-900',
-  'bg-orange-50 border-orange-300 text-orange-900',
-  'bg-blue-50 border-blue-300 text-blue-900',
+  'bg-emerald-200 border-emerald-600 text-emerald-950',
+  'bg-sky-200 border-sky-600 text-sky-950',
+  'bg-violet-200 border-violet-600 text-violet-950',
+  'bg-amber-200 border-amber-600 text-amber-950',
+  'bg-rose-200 border-rose-600 text-rose-950',
+  'bg-teal-200 border-teal-600 text-teal-950',
+  'bg-indigo-200 border-indigo-600 text-indigo-950',
+  'bg-lime-200 border-lime-600 text-lime-950',
+  'bg-fuchsia-200 border-fuchsia-600 text-fuchsia-950',
+  'bg-cyan-200 border-cyan-600 text-cyan-950',
+  'bg-orange-200 border-orange-600 text-orange-950',
+  'bg-blue-200 border-blue-600 text-blue-950',
 ];
 
 type Role = 'student' | 'instructor' | 'admin';
@@ -38,6 +39,7 @@ type Role = 'student' | 'instructor' | 'admin';
 type Slot = {
   startTime: string;
   endTime: string;
+  studentId?: string | null; // ⬅️ ajouté
   studentName?: string | null;
   instructorName?: string | null;
 
@@ -96,15 +98,6 @@ function formatServicePrice(
   }
 }
 
-// Clé partenaire stable: privilégie un identifiant si dispo
-function getPartnerKey(slot: Slot) {
-  return slot.studentName && slot.instructorName
-    ? `${slot.studentName}↔${slot.instructorName}`
-    : slot.studentName
-    ? slot.studentName
-    : slot.instructorName || '—';
-}
-
 // Hash déterministe pour indexer la palette
 function hashStringToIndex(s: string, modulo: number) {
   let h = 0;
@@ -112,9 +105,27 @@ function hashStringToIndex(s: string, modulo: number) {
   return Math.abs(h) % modulo;
 }
 
-// Donne la classe couleur pour un slot, constante pour le partenaire
-function getPartnerColor(slot: Slot) {
-  const key = getPartnerKey(slot);
+// Quel "partenaire" sert de base pour la couleur (id si possible, sinon nom)
+function getSlotPartnerKey(slot: Slot, viewerRole?: Role) {
+  if (viewerRole === 'instructor') {
+    // Moniteur : couleur par élève
+    return (slot.studentId ?? slot.studentName ?? 'UNKNOWN_STUDENT').trim();
+  }
+  if (viewerRole === 'student') {
+    // Élève : couleur par moniteur
+    return (slot.instructorName ?? 'UNKNOWN_INSTRUCTOR').trim();
+  }
+  // Admin / autres : on prend ce qu'on a
+  return (
+    slot.studentId ??
+    slot.studentName ??
+    slot.instructorName ??
+    'UNKNOWN_PARTNER'
+  ).trim();
+}
+
+function getSlotColorClass(slot: Slot, viewerRole?: Role) {
+  const key = getSlotPartnerKey(slot, viewerRole);
   const idx = hashStringToIndex(key, PARTNER_PALETTE.length);
   return PARTNER_PALETTE[idx];
 }
@@ -317,21 +328,33 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
   const getCounterpartName = (slot: Slot) =>
     slot.studentName ?? slot.instructorName ?? null;
 
+  const viewerRole: Role | undefined = data?.user.role;
+
   const partnerLegend = useMemo(() => {
     if (!data?.days) return [];
-    const set = new Map<string, string>(); // key -> class
+    const set = new Map<string, string>(); // label lisible -> class
+
     for (const d of data.days) {
       const slots = (d as any)?.slots ?? [];
       for (const s of slots as Slot[]) {
-        const key = getPartnerKey(s);
-        if (!set.has(key)) set.set(key, getPartnerColor(s));
+        const colorClass = getSlotColorClass(s, viewerRole);
+
+        // Libellé humain pour la légende
+        const label =
+          viewerRole === 'instructor'
+            ? s.studentName ?? 'Élève inconnu'
+            : viewerRole === 'student'
+            ? s.instructorName ?? 'Moniteur inconnu'
+            : s.studentName ?? s.instructorName ?? 'Intervenant inconnu';
+
+        if (!set.has(label)) set.set(label, colorClass);
       }
     }
-    return Array.from(set.entries()); // [ [name, class], ... ]
-  }, [data?.days]);
+
+    return Array.from(set.entries()); // [ [label, class], ... ]
+  }, [data?.days, viewerRole]);
 
   const upcoming = data?.nextSlots ?? [];
-  const viewerRole: Role | undefined = data?.user.role;
   const travelsByDate = data?.travelsByDate ?? {};
 
   const handlePrevWeek = () => {
@@ -620,7 +643,7 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                           s.startTime,
                           s.endTime
                         );
-                        const cc = getPartnerColor(s);
+                        const cc = getSlotColorClass(s, viewerRole);
 
                         const start = stripSeconds(s.startTime);
                         const end = stripSeconds(s.endTime);
