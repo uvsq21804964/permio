@@ -135,7 +135,7 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
         <>
           Parfait ✅
           <br />
-          Indiquez vos disponibilités (lun → dim).
+          Indiquez vos disponibilités
         </>
       ) : (
         <>
