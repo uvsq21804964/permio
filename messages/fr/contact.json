@@ -1,0 +1,71 @@
+{
+  "hero": {
+    "title": "Contact",
+    "subtitle": "Une question, une démo, un partenariat ? Écris-nous, réponse sous 24 à 48h ouvrées."
+  },
+  "form": {
+    "name": {
+      "label": "Nom",
+      "placeholder": "Ex. Marie Dupont"
+    },
+    "email": {
+      "label": "Email",
+      "placeholder": "vous@exemple.com"
+    },
+    "phone": {
+      "label": "Téléphone (optionnel)",
+      "placeholder": "+33 6 12 34 56 78"
+    },
+    "subject": {
+      "label": "Sujet",
+      "options": {
+        "demo": "Demande de démo",
+        "support": "Support / Problème technique",
+        "billing": "Facturation / Abonnement",
+        "partnership": "Partenariat / Intégration",
+        "other": "Autre"
+      }
+    },
+    "message": {
+      "label": "Message",
+      "placeholder": "Décrivez votre besoin, votre organisation, vos zones, etc."
+    },
+    "consent": {
+      "labelPrefix": "J’accepte d’être contacté·e à propos de ma demande. Mes données seront traitées selon la ",
+      "privacyLink": "politique de confidentialité",
+      "labelSuffix": "."
+    },
+    "submit": "Envoyer la demande",
+    "responseTime": "Nous répondons généralement sous 24 à 48h."
+  },
+  "sidebar": {
+    "otherMeans": {
+      "title": "Autres moyens de contact",
+      "emailLabel": "Email",
+      "phoneLabel": "Téléphone",
+      "whatsappLabel": "WhatsApp",
+      "whatsappCta": "Ouvrir la conversation"
+    },
+    "ideas": {
+      "title": "Idées de sujets pour nous solliciter",
+      "bullets": {
+        "demo": "Réserver une démo guidée (30 min) sur votre cas réel.",
+        "setup": "Configurer vos disponibilités et votre page de réservation.",
+        "zones": "Réduire les trajets en regroupant par zones/jours.",
+        "noShows": "Régler les no-shows (rappels, politique d’annulation, arrhes Stripe).",
+        "calendar": "Intégrer Google/Outlook Calendar et synchroniser vos événements.",
+        "import": "Importer vos élèves/clients (CSV/Google Contacts) et nettoyer les adresses.",
+        "holes": "Optimiser les créneaux “trou” pour remplir la journée sans sur-trajets.",
+        "billing": "Questions facturation/abonnement (upgrade, factures, TVA, coupons).",
+        "partnership": "Partenariat (écoles, réseaux de professeurs, intégrateurs)."
+      }
+    }
+  },
+  "mail": {
+    "subject": "Demande d’information / Démo",
+    "body": "Bonjour,\n\nJ’aimerais vous contacter au sujet de l’optimisation d’agenda et de trajets.\nMon contexte :\n- Nombre d’élèves/clients : \n- Zones / villes : \n- Outils actuels : \n\nMerci !"
+  },
+  "whatsapp": {
+    "text": "Bonjour 👋 — Je souhaite des infos sur l’outil (planning + optimisation des trajets). — Contexte rapide : [élèves/clients, zones, outils]"
+  }
+}

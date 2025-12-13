@@ -1,0 +1,39 @@
+{
+  "header_title": "Agenda hebdomadaire – vue globale",
+  "header_period": "Semaine du {from} au {to}.",
+  "legend_dogsitter": "Bleu = disponibilités par défaut · Vert = dispo ponctuelle · Rose = indispo ponctuelle · Violet = créneaux réservés · Orange = trajets.",
+  "legend_default": "Survolez un créneau pour plus de détails.",
+  "earnings_label_prefix": "Total gagné sur cette semaine :",
+  "earnings_none": "—",
+  "nav_prev_week": "← Semaine précédente",
+  "nav_next_week": "Semaine suivante →",
+  "error_load_week": "Impossible de récupérer vos créneaux pour cette semaine.",
+  "loading_overlay": "Chargement de la semaine…",
+  "column_hour": "Heure",
+
+  "default_block_title": "Par défaut {start}–{end}",
+  "default_block_label": "Semaine type",
+
+  "override_block_label_available": "Dispo ponctuelle",
+  "override_block_label_unavailable": "Indisponible",
+
+  "notice_missing_address": "Impossible d'ouvrir l'itinéraire : adresse manquante pour ce trajet.",
+  "travel_label": "Trajet",
+  "travel_tooltip_time": "Trajet {start}–{end}",
+  "travel_tooltip_destination": "Destination : {address}",
+  "travel_tooltip_origin": "Origine : {address}",
+
+  "slot_client_unknown": "Client inconnu",
+  "slot_instructor_unknown": "Instructeur inconnu",
+  "slot_main_label_client": "Client",
+  "slot_main_label_instructor": "Dogsitter",
+
+  "slot_tooltip_time": "{start}–{end}",
+  "slot_tooltip_main": "{label} : {name}",
+  "slot_tooltip_you": "Vous : {name}",
+  "slot_tooltip_client": "Client : {name}",
+  "slot_tooltip_service_with_price": "Service : {service} ({price})",
+  "slot_tooltip_service": "Service : {service}",
+  "slot_tooltip_price": "Prix : {price}",
+  "slot_tooltip_address": "Adresse : {address}"
+}

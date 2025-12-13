@@ -1,13 +1,20 @@
-// app/gestion/page.tsx
+// app/[locale]/(routes)/(routes)/gestion/page.tsx
+
 import { redirect } from 'next/navigation';
 import { auth } from '@clerk/nextjs/server';
 import { sql } from '@/lib/db';
 import UserManagement from '@/components/gestion/UserManagement';
 
-export default async function GestionPage() {
+type Props = {
+  params: { locale: string };
+};
+
+export default async function GestionPage({ params }: Props) {
+  const { locale } = params;
+
   const { userId, orgId } = await auth();
-  if (!userId) redirect('/sign-in');
-  if (!orgId) redirect('/');
+  if (!userId) redirect(`/${locale}/sign-in`);
+  if (!orgId) redirect(`/${locale}`);
 
   const me = await sql`
     SELECT role FROM "User"
@@ -19,16 +26,10 @@ export default async function GestionPage() {
 
   if (!meRole) return null;
   if (meRole !== 'instructor' && meRole !== 'admin') {
-    redirect('/myavailabilities');
+    redirect(`/${locale}/myavailabilities`);
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      <h1 className="text-2xl font-semibold mb-2">Gestion des utilisateurs</h1>
-      <p className="text-sm text-muted-foreground mb-6">
-        Contacter l'un de vos clients par mail.
-      </p>
-      <UserManagement meRole={meRole as 'student' | 'instructor' | 'admin'} />
-    </div>
+    <UserManagement meRole={meRole as 'student' | 'instructor' | 'admin'} />
   );
 }

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -168,8 +169,6 @@ const HOURS = Array.from(
   (_, i) => i + START_HOUR
 );
 
-const DAY_LABELS_SHORT = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-
 function isoToDateOnly(iso: string): Date {
   const base = iso.slice(0, 10);
   const [yStr, mStr, dStr] = base.split('-');
@@ -186,11 +185,17 @@ function dateToISO(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
-function formatDayAndDate(iso: string): string {
+function formatDDMM(iso: string): string {
   const d = isoToDateOnly(iso);
-  const dow = d.getDay(); // 0 = dim, 1 = lun, ...
-  const idx = dow === 0 ? 6 : dow - 1; // 0 = Lun, 6 = Dim
-  return `${DAY_LABELS_SHORT[idx]} ${formatDDMM(iso)}`;
+  return `${String(d.getDate()).padStart(2, '0')}/${String(
+    d.getMonth() + 1
+  ).padStart(2, '0')}`;
+}
+
+function formatDayAndDate(iso: string, locale: string): string {
+  const d = isoToDateOnly(iso);
+  const dayLabel = d.toLocaleDateString(locale, { weekday: 'short' });
+  return `${dayLabel} ${formatDDMM(iso)}`;
 }
 
 function startOfWeekMondayISO(base?: string): string {
@@ -207,13 +212,6 @@ function addDaysISO(iso: string, delta: number): string {
   const d = isoToDateOnly(iso);
   d.setDate(d.getDate() + delta);
   return dateToISO(d);
-}
-
-function formatDDMM(iso: string): string {
-  const d = isoToDateOnly(iso);
-  return `${String(d.getDate()).padStart(2, '0')}/${String(
-    d.getMonth() + 1
-  ).padStart(2, '0')}`;
 }
 
 function timeToMinutes(time: string): number {
@@ -318,6 +316,9 @@ export default function BookPage() {
   const searchParams = useSearchParams();
   const selectedServiceId = searchParams.get('serviceId');
 
+  const t = useTranslations('bookAgenda');
+  const locale = useLocale();
+
   // Semaine actuelle (lundi) et bornes min/max de navigation
   const [todayWeekStart] = useState(() => startOfWeekMondayISO());
   const [maxWeekStart] = useState(() =>
@@ -371,7 +372,6 @@ export default function BookPage() {
   const canGoPrevWeek = weekStart > todayWeekStart;
   const canGoNextWeek = weekStart < maxWeekStart;
 
-  // Juste pour info si besoin
   const bookedSlotsByDate = useMemo(() => {
     const map: Record<string, BookedSlot[]> = {};
     if (!data?.bookedSlots) return map;
@@ -393,12 +393,12 @@ export default function BookPage() {
   );
 
   useEffect(() => {
-    const addrParam = searchParams.get('addr');
+    const addrParamInner = searchParams.get('addr');
     let addr: BookingAddress | null = null;
 
-    if (addrParam) {
+    if (addrParamInner) {
       try {
-        const json = decodeURIComponent(addrParam);
+        const json = decodeURIComponent(addrParamInner);
         addr = JSON.parse(json);
         setBookingAddress(addr);
       } catch (e) {
@@ -406,6 +406,11 @@ export default function BookPage() {
       }
     }
   }, [addrParam, searchParams]);
+
+  const weekDates = useMemo(
+    () => Array.from({ length: 7 }, (_, i) => addDaysISO(weekStart, i)),
+    [weekStart]
+  );
 
   // Charger l’agenda hebdo du moniteur
   useEffect(() => {
@@ -433,26 +438,21 @@ export default function BookPage() {
 
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
-          throw new Error(
-            body.error ||
-              'Impossible de récupérer les disponibilités du moniteur.'
-          );
+          throw new Error(body.error || t('errors.loadAgendaApi'));
         }
 
         const json = (await res.json()) as WeeklyAgendaResponse;
         setData(json);
       } catch (e: any) {
         console.error(e);
-        setError(
-          e?.message || 'Erreur lors du chargement de l’agenda du moniteur.'
-        );
+        setError(e?.message || t('errors.loadAgendaGeneric'));
       } finally {
         setLoading(false);
       }
     };
 
     fetchAgenda();
-  }, [weekStart, isLoaded, isSignedIn, bookingAddress, agendaReloadKey]);
+  }, [weekStart, isLoaded, isSignedIn, bookingAddress, agendaReloadKey, t]);
 
   // Charger les infos du service sélectionné (nom + catégorie)
   useEffect(() => {
@@ -465,7 +465,7 @@ export default function BookPage() {
     const numericId = Number(selectedServiceId);
     if (!Number.isFinite(numericId)) {
       setSelectedService(null);
-      setServiceError('Service invalide dans l’URL.');
+      setServiceError(t('errors.invalidServiceUrl'));
       return;
     }
 
@@ -480,20 +480,16 @@ export default function BookPage() {
         });
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
-          throw new Error(
-            data.error || 'Impossible de récupérer la liste des services.'
-          );
+          throw new Error(data.error || t('errors.loadServicesApi'));
         }
 
         const data: ServicesApiResponse = await res.json();
         const service = (data.services || []).find((s) => s.id === numericId);
 
         if (!service) {
-          setServiceError(
-            "Le service sélectionné n'existe pas ou n'est pas disponible."
-          );
+          setServiceError(t('errors.serviceNotAvailable'));
           setSelectedService(null);
-          router.push('/book/services');
+          router.push(`/${locale}/book/services`);
           return;
         }
 
@@ -505,16 +501,14 @@ export default function BookPage() {
         });
       } catch (e: any) {
         console.error('Error fetching selected service', e);
-        setServiceError(
-          e?.message || 'Impossible de récupérer le service sélectionné.'
-        );
+        setServiceError(e?.message || t('errors.selectedServiceLoad'));
       } finally {
         setServiceLoading(false);
       }
     };
 
     loadService();
-  }, [selectedServiceId, router]);
+  }, [selectedServiceId, router, t, locale]);
 
   // Recalcule les horaires du service si on change l’alignement
   useEffect(() => {
@@ -530,7 +524,6 @@ export default function BookPage() {
         serviceAlignment
       );
 
-      // Si rien ne change, ne pas déclencher un nouveau render
       if (
         prev.serviceStartTime === serviceStartTime &&
         prev.serviceEndTime === serviceEndTime &&
@@ -547,137 +540,6 @@ export default function BookPage() {
       };
     });
   }, [serviceAlignment, selectedService?.durationMinutes]);
-
-  const handleSelectSlot = (dateIso: string, slot: ClientSlot) => {
-    const serviceDuration = selectedService?.durationMinutes ?? null;
-
-    let serviceStartTime = slot.startTime;
-    let serviceEndTime = slot.endTime;
-
-    if (serviceDuration && serviceDuration > 0) {
-      const times = computeServiceTimes(
-        slot.startTime,
-        slot.endTime,
-        serviceDuration,
-        serviceAlignment
-      );
-      serviceStartTime = times.serviceStartTime;
-      serviceEndTime = times.serviceEndTime;
-    }
-
-    const newSelected: SelectedSlot = {
-      date: dateIso,
-      windowStartTime: slot.startTime,
-      windowEndTime: slot.endTime,
-      serviceStartTime,
-      serviceEndTime,
-      travelBeforeMinutes: slot.travelBeforeMinutes,
-      travelAfterMinutes: slot.travelAfterMinutes,
-      fromLabel: slot.fromLabel,
-      toLabel: slot.toLabel,
-      alignment: serviceAlignment,
-    };
-
-    setSelectedSlot(newSelected);
-
-    console.log('[BOOKING] Créneau sélectionné', {
-      serviceId: selectedService?.id,
-      alignment: serviceAlignment,
-      slot: newSelected,
-    });
-  };
-
-  const handleConfirmBooking = async (overrideSlot?: SelectedSlot) => {
-    setBookingError(null);
-    setNotice(null);
-
-    if (!selectedService) {
-      setBookingError('Veuillez d’abord sélectionner un service.');
-      return;
-    }
-
-    const slot = overrideSlot ?? selectedSlot;
-
-    if (!slot) {
-      setBookingError(
-        'Veuillez d’abord sélectionner un créneau dans l’agenda.'
-      );
-      return;
-    }
-
-    if (!slot.serviceStartTime || !slot.serviceEndTime) {
-      setBookingError(
-        'Le créneau sélectionné est invalide. Veuillez en choisir un autre ou définir son alignement.'
-      );
-      return;
-    }
-
-    try {
-      setBookingLoading(true);
-
-      const res = await fetch('/api/slots', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          serviceId: selectedService.id,
-          date: slot.date,
-          startTime: slot.serviceStartTime,
-          endTime: slot.serviceEndTime,
-          bookingAddress: bookingAddress
-            ? {
-                formattedAddress: bookingAddress.formattedAddress,
-                lat: bookingAddress.lat,
-                lng: bookingAddress.lng,
-                street: bookingAddress.street,
-                streetNumber: bookingAddress.streetNumber,
-                postalCode: bookingAddress.postalCode,
-                city: bookingAddress.city,
-                country: bookingAddress.country,
-                countryCode: bookingAddress.countryCode,
-                googlePlaceId: bookingAddress.googlePlaceId,
-              }
-            : undefined,
-        }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        if (res.status === 409 && body?.error === 'SLOT_ALREADY_EXISTS') {
-          throw new Error(
-            'Ce créneau a déjà été réservé entre-temps. Veuillez en choisir un autre.'
-          );
-        }
-        throw new Error(
-          body?.error ||
-            'Impossible de créer la réservation. Veuillez réessayer.'
-        );
-      }
-
-      const json = await res.json().catch(() => ({}));
-      console.log('[BOOKING] Slot créé', json);
-
-      setNotice('Créneau réservé avec succès ✅');
-
-      // On vide la sélection et on force le rechargement de l’agenda
-      setSelectedSlot(null);
-      setAgendaReloadKey((prev) => prev + 1);
-    } catch (e: any) {
-      console.error('[BOOKING] error', e);
-      setBookingError(
-        e?.message || 'Erreur lors de la création du créneau. Réessayez.'
-      );
-    } finally {
-      setBookingLoading(false);
-    }
-  };
-
-  const weekDates = useMemo(
-    () => Array.from({ length: 7 }, (_, i) => addDaysISO(weekStart, i)),
-    [weekStart]
-  );
 
   /**
    * Jours "non réservables" : aucun créneau >= earliestAllowed
@@ -750,12 +612,124 @@ export default function BookPage() {
     setBookingLoading(false);
   };
 
+  const handleSelectSlot = (dateIso: string, slot: ClientSlot) => {
+    const serviceDuration = selectedService?.durationMinutes ?? null;
+
+    let serviceStartTime = slot.startTime;
+    let serviceEndTime = slot.endTime;
+
+    if (serviceDuration && serviceDuration > 0) {
+      const times = computeServiceTimes(
+        slot.startTime,
+        slot.endTime,
+        serviceDuration,
+        serviceAlignment
+      );
+      serviceStartTime = times.serviceStartTime;
+      serviceEndTime = times.serviceEndTime;
+    }
+
+    const newSelected: SelectedSlot = {
+      date: dateIso,
+      windowStartTime: slot.startTime,
+      windowEndTime: slot.endTime,
+      serviceStartTime,
+      serviceEndTime,
+      travelBeforeMinutes: slot.travelBeforeMinutes,
+      travelAfterMinutes: slot.travelAfterMinutes,
+      fromLabel: slot.fromLabel,
+      toLabel: slot.toLabel,
+      alignment: serviceAlignment,
+    };
+
+    setSelectedSlot(newSelected);
+
+    console.log('[BOOKING] Créneau sélectionné', {
+      serviceId: selectedService?.id,
+      alignment: serviceAlignment,
+      slot: newSelected,
+    });
+  };
+
+  const handleConfirmBooking = async (overrideSlot?: SelectedSlot) => {
+    setBookingError(null);
+    setNotice(null);
+
+    if (!selectedService) {
+      setBookingError(t('errors.noServiceSelected'));
+      return;
+    }
+
+    const slot = overrideSlot ?? selectedSlot;
+
+    if (!slot) {
+      setBookingError(t('errors.noSlotSelected'));
+      return;
+    }
+
+    if (!slot.serviceStartTime || !slot.serviceEndTime) {
+      setBookingError(t('errors.invalidSlot'));
+      return;
+    }
+
+    try {
+      setBookingLoading(true);
+
+      const res = await fetch('/api/slots', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          serviceId: selectedService.id,
+          date: slot.date,
+          startTime: slot.serviceStartTime,
+          endTime: slot.serviceEndTime,
+          bookingAddress: bookingAddress
+            ? {
+                formattedAddress: bookingAddress.formattedAddress,
+                lat: bookingAddress.lat,
+                lng: bookingAddress.lng,
+                street: bookingAddress.street,
+                streetNumber: bookingAddress.streetNumber,
+                postalCode: bookingAddress.postalCode,
+                city: bookingAddress.city,
+                country: bookingAddress.country,
+                countryCode: bookingAddress.countryCode,
+                googlePlaceId: bookingAddress.googlePlaceId,
+              }
+            : undefined,
+        }),
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        if (res.status === 409 && body?.error === 'SLOT_ALREADY_EXISTS') {
+          throw new Error(t('errors.slotAlreadyBooked'));
+        }
+        throw new Error(body?.error || t('errors.createBooking'));
+      }
+
+      const json = await res.json().catch(() => ({}));
+      console.log('[BOOKING] Slot créé', json);
+
+      setNotice(t('alerts.bookingSuccess'));
+
+      setSelectedSlot(null);
+      setAgendaReloadKey((prev) => prev + 1);
+    } catch (e: any) {
+      console.error('[BOOKING] error', e);
+      setBookingError(e?.message || t('errors.createBookingGeneric'));
+    } finally {
+      setBookingLoading(false);
+    }
+  };
+
   const handleOpenAlignmentDialog = () => {
     if (!selectedSlot) return;
     if (!selectedService?.durationMinutes) {
-      setBookingError(
-        "Ce service n'a pas de durée définie. Impossible d'ajuster son alignement dans le créneau."
-      );
+      setBookingError(t('errors.alignNoDuration'));
       return;
     }
     setAlignmentChoice(serviceAlignment);
@@ -794,13 +768,13 @@ export default function BookPage() {
   if (!isLoaded) {
     content = (
       <div className="p-6 text-sm text-muted-foreground">
-        Chargement de votre session…
+        {t('loadingSession')}
       </div>
     );
   } else if (!isSignedIn) {
     content = (
       <div className="p-6 text-sm text-muted-foreground">
-        Vous devez être connecté pour voir les disponibilités de votre moniteur.
+        {t('mustBeSignedIn')}
       </div>
     );
   } else {
@@ -815,7 +789,7 @@ export default function BookPage() {
               onClick={handlePrevWeek}
               disabled={!canGoPrevWeek}
             >
-              ← Semaine précédente
+              {t('buttons.prevWeek')}
             </Button>
             <Button
               variant="outline"
@@ -823,7 +797,7 @@ export default function BookPage() {
               onClick={handleNextWeek}
               disabled={!canGoNextWeek}
             >
-              Semaine suivante →
+              {t('buttons.nextWeek')}
             </Button>
           </div>
 
@@ -832,7 +806,7 @@ export default function BookPage() {
             onClick={handleOpenAlignmentDialog}
             disabled={bookingLoading || !selectedService || !selectedSlot}
           >
-            Placer ma réservation sur ce créneau
+            {t('buttons.placeBooking')}
           </Button>
         </div>
 
@@ -868,16 +842,15 @@ export default function BookPage() {
         <Card>
           <CardHeader>
             <div className="flex flex-col gap-1">
-              <CardTitle>Agenda de votre moniteur</CardTitle>
+              <CardTitle>{t('agenda.title')}</CardTitle>
               <p className="text-sm text-muted-foreground">
-                Semaine du{' '}
-                <span className="font-medium">{formatDDMM(weekStart)}</span> au{' '}
-                <span className="font-medium">{formatDDMM(weekEnd)}</span>.
+                {t('agenda.weekLabel', {
+                  start: formatDDMM(weekStart),
+                  end: formatDDMM(weekEnd),
+                })}
               </p>
               <p className="text-xs text-muted-foreground">
-                Les créneaux affichés tiennent compte de ses autres rendez-vous
-                et du temps de trajet nécessaire pour venir chez vous. Les jours
-                sans aucun créneau réservable sont légèrement grisés.
+                {t('agenda.help')}
               </p>
             </div>
           </CardHeader>
@@ -885,7 +858,7 @@ export default function BookPage() {
           <CardContent>
             {loading || !data ? (
               <div className="py-8 text-sm text-muted-foreground">
-                Chargement des créneaux disponibles…
+                {t('agenda.loadingSlots')}
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -893,11 +866,16 @@ export default function BookPage() {
                   {/* Header ligne jours */}
                   <div className="grid grid-cols-8">
                     <div className="p-2 border-b text-sm font-medium text-muted-foreground">
-                      Heure
+                      {t('agenda.hourColumn')}
                     </div>
-                    {weekDates.map((dateIso, idx) => {
+                    {weekDates.map((dateIso) => {
                       const isDisabledDay = dayDisabled[dateIso] ?? false;
                       const isToday = dateIso === todayIso;
+
+                      const d = isoToDateOnly(dateIso);
+                      const dayLabel = d.toLocaleDateString(locale, {
+                        weekday: 'short',
+                      });
 
                       return (
                         <div
@@ -915,7 +893,7 @@ export default function BookPage() {
                             }
                           `}
                         >
-                          <div>{DAY_LABELS_SHORT[idx]}</div>
+                          <div>{dayLabel}</div>
                           <div className="text-[11px] text-muted-foreground">
                             {formatDDMM(dateIso)}
                           </div>
@@ -1012,22 +990,31 @@ export default function BookPage() {
                               selectedSlot.windowEndTime === slot.endTime;
 
                             const tooltipLines = [
-                              `Créneau chez vous : ${slot.startTime}–${slot.endTime}`,
-                              `Trajet avant : ${slot.travelBeforeMinutes} min depuis ${slot.fromLabel}`,
-                              `Trajet après : ${slot.travelAfterMinutes} min vers ${slot.toLabel}`,
+                              t('agenda.slotTooltip.slot', {
+                                start: slot.startTime,
+                                end: slot.endTime,
+                              }),
+                              t('agenda.slotTooltip.travelBefore', {
+                                minutes: slot.travelBeforeMinutes,
+                                label: slot.fromLabel,
+                              }),
+                              t('agenda.slotTooltip.travelAfter', {
+                                minutes: slot.travelAfterMinutes,
+                                label: slot.toLabel,
+                              }),
                             ];
 
                             return (
                               <div
                                 key={`${dateIso}-${idx}-${slot.startTime}-${slot.endTime}`}
                                 className={`absolute left-1 right-1 rounded-md border shadow-sm cursor-pointer transition
-        ${colorClass}
-        ${
-          isSelected
-            ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-background'
-            : ''
-        }
-      `}
+                                  ${colorClass}
+                                  ${
+                                    isSelected
+                                      ? 'ring-2 ring-emerald-500 ring-offset-2 ring-offset-background'
+                                      : ''
+                                  }
+                                `}
                                 style={{
                                   top: `${top}px`,
                                   height: `${height}px`,
@@ -1049,14 +1036,16 @@ export default function BookPage() {
                                     {slot.startTime} – {slot.endTime}
                                   </span>
                                   <span className="text-[8px] leading-tight uppercase opacity-80 mt-0.5">
-                                    {isSelected ? 'Sélectionné' : 'Disponible'}
+                                    {isSelected
+                                      ? t('agenda.badgeSelected')
+                                      : t('agenda.badgeAvailable')}
                                   </span>
                                 </div>
                               </div>
                             );
                           })}
 
-                          {/* Trait "maintenant" sur aujourd’hui, dans la semaine courante */}
+                          {/* Trait "maintenant" */}
                           {showNowLine && isToday && (
                             <div
                               className="pointer-events-none absolute left-0 right-0 border-t border-dashed border-primary/60"
@@ -1095,20 +1084,17 @@ export default function BookPage() {
         return (
           <>
             <DialogHeader>
-              <DialogTitle>Comment placer votre service ?</DialogTitle>
+              <DialogTitle>{t('alignmentModal.title')}</DialogTitle>
               <DialogDescription>
-                Pour ce créneau chez le client, choisissez si votre service doit
-                commencer au début ou se terminer à la fin de la fenêtre
-                disponible.
+                {t('alignmentModal.description')}
               </DialogDescription>
             </DialogHeader>
             {selectedSlot && (
               <div className="flex flex-col items-start gap-1 text-xs text-muted-foreground">
                 <p>
-                  Date :{' '}
-                  <span className="font-medium">
-                    {formatDayAndDate(selectedSlot.date)}
-                  </span>
+                  {t('alignmentModal.dateLabel', {
+                    value: formatDayAndDate(selectedSlot.date, locale),
+                  })}
                 </p>
               </div>
             )}
@@ -1123,14 +1109,13 @@ export default function BookPage() {
                 onClick={() => setAlignmentChoice('start')}
               >
                 <div className="font-medium text-sm">
-                  Aligner sur le début du créneau
+                  {t('alignmentModal.alignStartTitle')}
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Service de{' '}
-                  <span className="font-semibold">
-                    {startAligned.serviceStartTime} à{' '}
-                    {startAligned.serviceEndTime}
-                  </span>
+                  {t('alignmentModal.alignStartBody', {
+                    start: startAligned.serviceStartTime,
+                    end: startAligned.serviceEndTime,
+                  })}
                 </p>
               </button>
 
@@ -1144,13 +1129,13 @@ export default function BookPage() {
                 onClick={() => setAlignmentChoice('end')}
               >
                 <div className="font-medium text-sm">
-                  Aligner sur la fin du créneau
+                  {t('alignmentModal.alignEndTitle')}
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Service de{' '}
-                  <span className="font-semibold">
-                    {endAligned.serviceStartTime} à {endAligned.serviceEndTime}
-                  </span>
+                  {t('alignmentModal.alignEndBody', {
+                    start: endAligned.serviceStartTime,
+                    end: endAligned.serviceEndTime,
+                  })}
                 </p>
               </button>
             </div>
@@ -1161,10 +1146,10 @@ export default function BookPage() {
                 size="sm"
                 onClick={() => setAlignmentDialogOpen(false)}
               >
-                Annuler
+                {t('buttons.cancel')}
               </Button>
               <Button size="sm" onClick={handleConfirmAlignmentChoice}>
-                Réserver
+                {t('buttons.confirm')}
               </Button>
             </DialogFooter>
           </>
@@ -1173,10 +1158,9 @@ export default function BookPage() {
     ) : (
       <>
         <DialogHeader>
-          <DialogTitle>Impossible de définir l’alignement</DialogTitle>
+          <DialogTitle>{t('alignmentModal.fallbackTitle')}</DialogTitle>
           <DialogDescription>
-            Ce service n’a pas de durée définie ou aucun créneau n’est
-            sélectionné.
+            {t('alignmentModal.fallbackDescription')}
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="mt-4">
@@ -1185,7 +1169,7 @@ export default function BookPage() {
             size="sm"
             onClick={() => setAlignmentDialogOpen(false)}
           >
-            Fermer
+            {t('buttons.close')}
           </Button>
         </DialogFooter>
       </>

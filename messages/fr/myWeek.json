@@ -1,0 +1,62 @@
+{
+  "header": {
+    "title": "Programme de la semaine",
+    "range": "• {range}"
+  },
+  "roles": {
+    "instructor": "Moniteur",
+    "student": "Élève",
+    "admin": "Admin"
+  },
+  "buttons": {
+    "prevWeek": "← Semaine précédente",
+    "nextWeek": "Semaine suivante →"
+  },
+  "upcoming": {
+    "title": "Prochains cours réservés (sur 5 semaines max)",
+    "empty": "Aucun cours réservé dans les 5 prochaines semaines.",
+    "cta": "Réserver un créneau",
+    "withCounterpart": "avec {name}"
+  },
+  "errors": {
+    "genericLoad": "Erreur de chargement",
+    "load": "Erreur de chargement",
+    "noAgenda": "Impossible de charger l’agenda.",
+    "unexpectedApiResponse": "Réponse inattendue de l’API agenda."
+  },
+  "loading": "Chargement…",
+  "table": {
+    "hourColumn": "Heure"
+  },
+  "todayBadge": "Aujourd’hui",
+  "days": {
+    "0": "Lundi",
+    "1": "Mardi",
+    "2": "Mercredi",
+    "3": "Jeudi",
+    "4": "Vendredi",
+    "5": "Samedi",
+    "6": "Dimanche"
+  },
+  "travel": {
+    "label": "Trajet",
+    "from": "De :",
+    "to": "Vers :",
+    "tooltipTime": "Trajet {start}–{end}"
+  },
+  "counterpart": {
+    "instructor": "Moniteur",
+    "student": "Élève",
+    "generic": "Intervenant"
+  },
+  "legend": {
+    "unknownStudent": "Élève inconnu",
+    "unknownInstructor": "Moniteur inconnu",
+    "unknownPartner": "Intervenant inconnu"
+  },
+  "slot": {
+    "serviceLabel": "Service :",
+    "priceLabel": "Prix :",
+    "addressLabel": "Adresse :"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "label": {
+    "code": "Agency code",
+    "address": "Your starting address"
+  },
+  "placeholder": {
+    "code": "Agency code",
+    "address": "Start typing and choose a suggestion from Google"
+  },
+  "help": {
+    "code": "This code is provided by your organization.",
+    "address": "Select an address suggested by Google to ensure it can be used for routing and distance calculations."
+  },
+  "selectedAddress": {
+    "title": "Selected address:",
+    "street": "Street:",
+    "city": "City:"
+  },
+  "button": {
+    "submit": "Link and continue",
+    "loading": "Linking…"
+  },
+  "error": {
+    "codeRequired": "Please enter an agency code.",
+    "addressRequired": "Please choose an address from the Google suggestions before continuing.",
+    "geoFailed": "We couldn’t retrieve the geolocation for this address.",
+    "mapsScript": "We couldn’t load Google address autocomplete. Please check your API key.",
+    "unknown": "Unknown error"
+  }
+}

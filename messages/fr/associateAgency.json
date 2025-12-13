@@ -1,0 +1,30 @@
+{
+  "label": {
+    "code": "Code agence",
+    "address": "Votre adresse de départ"
+  },
+  "placeholder": {
+    "code": "Code agence",
+    "address": "Commencez à taper et choisissez une suggestion Google"
+  },
+  "help": {
+    "code": "Ce code vous est fourni par votre organisation.",
+    "address": "Sélectionnez une adresse proposée par Google pour garantir qu'elle soit géolocalisable (trajets, distances...)."
+  },
+  "selectedAddress": {
+    "title": "Adresse sélectionnée :",
+    "street": "Rue :",
+    "city": "Ville :"
+  },
+  "button": {
+    "submit": "Associer et continuer",
+    "loading": "Association…"
+  },
+  "error": {
+    "codeRequired": "Veuillez saisir un code agence.",
+    "addressRequired": "Veuillez choisir une adresse dans les suggestions Google avant de continuer.",
+    "geoFailed": "Impossible de récupérer la géolocalisation de cette adresse.",
+    "mapsScript": "Impossible de charger l'autocomplétion d'adresse Google. Vérifiez la clé API.",
+    "unknown": "Erreur inconnue"
+  }
+}

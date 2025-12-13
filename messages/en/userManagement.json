@@ -1,0 +1,49 @@
+{
+  "title": "User management",
+  "subtitle": "Contact one of your clients by email.",
+  "toolbar": {
+    "refresh": {
+      "idle": "Refresh",
+      "loading": "Loading…"
+    }
+  },
+  "table": {
+    "columns": {
+      "name": "Name",
+      "role": "Role",
+      "email": "Email"
+    }
+  },
+  "labels": {
+    "me": "Me",
+    "noEmail": "—"
+  },
+  "roles": {
+    "student": "Student",
+    "instructor": "Instructor",
+    "admin": "Admin"
+  },
+  "empty": {
+    "noUsers": "No users yet."
+  },
+  "errors": {
+    "load": "Failed to load users.",
+    "roleChange": "Unable to change the role (insufficient permissions or server error).",
+    "delete": "Unable to delete this user (insufficient permissions or server error).",
+    "addHour": "Unable to add 1h (insufficient permissions or server error).",
+    "invalidRemaining": "Invalid input for remaining hours.",
+    "invalidTotal": "Invalid input for total hours.",
+    "invalidNonNegative": "Values must be \u2265 0.",
+    "editHours": "Unable to update hours."
+  },
+  "actions": {
+    "remove": {
+      "confirm": "Delete user {name}?"
+    }
+  },
+  "editHours": {
+    "defaultStudentName": "student",
+    "remainingPrompt": "Remaining hours (in minutes: \"48\" or \"48 m\"; in hours: \"3.5 h\") for {name}:",
+    "totalPrompt": "Total hours (in minutes: \"48\" or \"48 m\"; in hours: \"3.5 h\") for {name}:"
+  }
+}

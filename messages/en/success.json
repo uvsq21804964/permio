@@ -1,0 +1,12 @@
+{
+  "logoAlt": "Logo",
+  "title": "Payment confirmed",
+  "sessionLabel": "Session:",
+  "message": "Your subscription is now active. You can access your space to set your availabilities and start planning.",
+  "primaryCta": "Go to the app",
+  "secondaryCta": "View my billing",
+  "help": {
+    "text": "Need help? Reach out via the",
+    "contactLink": "contact page"
+  }
+}

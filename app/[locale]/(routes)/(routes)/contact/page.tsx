@@ -1,11 +1,7 @@
-// app/(marketing)/contact/page.tsx
-import Link from 'next/link';
-import { Metadata } from 'next';
+'use client';
 
-export const metadata: Metadata = {
-  title: 'Contact',
-  description: 'Contactez-nous : démo, support, partenariat, optimisations.',
-};
+import Link from 'next/link';
+import { useTranslations, useLocale } from 'next-intl';
 
 const CONTACT = {
   email: 'tomabbouz@outlook.com',
@@ -13,49 +9,32 @@ const CONTACT = {
   phoneE164: '+33659573345',
 };
 
-const subject = encodeURIComponent('Demande d’information / Démo');
-const body = encodeURIComponent(
-  [
-    'Bonjour,',
-    '',
-    'J’aimerais vous contacter au sujet de l’optimisation d’agenda et de trajets.',
-    'Mon contexte :',
-    '- Nombre d’élèves/clients : ',
-    '- Zones / villes : ',
-    '- Outils actuels : ',
-    '',
-    'Merci !',
-  ].join('\n')
-);
-
-const whatsappText = encodeURIComponent(
-  [
-    'Bonjour 👋',
-    'Je souhaite des infos sur l’outil (planning + optimisation des trajets).',
-    'Contexte rapide : [élèves/clients, zones, outils] ',
-  ].join(' — ')
-);
-
 export default function ContactPage() {
+  const t = useTranslations('contact');
+  const locale = useLocale();
+
+  const subject = encodeURIComponent(t('mail.subject'));
+  const body = encodeURIComponent(t('mail.body'));
+  const whatsappText = encodeURIComponent(t('whatsapp.text'));
+
   return (
     <main className="min-h-screen bg-[#f9ffc6] px-4 py-16 md:py-24">
       <div className="mx-auto grid w-full max-w-6xl gap-6 md:grid-cols-5">
         {/* Colonne gauche : formulaire */}
-        <section className="md:col-span-3">
+        {/* <section className="md:col-span-3">
           <div className="rounded-2xl border border-black/10 bg-white/85 p-6 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur md:p-8">
             <header className="mb-6 text-center md:text-left">
               <h1
                 className="text-2xl md:text-3xl font-semibold text-black break-words"
                 style={{ hyphens: 'auto' }}
               >
-                Contact
+                {t('hero.title')}
               </h1>
               <p
                 className="mt-2 text-sm text-black/70 break-words"
                 style={{ hyphens: 'auto' }}
               >
-                Une question, une démo, un partenariat ? Écris-nous, réponse
-                sous 24 à 48h ouvrées.
+                {t('hero.subtitle')}
               </p>
             </header>
 
@@ -72,14 +51,14 @@ export default function ContactPage() {
                     htmlFor="name"
                     className="block text-sm font-medium text-black"
                   >
-                    Nom
+                    {t('form.name.label')}
                   </label>
                   <input
                     id="name"
                     name="name"
                     type="text"
                     required
-                    placeholder="Ex. Marie Dupont"
+                    placeholder={t('form.name.placeholder')}
                     className="mt-1 w-full rounded-xl border border-black/15 bg-white/95 px-3 py-2 text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-black/60"
                   />
                 </div>
@@ -89,14 +68,14 @@ export default function ContactPage() {
                     htmlFor="email"
                     className="block text-sm font-medium text-black"
                   >
-                    Email
+                    {t('form.email.label')}
                   </label>
                   <input
                     id="email"
                     name="email"
                     type="email"
                     required
-                    placeholder="vous@exemple.com"
+                    placeholder={t('form.email.placeholder')}
                     className="mt-1 w-full rounded-xl border border-black/15 bg-white/95 px-3 py-2 text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-black/60"
                   />
                 </div>
@@ -108,13 +87,13 @@ export default function ContactPage() {
                     htmlFor="phone"
                     className="block text-sm font-medium text-black"
                   >
-                    Téléphone (optionnel)
+                    {t('form.phone.label')}
                   </label>
                   <input
                     id="phone"
                     name="phone"
                     type="tel"
-                    placeholder="+33 6 12 34 56 78"
+                    placeholder={t('form.phone.placeholder')}
                     className="mt-1 w-full rounded-xl border border-black/15 bg-white/95 px-3 py-2 text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-black/60"
                   />
                 </div>
@@ -124,7 +103,7 @@ export default function ContactPage() {
                     htmlFor="subject"
                     className="block text-sm font-medium text-black"
                   >
-                    Sujet
+                    {t('form.subject.label')}
                   </label>
                   <select
                     id="subject"
@@ -132,15 +111,21 @@ export default function ContactPage() {
                     className="mt-1 w-full rounded-xl border border-black/15 bg-white/95 px-3 py-2 text-black focus:outline-none focus:ring-2 focus:ring-black/60"
                     defaultValue="demo"
                   >
-                    <option value="demo">Demande de démo</option>
+                    <option value="demo">
+                      {t('form.subject.options.demo')}
+                    </option>
                     <option value="support">
-                      Support / Problème technique
+                      {t('form.subject.options.support')}
                     </option>
-                    <option value="billing">Facturation / Abonnement</option>
+                    <option value="billing">
+                      {t('form.subject.options.billing')}
+                    </option>
                     <option value="partnership">
-                      Partenariat / Intégration
+                      {t('form.subject.options.partnership')}
                     </option>
-                    <option value="other">Autre</option>
+                    <option value="other">
+                      {t('form.subject.options.other')}
+                    </option>
                   </select>
                 </div>
               </div>
@@ -150,14 +135,14 @@ export default function ContactPage() {
                   htmlFor="message"
                   className="block text-sm font-medium text-black"
                 >
-                  Message
+                  {t('form.message.label')}
                 </label>
                 <textarea
                   id="message"
                   name="message"
                   required
                   rows={6}
-                  placeholder="Décrivez votre besoin, votre organisation, vos zones, etc."
+                  placeholder={t('form.message.placeholder')}
                   className="mt-1 w-full rounded-xl border border-black/15 bg-white/95 px-3 py-2 text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-black/60 break-words"
                   style={{ hyphens: 'auto' }}
                 />
@@ -172,12 +157,14 @@ export default function ContactPage() {
                   className="mt-1 h-4 w-4 rounded border-black/30 text-black focus:ring-black/60"
                 />
                 <label htmlFor="consent" className="text-sm text-black/70">
-                  J’accepte d’être contacté·e à propos de ma demande. Mes
-                  données seront traitées selon la{' '}
-                  <Link href="/legal" className="underline underline-offset-4">
-                    politique de confidentialité
+                  {t('form.consent.labelPrefix')}
+                  <Link
+                    href={`/${locale}/legal`}
+                    className="underline underline-offset-4"
+                  >
+                    {t('form.consent.privacyLink')}
                   </Link>
-                  .
+                  {t('form.consent.labelSuffix')}
                 </label>
               </div>
 
@@ -192,27 +179,25 @@ export default function ContactPage() {
                     'motion-safe:transition motion-safe:duration-200',
                   ].join(' ')}
                 >
-                  Envoyer la demande
+                  {t('form.submit')}
                 </button>
               </div>
 
-              <p className="text-xs text-black/60">
-                Nous répondons généralement sous 24 à 48h.
-              </p>
+              <p className="text-xs text-black/60">{t('form.responseTime')}</p>
             </form>
           </div>
-        </section>
+        </section> */}
 
         {/* Colonne droite : moyens de contact + idées */}
         <aside className="md:col-span-2">
           <div className="rounded-2xl border border-black/10 bg-white/85 p-6 shadow-[0_8px_30px_rgba(0,0,0,0.08)] backdrop-blur md:p-8">
             <h2 className="text-lg font-semibold text-black">
-              Autres moyens de contact
+              {t('sidebar.otherMeans.title')}
             </h2>
 
             <ul className="mt-4 space-y-3 text-sm">
               <li className="break-words" style={{ hyphens: 'auto' }}>
-                📧 Email :{' '}
+                📧 {t('sidebar.otherMeans.emailLabel')}:{' '}
                 <Link
                   href={`mailto:${CONTACT.email}?subject=${subject}&body=${body}`}
                   className="underline"
@@ -221,13 +206,13 @@ export default function ContactPage() {
                 </Link>
               </li>
               <li>
-                📞 Téléphone :{' '}
+                📞 {t('sidebar.otherMeans.phoneLabel')}:{' '}
                 <Link href={`tel:${CONTACT.phoneE164}`} className="underline">
                   {CONTACT.phoneDisplay}
                 </Link>
               </li>
               <li className="break-words">
-                💬 WhatsApp :{' '}
+                💬 {t('sidebar.otherMeans.whatsappLabel')}:{' '}
                 <Link
                   href={`https://wa.me/${CONTACT.phoneE164.replace(
                     '+',
@@ -236,44 +221,25 @@ export default function ContactPage() {
                   target="_blank"
                   className="underline"
                 >
-                  Ouvrir la conversation
+                  {t('sidebar.otherMeans.whatsappCta')}
                 </Link>
               </li>
             </ul>
 
             <div className="mt-6 border-t border-black/10 pt-6">
               <h3 className="text-sm font-semibold text-black">
-                Idées de sujets pour nous solliciter
+                {t('sidebar.ideas.title')}
               </h3>
               <ul className="mt-3 list-disc space-y-2 pl-5 text-sm text-black/80">
-                <li>Réserver une démo guidée (30 min) sur votre cas réel.</li>
-                <li>
-                  Configurer vos disponibilités et votre page de réservation.
-                </li>
-                <li>Réduire les trajets en regroupant par zones/jours.</li>
-                <li>
-                  Régler les no-shows (rappels, politique d’annulation, arrhes
-                  Stripe).
-                </li>
-                <li>
-                  Intégrer Google/Outlook Calendar et synchroniser vos
-                  événements.
-                </li>
-                <li>
-                  Importer vos élèves/clients (CSV/Google Contacts) et nettoyer
-                  les adresses.
-                </li>
-                <li>
-                  Optimiser les créneaux “trou” pour remplir la journée sans
-                  sur-trajets.
-                </li>
-                <li>
-                  Questions facturation/abonnement (upgrade, factures, TVA,
-                  coupons).
-                </li>
-                <li>
-                  Partenariat (écoles, réseaux de professeurs, intégrateurs).
-                </li>
+                <li>{t('sidebar.ideas.bullets.demo')}</li>
+                <li>{t('sidebar.ideas.bullets.setup')}</li>
+                <li>{t('sidebar.ideas.bullets.zones')}</li>
+                <li>{t('sidebar.ideas.bullets.noShows')}</li>
+                <li>{t('sidebar.ideas.bullets.calendar')}</li>
+                <li>{t('sidebar.ideas.bullets.import')}</li>
+                <li>{t('sidebar.ideas.bullets.holes')}</li>
+                <li>{t('sidebar.ideas.bullets.billing')}</li>
+                <li>{t('sidebar.ideas.bullets.partnership')}</li>
               </ul>
             </div>
           </div>

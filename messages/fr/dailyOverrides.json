@@ -1,0 +1,22 @@
+{
+  "card_title": "Disponibilités / indisponibilités ponctuelles",
+  "notice_added_available": "Disponibilité ajoutée pour ce jour.",
+  "notice_added_unavailable": "Indisponibilité ajoutée pour ce jour.",
+  "notice_deleted": "Créneau supprimé.",
+  "error_fetch_day": "Impossible de récupérer vos créneaux pour ce jour.",
+  "error_create": "Erreur lors de la création de la disponibilité/indisponibilité.",
+  "error_delete": "Erreur lors de la suppression du créneau.",
+
+  "form_date_label": "Jour concerné",
+  "form_type_label": "Type",
+  "form_type_available": "Disponible",
+  "form_type_unavailable": "Indisponible",
+  "form_start_label": "Début",
+  "form_end_label": "Fin",
+  "form_submit_saving": "Enregistrement…",
+  "form_submit": "Ajouter ce créneau",
+
+  "upcoming_title": "Tous les créneaux ponctuels à venir",
+  "upcoming_loading": "Chargement des créneaux à venir…",
+  "upcoming_empty": "Aucun créneau ponctuel à venir."
+}

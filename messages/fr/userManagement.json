@@ -1,0 +1,49 @@
+{
+  "title": "Gestion des utilisateurs",
+  "subtitle": "Contacter l'un de vos clients par mail.",
+  "toolbar": {
+    "refresh": {
+      "idle": "Rafraîchir",
+      "loading": "Chargement…"
+    }
+  },
+  "table": {
+    "columns": {
+      "name": "Nom",
+      "role": "Rôle",
+      "email": "Email"
+    }
+  },
+  "labels": {
+    "me": "Moi",
+    "noEmail": "—"
+  },
+  "roles": {
+    "student": "Élève",
+    "instructor": "Moniteur",
+    "admin": "Admin"
+  },
+  "empty": {
+    "noUsers": "Aucun utilisateur."
+  },
+  "errors": {
+    "load": "Erreur de chargement",
+    "roleChange": "Impossible de changer le rôle (droits insuffisants ou erreur serveur).",
+    "delete": "Suppression impossible (droits insuffisants ou erreur serveur).",
+    "addHour": "Impossible d’ajouter 1h (droits insuffisants ou erreur serveur).",
+    "invalidRemaining": "Saisie invalide pour heures restantes.",
+    "invalidTotal": "Saisie invalide pour heures totales.",
+    "invalidNonNegative": "Les valeurs doivent être \u2265 0.",
+    "editHours": "Impossible de mettre à jour les heures."
+  },
+  "actions": {
+    "remove": {
+      "confirm": "Supprimer l'utilisateur {name} ?"
+    }
+  },
+  "editHours": {
+    "defaultStudentName": "élève",
+    "remainingPrompt": "Heures restantes (en minutes : \"48\" ou \"48 m\" ; en heures \"3.5 h\") pour {name} :",
+    "totalPrompt": "Heures totales (en minutes : \"48\" ou \"48 m\" ; en heures \"3.5 h\") pour {name} :"
+  }
+}

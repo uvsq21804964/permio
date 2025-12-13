@@ -1,0 +1,60 @@
+{
+  "header": {
+    "title": "Billing",
+    "subtitle": "Manage your subscription, invoices and payment methods."
+  },
+  "noCustomer": {
+    "description": "You don’t have an active plan yet. Choose a plan to get started.",
+    "choosePlanAria": "Choose a plan",
+    "chooseStarter": "Choose Starter",
+    "choosePro": "Choose Pro"
+  },
+  "subscription": {
+    "sectionLabel": "Subscription",
+    "subscriptionLabel": "Subscription start",
+    "renewalLabel": "Renewal",
+    "trialEndLabel": "Trial ends",
+    "closurePlanned": "Cancellation scheduled. The subscription will not renew.",
+    "closed": "Subscription has been canceled.",
+    "interval": {
+      "year": "year",
+      "month": "month"
+    }
+  },
+  "status": {
+    "closed": "Canceled",
+    "closurePlanned": "Cancellation scheduled",
+    "active": "Active",
+    "trialing": "Trial period",
+    "paymentPending": "Payment pending"
+  },
+  "actions": {
+    "manageSubscription": "Manage subscription",
+    "cancelClosure": "Undo cancellation",
+    "scheduleClosure": "Cancel at period end",
+    "upgradeStarter": "Switch to Starter",
+    "upgradePro": "Switch to Pro",
+    "upgradeMagic": "Switch to Full Magic",
+    "comparePlans": "Compare plans"
+  },
+  "invoices": {
+    "title": "Invoices",
+    "subtitle": "Last 10 invoices",
+    "empty": "No invoices yet.",
+    "columns": {
+      "date": "Date",
+      "reference": "Reference",
+      "status": "Status",
+      "amount": "Amount",
+      "action": "Action"
+    },
+    "actions": {
+      "downloadPdf": "Download PDF",
+      "viewOnline": "View online"
+    }
+  },
+  "help": {
+    "text": "Need help? Visit",
+    "contactLink": "/contact"
+  }
+}

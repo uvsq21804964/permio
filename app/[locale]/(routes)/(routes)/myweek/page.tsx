@@ -13,7 +13,7 @@ export default async function MyWeekPage() {
       <div className="min-h-screen bg-background p-6">
         <div className="mx-auto max-w-7xl">
           <p className="text-sm text-red-600">
-            Vous devez être connecté pour voir votre agenda.
+            You must be logged in to access this page.
           </p>
         </div>
       </div>

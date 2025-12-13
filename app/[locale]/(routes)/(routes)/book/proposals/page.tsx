@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
 
 type ServiceCategory = {
   id: number;
@@ -50,26 +51,18 @@ type WeeklyAgendaResponse = {
   weekStart: string;
   weekEnd: string;
   clientSlotsByDate: Record<string, ClientSlot[]>;
-  // renvoyé par l'API /api/me/instructor-weekly-agenda-proposals
   bookedSlots?: BookedSlotLite[];
 };
 
 type SuggestedSlot = {
   id: string;
   date: string; // YYYY-MM-DD
-
-  // Fenêtre possible chez le client
   windowStartTime: string;
   windowEndTime: string;
-
-  // Horaire précis du service (durée = durée du service)
   serviceStartTime: string;
   serviceEndTime: string;
-
   alignment: ServiceAlignment;
   score?: number;
-
-  // Métadonnées utilisées pour le scoring et l'explication
   travelBeforeMinutes?: number;
   travelAfterMinutes?: number;
   fromLabel?: string;
@@ -90,17 +83,26 @@ type BookingAddress = {
   googlePlaceId?: string;
 };
 
-function formatPrice(price: number | string): string {
+// Prix localisé (EUR, locale = fr/en)
+function formatPrice(price: number | string, locale: string): string {
   const num = Number(price);
   if (Number.isNaN(num)) return `${price} €`;
-  return `${num.toFixed(2)} €`;
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: 'EUR',
+    }).format(num);
+  } catch {
+    return `${num.toFixed(2)} €`;
+  }
 }
 
-function formatDateFR(dateIso: string): string {
+// Date courte (lun. 05 janv.) adaptée à la locale
+function formatDate(dateIso: string, locale: string): string {
   try {
     const [y, m, d] = dateIso.split('-').map(Number);
     const date = new Date(y, (m || 1) - 1, d || 1);
-    return date.toLocaleDateString('fr-FR', {
+    return date.toLocaleDateString(locale, {
       weekday: 'short',
       day: '2-digit',
       month: 'short',
@@ -131,10 +133,6 @@ function addMinutesToTime(time: string, minutes: number): string {
   return `${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
 }
 
-/**
- * Calcule les horaires du service pour une fenêtre donnée
- * en fonction de l’alignement choisi (début / fin).
- */
 function computeServiceTimes(
   windowStartTime: string,
   windowEndTime: string,
@@ -177,14 +175,11 @@ function getEarliestAllowedDateTime(now: Date = new Date()): Date {
   const earliest = new Date(ref);
 
   if (hour < 10) {
-    // Avant 10h → aujourd’hui mais à partir de 12h
     earliest.setHours(12, 0, 0, 0);
   } else if (hour < 16) {
-    // Entre 10h et 16h → demain à partir de 10h
     earliest.setDate(earliest.getDate() + 1);
     earliest.setHours(10, 0, 0, 0);
   } else {
-    // Après 16h → demain à partir de 12h
     earliest.setDate(earliest.getDate() + 1);
     earliest.setHours(12, 0, 0, 0);
   }
@@ -192,24 +187,14 @@ function getEarliestAllowedDateTime(now: Date = new Date()): Date {
   return earliest;
 }
 
-/**
- * Scoring d'un créneau :
- * - privilégie les jours déjà travaillés (évite d’ouvrir un jour off)
- * - minimise les trajets
- * - comble les trous entre deux interventions
- * - garde une petite préférence pour ce qui est proche dans le temps
- */
 function scoreSlot(slot: SuggestedSlot, earliestAllowed: Date): number {
   const before = slot.travelBeforeMinutes ?? 0;
   const after = slot.travelAfterMinutes ?? 0;
   const totalTravel = before + after;
-
   const hasBookingsToday = !!slot.hasBookingsToday;
 
-  // 1) Score "jour déjà travaillé"
   const dayGroupScore = hasBookingsToday ? 1 : 0;
 
-  // 2) Proximité temporelle par rapport à earliestAllowed
   let timeScore = 0.5;
   try {
     const [y, m, d] = slot.date.split('-').map(Number);
@@ -227,19 +212,17 @@ function scoreSlot(slot: SuggestedSlot, earliestAllowed: Date): number {
     );
     const deltaMs = slotDateTime.getTime() - earliestAllowed.getTime();
     const deltaMinutes = Math.max(0, Math.round(deltaMs / 60000));
-    const MAX_DELTA_MIN = 42 * 24 * 60; // 42 jours
+    const MAX_DELTA_MIN = 42 * 24 * 60;
     const cappedDelta = Math.min(deltaMinutes, MAX_DELTA_MIN);
     timeScore = 1 - cappedDelta / MAX_DELTA_MIN;
   } catch {
-    // on laisse 0.5
+    // 0.5 par défaut
   }
 
-  // 3) Score déplacement
-  const MAX_TRAVEL = 60; // au-delà de 60 min = très mauvais
+  const MAX_TRAVEL = 60;
   const cappedTravel = Math.min(totalTravel, MAX_TRAVEL);
   const travelScore = 1 - cappedTravel / MAX_TRAVEL;
 
-  // 4) Bonus "créneau qui comble un trou"
   let holeScore = 0;
   if (before > 0 && after > 0 && hasBookingsToday) {
     const worstSide = Math.max(before, after);
@@ -254,8 +237,7 @@ function scoreSlot(slot: SuggestedSlot, earliestAllowed: Date): number {
     }
   }
 
-  // pondérations
-  const W_DAY_GROUP = 0.5; // très important de rester sur un jour déjà travaillé
+  const W_DAY_GROUP = 0.5;
   const W_HOLE = 0.25;
   const W_TRAVEL = 0.15;
   const W_TIME = 0.1;
@@ -270,12 +252,11 @@ function scoreSlot(slot: SuggestedSlot, earliestAllowed: Date): number {
   return finalScore;
 }
 
-/**
- * Texte d'explication lisible pour l'utilisateur,
- * basé sur les mêmes critères que le score.
- * ⚠️ On ne montre pas les durées chiffrées, juste la logique.
- */
-function buildSuggestionExplanation(slot: SuggestedSlot): string {
+// Explication qualitative localisée
+function buildSuggestionExplanation(
+  slot: SuggestedSlot,
+  t: (key: string) => string
+): string {
   const before = slot.travelBeforeMinutes ?? 0;
   const after = slot.travelAfterMinutes ?? 0;
   const totalTravel = before + after;
@@ -283,40 +264,32 @@ function buildSuggestionExplanation(slot: SuggestedSlot): string {
 
   const reasons: string[] = [];
 
-  // 1) Journée déjà travaillée vs ouverture d'une nouvelle journée
   if (hasBookingsToday) {
-    reasons.push('se cale sur une journée où votre dogsitter a déjà des cours');
+    reasons.push(t('reason.sameDay'));
   } else {
-    reasons.push(
-      'reste compatible avec les autres jours de repos de votre dogsitter'
-    );
+    reasons.push(t('reason.dayOff'));
   }
 
-  // 2) Qualité des déplacements
   if (totalTravel > 0) {
     if (totalTravel <= 20) {
-      reasons.push('limite fortement les déplacements de votre dogsitter');
+      reasons.push(t('reason.travelVeryLow'));
     } else if (totalTravel <= 40) {
-      reasons.push('réduit les temps de trajet par rapport à d’autres options');
+      reasons.push(t('reason.travelReduced'));
     } else {
-      reasons.push(
-        'respecte tout de même les contraintes de déplacement de votre dogsitter'
-      );
+      reasons.push(t('reason.travelStillOk'));
     }
   }
 
-  // 3) Position par rapport aux autres interventions
   if (hasBookingsToday) {
     if (before > 0 && after > 0) {
-      reasons.push('remplit un trou entre deux cours déjà prévus');
+      reasons.push(t('reason.fillsGap'));
     } else if (before > 0 && after === 0) {
-      reasons.push('s’enchaîne juste après un cours déjà prévu');
+      reasons.push(t('reason.afterLesson'));
     } else if (after > 0 && before === 0) {
-      reasons.push('prépare le cours suivant dans la journée');
+      reasons.push(t('reason.beforeNextLesson'));
     }
   }
 
-  // 4) Proximité temporelle (par rapport à aujourd’hui)
   try {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -328,33 +301,30 @@ function buildSuggestionExplanation(slot: SuggestedSlot): string {
     );
 
     if (diffDays <= 1) {
-      reasons.push('est proposé très rapidement');
+      reasons.push(t('reason.verySoon'));
     } else if (diffDays <= 7) {
-      reasons.push('est situé dans les prochains jours');
+      reasons.push(t('reason.nextDays'));
     } else {
-      reasons.push('reste dans une période relativement proche');
+      reasons.push(t('reason.soon'));
     }
   } catch {
     // ignore
   }
 
   if (!reasons.length) {
-    return 'Ce créneau est suggéré car il s’intègre bien dans le planning de votre dogsitter.';
+    return t('explanation.base');
   }
 
   if (reasons.length === 1) {
-    return `Ce créneau est suggéré car il ${reasons[0]}.`;
+    return `${t('explanation.prefix')} ${reasons[0]}.`;
   }
 
   const last = reasons.pop();
-  return `Ce créneau est suggéré car il ${reasons.join(', ')} et ${last}.`;
+  const prefix = t('explanation.prefix');
+  const andWord = t('explanation.and');
+  return `${prefix} ${reasons.join(', ')} ${andWord} ${last}.`;
 }
 
-/**
- * Fabrique des suggestions à partir de l'agenda réel (clientSlotsByDate)
- * en tenant compte de la durée du service et en privilégiant
- * les jours où le dogsitter travaille déjà.
- */
 function computeSuggestionsFromAgenda(
   agenda: WeeklyAgendaResponse,
   durationMinutes: number | null,
@@ -364,10 +334,8 @@ function computeSuggestionsFromAgenda(
   const results: SuggestedSlot[] = [];
 
   const dates = Object.keys(agenda.clientSlotsByDate || {}).sort();
-
   const now = new Date();
   const earliestAllowed = getEarliestAllowedDateTime(now);
-
   const bookedSlots = agenda.bookedSlots ?? [];
 
   for (const date of dates) {
@@ -375,7 +343,6 @@ function computeSuggestionsFromAgenda(
     if (!slots.length) continue;
 
     const hasBookingsToday = bookedSlots.some((b) => b.date === date);
-
     const [y, m, d] = date.split('-').map(Number);
 
     for (const slot of slots) {
@@ -392,7 +359,6 @@ function computeSuggestionsFromAgenda(
         0
       );
 
-      // ⛔ on ignore les créneaux dans le passé ou trop tôt vs règles métier
       if (slotDateTime < earliestAllowed) continue;
 
       const slotDur =
@@ -429,7 +395,6 @@ function computeSuggestionsFromAgenda(
 
   if (!results.length) return [];
 
-  // 1) séparer les créneaux sur jours déjà travaillés vs jours off
   const withBookings = results.filter((s) => s.hasBookingsToday);
   const withoutBookings = results.filter((s) => !s.hasBookingsToday);
 
@@ -456,6 +421,8 @@ function computeSuggestionsFromAgenda(
 export default function ProposalsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const t = useTranslations('bookProposals');
+  const locale = useLocale();
 
   const serviceIdParam = searchParams.get('serviceId');
   const addrParam = searchParams.get('addr');
@@ -468,16 +435,16 @@ export default function ProposalsPage() {
     null
   );
 
-  const [loading, setLoading] = useState(true); // chargement des services
+  const [loading, setLoading] = useState(true);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<SuggestedSlot[]>([]);
 
   const [bookingLoading, setBookingLoading] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
-  const [bookingNotice, setBookingNotice] = useState<string | null>(null);
+  const [bookingNotice, setBookingNotice] = useState(false);
 
-  // Décoder l'adresse passée depuis /book/address
+  // Décoder l'adresse
   useEffect(() => {
     if (!addrParam) {
       setBookingAddress(null);
@@ -493,7 +460,7 @@ export default function ProposalsPage() {
     }
   }, [addrParam]);
 
-  // Charger les services du moniteur (comme sur /book/services)
+  // Charger les services
   useEffect(() => {
     const load = async () => {
       try {
@@ -504,10 +471,7 @@ export default function ProposalsPage() {
         });
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
-          throw new Error(
-            data.error ||
-              'Impossible de récupérer les services de votre moniteur.'
-          );
+          throw new Error(data.error || t('errors.loadServicesApi'));
         }
         const data: ApiResponse = await res.json();
         setServices(data.services || []);
@@ -515,17 +479,14 @@ export default function ProposalsPage() {
         setInstructorId(data.instructorId || null);
       } catch (e: any) {
         console.error(e);
-        setError(
-          e?.message ||
-            'Erreur lors du chargement des services de votre moniteur.'
-        );
+        setError(e?.message || t('errors.loadServicesGeneric'));
       } finally {
         setLoading(false);
       }
     };
 
     load();
-  }, []);
+  }, [t]);
 
   const selectedService = useMemo(() => {
     if (!serviceIdParam) return null;
@@ -533,7 +494,7 @@ export default function ProposalsPage() {
     return services.find((s) => s.id === idNum) || null;
   }, [services, serviceIdParam]);
 
-  // Charger les suggestions à partir de l'agenda (42 jours) + adresse
+  // Suggestions depuis l'agenda
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (!selectedService || !instructorId || !bookingAddress) return;
@@ -547,7 +508,6 @@ export default function ProposalsPage() {
           window.location.origin
         );
 
-        // on laisse l’API choisir la plage : 21 jours à partir d’aujourd’hui
         url.searchParams.set('clientLat', String(bookingAddress.lat));
         url.searchParams.set('clientLng', String(bookingAddress.lng));
         url.searchParams.set(
@@ -558,10 +518,7 @@ export default function ProposalsPage() {
         const res = await fetch(url.toString(), { credentials: 'include' });
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
-          throw new Error(
-            body.error ||
-              'Impossible de récupérer les disponibilités du moniteur.'
-          );
+          throw new Error(body.error || t('errors.loadAgendaApi'));
         }
 
         const agenda = (await res.json()) as WeeklyAgendaResponse;
@@ -574,9 +531,7 @@ export default function ProposalsPage() {
         setSuggestions(slots);
       } catch (e: any) {
         console.error(e);
-        setError(
-          e?.message || 'Erreur lors de la génération des créneaux proposés.'
-        );
+        setError(e?.message || t('errors.generateSlots'));
         setSuggestions([]);
       } finally {
         setLoadingSuggestions(false);
@@ -584,13 +539,13 @@ export default function ProposalsPage() {
     };
 
     fetchSuggestions();
-  }, [selectedService, instructorId, bookingAddress]);
+  }, [selectedService, instructorId, bookingAddress, t]);
 
   const handleBookSlot = async (slot: SuggestedSlot) => {
     if (!selectedService) return;
 
     setBookingError(null);
-    setBookingNotice(null);
+    setBookingNotice(false);
 
     try {
       setBookingLoading(true);
@@ -604,37 +559,27 @@ export default function ProposalsPage() {
           date: slot.date,
           startTime: slot.serviceStartTime,
           endTime: slot.serviceEndTime,
-          // plus tard : bookingAddressOverride si tu l'ajoutes côté API
         }),
       });
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         if (res.status === 409 && body?.error === 'SLOT_ALREADY_EXISTS') {
-          throw new Error(
-            'Ce créneau a déjà été réservé entre-temps. Veuillez en choisir un autre.'
-          );
+          throw new Error(t('errors.slotAlreadyBooked'));
         }
-        throw new Error(
-          body?.error ||
-            'Impossible de créer la réservation. Veuillez réessayer.'
-        );
+        throw new Error(body?.error || t('errors.createBooking'));
       }
 
       const json = await res.json().catch(() => ({}));
       console.log('[PROPOSALS BOOKING] Slot créé', json);
-      setBookingNotice('Créneau réservé avec succès ✅');
+      setBookingNotice(true);
 
-      // Optionnel : nettoyage local
       setSuggestions((prev) => prev.filter((s) => s.id !== slot.id));
 
-      // 🔥 Redirection vers la semaine du dogsitter
       router.push('/myweek');
     } catch (e: any) {
       console.error('[PROPOSALS BOOKING] error', e);
-      setBookingError(
-        e?.message || 'Erreur lors de la création du créneau. Réessayez.'
-      );
+      setBookingError(e?.message || t('errors.createBooking'));
     } finally {
       setBookingLoading(false);
     }
@@ -658,13 +603,13 @@ export default function ProposalsPage() {
     return (
       <main className="min-h-screen bg-background flex items-center justify-center p-6">
         <div className="w-full max-w-md rounded-2xl border bg-card p-6 text-sm text-muted-foreground space-y-3">
-          <p>Aucun service sélectionné.</p>
+          <p>{t('noServiceSelected.title')}</p>
           <button
             type="button"
             onClick={() => router.push('/book/services')}
             className="text-primary text-xs underline"
           >
-            Retour à la sélection de services
+            {t('noServiceSelected.button')}
           </button>
         </div>
       </main>
@@ -675,10 +620,7 @@ export default function ProposalsPage() {
     return (
       <main className="min-h-screen bg-background flex items-center justify-center p-6">
         <div className="w-full max-w-md rounded-2xl border bg-card p-6 space-y-3 text-sm">
-          <p className="text-red-600">
-            Impossible de retrouver votre adresse pour calculer les créneaux
-            proposés.
-          </p>
+          <p className="text-red-600">{t('errors.noBookingAddress')}</p>
           <button
             type="button"
             onClick={() =>
@@ -686,7 +628,7 @@ export default function ProposalsPage() {
             }
             className="text-primary text-xs underline"
           >
-            Revenir à l&apos;étape adresse
+            {t('noAddress.button')}
           </button>
         </div>
       </main>
@@ -714,15 +656,14 @@ export default function ProposalsPage() {
       <main className="min-h-screen bg-background flex items-center justify-center p-6">
         <div className="w-full max-w-md rounded-2xl border bg-card p-6 space-y-3 text-sm">
           <p className="text-red-600">
-            {error ||
-              'Impossible de retrouver le service sélectionné. Veuillez réessayer.'}
+            {error || t('errors.genericSelectedService')}
           </p>
           <button
             type="button"
             onClick={() => router.push('/book/services')}
             className="text-primary text-xs underline"
           >
-            Retour à la sélection de services
+            {t('noServiceSelected.button')}
           </button>
         </div>
       </main>
@@ -736,12 +677,10 @@ export default function ProposalsPage() {
         <header className="flex flex-wrap items-center justify-between gap-3">
           <div className="space-y-1">
             <h1 className="text-lg md:text-xl font-semibold">
-              Choisir un créneau recommandé
+              {t('header.title')}
             </h1>
             <p className="text-xs md:text-sm text-muted-foreground">
-              Ces créneaux tiennent compte de votre adresse et de l’agenda de
-              votre dogsitter, avec un placement optimisé pour limiter les
-              déplacements et éviter de casser ses jours de repos.
+              {t('header.subtitle')}
             </p>
           </div>
 
@@ -750,7 +689,7 @@ export default function ProposalsPage() {
             onClick={handleSeeAllSlots}
             className="text-xs md:text-sm inline-flex items-center rounded-full border border-primary/40 px-3 py-1 text-primary hover:bg-primary/5 transition"
           >
-            Voir toutes les disponibilités
+            {t('header.seeAll')}
           </button>
         </header>
 
@@ -758,16 +697,16 @@ export default function ProposalsPage() {
         {(bookingNotice || bookingError) && (
           <section className="text-xs md:text-sm space-y-1">
             {bookingNotice && (
-              <p className="text-emerald-600">{bookingNotice}</p>
+              <p className="text-emerald-600">{t('booking.noticeSuccess')}</p>
             )}
             {bookingError && <p className="text-red-600">{bookingError}</p>}
           </section>
         )}
 
-        {/* Rappel du service choisi */}
+        {/* Service sélectionné */}
         <section className="rounded-2xl border bg-card p-4 md:p-5 space-y-1 text-sm">
           <p className="text-xs uppercase tracking-wide text-muted-foreground">
-            Service sélectionné
+            {t('serviceSection.label')}
           </p>
           <div className="flex flex-wrap items-center justify-between gap-2">
             <div className="flex-1 min-w-0">
@@ -780,7 +719,7 @@ export default function ProposalsPage() {
             </div>
             <div className="flex flex-col items-end text-xs">
               <span className="font-semibold">
-                {formatPrice(selectedService.price)}
+                {formatPrice(selectedService.price, locale)}
               </span>
               {selectedService.duration_minutes != null && (
                 <span className="text-muted-foreground">
@@ -791,10 +730,10 @@ export default function ProposalsPage() {
           </div>
         </section>
 
-        {/* Rappel adresse */}
+        {/* Adresse */}
         <section className="rounded-2xl border bg-card p-4 md:p-5 space-y-1 text-xs md:text-sm">
           <p className="text-xs uppercase tracking-wide text-muted-foreground">
-            Adresse utilisée pour le calcul
+            {t('addressSection.label')}
           </p>
           <p className="font-medium">{bookingAddress.formattedAddress}</p>
           <p className="text-muted-foreground">
@@ -803,23 +742,22 @@ export default function ProposalsPage() {
           </p>
         </section>
 
-        {/* Suggestions de créneaux */}
+        {/* Suggestions */}
         <section className="space-y-3">
           <div className="flex items-center justify-between gap-2">
             <h2 className="text-sm md:text-base font-semibold">
-              Créneaux recommandés
+              {t('suggestions.title')}
             </h2>
             {loadingSuggestions && (
               <span className="text-xs text-muted-foreground">
-                Calcul des meilleurs créneaux…
+                {t('suggestions.loading')}
               </span>
             )}
           </div>
 
           {suggestions.length === 0 && !loadingSuggestions && (
             <div className="rounded-xl border bg-card p-4 text-xs text-muted-foreground">
-              Aucun créneau recommandé pour le moment. Vous pouvez consulter
-              l’ensemble des disponibilités dans l’agenda.
+              {t('suggestions.empty')}
             </div>
           )}
 
@@ -835,28 +773,27 @@ export default function ProposalsPage() {
                 >
                   <div className="space-y-1">
                     <p className="text-xs uppercase tracking-wide text-muted-foreground">
-                      {formatDateFR(slot.date)}
+                      {formatDate(slot.date, locale)}
                     </p>
-                    {/* Horaire du cours */}
                     <p className="text-sm font-semibold">
                       {slot.serviceStartTime} – {slot.serviceEndTime}
                     </p>
-
-                    {/* Explication qualitative (pas de détails chiffrés) */}
                     <p className="text-[11px] text-muted-foreground">
-                      {buildSuggestionExplanation(slot)}
+                      {buildSuggestionExplanation(slot, t)}
                     </p>
                   </div>
 
                   <div className="mt-3 flex items-center justify-between gap-2 text-[11px]">
                     <span className="inline-flex items-center rounded-full bg-primary/5 border border-primary/20 px-2 py-0.5 text-primary font-medium">
                       {bookingLoading
-                        ? 'Réservation en cours…'
-                        : 'Choisir et réserver ce créneau'}
+                        ? t('booking.loading')
+                        : t('booking.button')}
                     </span>
                     {slot.score != null && (
                       <span className="text-muted-foreground">
-                        Score : {(slot.score * 100).toFixed(0)}%
+                        {t('score.label', {
+                          score: (slot.score * 100).toFixed(0),
+                        })}
                       </span>
                     )}
                   </div>
@@ -866,14 +803,14 @@ export default function ProposalsPage() {
           )}
         </section>
 
-        {/* Lien secondaire : toutes les dispo */}
+        {/* Lien secondaire */}
         <div className="pt-2">
           <button
             type="button"
             onClick={handleSeeAllSlots}
             className="text-xs text-muted-foreground underline hover:text-primary"
           >
-            Ou voir toutes les disponibilités dans l’agenda
+            {t('footer.seeAll')}
           </button>
         </div>
       </div>

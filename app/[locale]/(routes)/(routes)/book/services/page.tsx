@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
 
 type ServiceCategory = {
   id: number;
@@ -29,8 +30,24 @@ type ApiResponse = {
   services: ServicePricing[];
 };
 
+// Format prix en EUR, localisé
+function formatPrice(price: number | string, locale: string): string {
+  const num = Number(price);
+  if (Number.isNaN(num)) return `${price} €`;
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: 'currency',
+      currency: 'EUR',
+    }).format(num);
+  } catch {
+    return `${num.toFixed(2)} €`;
+  }
+}
+
 export default function SelectServicePage() {
   const router = useRouter();
+  const t = useTranslations('bookServices');
+  const locale = useLocale();
 
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [services, setServices] = useState<ServicePricing[]>([]);
@@ -47,27 +64,21 @@ export default function SelectServicePage() {
         });
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
-          throw new Error(
-            data.error ||
-              'Impossible de récupérer les services de votre moniteur.'
-          );
+          throw new Error(data.error || t('errors.loadServicesApi'));
         }
         const data: ApiResponse = await res.json();
         setCategories(data.categories || []);
         setServices(data.services || []);
       } catch (e: any) {
         console.error(e);
-        setError(
-          e?.message ||
-            'Erreur lors du chargement des services de votre moniteur.'
-        );
+        setError(e?.message || t('errors.loadServicesGeneric'));
       } finally {
         setLoading(false);
       }
     };
 
     load();
-  }, []);
+  }, [t]);
 
   const handleSelectService = (service: ServicePricing) => {
     const params = new URLSearchParams({
@@ -98,11 +109,10 @@ export default function SelectServicePage() {
         <header className="flex flex-wrap items-center justify-between gap-2">
           <div>
             <h1 className="text-lg md:text-xl font-semibold">
-              Choisir un type de service
+              {t('header.title')}
             </h1>
             <p className="text-xs text-muted-foreground">
-              Sélectionnez le service que vous souhaitez réserver avant de
-              choisir un créneau dans l’agenda.
+              {t('header.subtitle')}
             </p>
           </div>
         </header>
@@ -115,7 +125,7 @@ export default function SelectServicePage() {
 
         {!error && categories.length === 0 && (
           <div className="rounded-xl border bg-card p-4 text-sm text-muted-foreground">
-            Votre moniteur n’a pas encore configuré de services.
+            {t('empty.noServices')}
           </div>
         )}
 
@@ -146,16 +156,12 @@ export default function SelectServicePage() {
 
                 {catServices.length === 0 ? (
                   <p className="text-xs text-muted-foreground">
-                    Aucun service disponible dans cette catégorie pour
-                    l’instant.
+                    {t('category.noServices')}
                   </p>
                 ) : (
                   <div className="grid gap-3 md:grid-cols-2">
                     {catServices.map((service) => {
-                      const priceNum = Number(service.price);
-                      const priceLabel = Number.isNaN(priceNum)
-                        ? `${service.price} €`
-                        : `${priceNum.toFixed(2)} €`;
+                      const priceLabel = formatPrice(service.price, locale);
 
                       return (
                         <button
@@ -185,7 +191,7 @@ export default function SelectServicePage() {
                               )}
                             </div>
                             <span className="inline-flex items-center rounded-full bg-primary/5 border border-primary/20 px-2 py-0.5 text-[11px] text-primary">
-                              Choisir ce service
+                              {t('button.chooseService')}
                             </span>
                           </div>
                         </button>

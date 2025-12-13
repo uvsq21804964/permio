@@ -1,0 +1,78 @@
+{
+  "competitors": {
+    "table": {
+      "marketSolutions": "Solutions du marché",
+      "moreInfo": "Plus d'infos"
+    },
+    "headers": {
+      "platforms": {
+        "label": "Apps de mise en relation",
+        "subtitle": "Vous envoient des clients"
+      },
+      "allInOne": {
+        "label": "Logiciels de gestion",
+        "subtitle": "Gèrent votre administratif"
+      },
+      "freeTools": {
+        "label": "Outils basiques",
+        "subtitle": "Agenda, tableur, notes…"
+      },
+      "ourTool": {
+        "label": "Magic Hango",
+        "subtitle": "Organise vos journées"
+      }
+    },
+    "sections": {
+      "booking": "Trouver & réserver des clients",
+      "travel": "Organisation des trajets",
+      "daily": "Votre quotidien",
+      "price": "Prix"
+    },
+    "rows": {
+      "bringsClients": {
+        "label": "Vous apporte de nouveaux clients",
+        "tooltip": "Plateformes : elles vous louent leur audience. Cet assistant : votre page de réservation attire vos propres nouveaux clients (site, réseaux, bouche-à-oreille)."
+      },
+      "selfBookingLogicalSlots": {
+        "label": "Clients qui réservent seuls dans des créneaux logiques",
+        "tooltip": "Les plateformes montrent surtout des heures “libres”. Ici, vos clients ne voient que des créneaux qui respectent vos horaires ET vos temps de trajet."
+      },
+      "includesTravelTime": {
+        "label": "Prend en compte vos temps de trajet"
+      },
+      "groupsByArea": {
+        "label": "Regroupe vos rendez-vous par zone"
+      },
+      "dailyRouteInMaps": {
+        "label": "Tournée du jour prête dans Google Maps"
+      },
+      "timeSpentPlanning": {
+        "label": "Temps passé à organiser votre semaine",
+        "tooltip": "Messages, ajustements, trous à combler…"
+      },
+      "madeForInHome": {
+        "label": "Pensé pour les dog-sitters à domicile"
+      },
+      "realCost": {
+        "label": "Combien ça vous coûte vraiment",
+        "tooltip": "Certaines solutions sont “gratuites” mais prennent une part sur chaque séance. Ici, pas de commission : le prix reste le même quel que soit votre chiffre d’affaires."
+      }
+    },
+    "values": {
+      "extraFee": "+ frais",
+      "sometimes": "Parfois",
+      "rarely": "Rarement",
+      "yesNoTravel": "Oui, mais sans trajets",
+      "yesSimpleCalendar": "Oui, agenda simple",
+      "yesOptimizedWithTravel": "Oui, optimisé avec trajets",
+      "high": "Élevé",
+      "medium": "Moyen",
+      "veryHigh": "Très élevé",
+      "veryLow": "Très faible",
+      "platformCommission": "Commission 15–25 %",
+      "managementSoftwarePrice": "40–100 €/mois",
+      "basicToolsPrice": "0–5 €/mois",
+      "ourToolPrice": "34 €/mois, sans commission"
+    }
+  }
+}

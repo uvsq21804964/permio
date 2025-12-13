@@ -1,0 +1,27 @@
+{
+  "plans": {
+    "heading": "Gagnez du temps sur vos trajets, sans changer vos habitudes",
+    "subheading": "Vos clients réservent seuls, vos rendez-vous sont regroupés, et tout votre planning vit au même endroit.",
+    "banner": {
+      "label": "Bon plan",
+      "text": "Regroupez vos rendez-vous, limitez les allers-retours et ouvrez Google Maps en un clic depuis votre agenda."
+    },
+    "badge": "Spécial éducateurs canins",
+    "perMonth": "/mois",
+    "note": "Idéal si vos clients demandent des déplacements à domicile.",
+    "ctaPrimary": "Essayer pendant un mois",
+    "ctaSecondary": "Passer à cette formule",
+    "disclaimer": "Carte non requise pour démarrer. Vous êtes libre d’arrêter à tout moment.",
+    "plan": {
+      "title": "Full Magic",
+      "features": [
+        "Vos clients réservent eux-mêmes 24h/24 et 7j/7",
+        "Prise en compte des temps de trajet, aucun conflits horaires",
+        "Réduction des trous et allers-retours",
+        "Intégration avec Google Maps !",
+        "Agenda, trajets et infos clients réunis au même endroit",
+        "Nombre illimité de services et de rendez-vous"
+      ]
+    }
+  }
+}

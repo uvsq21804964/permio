@@ -3,9 +3,16 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useLocale } from 'next-intl';
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
 
-type Page = { name: string; link: string; visible: number; cta?: boolean };
+type Page = {
+  nameFR: string;
+  nameEN: string;
+  link: string;
+  visible: number;
+  cta?: boolean;
+};
 
 export default function DesktopNavbar({
   logo,
@@ -18,6 +25,9 @@ export default function DesktopNavbar({
   activeLink?: string;
   meRole: 'student' | 'instructor' | 'admin' | string | null;
 }) {
+  const locale = useLocale();
+  const isFR = locale.startsWith('fr');
+
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileBtnRef = useRef<HTMLButtonElement | null>(null);
@@ -44,21 +54,23 @@ export default function DesktopNavbar({
     [pages, meRole]
   );
 
-  const PROFILE_NAMES = new Set([
-    'Mes services',
-    'Mes factures',
-    'Gestion',
-    'Configuration',
-    'Subscribe',
-    'Paramètres',
-    'Se déconnecter',
+  // On base le menu "profil" sur les links, pas sur le texte (indépendant de la langue)
+  const PROFILE_LINKS = new Set([
+    '/services',
+    '/availability',
+    '/invoices',
+    '/plans',
+    '/profile',
+    '/sign-out',
+    '/gestion', // éventuel : à retirer si tu ne veux pas "Mes clients" dans le menu profil
   ]);
+
   const profileItems = useMemo(
-    () => filteredPages.filter((p) => PROFILE_NAMES.has(p.name)),
+    () => filteredPages.filter((p) => PROFILE_LINKS.has(p.link)),
     [filteredPages]
   );
   const mainNavPages = useMemo(
-    () => filteredPages.filter((p) => !PROFILE_NAMES.has(p.name)),
+    () => filteredPages.filter((p) => !PROFILE_LINKS.has(p.link)),
     [filteredPages]
   );
 
@@ -86,16 +98,21 @@ export default function DesktopNavbar({
     };
   }, [profileOpen]);
 
+  const homeSrLabel = isFR ? 'Aller à l’accueil' : 'Go to home';
+  const profileMenuLabel = isFR ? 'Menu profil' : 'Profile menu';
+  const accountLabel = isFR ? 'Mon compte' : 'Account';
+  const burgerSrLabel = isFR ? 'Ouvrir le menu' : 'Open menu';
+
   return (
     <nav className="fixed inset-x-0 top-0 z-50 border-b border-neutral-200 bg-white/90 text-white backdrop-blur supports-[backdrop-filter]:bg-[#8920D1] dark:border-neutral-800 dark:bg-neutral-900/80">
       {/* Barre full-bleed pour coller le logo à gauche */}
       <div className="flex h-12 items-center justify-between px-0">
         {/* LOGO collé au bord gauche du viewport */}
         <Link
-          href="/accueil"
+          href="/myweek"
           className="h-10 w-[12rem] pl-0  dark:focus:ring-neutral-600"
         >
-          <span className="sr-only">Aller à l’accueil</span>
+          <span className="sr-only">{homeSrLabel}</span>
           <div className="relative h-full w-full">
             <Image
               src={logo}
@@ -118,21 +135,22 @@ export default function DesktopNavbar({
               {/* Liens desktop */}
               <div className="hidden md:flex items-center gap-2">
                 {mainNavPages.map((p) => {
+                  const label = isFR ? p.nameFR : p.nameEN;
                   const isActive = activeLink === p.link;
                   if (p.cta) {
                     return (
                       <Link
-                        key={p.name}
+                        key={p.link}
                         href={p.link}
                         className="inline-flex items-center justify-center rounded-md bg-navbar px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110 active:translate-y-px focus:outline-none focus:ring-2 focus:ring-navbar/60 focus:ring-offset-2"
                       >
-                        {p.name}
+                        {label}
                       </Link>
                     );
                   }
                   return (
                     <Link
-                      key={p.name}
+                      key={p.link}
                       href={p.link}
                       className={`group relative rounded-md px-3 py-2 text-sm font-medium transition hover:bg-neutral-100/60 focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:ring-offset-2 dark:hover:bg-neutral-800/60 dark:focus:ring-neutral-700 ${
                         isActive
@@ -140,7 +158,7 @@ export default function DesktopNavbar({
                           : 'text-white-600 dark:text-neutral-300'
                       }`}
                     >
-                      {p.name}
+                      {label}
                       <span
                         className={`pointer-events-none absolute inset-x-2 -bottom-0.5 h-px origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100 ${
                           isActive
@@ -152,7 +170,7 @@ export default function DesktopNavbar({
                   );
                 })}
 
-                {/* Mon profil */}
+                {/* Mon profil / Account */}
                 {profileItems.length > 0 && (
                   <div className="relative">
                     <button
@@ -162,7 +180,7 @@ export default function DesktopNavbar({
                       aria-haspopup="menu"
                       className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white transition hover:bg-neutral-100/60 focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:ring-offset-2 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:focus:ring-neutral-700"
                     >
-                      <span>Mon compte</span>
+                      <span>{accountLabel}</span>
                       <svg
                         className={`h-4 w-4 transition-transform ${
                           profileOpen ? 'rotate-180' : ''
@@ -183,14 +201,15 @@ export default function DesktopNavbar({
                       <div
                         ref={profilePanelRef}
                         role="menu"
-                        aria-label="Menu profil"
+                        aria-label={profileMenuLabel}
                         className="absolute right-0 mt-2 w-56 overflow-hidden rounded-xl border border-neutral-200 bg-white/95 shadow-lg backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/95"
                       >
                         <ul className="py-1 text-sm">
                           {profileItems.map((p) => {
+                            const label = isFR ? p.nameFR : p.nameEN;
                             const isActive = activeLink === p.link;
                             return (
-                              <li key={p.name}>
+                              <li key={p.link}>
                                 <Link
                                   role="menuitem"
                                   href={p.link}
@@ -201,7 +220,7 @@ export default function DesktopNavbar({
                                       : 'text-neutral-700 dark:text-neutral-300'
                                   }`}
                                 >
-                                  <span>{p.name}</span>
+                                  <span>{label}</span>
                                   {isActive && (
                                     <span className="h-2 w-2 rounded-full bg-emerald-500" />
                                   )}
@@ -223,7 +242,7 @@ export default function DesktopNavbar({
                 aria-controls="mobile-menu"
                 className="inline-flex items-center justify-center rounded-md p-2 md:hidden hover:bg-neutral-100/60 focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:ring-offset-2 dark:hover:bg-neutral-800/60 dark:focus:ring-neutral-700"
               >
-                <span className="sr-only">Ouvrir le menu</span>
+                <span className="sr-only">{burgerSrLabel}</span>
                 <svg
                   className="h-6 w-6"
                   viewBox="0 0 24 24"

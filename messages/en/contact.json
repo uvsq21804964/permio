@@ -1,0 +1,71 @@
+{
+  "hero": {
+    "title": "Contact",
+    "subtitle": "Questions, demo, partnership? Drop us a message, we usually reply within 24–48 business hours."
+  },
+  "form": {
+    "name": {
+      "label": "Name",
+      "placeholder": "e.g. Marie Dupont"
+    },
+    "email": {
+      "label": "Email",
+      "placeholder": "you@example.com"
+    },
+    "phone": {
+      "label": "Phone (optional)",
+      "placeholder": "+33 6 12 34 56 78"
+    },
+    "subject": {
+      "label": "Subject",
+      "options": {
+        "demo": "Request a demo",
+        "support": "Support / Technical issue",
+        "billing": "Billing / Subscription",
+        "partnership": "Partnership / Integration",
+        "other": "Other"
+      }
+    },
+    "message": {
+      "label": "Message",
+      "placeholder": "Describe your use case, your organisation, your zones, etc."
+    },
+    "consent": {
+      "labelPrefix": "I agree to be contacted about my request. My data will be processed according to the ",
+      "privacyLink": "privacy policy",
+      "labelSuffix": "."
+    },
+    "submit": "Send request",
+    "responseTime": "We usually reply within 24–48 hours."
+  },
+  "sidebar": {
+    "otherMeans": {
+      "title": "Other ways to reach us",
+      "emailLabel": "Email",
+      "phoneLabel": "Phone",
+      "whatsappLabel": "WhatsApp",
+      "whatsappCta": "Open conversation"
+    },
+    "ideas": {
+      "title": "Ideas of things you can contact us about",
+      "bullets": {
+        "demo": "Book a guided demo (30 min) on your real use case.",
+        "setup": "Set up your availability and your booking page.",
+        "zones": "Reduce travel time by grouping by zones/days.",
+        "noShows": "Tackle no-shows (reminders, cancellation policy, Stripe deposits).",
+        "calendar": "Integrate Google/Outlook Calendar and sync your events.",
+        "import": "Import your students/clients (CSV/Google Contacts) and clean addresses.",
+        "holes": "Optimise “gap” slots to fill your day without extra travel.",
+        "billing": "Billing/subscription questions (upgrade, invoices, VAT, coupons).",
+        "partnership": "Partnerships (schools, teacher networks, integrators)."
+      }
+    }
+  },
+  "mail": {
+    "subject": "Information / Demo request",
+    "body": "Hi,\n\nI’d like to contact you about schedule and route optimisation.\nMy context:\n- Number of students/clients:\n- Zones / cities:\n- Current tools:\n\nThanks!"
+  },
+  "whatsapp": {
+    "text": "Hi 👋 — I’d like more information about the tool (planning + route optimisation). — Quick context: [students/clients, zones, tools]"
+  }
+}

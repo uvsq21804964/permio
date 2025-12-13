@@ -1,0 +1,19 @@
+{
+  "header": {
+    "title": "Choose a service type",
+    "subtitle": "Select the service you want to book before choosing a time slot in the agenda."
+  },
+  "errors": {
+    "loadServicesApi": "We couldn’t retrieve your instructor’s services.",
+    "loadServicesGeneric": "An error occurred while loading your instructor’s services."
+  },
+  "empty": {
+    "noServices": "Your instructor has not configured any services yet."
+  },
+  "category": {
+    "noServices": "No service is currently available in this category."
+  },
+  "button": {
+    "chooseService": "Choose this service"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "logoAlt": "Logo",
+  "title": "Paiement confirmé",
+  "sessionLabel": "Session :",
+  "message": "Ton abonnement est actif. Tu peux accéder à ton espace pour définir tes disponibilités et commencer à planifier.",
+  "primaryCta": "Accéder à l’application",
+  "secondaryCta": "Voir ma facturation",
+  "help": {
+    "text": "Besoin d’aide ? Contacte-nous via la page",
+    "contactLink": "contact"
+  }
+}

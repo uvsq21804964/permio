@@ -1,0 +1,57 @@
+{
+  "title": "Default availabilities (Typical week)",
+  "description": "The slots you add or remove here define your typical week (recurring availabilities). They will be used as the base for your future schedules.",
+  "hoursLabel": "Hours (remaining/total):",
+  "editing": {
+    "hintOn": "Click on an empty cell to add availabilities, or on an existing one to delete it.",
+    "hintOff": "Read-only mode: enable edit mode to modify your typical week."
+  },
+  "userLabel": {
+    "instructor": "Instructor",
+    "student": "Student",
+    "selfFallback": "Me"
+  },
+  "buttons": {
+    "editOn": "Finish editing",
+    "editOff": "Edit typical week",
+    "addSlot": "Add a time range",
+    "cancel": "Cancel",
+    "submit": "Add"
+  },
+  "table": {
+    "hourColumn": "Time"
+  },
+  "dialog": {
+    "title": "Add availabilities",
+    "dayLabel": "Day",
+    "rangesLabel": "Time ranges",
+    "startLabel": "Start",
+    "endLabel": "End"
+  },
+  "notices": {
+    "slotDeleted": "Time range deleted",
+    "oneAdded": "Time range added ({start}–{end})",
+    "manyAdded": "{count} time ranges added"
+  },
+  "errors": {
+    "currentUser": "Unable to load current user.",
+    "createRange": "Error while creating availabilities.",
+    "rangeOrder": "Range {index}: end time must be after start time.",
+    "rangeBounds": "Range {index}: times must be between 8:00 and 20:00.",
+    "loadStatusOrAvailabilities": "Unable to fetch your status or availabilities.",
+    "loadAvailabilities": "Loading your availabilities…",
+    "loadingGeneric": "Loading…"
+  },
+  "meta": {
+    "lastUpdate": "Last update {value}"
+  },
+  "days": {
+    "0": "Monday",
+    "1": "Tuesday",
+    "2": "Wednesday",
+    "3": "Thursday",
+    "4": "Friday",
+    "5": "Saturday",
+    "6": "Sunday"
+  }
+}

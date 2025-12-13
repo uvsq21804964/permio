@@ -1,0 +1,18 @@
+{
+  "title": "My availabilities",
+  "subtitle": "Set up your typical week, add day-by-day exceptions and see everything in a weekly calendar.",
+  "tabs": {
+    "configure": "Configure",
+    "global": "Global view"
+  },
+  "loading": {
+    "session": "Loading your session…",
+    "rights": "Loading your permissions…"
+  },
+  "auth": {
+    "signInRequired": "You must be signed in to manage your availabilities."
+  },
+  "errors": {
+    "loadRole": "Failed to load your role."
+  }
+}

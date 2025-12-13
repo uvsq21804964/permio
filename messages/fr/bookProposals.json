@@ -1,0 +1,65 @@
+{
+  "noServiceSelected": {
+    "title": "Aucun service sélectionné.",
+    "button": "Retour à la sélection de services"
+  },
+  "noAddress": {
+    "title": "Impossible de retrouver votre adresse pour calculer les créneaux proposés.",
+    "button": "Revenir à l’étape adresse"
+  },
+  "errors": {
+    "loadServicesApi": "Impossible de récupérer les services de votre moniteur.",
+    "loadServicesGeneric": "Erreur lors du chargement des services de votre moniteur.",
+    "loadAgendaApi": "Impossible de récupérer les disponibilités du moniteur.",
+    "generateSlots": "Erreur lors de la génération des créneaux proposés.",
+    "slotAlreadyBooked": "Ce créneau a déjà été réservé entre-temps. Veuillez en choisir un autre.",
+    "createBooking": "Impossible de créer la réservation. Veuillez réessayer.",
+    "genericSelectedService": "Impossible de retrouver le service sélectionné. Veuillez réessayer.",
+    "noBookingAddress": "Impossible de retrouver votre adresse pour calculer les créneaux proposés."
+  },
+  "header": {
+    "title": "Choisir un créneau recommandé",
+    "subtitle": "Ces créneaux tiennent compte de votre adresse et de l’agenda de votre dogsitter, avec un placement optimisé pour limiter les déplacements et éviter de casser ses jours de repos.",
+    "seeAll": "Voir toutes les disponibilités"
+  },
+  "serviceSection": {
+    "label": "Service sélectionné"
+  },
+  "addressSection": {
+    "label": "Adresse utilisée pour le calcul"
+  },
+  "suggestions": {
+    "title": "Créneaux recommandés",
+    "loading": "Calcul des meilleurs créneaux…",
+    "empty": "Aucun créneau recommandé pour le moment. Vous pouvez consulter l’ensemble des disponibilités dans l’agenda."
+  },
+  "booking": {
+    "noticeSuccess": "Créneau réservé avec succès ✅",
+    "loading": "Réservation en cours…",
+    "button": "Choisir et réserver ce créneau"
+  },
+  "score": {
+    "label": "Score : {score}%"
+  },
+  "footer": {
+    "seeAll": "Ou voir toutes les disponibilités dans l’agenda"
+  },
+  "explanation": {
+    "base": "Ce créneau est suggéré car il s’intègre bien dans le planning de votre dogsitter.",
+    "prefix": "Ce créneau est suggéré car il ",
+    "and": " et "
+  },
+  "reason": {
+    "sameDay": "se cale sur une journée où votre dogsitter a déjà des cours",
+    "dayOff": "reste compatible avec les autres jours de repos de votre dogsitter",
+    "travelVeryLow": "limite fortement les déplacements de votre dogsitter",
+    "travelReduced": "réduit les temps de trajet par rapport à d’autres options",
+    "travelStillOk": "respecte tout de même les contraintes de déplacement de votre dogsitter",
+    "fillsGap": "remplit un trou entre deux cours déjà prévus",
+    "afterLesson": "s’enchaîne juste après un cours déjà prévu",
+    "beforeNextLesson": "prépare le cours suivant dans la journée",
+    "verySoon": "est proposé très rapidement",
+    "nextDays": "est situé dans les prochains jours",
+    "soon": "reste dans une période relativement proche"
+  }
+}

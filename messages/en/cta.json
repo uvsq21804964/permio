@@ -1,0 +1,17 @@
+{
+  "cta": {
+    "title": "Make your day lighter",
+    "subtitle": "Less driving, more free time, happier clients.",
+    "primaryLabel": "Try it for 1 month before subscribing",
+    "secondaryLabel": "I have a question or I want a demo",
+    "proof": [
+      "No card required",
+      "Cancel in 2 clicks",
+      "No marketplace: your availability, your rules"
+    ],
+    "email": {
+      "subject": "Demo request — route optimization",
+      "body": "Hi Tom,\n\nI’d like a quick demo of the optimization tool (availability + travel time).\nIdeal slot: __/__/____ at __:__\n\nContext:\n- Number of clients: \n- Areas covered: \n- Current tools: \n\nThanks!"
+    }
+  }
+}

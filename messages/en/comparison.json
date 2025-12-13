@@ -1,0 +1,125 @@
+{
+  "comparison": {
+    "units": { "hoursShort": "hrs" },
+
+    "headers": {
+      "free": "Alone",
+      "magic": "With MagicHango"
+    },
+
+    "table": {
+      "featureHeader": "Feature",
+      "moreInfo": "More info"
+    },
+
+    "values": {
+      "unlimited": "Unlimited",
+      "extraFee": "+ fee",
+
+      "organizationMode": {
+        "free": "100% manual",
+        "magic": "Algorithm-driven"
+      },
+      "yourTime": {
+        "free": "Time spent planning and following up",
+        "magic": "More free time & billable sessions"
+      },
+      "notAlone": {
+        "free": "You handle everything yourself",
+        "magic": "A team that listens and turns your ideas into new features"
+      },
+      "growth": {
+        "limited": "Limited",
+        "scalable": "Scalable"
+      },
+      "clientPerception": {
+        "free": "An independent trainer “making it work”",
+        "magic": "An organized, in-demand professional"
+      },
+      "whatProspectsSee": {
+        "free": "A personal site with no visible reviews",
+        "magic": "A page showing reviews and experience"
+      }
+    },
+
+    "sections": {
+      "booking": "Booking & client experience",
+      "travel": "Travel & Google Maps",
+      "optimization": "Optimization & productivity",
+      "support": "Support & growth",
+      "branding": "Brand & credibility"
+    },
+
+    "rows": {
+      "selfBooking": {
+        "label": "Client self-booking",
+        "tooltip": "Clients choose a time slot from your configured availability—no email back-and-forth."
+      },
+      "smartGrouping": {
+        "label": "Smart appointment grouping",
+        "tooltip": "Automatically groups sessions to reduce gaps and concentrate your working hours at the best times."
+      },
+      "travelTime": {
+        "label": "Travel time between sessions",
+        "tooltip": "Estimates travel time between appointments to avoid impossible sequences and unnecessary driving."
+      },
+      "googleMaps": {
+        "label": "One-click Google Maps",
+        "tooltip": "Click the travel time to open the route in Google Maps—no retyping."
+      },
+      "allInOne": {
+        "label": "Calendar, routes, and clients in one place (all-in-one)",
+        "tooltip": "Stop juggling multiple apps—your schedule, routes, and clients finally live in one tool."
+      },
+      "organizationMode": {
+        "label": "Organization mode"
+      },
+      "yourTime": {
+        "label": "Your time",
+        "tooltip": "Time lost organizing vs real time freed up to teach, travel efficiently… or rest."
+      },
+      "notAlone": {
+        "label": "Stop working alone"
+      },
+      "customNoFee": {
+        "label": "Custom features (at no extra cost)"
+      },
+      "growth": {
+        "label": "Client growth potential"
+      },
+      "clientPerception": {
+        "label": "How clients perceive you"
+      },
+      "whatProspectsSee": {
+        "label": "What prospects see",
+        "tooltip": "Personal site: few proofs. MagicHango page: reviews + experience visible."
+      }
+    },
+
+    "plans": {
+      "free": {
+        "title": "Free",
+        "features": [
+          "Up to 2 students",
+          "Visual planner with manual session creation",
+          "Simple view of available time slots",
+          "Email support"
+        ]
+      },
+      "magic": {
+        "title": "Full Magic",
+        "features": [
+          "Unlimited students",
+          "Self-booking, advanced prioritization and complex scenarios",
+          "Multi-trainer grouping and multi-area optimization",
+          "Detailed travel times and full routes, clickable to Google Maps",
+          "All-in-one agency view: calendar, routes, clients",
+          "Advanced optimization",
+          "Priority support (email & phone)",
+          "Personal branding/logo",
+          "Custom features at no extra cost!"
+        ]
+      }
+    }
+  }
+}

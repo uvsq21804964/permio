@@ -1,0 +1,26 @@
+{
+  "nav": {
+    "login": "Sign in",
+    "tryFree": "Try 1 month, no card"
+  },
+  "hero": {
+    "titlePrefix": "The platform built for",
+    "highlight1": "dog trainers",
+    "titleMiddle": "who travel",
+    "highlight2": "to clients' homes",
+    "titleSuffix": ",",
+    "subtitlePrefix": "Spend less time driving and grow your client base",
+    "subtitleEmphasis": "in a blink",
+    "ctaPrimary": "Create my account — 1 minute",
+    "ctaSecondary": "Sign in",
+    "imageAlt": "Preview of the MagicHango schedule",
+    "imageCaption": "Calendar, clients, and travel — all in one place."
+  },
+  "preview": {
+    "badgeSchedule": "Schedule",
+    "badgeRoute": "Routes",
+    "caption": "Preview: optimized schedule + one-click directions.",
+    "altSchedule": "MagicHango schedule preview",
+    "altRoute": "Route preview with travel time"
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "title": "Mes disponibilités",
+  "subtitle": "Définissez votre semaine type, ajoutez des exceptions jour par jour et visualisez le tout dans un agenda hebdomadaire.",
+  "tabs": {
+    "configure": "Configurer",
+    "global": "Vue globale"
+  },
+  "loading": {
+    "session": "Chargement de votre session…",
+    "rights": "Chargement de vos droits…"
+  },
+  "auth": {
+    "signInRequired": "Vous devez être connecté pour gérer vos disponibilités."
+  },
+  "errors": {
+    "loadRole": "Erreur de chargement du rôle."
+  }
+}

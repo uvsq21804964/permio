@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
+import { useTranslations } from 'next-intl';
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -78,6 +79,7 @@ function buildGoogleMapsUrl(travel: Travel): string | null {
 }
 
 export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
+  const t = useTranslations('weeklyAgenda');
   const { user, isLoaded: isUserLoaded } = useUser();
   const currentUserId = user?.id ?? null;
 
@@ -113,7 +115,6 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
     for (const dateKey of Object.keys(slotsByDate)) {
       const list = slotsByDate[dateKey] || [];
       for (const s of list) {
-        // On ne compte que les créneaux où l'utilisateur est le dogsitter
         if (s.dogsitterUserId !== currentUserId) continue;
 
         const rawPrice = s.servicePrice;
@@ -192,7 +193,6 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
   // 🔥 Charger exceptions + slots + travels, filtrés par currentUserId
   const fetchWeek = async (weekStartISO: string, userId: string | null) => {
     if (!userId) {
-      // pas d'utilisateur => pas de slots ni travels visibles
       setEntriesByDate({});
       setSlotsByDate({});
       setTravelsByDate({});
@@ -208,7 +208,7 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
       );
       const weekEndISO = addDaysISO(weekStartISO, 6);
 
-      // 1) Promise pour les exceptions jour par jour
+      // 1) Exceptions jour par jour
       const weekExceptionsPromise = Promise.all(
         dates.map(async (dateIso) => {
           const res = await fetch(
@@ -223,7 +223,7 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
         })
       );
 
-      // 2) Promise pour les slots réservés sur la semaine
+      // 2) Slots réservés
       const slotsPromise = (async () => {
         try {
           const slotRes = await fetch(
@@ -249,8 +249,6 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
             ? jsonSlots.data
             : [];
 
-          // 🔐 Filtrage côté front : ne garder que les créneaux où
-          // l'utilisateur est soit client, soit dogsitter.
           const visibleSlots = slots.filter((s) => {
             const clientForSlot = s.clientUserId;
             return clientForSlot === userId || s.dogsitterUserId === userId;
@@ -271,10 +269,10 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
         }
       })();
 
-      // 3) Promise pour les travels sur la semaine
+      // 3) Trajets
       const travelsPromise = (async () => {
         try {
-          // 🎓 Si l'utilisateur est student, on ne charge ni n'affiche les trajets
+          // 🎓 student → pas de trajets
           if (meRole === 'student') {
             return {} as Record<string, Travel[]>;
           }
@@ -296,21 +294,16 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
           }
 
           const jsonTravels = await travelRes.json();
-
-          // 🚚 Ton API renvoie un tableau plat de Travel
           const travels: Travel[] = Array.isArray(jsonTravels)
             ? jsonTravels
             : Array.isArray(jsonTravels?.data)
             ? jsonTravels.data
             : [];
 
-          // 🔐 Sécurité supplémentaire : on garde seulement les trajets
-          // où l'utilisateur est impliqué (même si l'API le fait déjà côté SQL)
           const visibleTravels = travels.filter((t) => {
             return t.dogsitterUserId === userId || t.clientUserId === userId;
           });
 
-          // 📅 Groupement par date "YYYY-MM-DD"
           const grouped: Record<string, Travel[]> = {};
           for (const t of visibleTravels) {
             const rawDate = t.date;
@@ -337,28 +330,23 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
         }
       })();
 
-      // 4) On attend que TOUT soit prêt
       const [results, groupedSlots, groupedTravels] = await Promise.all([
         weekExceptionsPromise,
         slotsPromise,
         travelsPromise,
       ]);
 
-      // Construire la map des exceptions
       const map: Record<string, DayAvailability[]> = {};
       for (const [d, entries] of results) {
         map[d] = entries;
       }
 
-      // ✅ Mettre à jour les trois states en même temps
       setEntriesByDate(map);
       setSlotsByDate(groupedSlots);
       setTravelsByDate(groupedTravels);
-    } catch (e: any) {
+    } catch (e) {
       console.error('Error fetching weekly agenda', e);
-      setError(
-        e?.message || 'Impossible de récupérer vos créneaux pour cette semaine.'
-      );
+      setError(t('error_load_week'));
     } finally {
       setLoadingWeek(false);
     }
@@ -390,31 +378,29 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
     <Card className="relative">
       <CardHeader className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div>
-          <CardTitle>Agenda hebdomadaire – vue globale</CardTitle>
+          <CardTitle>{t('header_title')}</CardTitle>
           <p className="text-sm text-muted-foreground mt-1">
-            Semaine du{' '}
-            <span className="font-medium">{formatDDMM(weekStart)}</span> au{' '}
-            <span className="font-medium">{formatDDMM(weekEndISO)}</span>.
+            {t('header_period', {
+              from: formatDDMM(weekStart),
+              to: formatDDMM(weekEndISO),
+            })}
             <br />
             {isDogsitterForWeek ? (
               <span className="text-xs text-muted-foreground">
-                Bleu = disponibilités par défaut · Vert = dispo ponctuelle ·
-                Rose = indispo ponctuelle · Violet = créneaux réservés · Orange
-                = trajets.
+                {t('legend_dogsitter')}
               </span>
             ) : (
               <span className="text-xs text-muted-foreground">
-                Survolez un créneau pour plus de détails.
+                {t('legend_default')}
               </span>
             )}
           </p>
 
-          {/* 💰 Total gagné sur la semaine */}
           {isDogsitterForWeek && (
             <p className="text-sm text-muted-foreground mt-2">
-              Total gagné sur cette semaine :{' '}
+              {t('earnings_label_prefix')}{' '}
               <span className="font-semibold">
-                {formatServicePrice(totalWeeklyEarnings) ?? '—'}
+                {formatServicePrice(totalWeeklyEarnings) ?? t('earnings_none')}
               </span>
             </p>
           )}
@@ -422,10 +408,10 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
 
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={handlePrevWeek}>
-            ← Semaine précédente
+            {t('nav_prev_week')}
           </Button>
           <Button variant="outline" size="sm" onClick={handleNextWeek}>
-            Semaine suivante →
+            {t('nav_next_week')}
           </Button>
         </div>
       </CardHeader>
@@ -446,7 +432,6 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
         </div>
       )}
 
-      {/* Contenu de la grille, estompé pendant le chargement */}
       <CardContent
         className={
           isLoading
@@ -459,7 +444,7 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
             {/* En-têtes */}
             <div className="grid grid-cols-8">
               <div className="p-2 border-b text-sm font-medium text-muted-foreground">
-                Heure
+                {t('column_hour')}
               </div>
               {weekDates.map((dateIso, idx) => (
                 <div
@@ -503,7 +488,7 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
                     key={dateIso}
                     className="relative border-r last:border-r-0"
                   >
-                    {/* Fond heure par heure */}
+                    {/* Fond par heure */}
                     {HOURS.map((h) => (
                       <div
                         key={`${dateIso}-${h}`}
@@ -512,7 +497,7 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
                       />
                     ))}
 
-                    {/* Bloc par défaut (semaine type) */}
+                    {/* Dispos par défaut */}
                     {defaultsForDay.map((a) => {
                       const { top, height } = getBlockStyle(
                         a.startTime,
@@ -530,27 +515,35 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
                             minHeight: '22px',
                             opacity: 0.85,
                           }}
-                          title={`Par défaut ${a.startTime}–${a.endTime}`}
+                          title={t('default_block_title', {
+                            start: a.startTime,
+                            end: a.endTime,
+                          })}
                         >
                           <div className="flex h-full flex-col items-start justify-center px-1 py-0.5">
                             <span className="text-[10px] leading-tight truncate">
                               {a.startTime} – {a.endTime}
                             </span>
                             <span className="text-[8px] leading-tight uppercase opacity-70 mt-0.5">
-                              Semaine type
+                              {t('default_block_label')}
                             </span>
                           </div>
                         </div>
                       );
                     })}
 
-                    {/* Bloc exception (vert / rose) */}
+                    {/* Exceptions (dispo/indispo ponctuelles) */}
                     {entries.map((entry) => {
                       const { top, height } = getBlockStyle(
                         entry.startTime,
                         entry.endTime
                       );
                       const colorClass = getDayOverrideColor(entry.kind);
+
+                      const label =
+                        entry.kind === 'available'
+                          ? t('override_block_label_available')
+                          : t('override_block_label_unavailable');
 
                       return (
                         <div
@@ -561,23 +554,21 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
                             height: `${height}px`,
                             minHeight: '24px',
                           }}
-                          title={`${entry.startTime}–${entry.endTime} (${entry.kind})`}
+                          title={`${entry.startTime}–${entry.endTime}`}
                         >
                           <div className="flex h-full flex-col items-start justify-center px-1 py-0.5">
                             <span className="text-[10px] leading-tight truncate">
                               {entry.startTime} – {entry.endTime}
                             </span>
                             <span className="text-[8px] leading-tight uppercase opacity-80 mt-0.5">
-                              {entry.kind === 'available'
-                                ? 'Dispo ponctuelle'
-                                : 'Indisponible'}
+                              {label}
                             </span>
                           </div>
                         </div>
                       );
                     })}
 
-                    {/* Trajets (Travel) – orange, cachés si meRole === 'student' */}
+                    {/* Trajets (cachés si student) */}
                     {travelsForDay.map((travel) => {
                       const { top, height } = getBlockStyle(
                         travel.startTime,
@@ -586,16 +577,23 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
 
                       const tooltipLines: string[] = [];
                       tooltipLines.push(
-                        `Trajet ${travel.startTime}–${travel.endTime}`
+                        t('travel_tooltip_time', {
+                          start: travel.startTime,
+                          end: travel.endTime,
+                        })
                       );
                       if (travel.client_formatted_address) {
                         tooltipLines.push(
-                          `Destination : ${travel.client_formatted_address}`
+                          t('travel_tooltip_destination', {
+                            address: travel.client_formatted_address,
+                          })
                         );
                       }
                       if (travel.dogsitter_formatted_address) {
                         tooltipLines.push(
-                          `Origine : ${travel.dogsitter_formatted_address}`
+                          t('travel_tooltip_origin', {
+                            address: travel.dogsitter_formatted_address,
+                          })
                         );
                       }
                       const tooltip = tooltipLines.join('\n');
@@ -603,9 +601,7 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
                       const handleClickTravel = () => {
                         const url = buildGoogleMapsUrl(travel);
                         if (!url) {
-                          showNotice(
-                            "Impossible d'ouvrir l'itinéraire : adresse manquante pour ce trajet."
-                          );
+                          showNotice(t('notice_missing_address'));
                           return;
                         }
                         window.open(url, '_blank', 'noopener,noreferrer');
@@ -631,14 +627,14 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
                               {travel.startTime} – {travel.endTime}
                             </span>
                             <span className="text-[8px] leading-tight uppercase tracking-wide opacity-80 truncate">
-                              Trajet
+                              {t('travel_label')}
                             </span>
                           </div>
                         </button>
                       );
                     })}
 
-                    {/* Créneaux réservés (slots) – violet */}
+                    {/* Créneaux réservés */}
                     {slotsForDay.map((slot) => {
                       const { top, height } = getBlockStyle(
                         slot.startTime,
@@ -651,20 +647,40 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
                         currentUserId === slot.dogsitterUserId;
                       const isClient = currentUserId === clientForSlot;
 
-                      const mainName = isDogsitter
-                        ? slot.clientName || 'Client inconnu'
-                        : slot.dogsitterName || 'Instructeur inconnu';
+                      const fallbackName = isDogsitter
+                        ? t('slot_client_unknown')
+                        : t('slot_instructor_unknown');
 
-                      const mainLabel = isDogsitter ? 'Client' : 'Dogsitter';
+                      const mainName =
+                        (isDogsitter ? slot.clientName : slot.dogsitterName) ||
+                        fallbackName;
+
+                      const mainLabel = isDogsitter
+                        ? t('slot_main_label_client')
+                        : t('slot_main_label_instructor');
 
                       const tooltipLines: string[] = [];
-                      tooltipLines.push(`${slot.startTime}–${slot.endTime}`);
-                      tooltipLines.push(`${mainLabel} : ${mainName}`);
+                      tooltipLines.push(
+                        t('slot_tooltip_time', {
+                          start: slot.startTime,
+                          end: slot.endTime,
+                        })
+                      );
+                      tooltipLines.push(
+                        t('slot_tooltip_main', {
+                          label: mainLabel,
+                          name: mainName,
+                        })
+                      );
 
                       if (isDogsitter && slot.dogsitterName) {
-                        tooltipLines.push(`Vous : ${slot.dogsitterName}`);
+                        tooltipLines.push(
+                          t('slot_tooltip_you', { name: slot.dogsitterName })
+                        );
                       } else if (isClient && slot.clientName) {
-                        tooltipLines.push(`Client : ${slot.clientName}`);
+                        tooltipLines.push(
+                          t('slot_tooltip_client', { name: slot.clientName })
+                        );
                       }
 
                       const priceLabel = isDogsitter
@@ -672,23 +688,37 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
                         : null;
 
                       if (slot.serviceName) {
-                        const base = `Service : ${slot.serviceName}`;
-                        tooltipLines.push(
-                          priceLabel ? `${base} (${priceLabel})` : base
-                        );
+                        if (priceLabel) {
+                          tooltipLines.push(
+                            t('slot_tooltip_service_with_price', {
+                              service: slot.serviceName,
+                              price: priceLabel,
+                            })
+                          );
+                        } else {
+                          tooltipLines.push(
+                            t('slot_tooltip_service', {
+                              service: slot.serviceName,
+                            })
+                          );
+                        }
                       } else if (priceLabel) {
-                        tooltipLines.push(`Prix : ${priceLabel}`);
+                        tooltipLines.push(
+                          t('slot_tooltip_price', { price: priceLabel })
+                        );
                       }
 
                       if (slot.formatted_address) {
                         tooltipLines.push(
-                          `Adresse : ${slot.formatted_address}`
+                          t('slot_tooltip_address', {
+                            address: slot.formatted_address,
+                          })
                         );
                       }
 
                       const tooltip = tooltipLines.join('\n');
 
-                      const contentLines = [];
+                      const contentLines: React.ReactNode[] = [];
 
                       contentLines.push(
                         <span
@@ -766,13 +796,12 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
         </div>
       </CardContent>
 
-      {/* Overlay de chargement bien visible */}
       {isLoading && (
         <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-background/70 backdrop-blur-sm">
           <div className="pointer-events-none flex items-center gap-3 rounded-full border bg-card px-4 py-2 shadow-lg">
             <Loader2 className="h-4 w-4 animate-spin text-primary" />
             <span className="text-sm text-muted-foreground">
-              Chargement de la semaine…
+              {t('loading_overlay')}
             </span>
           </div>
         </div>

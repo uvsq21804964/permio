@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations, useLocale } from 'next-intl';
 
 const DAYS = [
   'Lundi',
@@ -17,7 +18,6 @@ const HOURS = Array.from({ length: 12 }, (_, i) => i + 8); // 08 → 19
 const START_HOUR = 8;
 const PIXELS_PER_HOUR = 80;
 
-// Palette de classes Tailwind {bg + border + text}
 // Palette de classes Tailwind {bg + border + text} plus contrastée
 const PARTNER_PALETTE = [
   'bg-emerald-200 border-emerald-600 text-emerald-950',
@@ -39,7 +39,7 @@ type Role = 'student' | 'instructor' | 'admin';
 type Slot = {
   startTime: string;
   endTime: string;
-  studentId?: string | null; // ⬅️ ajouté
+  studentId?: string | null;
   studentName?: string | null;
   instructorName?: string | null;
 
@@ -219,6 +219,8 @@ function buildTravelMapsUrl(travel: TravelSlot): string | null {
 
 export default function LastWeekAgenda({ userId }: { userId?: string }) {
   const router = useRouter();
+  const t = useTranslations('myWeek');
+  const locale = useLocale();
 
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -258,7 +260,7 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
         }
 
         if (!looksLikeAgendaPayload(payload)) {
-          throw new Error("Réponse inattendue de l'API agenda.");
+          throw new Error(t('errors.unexpectedApiResponse'));
         }
 
         const json = payload as ApiResponse;
@@ -269,13 +271,13 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
           setCurrentWeekStartISO(json.weekShown);
         }
       } catch (e: any) {
-        setErr(e?.message ?? 'Erreur de chargement');
+        setErr(e?.message ?? t('errors.genericLoad'));
         setData(null);
       } finally {
         setLoading(false);
       }
     })();
-  }, [userId, currentWeekStartISO]);
+  }, [userId, currentWeekStartISO, t]);
 
   const daysMap = useMemo(() => {
     const m = new Map<number, ApiDay>();
@@ -285,9 +287,11 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
 
   /** Calcule pour chaque index 0..6 : la date effective et si c’est aujourd’hui. */
   const dayHeaders = useMemo(() => {
+    const dayLabel = (i: number) => t(`days.${i}` as any);
+
     if (!data?.weekShown) {
-      return DAYS.map((label) => ({
-        label,
+      return DAYS.map((_, i) => ({
+        label: dayLabel(i),
         dateLabel: '',
         iso: '',
         isToday: false,
@@ -298,7 +302,7 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
     const today = new Date();
     const todayISO = toISO(today);
 
-    return DAYS.map((label, i) => {
+    return DAYS.map((_, i) => {
       const d = daysMap.get(i);
       const dt = d?.dayDate
         ? parseISODateLocal(d.dayDate)
@@ -307,15 +311,15 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
 
       const iso = toISO(dt);
       return {
-        label,
+        label: dayLabel(i),
         dateLabel: fmtDDMM(dt),
         iso,
         isToday: iso === todayISO,
       };
     });
-  }, [data?.weekShown, daysMap]);
+  }, [data?.weekShown, daysMap, t]);
 
-  // En-tête lisible: "Semaine du dd/mm au dd/mm"
+  // En-tête lisible: "dd/mm → dd/mm"
   const headerRange = useMemo(() => {
     if (!data?.weekShown) return '';
     const start = parseISODateLocal(data.weekShown);
@@ -342,17 +346,17 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
         // Libellé humain pour la légende
         const label =
           viewerRole === 'instructor'
-            ? s.studentName ?? 'Élève inconnu'
+            ? s.studentName ?? t('legend.unknownStudent')
             : viewerRole === 'student'
-            ? s.instructorName ?? 'Moniteur inconnu'
-            : s.studentName ?? s.instructorName ?? 'Intervenant inconnu';
+            ? s.instructorName ?? t('legend.unknownInstructor')
+            : s.studentName ?? s.instructorName ?? t('legend.unknownPartner');
 
         if (!set.has(label)) set.set(label, colorClass);
       }
     }
 
     return Array.from(set.entries()); // [ [label, class], ... ]
-  }, [data?.days, viewerRole]);
+  }, [data?.days, viewerRole, t]);
 
   const upcoming = data?.nextSlots ?? [];
   const travelsByDate = data?.travelsByDate ?? {};
@@ -379,14 +383,20 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
 
   const showTravels = viewerRole && viewerRole !== 'student';
 
+  // Locale JS pour les noms de jours courts
+  const weekdayLocale =
+    locale === 'fr' || locale.startsWith('fr') ? 'fr-FR' : 'en-US';
+
   return (
     <div className="rounded-lg border bg-card">
       <div className="p-4 border-b">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div className="text-sm font-medium">
-            Programme de la semaine{' '}
+            {t('header.title')}{' '}
             {headerRange && (
-              <span className="text-neutral-500">• {headerRange}</span>
+              <span className="text-neutral-500">
+                {t('header.range', { range: headerRange })}
+              </span>
             )}
             {partnerLegend.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-2">
@@ -413,10 +423,10 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                 <span className="text-neutral-500">
                   (
                   {data.user.role === 'instructor'
-                    ? 'Moniteur'
+                    ? t('roles.instructor')
                     : data.user.role === 'student'
-                    ? 'Élève'
-                    : 'Admin'}
+                    ? t('roles.student')
+                    : t('roles.admin')}
                   )
                 </span>
               </div>
@@ -429,35 +439,33 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                 onClick={handlePrevWeek}
                 className="text-xs px-2 py-1 border rounded-md hover:bg-muted"
               >
-                ← Semaine précédente
+                {t('buttons.prevWeek')}
               </button>
               <button
                 type="button"
                 onClick={handleNextWeek}
                 className="text-xs px-2 py-1 border rounded-md hover:bg-muted"
               >
-                Semaine suivante →
+                {t('buttons.nextWeek')}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Section "Prochains cours réservés" */}
+        {/* Section "Prochains cours réservés" (élève uniquement) */}
         {data?.user.role === 'student' && (
           <div className="mt-3 text-xs text-neutral-800">
-            <div className="font-semibold mb-1">
-              Prochains cours réservés (sur 5 semaines max)
-            </div>
+            <div className="font-semibold mb-1">{t('upcoming.title')}</div>
 
             {upcoming.length === 0 ? (
               <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between rounded-md border border-dashed bg-muted/50 px-3 py-2">
-                <span>Aucun cours réservé dans les 5 prochaines semaines.</span>
+                <span>{t('upcoming.empty')}</span>
                 <button
                   type="button"
                   onClick={() => router.push('/book/services')}
                   className="mt-2 sm:mt-0 inline-flex items-center justify-center rounded-md border border-primary px-2 py-1 text-[11px] font-medium text-primary hover:bg-primary/5"
                 >
-                  Réserver un créneau
+                  {t('upcoming.cta')}
                 </button>
               </div>
             ) : (
@@ -465,7 +473,7 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                 {upcoming.map((s, idx) => {
                   const d = parseISODateLocal(s.date);
                   const dateLabel = fmtDDMM(d);
-                  const weekday = d.toLocaleDateString('fr-FR', {
+                  const weekday = d.toLocaleDateString(weekdayLocale, {
                     weekday: 'short',
                   });
                   return (
@@ -481,7 +489,9 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                       </span>
                       {s.counterpartName && (
                         <span className="text-[11px] text-neutral-600">
-                          avec {s.counterpartName}
+                          {t('upcoming.withCounterpart', {
+                            name: s.counterpartName,
+                          })}
                         </span>
                       )}
                     </div>
@@ -494,24 +504,22 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
 
         {err && (
           <div className="mt-2 text-xs text-red-600">
-            Erreur de chargement : {err}
+            {t('errors.load')}: {err}
           </div>
         )}
       </div>
 
       <div className="p-4 overflow-x-auto">
         {loading ? (
-          <div className="text-sm text-neutral-500">Chargement…</div>
+          <div className="text-sm text-neutral-500">{t('loading')}</div>
         ) : !data ? (
-          <div className="text-sm text-neutral-500">
-            Impossible de charger l’agenda.
-          </div>
+          <div className="text-sm text-neutral-500">{t('errors.noAgenda')}</div>
         ) : (
           <div className="min-w-[800px]">
             {/* Header row */}
             <div className="grid grid-cols-8 gap-0">
               <div className="font-medium text-sm text-muted-foreground p-2 border-b">
-                Heure
+                {t('table.hourColumn')}
               </div>
               {dayHeaders.map((d) => (
                 <div
@@ -526,7 +534,7 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                   </span>
                   {d.isToday && (
                     <span className="ml-2 inline-flex items-center rounded px-1 py-0.5 text-[10px] font-medium border bg-green-200 border-green-500 text-green-900">
-                      Aujourd’hui
+                      {t('todayBadge')}
                     </span>
                   )}
                 </div>
@@ -577,33 +585,38 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                       />
                     ))}
 
-                    {/* 🔶 Trajets (travel slots) : blocs orange, seulement pour roles ≠ student */}
+                    {/* 🔶 Trajets : blocs orange, seulement pour roles ≠ student */}
                     {showTravels &&
                       isoDate &&
                       Array.isArray(travelsForDay) &&
-                      travelsForDay.map((t, i) => {
+                      travelsForDay.map((tTravel, i) => {
                         const { top, height } = getBlockStyle(
-                          t.startTime,
-                          t.endTime
+                          tTravel.startTime,
+                          tTravel.endTime
                         );
 
                         const tooltipLines: string[] = [];
                         tooltipLines.push(
-                          `Trajet ${stripSeconds(t.startTime)}–${stripSeconds(
-                            t.endTime
-                          )}`
+                          `${t('travel.tooltipTime', {
+                            start: stripSeconds(tTravel.startTime),
+                            end: stripSeconds(tTravel.endTime),
+                          })}`
                         );
-                        if (t.fromLabel) {
-                          tooltipLines.push(`De : ${t.fromLabel}`);
+                        if (tTravel.fromLabel) {
+                          tooltipLines.push(
+                            `${t('travel.from')} ${tTravel.fromLabel}`
+                          );
                         }
-                        if (t.toLabel) {
-                          tooltipLines.push(`Vers : ${t.toLabel}`);
+                        if (tTravel.toLabel) {
+                          tooltipLines.push(
+                            `${t('travel.to')} ${tTravel.toLabel}`
+                          );
                         }
 
                         const tooltip = tooltipLines.join('\n');
 
                         const handleClickTravel = () => {
-                          const url = buildTravelMapsUrl(t);
+                          const url = buildTravelMapsUrl(tTravel);
                           if (!url) return;
                           window.open(url, '_blank', 'noopener,noreferrer');
                         };
@@ -624,18 +637,18 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                           >
                             <div className="flex h-full flex-col items-start justify-center px-1 py-0.5 gap-0.5">
                               <span className="text-[9px] leading-tight font-mono truncate">
-                                {stripSeconds(t.startTime)} –{' '}
-                                {stripSeconds(t.endTime)}
+                                {stripSeconds(tTravel.startTime)} –{' '}
+                                {stripSeconds(tTravel.endTime)}
                               </span>
                               <span className="text-[8px] leading-tight uppercase tracking-wide opacity-80 truncate">
-                                Trajet
+                                {t('travel.label')}
                               </span>
                             </div>
                           </button>
                         );
                       })}
 
-                    {/* blocks (créneaux réservés) */}
+                    {/* Créneaux réservés */}
                     {Array.isArray(slots) &&
                       slots.length > 0 &&
                       slots.map((s: Slot, i: number) => {
@@ -651,10 +664,10 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
 
                         const labelCounterpart =
                           viewerRole === 'student'
-                            ? 'Moniteur'
+                            ? t('counterpart.instructor')
                             : viewerRole === 'instructor'
-                            ? 'Élève'
-                            : 'Intervenant';
+                            ? t('counterpart.student')
+                            : t('counterpart.generic');
 
                         const priceLabel =
                           isInstructorView && s.servicePrice != null
@@ -671,16 +684,22 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                         }
 
                         if (s.serviceName) {
-                          const base = `Service : ${s.serviceName}`;
+                          const base = `${t('slot.serviceLabel')} ${
+                            s.serviceName
+                          }`;
                           tooltipLines.push(
                             priceLabel ? `${base} (${priceLabel})` : base
                           );
                         } else if (priceLabel) {
-                          tooltipLines.push(`Prix : ${priceLabel}`);
+                          tooltipLines.push(
+                            `${t('slot.priceLabel')} ${priceLabel}`
+                          );
                         }
 
                         if (s.formattedAddress) {
-                          tooltipLines.push(`Adresse : ${s.formattedAddress}`);
+                          tooltipLines.push(
+                            `${t('slot.addressLabel')} ${s.formattedAddress}`
+                          );
                         }
 
                         const tooltip = tooltipLines.join('\n');

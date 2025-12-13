@@ -1,0 +1,55 @@
+{
+  "loadingSession": "Loading your session…",
+  "mustBeSignedIn": "You must be signed in to see your instructor’s availability.",
+  "buttons": {
+    "prevWeek": "← Previous week",
+    "nextWeek": "Next week →",
+    "placeBooking": "Place my booking in this slot",
+    "cancel": "Cancel",
+    "confirm": "Book",
+    "close": "Close"
+  },
+  "alerts": {
+    "bookingSuccess": "Slot booked successfully ✅"
+  },
+  "errors": {
+    "loadAgendaApi": "Unable to fetch your instructor’s availability.",
+    "loadAgendaGeneric": "An error occurred while loading your instructor’s agenda.",
+    "loadServicesApi": "Unable to fetch the list of services.",
+    "selectedServiceLoad": "Unable to fetch the selected service.",
+    "invalidServiceUrl": "Invalid service in the URL.",
+    "serviceNotAvailable": "The selected service does not exist or is not available.",
+    "noServiceSelected": "Please select a service first.",
+    "noSlotSelected": "Please select a slot in the agenda first.",
+    "invalidSlot": "The selected slot is invalid. Please pick another one or adjust its alignment.",
+    "slotAlreadyBooked": "This slot has just been booked. Please choose another one.",
+    "createBooking": "Unable to create the booking. Please try again.",
+    "createBookingGeneric": "An error occurred while creating the slot. Please try again.",
+    "alignNoDuration": "This service does not have a defined duration. Its alignment cannot be adjusted in the slot."
+  },
+  "agenda": {
+    "title": "Your instructor’s agenda",
+    "weekLabel": "Week from {start} to {end}.",
+    "help": "The displayed slots take into account other bookings and travel time needed to come to your place. Days without any bookable slot are slightly greyed out.",
+    "hourColumn": "Time",
+    "loadingSlots": "Loading available slots…",
+    "slotTooltip": {
+      "slot": "Slot at your place: {start}–{end}",
+      "travelBefore": "Travel before: {minutes} min from {label}",
+      "travelAfter": "Travel after: {minutes} min to {label}"
+    },
+    "badgeSelected": "Selected",
+    "badgeAvailable": "Available"
+  },
+  "alignmentModal": {
+    "title": "How should we place your service?",
+    "description": "For this client slot, choose whether the service should start at the beginning or end at the end of the available window.",
+    "dateLabel": "Date: {value}",
+    "alignStartTitle": "Align at the beginning of the slot",
+    "alignStartBody": "Service from {start} to {end}",
+    "alignEndTitle": "Align at the end of the slot",
+    "alignEndBody": "Service from {start} to {end}",
+    "fallbackTitle": "Unable to define alignment",
+    "fallbackDescription": "This service does not have a defined duration or no slot is selected."
+  }
+}

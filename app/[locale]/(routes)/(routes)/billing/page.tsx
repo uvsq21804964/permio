@@ -7,6 +7,9 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import Stripe from 'stripe';
 
+import type { Locale } from '@/src/lib/i18n';
+import { getMessages } from '@/src/i18n/getMessages';
+
 type SubWithPeriods = Stripe.Subscription & {
   start_date?: number;
   current_period_end?: number;
@@ -21,14 +24,33 @@ function mapPlanName(raw?: string | null) {
   return raw;
 }
 
-function formatCentsToCurrency(cents: number, currency = 'eur') {
-  return new Intl.NumberFormat('fr-FR', { style: 'currency', currency }).format(
-    cents / 100
-  );
+// localeTag = 'fr-FR' | 'en-US'...
+function formatCentsToCurrency(
+  cents: number,
+  currency = 'eur',
+  localeTag: string = 'fr-FR'
+) {
+  return new Intl.NumberFormat(localeTag, {
+    style: 'currency',
+    currency: currency.toUpperCase(),
+  }).format(cents / 100);
 }
+
 function getPrimaryEmail(user: any): string | undefined {
   const id = user?.primaryEmailAddressId;
   return user?.emailAddresses?.find((e: any) => e.id === id)?.emailAddress;
+}
+
+// Petit helper pour lire les clés "a.b.c" dans le JSON
+function createTranslator(dict: any) {
+  return (path: string): string => {
+    const parts = path.split('.');
+    let current: any = dict;
+    for (const p of parts) {
+      current = current?.[p];
+    }
+    return typeof current === 'string' ? current : path;
+  };
 }
 
 // ---- UI helpers (charte)
@@ -55,11 +77,17 @@ export default async function BillingPage({
   params,
 }: {
   searchParams?: Promise<{ session_id?: string | string[] }>;
-  params: { locale: string };
+  params: { locale: Locale };
 }) {
+  const locale = params.locale ?? 'fr';
+  const localeTag = locale === 'fr' ? 'fr-FR' : 'en-US';
+
+  const allMessages = await getMessages(locale);
+  const t = createTranslator(allMessages.billing);
+
   // --- Auth
   const { userId } = await auth();
-  if (!userId) redirect('/sign-in');
+  if (!userId) redirect(`/${locale}/sign-in`);
 
   // Next.js 15: searchParams est async dyn
   const sp = (await searchParams) || {};
@@ -74,7 +102,7 @@ export default async function BillingPage({
     user = await clerk.users.getUser(userId);
   } catch (e) {
     // Si Clerk tombe, on redirige proprement
-    redirect('/sign-in');
+    redirect(`/${locale}/sign-in`);
   }
 
   // --- Stripe customerId
@@ -132,16 +160,18 @@ export default async function BillingPage({
 
   // --- État sans client Stripe → proposition d’abonnement
   if (!customerId) {
+    const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/billing?success=1&session_id={CHECKOUT_SESSION_ID}`;
+    const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/billing?canceled=1`;
+
     return (
       <main className="min-h-screen bg-[#f9ffc6] px-4 py-16 md:py-24">
         <div className="mx-auto w-full max-w-3xl space-y-6">
           <header className="break-words" style={{ hyphens: 'auto' }}>
             <h1 className="text-2xl md:text-3xl font-semibold text-black">
-              Facturation
+              {t('header.title')}
             </h1>
             <p className="mt-2 text-sm text-black/70">
-              Aucune formule n’est active pour le moment. Choisissez un plan
-              pour démarrer.
+              {t('noCustomer.description')}
             </p>
           </header>
 
@@ -149,7 +179,7 @@ export default async function BillingPage({
             <div
               className="flex flex-wrap items-center gap-3"
               role="group"
-              aria-label="Choisir une formule"
+              aria-label={t('noCustomer.choosePlanAria')}
             >
               <form action="/api/stripe/checkout" method="POST">
                 <input
@@ -158,17 +188,11 @@ export default async function BillingPage({
                   value="starter_monthly_eur"
                 />
                 <input type="hidden" name="mode" value="subscription" />
-                <input
-                  type="hidden"
-                  name="successUrl"
-                  value={`${process.env.NEXT_PUBLIC_APP_URL}/billing?success=1&session_id={CHECKOUT_SESSION_ID}`}
-                />
-                <input
-                  type="hidden"
-                  name="cancelUrl"
-                  value={`${process.env.NEXT_PUBLIC_APP_URL}/billing?canceled=1`}
-                />
-                <button className={btnPrimary}>Choisir Starter</button>
+                <input type="hidden" name="successUrl" value={successUrl} />
+                <input type="hidden" name="cancelUrl" value={cancelUrl} />
+                <button className={btnPrimary}>
+                  {t('noCustomer.chooseStarter')}
+                </button>
               </form>
 
               <form action="/api/stripe/checkout" method="POST">
@@ -178,17 +202,11 @@ export default async function BillingPage({
                   value="pro_monthly_eur"
                 />
                 <input type="hidden" name="mode" value="subscription" />
-                <input
-                  type="hidden"
-                  name="successUrl"
-                  value={`${process.env.NEXT_PUBLIC_APP_URL}/billing?success=1&session_id={CHECKOUT_SESSION_ID}`}
-                />
-                <input
-                  type="hidden"
-                  name="cancelUrl"
-                  value={`${process.env.NEXT_PUBLIC_APP_URL}/billing?canceled=1`}
-                />
-                <button className={btnGhost}>Choisir Pro</button>
+                <input type="hidden" name="successUrl" value={successUrl} />
+                <input type="hidden" name="cancelUrl" value={cancelUrl} />
+                <button className={btnGhost}>
+                  {t('noCustomer.choosePro')}
+                </button>
               </form>
             </div>
           </section>
@@ -269,8 +287,6 @@ export default async function BillingPage({
   const isCurrent = (prefix: string) => currentPlan.startsWith(prefix);
 
   // Métadonnées + dates robustes
-  // ---- États & dates (remplace ton bloc actuel)
-  // ---- États & dates (HIDE date if canceled OR cancel_at_period_end)
   const subId = sub?.id;
   const status = sub?.status ?? 'inconnu';
 
@@ -279,7 +295,6 @@ export default async function BillingPage({
   const isCancelScheduled = Boolean((sub as any)?.cancel_at_period_end);
   const isCanceled = status === 'canceled' || Boolean((sub as any)?.ended_at);
 
-  // seconds potentially available (selon ta version API)
   const currentPeriodEndSec =
     (sub as any)?.current_period_end ??
     firstItem?.current_period_end ??
@@ -291,28 +306,28 @@ export default async function BillingPage({
   const hideRenewalCompletely = isCanceled || isCancelScheduled;
 
   // 2) sinon on choisit un libellé/date “normale”
-  let renewalLabel: 'Renouvellement' | 'Fin d’essai' | '—' = '—';
+  let renewalLabel = '—';
   let renewalDate: string = '—';
 
   if (!hideRenewalCompletely) {
     if (status === 'trialing') {
-      renewalLabel = 'Fin d’essai';
+      renewalLabel = t('subscription.trialEndLabel');
       const sec = trialEndSec ?? currentPeriodEndSec;
       renewalDate = sec
-        ? new Date(sec * 1000).toLocaleDateString('fr-FR')
+        ? new Date(sec * 1000).toLocaleDateString(localeTag)
         : '—';
     } else if (status === 'active') {
-      renewalLabel = 'Renouvellement';
+      renewalLabel = t('subscription.renewalLabel');
       const sec = currentPeriodEndSec;
       renewalDate = sec
-        ? new Date(sec * 1000).toLocaleDateString('fr-FR')
+        ? new Date(sec * 1000).toLocaleDateString(localeTag)
         : '—';
     }
   }
 
-  // Date de souscription (inchangé)
+  // Date de souscription
   const startedOn = (sub as any)?.start_date
-    ? new Date((sub as any).start_date * 1000).toLocaleDateString('fr-FR')
+    ? new Date((sub as any).start_date * 1000).toLocaleDateString(localeTag)
     : '—';
 
   const endSec =
@@ -322,25 +337,31 @@ export default async function BillingPage({
     (isCancelScheduled ? (sub as any)?.cancel_at : undefined);
 
   const endDate = endSec
-    ? new Date(endSec * 1000).toLocaleDateString('fr-FR')
+    ? new Date(endSec * 1000).toLocaleDateString(localeTag)
     : '—';
 
   // URLs locales
-  const locale = params?.locale ?? 'fr';
   const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/billing?success=1&session_id={CHECKOUT_SESSION_ID}`;
   const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/billing?canceled=1`;
 
   function renderStatusBadge(s: string) {
-    if (isCanceled) return <span className={badgeMuted}>Clôturé</span>;
+    if (isCanceled)
+      return <span className={badgeMuted}>{t('status.closed')}</span>;
     if (isCancelScheduled)
-      return <span className={badgeWarning}>Clôture planifiée</span>;
-    if (s === 'active') return <span className={badgePositive}>Actif</span>;
+      return <span className={badgeWarning}>{t('status.closurePlanned')}</span>;
+    if (s === 'active')
+      return <span className={badgePositive}>{t('status.active')}</span>;
     if (s === 'trialing')
-      return <span className={badgeWarning}>Période d’essai</span>;
+      return <span className={badgeWarning}>{t('status.trialing')}</span>;
     if (s === 'past_due' || s === 'unpaid')
-      return <span className={badgeWarning}>Paiement en attente</span>;
+      return <span className={badgeWarning}>{t('status.paymentPending')}</span>;
     return <span className={badgeNeutral}>{s}</span>;
   }
+
+  const intervalLabel =
+    interval === 'year'
+      ? t('subscription.interval.year')
+      : t('subscription.interval.month');
 
   return (
     <main className="min-h-screen bg-[#f9ffc6] px-4 py-16 md:py-24">
@@ -348,25 +369,27 @@ export default async function BillingPage({
         {/* En-tête */}
         <header className="space-y-1">
           <h1 className="text-2xl md:text-3xl font-semibold text-black">
-            Facturation
+            {t('header.title')}
           </h1>
-          <p className="text-sm text-black/70">
-            Gérez votre abonnement, vos factures et vos moyens de paiement.
-          </p>
+          <p className="text-sm text-black/70">{t('header.subtitle')}</p>
         </header>
 
-        {/* Souscription */}
+        {/* Souscription globale */}
         <div className="space-y-1">
-          <dt className="text-sm text-black/60">Souscription</dt>
+          <dt className="text-sm text-black/60">
+            {t('subscription.subscriptionLabel')}
+          </dt>
           <dd className="text-base font-medium text-black">{startedOn}</dd>
         </div>
         {isCancelScheduled && (
           <p className="mt-2 text-xs text-black/60">
-            Clôture planifiée. L’abonnement ne sera pas reconduit.
+            {t('subscription.closurePlanned')}
           </p>
         )}
         {isCanceled && (
-          <p className="mt-2 text-xs text-black/60">Abonnement clôturé.</p>
+          <p className="mt-2 text-xs text-black/60">
+            {t('subscription.closed')}
+          </p>
         )}
 
         {/* Renouvellement / Fin d’essai — masqué si cancel planifiée ou déjà annulé */}
@@ -382,11 +405,12 @@ export default async function BillingPage({
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="space-y-1">
               <div className="text-xs uppercase tracking-wide text-black/50">
-                Abonnement
+                {t('subscription.sectionLabel')}
               </div>
               <div className="text-xl font-semibold text-black">
-                {planLabel} — {formatCentsToCurrency(amount || 0, currency)} /{' '}
-                {interval === 'year' ? 'an' : 'mois'}
+                {planLabel} —{' '}
+                {formatCentsToCurrency(amount || 0, currency, localeTag)} /{' '}
+                {intervalLabel}
               </div>
             </div>
             <div className="md:text-right">{renderStatusBadge(status)}</div>
@@ -398,7 +422,9 @@ export default async function BillingPage({
             {/* Infos */}
             <dl className="md:col-span-2 grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-1">
-                <dt className="text-sm text-black/60">Souscription</dt>
+                <dt className="text-sm text-black/60">
+                  {t('subscription.subscriptionLabel')}
+                </dt>
                 <dd className="text-base font-medium text-black">
                   {startedOn}
                 </dd>
@@ -437,9 +463,9 @@ export default async function BillingPage({
                 <button
                   type="submit"
                   className={btnPrimary}
-                  aria-label="Gérer l'abonnement"
+                  aria-label={t('actions.manageSubscription')}
                 >
-                  Gérer l'abonnement
+                  {t('actions.manageSubscription')}
                 </button>
               </form>
 
@@ -456,7 +482,9 @@ export default async function BillingPage({
                     name="returnUrl"
                     value={`${process.env.NEXT_PUBLIC_APP_URL}/${locale}/billing`}
                   />
-                  <button className={btnGhost}>Annuler la clôture</button>
+                  <button className={btnGhost}>
+                    {t('actions.cancelClosure')}
+                  </button>
                 </form>
               ) : subId ? (
                 <form
@@ -471,7 +499,7 @@ export default async function BillingPage({
                     value={`${process.env.NEXT_PUBLIC_APP_URL}/${locale}/billing`}
                   />
                   <button className={btnDanger}>
-                    Clore l’abonnement (fin de période)
+                    {t('actions.scheduleClosure')}
                   </button>
                 </form>
               ) : null}
@@ -481,7 +509,7 @@ export default async function BillingPage({
                 <div
                   className="mt-2 flex flex-wrap gap-2 md:justify-end"
                   role="group"
-                  aria-label="Changer de plan"
+                  aria-label={t('noCustomer.choosePlanAria')}
                 >
                   {!isCurrent('starter') && (
                     <form action="/api/stripe/checkout" method="POST">
@@ -497,7 +525,9 @@ export default async function BillingPage({
                         value={successUrl}
                       />
                       <input type="hidden" name="cancelUrl" value={cancelUrl} />
-                      <button className={btnGhost}>Passer à Starter</button>
+                      <button className={btnGhost}>
+                        {t('actions.upgradeStarter')}
+                      </button>
                     </form>
                   )}
                   {!isCurrent('pro') && (
@@ -514,7 +544,9 @@ export default async function BillingPage({
                         value={successUrl}
                       />
                       <input type="hidden" name="cancelUrl" value={cancelUrl} />
-                      <button className={btnGhost}>Passer à Pro</button>
+                      <button className={btnGhost}>
+                        {t('actions.upgradePro')}
+                      </button>
                     </form>
                   )}
                   {!isCurrent('magic') && (
@@ -533,16 +565,16 @@ export default async function BillingPage({
                       <input type="hidden" name="cancelUrl" value={cancelUrl} />
                       <button
                         className={btnMagic}
-                        aria-label="Passer au plan Full Magic"
+                        aria-label={t('actions.upgradeMagic')}
                       >
-                        Passer à Full Magic
+                        {t('actions.upgradeMagic')}
                       </button>
-                      {/* le bouton “Comparer” ne doit pas soumettre le form */}
+
                       <Link
                         href={`/${locale}/plans?from=billing`}
                         className={btnGhost}
                       >
-                        Comparer les formules
+                        {t('actions.comparePlans')}
                       </Link>
                     </form>
                   )}
@@ -555,28 +587,36 @@ export default async function BillingPage({
         {/* Bloc factures */}
         <section className={`${cardBase} ${cardPadding}`}>
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-black">Factures</h2>
-            <div className="text-xs text-black/60">Dernières 10 factures</div>
+            <h2 className="text-lg font-semibold text-black">
+              {t('invoices.title')}
+            </h2>
+            <div className="text-xs text-black/60">
+              {t('invoices.subtitle')}
+            </div>
           </div>
 
           {invoices.data.length === 0 ? (
-            <div className="text-sm text-black/70">
-              Aucune facture pour le moment.
-            </div>
+            <div className="text-sm text-black/70">{t('invoices.empty')}</div>
           ) : (
             <div className="overflow-x-auto -mx-2 md:mx-0">
               <table className="min-w-full table-fixed border-collapse text-sm">
                 <thead className="text-black/60">
                   <tr className="border-y border-black/10">
-                    <th className="px-2 py-2 text-left font-medium">Date</th>
                     <th className="px-2 py-2 text-left font-medium">
-                      Référence
+                      {t('invoices.columns.date')}
                     </th>
-                    <th className="px-2 py-2 text-left font-medium">Statut</th>
+                    <th className="px-2 py-2 text-left font-medium">
+                      {t('invoices.columns.reference')}
+                    </th>
+                    <th className="px-2 py-2 text-left font-medium">
+                      {t('invoices.columns.status')}
+                    </th>
                     <th className="px-2 py-2 text-right font-medium">
-                      Montant
+                      {t('invoices.columns.amount')}
                     </th>
-                    <th className="px-2 py-2 text-right font-medium">Action</th>
+                    <th className="px-2 py-2 text-right font-medium">
+                      {t('invoices.columns.action')}
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-black/10">
@@ -584,7 +624,7 @@ export default async function BillingPage({
                     <tr key={inv.id} className="align-middle">
                       <td className="px-2 py-2 whitespace-nowrap">
                         {new Date((inv.created || 0) * 1000).toLocaleDateString(
-                          'fr-FR'
+                          localeTag
                         )}
                       </td>
                       <td className="px-2 py-2">
@@ -601,7 +641,8 @@ export default async function BillingPage({
                         <span className="font-medium text-black">
                           {formatCentsToCurrency(
                             inv.total || 0,
-                            inv.currency?.toUpperCase()
+                            inv.currency?.toUpperCase() || 'EUR',
+                            localeTag
                           )}
                         </span>
                       </td>
@@ -612,7 +653,7 @@ export default async function BillingPage({
                             target="_blank"
                             className={btnPrimary}
                           >
-                            Télécharger PDF
+                            {t('invoices.actions.downloadPdf')}
                           </Link>
                         ) : inv.hosted_invoice_url ? (
                           <Link
@@ -620,7 +661,7 @@ export default async function BillingPage({
                             target="_blank"
                             className={btnPrimary}
                           >
-                            Voir en ligne
+                            {t('invoices.actions.viewOnline')}
                           </Link>
                         ) : (
                           <span className="text-black/50">—</span>
@@ -635,12 +676,12 @@ export default async function BillingPage({
         </section>
 
         <section className="text-xs text-black/60">
-          Besoin d’aide ? Rendez-vous sur{' '}
+          {t('help.text')}{' '}
           <Link
-            href="/contact"
+            href={`/${locale}${t('help.contactLink')}`}
             className="underline underline-offset-4 hover:no-underline"
           >
-            /contact
+            {t('help.contactLink')}
           </Link>
           .
         </section>

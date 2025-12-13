@@ -1,0 +1,62 @@
+{
+  "header": {
+    "title": "Weekly schedule",
+    "range": "• {range}"
+  },
+  "roles": {
+    "instructor": "Instructor",
+    "student": "Student",
+    "admin": "Admin"
+  },
+  "buttons": {
+    "prevWeek": "← Previous week",
+    "nextWeek": "Next week →"
+  },
+  "upcoming": {
+    "title": "Upcoming booked lessons (up to 5 weeks)",
+    "empty": "No booked lessons in the next 5 weeks.",
+    "cta": "Book a slot",
+    "withCounterpart": "with {name}"
+  },
+  "errors": {
+    "genericLoad": "Loading error",
+    "load": "Loading error",
+    "noAgenda": "Unable to load the schedule.",
+    "unexpectedApiResponse": "Unexpected response from the schedule API."
+  },
+  "loading": "Loading…",
+  "table": {
+    "hourColumn": "Time"
+  },
+  "todayBadge": "Today",
+  "days": {
+    "0": "Monday",
+    "1": "Tuesday",
+    "2": "Wednesday",
+    "3": "Thursday",
+    "4": "Friday",
+    "5": "Saturday",
+    "6": "Sunday"
+  },
+  "travel": {
+    "label": "Travel",
+    "from": "From:",
+    "to": "To:",
+    "tooltipTime": "Travel {start}–{end}"
+  },
+  "counterpart": {
+    "instructor": "Instructor",
+    "student": "Student",
+    "generic": "Partner"
+  },
+  "legend": {
+    "unknownStudent": "Unknown student",
+    "unknownInstructor": "Unknown instructor",
+    "unknownPartner": "Unknown partner"
+  },
+  "slot": {
+    "serviceLabel": "Service:",
+    "priceLabel": "Price:",
+    "addressLabel": "Address:"
+  }
+}

@@ -2,9 +2,10 @@
 
 import { useAuth } from '@clerk/nextjs';
 import { useUser } from '@clerk/nextjs';
+import { useTranslations, useLocale } from 'next-intl';
 
 import type React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,15 +19,6 @@ import { Input } from '@/components/ui/input';
 import { Trash2, Plus, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-const DAYS = [
-  'Lundi',
-  'Mardi',
-  'Mercredi',
-  'Jeudi',
-  'Vendredi',
-  'Samedi',
-  'Dimanche',
-];
 const HOURS = Array.from({ length: 12 }, (_, i) => i + 8); // 8:00 → 19:00
 const START_HOUR = 8;
 const PIXELS_PER_HOUR = 80;
@@ -99,6 +91,9 @@ function formatQty(m?: number | null): string {
 }
 
 export function AvailabilityAgenda() {
+  const t = useTranslations('availabilityAgenda');
+  const locale = useLocale();
+
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUserId, setSelectedUserId] = useState('');
   const [availabilities, setAvailabilities] = useState<Availability[]>([]);
@@ -132,8 +127,16 @@ export function AvailabilityAgenda() {
     window.setTimeout(() => setNotice(null), 5000);
   };
 
-  // Format relatif FR ("il y a 2 min", etc.)
-  const rtf = new Intl.RelativeTimeFormat('fr', { numeric: 'auto' });
+  // RelativeTimeFormat selon la locale
+  const rtf = useMemo(
+    () =>
+      new Intl.RelativeTimeFormat(
+        locale === 'fr' || locale.startsWith('fr') ? 'fr' : 'en',
+        { numeric: 'auto' }
+      ),
+    [locale]
+  );
+
   const formatRelativeFrom = (d: Date) => {
     const diffSec = Math.round((Date.now() - d.getTime()) / 1000);
     if (Math.abs(diffSec) < 60) return rtf.format(-diffSec, 'second');
@@ -168,7 +171,7 @@ export function AvailabilityAgenda() {
       [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim() ||
       user?.username ||
       user?.primaryEmailAddress?.emailAddress ||
-      'Moi';
+      t('userLabel.selfFallback');
 
     (async () => {
       try {
@@ -188,13 +191,13 @@ export function AvailabilityAgenda() {
         setRoleReady(true);
       } catch (e) {
         console.error('/api/me/role failed:', e);
-        setUsersError("Impossible de charger l'utilisateur courant");
+        setUsersError(t('errors.currentUser'));
         setUsers([{ id: userId, name: fallbackDisplayName, role: 'student' }]);
         setSelectedUserId(userId);
         setRoleReady(true);
       }
     })();
-  }, [isLoaded, isSignedIn, userId, user]);
+  }, [isLoaded, isSignedIn, userId, user, t]);
 
   // 1.b heures (restant/planifiées)
   useEffect(() => {
@@ -262,7 +265,7 @@ export function AvailabilityAgenda() {
       }
     };
 
-    fetchAvailabilities();
+    void fetchAvailabilities();
   }, [isLoaded, isSignedIn, userId, roleReady]);
 
   const handleCellClick = (day: number, hour: number) => {
@@ -311,13 +314,17 @@ export function AvailabilityAgenda() {
       const endMinutes = timeToMinutes(endTime);
       if (endMinutes <= startMinutes) {
         setError(
-          `Plage ${i + 1}: L'heure de fin doit être après l'heure de début`
+          t('errors.rangeOrder', {
+            index: i + 1,
+          })
         );
         return;
       }
       if (startMinutes < START_HOUR * 60 || endMinutes > 20 * 60) {
         setError(
-          `Plage ${i + 1}: Les horaires doivent être entre 8h00 et 20h00`
+          t('errors.rangeBounds', {
+            index: i + 1,
+          })
         );
         return;
       }
@@ -361,16 +368,26 @@ export function AvailabilityAgenda() {
       setDialogOpen(false);
       setTimeRanges([{ startTime: '08:00', endTime: '09:00' }]);
       setLastChangeAt(new Date());
-      showNotice(
-        timeRanges.length > 1
-          ? `${timeRanges.length} plages ajoutées`
-          : `Plage ajoutée (${timeRanges[0].startTime}–${timeRanges[0].endTime})`
-      );
+
+      if (timeRanges.length > 1) {
+        showNotice(
+          t('notices.manyAdded', {
+            count: timeRanges.length,
+          })
+        );
+      } else {
+        showNotice(
+          t('notices.oneAdded', {
+            start: timeRanges[0].startTime,
+            end: timeRanges[0].endTime,
+          })
+        );
+      }
 
       setError('');
     } catch (err) {
       console.error('[v0] Error creating availabilities:', err);
-      setError('Erreur lors de la création des disponibilités');
+      setError(t('errors.createRange'));
     }
   };
 
@@ -399,7 +416,7 @@ export function AvailabilityAgenda() {
           : [];
         setAvailabilities(list);
         setLastChangeAt(new Date());
-        showNotice('Plage supprimée');
+        showNotice(t('notices.slotDeleted'));
       } else {
         console.error(
           '[v0] Error deleting availability:',
@@ -418,9 +435,21 @@ export function AvailabilityAgenda() {
 
   // Libellé utilisateur
   const renderUserLabel = (u: User) => {
-    const roleLabel = u.role === 'instructor' ? 'Moniteur' : 'Élève';
+    const roleLabel =
+      u.role === 'instructor'
+        ? t('userLabel.instructor')
+        : t('userLabel.student');
     return `${u.name} (${roleLabel})`;
   };
+
+  const dayLabels = useMemo(
+    () =>
+      Array.from(
+        { length: 7 },
+        (_, i) => t(`days.${i}` as any) // typescript est un peu chiant ici
+      ),
+    [t]
+  );
 
   return (
     <>
@@ -429,11 +458,9 @@ export function AvailabilityAgenda() {
           <CardHeader>
             <div className="flex items-start justify-between gap-4">
               <div>
-                <CardTitle>Disponibilités par défaut (Semaine type)</CardTitle>
+                <CardTitle>{t('title')}</CardTitle>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Les créneaux que vous ajoutez ou supprimez ici définissent
-                  votre semaine type (disponibilités récurrentes). Ils seront
-                  utilisés comme base pour vos futurs plannings.
+                  {t('description')}
                 </p>
 
                 {/* Heures restant/total si élève */}
@@ -452,7 +479,7 @@ export function AvailabilityAgenda() {
                       return null;
                     return (
                       <p className="text-muted-foreground text-sm mt-2">
-                        Heures (rest./tot.) :{' '}
+                        {t('hoursLabel')}{' '}
                         <span className="text-xs rounded px-1.5 py-0.5 border bg-amber-200 border-amber-400 text-amber-900">
                           {formatQty(hrs.remainingMinutes)}
                         </span>
@@ -465,29 +492,23 @@ export function AvailabilityAgenda() {
                   })()}
 
                 <p className="text-muted-foreground text-sm mt-2">
-                  {isEditing ? (
-                    <>
-                      Cliquez sur une case vide pour ajouter des disponibilités,
-                      ou sur une disponibilité existante pour la supprimer.
-                    </>
-                  ) : (
-                    <>
-                      Mode lecture : activez le mode édition pour modifier votre
-                      semaine type.
-                    </>
-                  )}
+                  {isEditing ? t('editing.hintOn') : t('editing.hintOff')}
                 </p>
               </div>
 
               <div className="flex flex-col items-end gap-1">
                 <div className="text-sm">
                   <span className="font-medium">
-                    {users[0] ? renderUserLabel(users[0]) : 'Moi'}
+                    {users[0]
+                      ? renderUserLabel(users[0])
+                      : t('userLabel.selfFallback')}
                   </span>
                 </div>
                 {lastChangeAt && (
                   <div className="text-xs text-neutral-500">
-                    Dernière modification {formatRelativeFrom(lastChangeAt)}
+                    {t('meta.lastUpdate', {
+                      value: formatRelativeFrom(lastChangeAt),
+                    })}
                   </div>
                 )}
 
@@ -498,9 +519,7 @@ export function AvailabilityAgenda() {
                   className="mt-1"
                   onClick={() => setIsEditing((prev) => !prev)}
                 >
-                  {isEditing
-                    ? 'Terminer les modifications'
-                    : 'Modifier la semaine type'}
+                  {isEditing ? t('buttons.editOn') : t('buttons.editOff')}
                 </Button>
               </div>
             </div>
@@ -523,14 +542,14 @@ export function AvailabilityAgenda() {
                 {/* Header row */}
                 <div className="grid grid-cols-8 gap-0">
                   <div className="font-medium text-sm text-muted-foreground p-2 border-b">
-                    Heure
+                    {t('table.hourColumn')}
                   </div>
-                  {DAYS.map((day) => (
+                  {dayLabels.map((label, index) => (
                     <div
-                      key={day}
+                      key={index}
                       className="font-medium text-sm text-center p-2 border-b border-r"
                     >
-                      {day}
+                      {label}
                     </div>
                   ))}
                 </div>
@@ -551,8 +570,7 @@ export function AvailabilityAgenda() {
                   </div>
 
                   {/* Day columns */}
-                  {/* Day columns */}
-                  {DAYS.map((_, dayIndex) => (
+                  {dayLabels.map((_, dayIndex) => (
                     <div key={`day-${dayIndex}`} className="relative border-r">
                       {/* Hour cells */}
                       {HOURS.map((hour) => (
@@ -599,7 +617,7 @@ export function AvailabilityAgenda() {
                               isEditing
                                 ? (e) => {
                                     e.stopPropagation();
-                                    handleDelete(avail.id);
+                                    void handleDelete(avail.id);
                                   }
                                 : undefined
                             }
@@ -607,13 +625,11 @@ export function AvailabilityAgenda() {
                           >
                             <div className="flex items-start justify-between gap-1 h-full">
                               <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                {/* 👇 LE TEXTE DES HEURES */}
                                 <div className="text-[10px] font-medium leading-tight truncate">
                                   {avail.startTime} – {avail.endTime}
                                 </div>
                               </div>
 
-                              {/* Icône poubelle uniquement utile en mode édition */}
                               {isEditing && (
                                 <Trash2 className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                               )}
@@ -631,10 +647,10 @@ export function AvailabilityAgenda() {
       ) : (
         <div className="rounded-lg border p-6 text-sm text-muted-foreground">
           {usersError
-            ? 'Impossible de récupérer votre statut ou vos disponibilités.'
+            ? t('errors.loadStatusOrAvailabilities')
             : loadingAvail
-            ? 'Chargement de vos disponibilités…'
-            : 'Chargement…'}
+            ? t('errors.loadAvailabilities')
+            : t('errors.loadingGeneric')}
         </div>
       )}
 
@@ -642,13 +658,15 @@ export function AvailabilityAgenda() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Ajouter des disponibilités</DialogTitle>
+            <DialogTitle>{t('dialog.title')}</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label>Jour</Label>
+              <Label>{t('dialog.dayLabel')}</Label>
               <Input
-                value={selectedDay !== null ? DAYS[selectedDay] : ''}
+                value={
+                  selectedDay !== null ? t(`days.${selectedDay}` as any) : ''
+                }
                 disabled
               />
             </div>
@@ -662,7 +680,7 @@ export function AvailabilityAgenda() {
 
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <Label>Plages horaires</Label>
+                <Label>{t('dialog.rangesLabel')}</Label>
                 <Button
                   type="button"
                   variant="outline"
@@ -670,7 +688,7 @@ export function AvailabilityAgenda() {
                   onClick={addTimeRange}
                 >
                   <Plus className="h-4 w-4 mr-1" />
-                  Ajouter une plage
+                  {t('buttons.addSlot')}
                 </Button>
               </div>
 
@@ -682,7 +700,7 @@ export function AvailabilityAgenda() {
                   <div className="flex-1 grid grid-cols-2 gap-2">
                     <div className="space-y-1">
                       <Label htmlFor={`start-${index}`} className="text-xs">
-                        Début
+                        {t('dialog.startLabel')}
                       </Label>
                       <Input
                         id={`start-${index}`}
@@ -698,7 +716,7 @@ export function AvailabilityAgenda() {
                     </div>
                     <div className="space-y-1">
                       <Label htmlFor={`end-${index}`} className="text-xs">
-                        Fin
+                        {t('dialog.endLabel')}
                       </Label>
                       <Input
                         id={`end-${index}`}
@@ -734,9 +752,9 @@ export function AvailabilityAgenda() {
                 variant="outline"
                 onClick={() => setDialogOpen(false)}
               >
-                Annuler
+                {t('buttons.cancel')}
               </Button>
-              <Button type="submit">Ajouter</Button>
+              <Button type="submit">{t('buttons.submit')}</Button>
             </div>
           </form>
         </DialogContent>

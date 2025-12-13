@@ -1,0 +1,69 @@
+{
+  "title": "My services and pricing",
+  "subtitle": "Your services are available for your clients to book on their own.",
+  "buttons": {
+    "addCategory": "Add a category",
+    "addService": "Service",
+    "edit": "Edit",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save",
+    "create": "Create",
+    "saving": "Saving…",
+    "creating": "Creating…"
+  },
+  "empty": {
+    "noCategoryOrService": "No category or service configured yet.",
+    "noServiceInCategory": "No service in this category yet."
+  },
+  "alerts": {
+    "errorGeneric": "Error while loading services.",
+    "successServiceCreated": "Service created successfully.",
+    "successServiceUpdated": "Service updated successfully.",
+    "successServiceDeleted": "Service deleted successfully.",
+    "successCategoryCreated": "Category created successfully.",
+    "successCategoryDeleted": "Category deleted successfully."
+  },
+  "errors": {
+    "loadServices": "Unable to load services.",
+    "serviceNameRequired": "Service name is required.",
+    "serviceCategoryRequired": "Category is required.",
+    "serviceDescriptionRequired": "Service description is required.",
+    "serviceDurationRequired": "Duration (in minutes) is required.",
+    "serviceDurationInvalid": "Duration must be a number greater than or equal to 0.",
+    "servicePriceRequired": "Price is required.",
+    "servicePriceInvalid": "Price must be a number greater than or equal to 0.",
+    "createService": "Error while creating the service.",
+    "updateService": "Error while updating the service.",
+    "deleteService": "Error while deleting the service.",
+    "categoryNameRequired": "Category name is required.",
+    "categoryDescriptionRequired": "Category description is required.",
+    "createCategory": "Error while creating the category.",
+    "deleteCategory": "Error while deleting the category.",
+    "deleteCategoryHasServices": "You cannot delete this category because it still contains services. Delete or move those services first."
+  },
+  "confirm": {
+    "deleteService": "Delete the service \"{name}\"? This action cannot be undone.",
+    "deleteCategory": "Delete the category \"{name}\"? All services must be deleted or moved first."
+  },
+  "category": {
+    "createTitle": "Create a category",
+    "nameLabel": "Category name",
+    "descriptionLabel": "Description"
+  },
+  "service": {
+    "createTitle": "Create a service",
+    "editTitle": "Edit service & pricing",
+    "categoryLabel": "Category",
+    "categoryPlaceholder": "Select a category…",
+    "nameLabel": "Service name",
+    "descriptionLabel": "Description",
+    "durationLabel": "Duration (min)",
+    "priceLabel": "Price ($)",
+    "durationPlaceholder": "e.g. 30",
+    "pricePlaceholder": "e.g. 45",
+    "includesTransportLabel": "Includes travel",
+    "badgeIncludesTransport": "Includes travel"
+  }
+}

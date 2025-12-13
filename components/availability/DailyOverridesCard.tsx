@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslations } from 'next-intl';
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -13,6 +14,8 @@ import type { DayAvailability, Kind } from '@/types/availability';
 import { isoToDate, todayISO } from '@/lib/availability-utils';
 
 export function DailyOverridesCard() {
+  const t = useTranslations('dailyOverrides');
+
   const [date, setDate] = useState<string>(todayISO());
   const [kind, setKind] = useState<Kind>('available');
   const [startTime, setStartTime] = useState('08:00');
@@ -49,7 +52,7 @@ export function DailyOverridesCard() {
       setEntries(data);
     } catch (e: any) {
       console.error('Error fetching day availabilities:', e);
-      setError('Impossible de récupérer vos créneaux pour ce jour.');
+      setError(t('error_load_day'));
     } finally {
       setLoading(false);
     }
@@ -85,13 +88,13 @@ export function DailyOverridesCard() {
   // quand la date change → on recharge la liste du jour
   useEffect(() => {
     if (!date) return;
-    fetchEntries(date);
+    void fetchEntries(date);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [date]);
 
   // au montage → on charge la liste "à venir"
   useEffect(() => {
-    fetchUpcoming();
+    void fetchUpcoming();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -121,8 +124,8 @@ export function DailyOverridesCard() {
 
       showNotice(
         kind === 'available'
-          ? 'Disponibilité ajoutée pour ce jour.'
-          : 'Indisponibilité ajoutée pour ce jour.'
+          ? t('notice_added_available')
+          : t('notice_added_unavailable')
       );
       setStartTime('08:00');
       setEndTime('09:00');
@@ -131,10 +134,7 @@ export function DailyOverridesCard() {
       await fetchUpcoming();
     } catch (e: any) {
       console.error('Error creating day availability:', e);
-      setError(
-        e?.message ||
-          'Erreur lors de la création de la disponibilité/indisponibilité.'
-      );
+      setError(e?.message || t('error_create'));
     } finally {
       setSaving(false);
     }
@@ -150,12 +150,12 @@ export function DailyOverridesCard() {
         const txt = await res.text().catch(() => '');
         throw new Error(txt || `HTTP ${res.status}`);
       }
-      showNotice('Créneau supprimé.');
+      showNotice(t('notice_deleted'));
       await fetchEntries(date);
       await fetchUpcoming();
     } catch (e: any) {
       console.error('Error deleting day availability:', e);
-      setError('Erreur lors de la suppression du créneau.');
+      setError(t('error_delete'));
     }
   };
 
@@ -170,12 +170,12 @@ export function DailyOverridesCard() {
   };
 
   const formatKindBadge = (kind: Kind) =>
-    kind === 'available' ? 'Dispo' : 'Indispo';
+    kind === 'available' ? t('badge_available') : t('badge_unavailable');
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Disponibilités / indisponibilités ponctuelles</CardTitle>
+        <CardTitle>{t('title')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
         {notice && (
@@ -194,7 +194,7 @@ export function DailyOverridesCard() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="date">Jour concerné</Label>
+              <Label htmlFor="date">{t('field_date_label')}</Label>
               <Input
                 id="date"
                 type="date"
@@ -205,7 +205,7 @@ export function DailyOverridesCard() {
             </div>
 
             <div className="space-y-2">
-              <Label>Type</Label>
+              <Label>{t('field_type_label')}</Label>
               <div className="flex gap-2">
                 <Button
                   type="button"
@@ -213,7 +213,7 @@ export function DailyOverridesCard() {
                   onClick={() => setKind('available')}
                   className="flex-1"
                 >
-                  Disponible
+                  {t('type_available')}
                 </Button>
                 <Button
                   type="button"
@@ -221,7 +221,7 @@ export function DailyOverridesCard() {
                   onClick={() => setKind('unavailable')}
                   className="flex-1"
                 >
-                  Indisponible
+                  {t('type_unavailable')}
                 </Button>
               </div>
             </div>
@@ -229,7 +229,7 @@ export function DailyOverridesCard() {
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="startTime">Début</Label>
+              <Label htmlFor="startTime">{t('field_start_label')}</Label>
               <Input
                 id="startTime"
                 type="time"
@@ -241,7 +241,7 @@ export function DailyOverridesCard() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="endTime">Fin</Label>
+              <Label htmlFor="endTime">{t('field_end_label')}</Label>
               <Input
                 id="endTime"
                 type="time"
@@ -256,24 +256,22 @@ export function DailyOverridesCard() {
 
           <div className="flex justify-end">
             <Button type="submit" disabled={saving}>
-              {saving ? 'Enregistrement…' : 'Ajouter ce créneau'}
+              {saving ? t('button_saving') : t('button_submit')}
             </Button>
           </div>
         </form>
 
         {/* Tous les créneaux à venir */}
         <div className="space-y-3 pt-4 border-t">
-          <p className="text-sm font-medium">
-            Tous les créneaux ponctuels à venir
-          </p>
+          <p className="text-sm font-medium">{t('upcoming_title')}</p>
 
           {loadingUpcoming ? (
             <p className="text-sm text-muted-foreground">
-              Chargement des créneaux à venir…
+              {t('upcoming_loading')}
             </p>
           ) : upcomingEntries.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              Aucun créneau ponctuel à venir.
+              {t('upcoming_empty')}
             </p>
           ) : (
             <ul className="space-y-1">

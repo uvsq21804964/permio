@@ -1,0 +1,22 @@
+{
+  "title": "One-off availabilities / unavailabilities",
+  "field_date_label": "Selected day",
+  "field_type_label": "Type",
+  "type_available": "Available",
+  "type_unavailable": "Unavailable",
+  "field_start_label": "Start",
+  "field_end_label": "End",
+  "button_saving": "Saving…",
+  "button_submit": "Add this slot",
+  "upcoming_title": "All upcoming one-off slots",
+  "upcoming_loading": "Loading upcoming slots…",
+  "upcoming_empty": "No upcoming one-off slots.",
+  "badge_available": "Avail.",
+  "badge_unavailable": "Unavail.",
+  "notice_added_available": "Availability added for this day.",
+  "notice_added_unavailable": "Unavailability added for this day.",
+  "notice_deleted": "Slot deleted.",
+  "error_load_day": "Unable to fetch your slots for this day.",
+  "error_create": "Error while creating availability/unavailability.",
+  "error_delete": "Error while deleting the slot."
+}

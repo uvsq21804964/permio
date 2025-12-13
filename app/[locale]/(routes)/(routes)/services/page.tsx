@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, FormEvent, ChangeEvent } from 'react';
+import { useTranslations } from 'next-intl';
 
 type ServiceCategory = {
   id: number;
@@ -39,6 +40,8 @@ type CategoryDraft = {
 type ServiceModalMode = 'create' | 'edit';
 
 export default function ServicesPage() {
+  const t = useTranslations('services');
+
   const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [services, setServices] = useState<ServicePricing[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,14 +74,14 @@ export default function ServicesPage() {
       const res = await fetch('/api/me/services');
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || 'Impossible de charger les services');
+        throw new Error(data.error || t('errors.loadServices'));
       }
       const data = await res.json();
       setCategories(data.categories || []);
       setServices(data.services || []);
     } catch (err: any) {
       console.error(err);
-      setError(err?.message || 'Erreur lors du chargement des services.');
+      setError(err?.message || t('alerts.errorGeneric'));
       setCategories([]);
       setServices([]);
     } finally {
@@ -87,7 +90,7 @@ export default function ServicesPage() {
   };
 
   useEffect(() => {
-    loadServices();
+    void loadServices();
   }, []);
 
   // ─────────────────────  MODALE SERVICE (CREATE / EDIT)  ─────────────────────
@@ -168,44 +171,42 @@ export default function ServicesPage() {
     // Nom obligatoire
     const name = serviceDraft.name.trim();
     if (!name) {
-      setServiceFormError('Le nom du service est obligatoire.');
+      setServiceFormError(t('errors.serviceNameRequired'));
       return;
     }
 
     // Catégorie obligatoire
     if (!serviceDraft.categoryId) {
-      setServiceFormError('La catégorie est obligatoire.');
+      setServiceFormError(t('errors.serviceCategoryRequired'));
       return;
     }
 
     // Description obligatoire
     const description = serviceDraft.description.trim();
     if (!description) {
-      setServiceFormError('La description du service est obligatoire.');
+      setServiceFormError(t('errors.serviceDescriptionRequired'));
       return;
     }
 
     // Durée obligatoire + nombre >= 0
     if (!serviceDraft.duration_minutes.trim()) {
-      setServiceFormError('La durée (en minutes) est obligatoire.');
+      setServiceFormError(t('errors.serviceDurationRequired'));
       return;
     }
     const duration = Number.parseInt(serviceDraft.duration_minutes.trim(), 10);
     if (Number.isNaN(duration) || duration < 0) {
-      setServiceFormError(
-        'La durée doit être un nombre supérieur ou égal à 0.'
-      );
+      setServiceFormError(t('errors.serviceDurationInvalid'));
       return;
     }
 
     // Prix obligatoire + nombre >= 0
     if (!serviceDraft.price.trim()) {
-      setServiceFormError('Le prix est obligatoire.');
+      setServiceFormError(t('errors.servicePriceRequired'));
       return;
     }
     const price = Number.parseFloat(serviceDraft.price.trim());
     if (Number.isNaN(price) || price < 0) {
-      setServiceFormError('Le prix doit être un nombre supérieur ou égal à 0.');
+      setServiceFormError(t('errors.servicePriceInvalid'));
       return;
     }
 
@@ -250,8 +251,8 @@ export default function ServicesPage() {
         throw new Error(
           data.error ||
             (serviceModalMode === 'create'
-              ? 'Impossible de créer le service'
-              : 'Impossible de mettre à jour le service')
+              ? t('errors.createService')
+              : t('errors.updateService'))
         );
       }
 
@@ -260,12 +261,12 @@ export default function ServicesPage() {
 
       if (serviceModalMode === 'create') {
         setServices((prev) => [...prev, updated]);
-        setSuccessMessage('Service créé avec succès.');
+        setSuccessMessage(t('alerts.successServiceCreated'));
       } else {
         setServices((prev) =>
           prev.map((s) => (s.id === updated.id ? updated : s))
         );
-        setSuccessMessage('Service mis à jour avec succès.');
+        setSuccessMessage(t('alerts.successServiceUpdated'));
       }
 
       setServiceModalOpen(false);
@@ -275,8 +276,8 @@ export default function ServicesPage() {
       setServiceFormError(
         err?.message ||
           (serviceModalMode === 'create'
-            ? 'Erreur lors de la création du service.'
-            : 'Erreur lors de la mise à jour du service.')
+            ? t('errors.createService')
+            : t('errors.updateService'))
       );
     } finally {
       setSavingService(false);
@@ -284,11 +285,7 @@ export default function ServicesPage() {
   };
 
   const handleDeleteService = async (service: ServicePricing) => {
-    if (
-      !window.confirm(
-        `Supprimer le service "${service.name}" ? Cette action est définitive.`
-      )
-    ) {
+    if (!window.confirm(t('confirm.deleteService', { name: service.name }))) {
       return;
     }
 
@@ -307,14 +304,14 @@ export default function ServicesPage() {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || 'Impossible de supprimer le service.');
+        throw new Error(data.error || t('errors.deleteService'));
       }
 
       setServices((prev) => prev.filter((s) => s.id !== service.id));
-      setSuccessMessage('Service supprimé avec succès.');
+      setSuccessMessage(t('alerts.successServiceDeleted'));
     } catch (err: any) {
       console.error(err);
-      setError(err?.message || 'Erreur lors de la suppression du service.');
+      setError(err?.message || t('errors.deleteService'));
     }
   };
 
@@ -352,12 +349,12 @@ export default function ServicesPage() {
     const description = categoryDraft.description.trim();
 
     if (!name) {
-      setCategoryFormError('Le nom de la catégorie est obligatoire.');
+      setCategoryFormError(t('errors.categoryNameRequired'));
       return;
     }
 
     if (!description) {
-      setCategoryFormError('La description de la catégorie est obligatoire.');
+      setCategoryFormError(t('errors.categoryDescriptionRequired'));
       return;
     }
 
@@ -378,31 +375,25 @@ export default function ServicesPage() {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || 'Impossible de créer la catégorie.');
+        throw new Error(data.error || t('errors.createCategory'));
       }
 
       const data = await res.json();
       const newCat: ServiceCategory = data.category;
 
       setCategories((prev) => [...prev, newCat]);
-      setSuccessMessage('Catégorie créée avec succès.');
+      setSuccessMessage(t('alerts.successCategoryCreated'));
       setCategoryModalOpen(false);
     } catch (err: any) {
       console.error(err);
-      setCategoryFormError(
-        err?.message || 'Erreur lors de la création de la catégorie.'
-      );
+      setCategoryFormError(err?.message || t('errors.createCategory'));
     } finally {
       setSavingCategory(false);
     }
   };
 
   const handleDeleteCategory = async (cat: ServiceCategory) => {
-    if (
-      !window.confirm(
-        `Supprimer la catégorie "${cat.name}" ? Tous les services doivent être supprimés ou déplacés avant.`
-      )
-    ) {
+    if (!window.confirm(t('confirm.deleteCategory', { name: cat.name }))) {
       return;
     }
 
@@ -424,28 +415,23 @@ export default function ServicesPage() {
       if (!res.ok) {
         // Cas particulier : la catégorie contient encore des services
         if (data.error === 'CATEGORY_HAS_SERVICES') {
-          setError(
-            data.message ||
-              'Impossible de supprimer cette catégorie car elle contient encore des services. Supprime ou déplace les services avant.'
-          );
+          setError(data.message || t('errors.deleteCategoryHasServices'));
           return;
         }
 
         // Autres erreurs
         throw new Error(
-          data.message || data.error || 'Impossible de supprimer la catégorie.'
+          data.message || data.error || t('errors.deleteCategory')
         );
       }
 
       // Succès : on retire la catégorie et ses services du state
       setCategories((prev) => prev.filter((c) => c.id !== cat.id));
       setServices((prev) => prev.filter((s) => s.category_id !== cat.id));
-      setSuccessMessage('Catégorie supprimée avec succès.');
+      setSuccessMessage(t('alerts.successCategoryDeleted'));
     } catch (err: any) {
       console.error(err);
-      setError(
-        err?.message || 'Erreur lors de la suppression de la catégorie.'
-      );
+      setError(err?.message || t('errors.deleteCategory'));
     }
   };
 
@@ -471,20 +457,15 @@ export default function ServicesPage() {
       <div className="w-full max-w-5xl space-y-6">
         <header className="flex flex-wrap items-center justify-between gap-2">
           <div>
-            <h1 className="text-lg md:text-xl font-semibold">
-              Mes services et tarifs
-            </h1>
-            <p className="text-xs text-muted-foreground">
-              Vos services sont disponibles à la commande pour vos clients qui
-              peuvent réserver un créneau en autonomie.
-            </p>
+            <h1 className="text-lg md:text-xl font-semibold">{t('title')}</h1>
+            <p className="text-xs text-muted-foreground">{t('subtitle')}</p>
           </div>
           <button
             type="button"
             onClick={openCreateCategoryModal}
             className="inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-medium text-primary hover:bg-primary/5"
           >
-            + Ajouter une catégorie
+            + {t('buttons.addCategory')}
           </button>
         </header>
 
@@ -504,7 +485,7 @@ export default function ServicesPage() {
         <div className="space-y-6">
           {categories.length === 0 && !error && (
             <div className="rounded-xl border bg-card p-4 text-sm text-muted-foreground">
-              Aucune catégorie ou service configuré pour l’instant.
+              {t('empty.noCategoryOrService')}
             </div>
           )}
 
@@ -535,21 +516,21 @@ export default function ServicesPage() {
                       onClick={() => openCreateServiceModal(cat.id)}
                       className="inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-medium text-primary hover:bg-primary/5 whitespace-nowrap shrink-0"
                     >
-                      + Service
+                      + {t('buttons.addService')}
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDeleteCategory(cat)}
                       className="inline-flex items-center justify-center rounded-full border border-red-300 px-3 py-1 text-[11px] font-medium text-red-600 hover:bg-red-50 whitespace-nowrap shrink-0"
                     >
-                      Supprimer
+                      {t('buttons.delete')}
                     </button>
                   </div>
                 </div>
 
                 {catServices.length === 0 ? (
                   <p className="text-xs text-muted-foreground">
-                    Aucun service dans cette catégorie pour l’instant.
+                    {t('empty.noServiceInCategory')}
                   </p>
                 ) : (
                   <div className="grid gap-3 md:grid-cols-2">
@@ -575,14 +556,14 @@ export default function ServicesPage() {
                                   onClick={() => openEditServiceModal(service)}
                                   className="inline-flex items-center justify-center rounded-full border px-2 py-1 text-[11px] font-medium text-primary hover:bg-primary/5 whitespace-nowrap shrink-0"
                                 >
-                                  Modifier
+                                  {t('buttons.edit')}
                                 </button>
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteService(service)}
                                   className="inline-flex items-center justify-center rounded-full border border-red-300 px-2 py-1 text-[11px] font-medium text-red-600 hover:bg-red-50 whitespace-nowrap shrink-0"
                                 >
-                                  Supprimer
+                                  {t('buttons.delete')}
                                 </button>
                               </div>
                             </div>
@@ -605,7 +586,7 @@ export default function ServicesPage() {
                             </div>
                             {service.includes_transport && (
                               <span className="inline-flex items-center rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[11px] text-emerald-700">
-                                Inclut le transport
+                                {t('service.badgeIncludesTransport')}
                               </span>
                             )}
                           </div>
@@ -627,15 +608,15 @@ export default function ServicesPage() {
             <div className="flex items-center justify-between gap-2">
               <h2 className="text-sm font-semibold">
                 {serviceModalMode === 'create'
-                  ? 'Créer un service'
-                  : 'Modifier le service & tarif'}
+                  ? t('service.createTitle')
+                  : t('service.editTitle')}
               </h2>
               <button
                 type="button"
                 onClick={closeServiceModal}
                 className="text-xs text-muted-foreground hover:text-foreground"
               >
-                Fermer
+                {t('buttons.close')}
               </button>
             </div>
 
@@ -645,7 +626,7 @@ export default function ServicesPage() {
                   htmlFor="categoryId"
                   className="text-xs font-medium text-foreground"
                 >
-                  Catégorie
+                  {t('service.categoryLabel')}
                 </label>
                 <select
                   id="categoryId"
@@ -654,7 +635,7 @@ export default function ServicesPage() {
                   onChange={handleServiceDraftChange}
                   className="w-full rounded-md border px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
-                  <option value={0}>Sélectionner une catégorie…</option>
+                  <option value={0}>{t('service.categoryPlaceholder')}</option>
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
                       {cat.name}
@@ -668,7 +649,7 @@ export default function ServicesPage() {
                   htmlFor="name"
                   className="text-xs font-medium text-foreground"
                 >
-                  Nom du service
+                  {t('service.nameLabel')}
                 </label>
                 <input
                   id="name"
@@ -684,7 +665,7 @@ export default function ServicesPage() {
                   htmlFor="description"
                   className="text-xs font-medium text-foreground"
                 >
-                  Description
+                  {t('service.descriptionLabel')}
                 </label>
                 <textarea
                   id="description"
@@ -702,7 +683,7 @@ export default function ServicesPage() {
                     htmlFor="duration_minutes"
                     className="text-xs font-medium text-foreground"
                   >
-                    Durée (min)
+                    {t('service.durationLabel')}
                   </label>
                   <input
                     id="duration_minutes"
@@ -712,7 +693,7 @@ export default function ServicesPage() {
                     value={serviceDraft.duration_minutes}
                     onChange={handleServiceDraftChange}
                     className="w-full rounded-md border px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                    placeholder="ex : 30"
+                    placeholder={t('service.durationPlaceholder')}
                   />
                 </div>
 
@@ -721,7 +702,7 @@ export default function ServicesPage() {
                     htmlFor="price"
                     className="text-xs font-medium text-foreground"
                   >
-                    Prix ($)
+                    {t('service.priceLabel')}
                   </label>
                   <input
                     id="price"
@@ -732,7 +713,7 @@ export default function ServicesPage() {
                     value={serviceDraft.price}
                     onChange={handleServiceDraftChange}
                     className="w-full rounded-md border px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                    placeholder="ex : 45"
+                    placeholder={t('service.pricePlaceholder')}
                   />
                 </div>
 
@@ -745,7 +726,7 @@ export default function ServicesPage() {
                       onChange={handleServiceDraftChange}
                       className="rounded border"
                     />
-                    Inclut le transport
+                    {t('service.includesTransportLabel')}
                   </label>
                 </div>
               </div>
@@ -761,7 +742,7 @@ export default function ServicesPage() {
                   disabled={savingService}
                   className="inline-flex items-center justify-center rounded-md border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Annuler
+                  {t('buttons.cancel')}
                 </button>
                 <button
                   type="submit"
@@ -769,10 +750,10 @@ export default function ServicesPage() {
                   className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {savingService
-                    ? 'Enregistrement…'
+                    ? t('buttons.saving')
                     : serviceModalMode === 'create'
-                    ? 'Créer'
-                    : 'Enregistrer'}
+                    ? t('buttons.create')
+                    : t('buttons.save')}
                 </button>
               </div>
             </form>
@@ -785,13 +766,15 @@ export default function ServicesPage() {
         <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4">
           <div className="w-full max-w-md rounded-2xl bg-card border shadow-lg p-5 space-y-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between gap-2">
-              <h2 className="text-sm font-semibold">Créer une catégorie</h2>
+              <h2 className="text-sm font-semibold">
+                {t('category.createTitle')}
+              </h2>
               <button
                 type="button"
                 onClick={closeCategoryModal}
                 className="text-xs text-muted-foreground hover:text-foreground"
               >
-                Fermer
+                {t('buttons.close')}
               </button>
             </div>
 
@@ -801,7 +784,7 @@ export default function ServicesPage() {
                   htmlFor="cat_name"
                   className="text-xs font-medium text-foreground"
                 >
-                  Nom de la catégorie
+                  {t('category.nameLabel')}
                 </label>
                 <input
                   id="cat_name"
@@ -817,7 +800,7 @@ export default function ServicesPage() {
                   htmlFor="cat_description"
                   className="text-xs font-medium text-foreground"
                 >
-                  Description
+                  {t('category.descriptionLabel')}
                 </label>
                 <textarea
                   id="cat_description"
@@ -840,14 +823,14 @@ export default function ServicesPage() {
                   disabled={savingCategory}
                   className="inline-flex items-center justify-center rounded-md border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  Annuler
+                  {t('buttons.cancel')}
                 </button>
                 <button
                   type="submit"
                   disabled={savingCategory}
                   className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  {savingCategory ? 'Création…' : 'Créer'}
+                  {savingCategory ? t('buttons.creating') : t('buttons.create')}
                 </button>
               </div>
             </form>

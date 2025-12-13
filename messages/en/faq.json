@@ -1,0 +1,77 @@
+{
+  "faq": {
+    "badge": "FAQ",
+    "title": "Frequently asked questions",
+    "subtitle": "Everything you need to know about plans, billing, and travel management.",
+    "items": {
+      "whoFor": {
+        "q": "Who is this tool for?",
+        "a": "For independent dog trainers and dog walkers who travel to clients’ homes and want to reduce driving while filling more time slots in their day. It’s also for anyone tired of doing all the planning manually and spending evenings emailing back and forth."
+      },
+      "whyUse": {
+        "q": "Why use MagicHango instead of a regular calendar?",
+        "a": "Because the goal isn’t just to “book appointments” — it's to optimize your week. MagicHango helps reduce back-and-forth driving, avoid gaps between sessions, and group appointments realistically by taking travel time into account. You gain clarity, save time, and sell more billable hours."
+      },
+      "publicBooking": {
+        "q": "Do you offer a public booking page?",
+        "a": "Yes. Clients can book time slots through a booking page based on the availability you configured. They don’t pay on the platform, but they can select exactly which service they want."
+      },
+      "payments": {
+        "q": "Who pays and how?",
+        "a": "The subscription is paid by the dog trainer or the agency (via Stripe). Clients don’t pay anything on the platform. EUR and USD are supported."
+      },
+      "hiddenFees": {
+        "q": "Are there any hidden fees?",
+        "a": "No. No setup fees, no cancellation fees, no surprise charges. You only pay the displayed subscription. Taxes may apply depending on your country."
+      },
+      "cancelAnytime": {
+        "q": "Can I cancel anytime?",
+        "a": "Yes. You can cancel whenever you want. Once canceled, you’re no longer billed and you keep access to your data according to the retention period in the app (export available)."
+      },
+      "trialPricing": {
+        "q": "Is there a free trial and what plans do you offer?",
+        "a": "A 1-month free trial with no card. One plan: Full Magic. You can cancel anytime."
+      },
+      "prorata": {
+        "q": "If I sign up mid-month, is it prorated?",
+        "a": "Your billing cycle starts on the day you sign up. For example, if you start on the 15th, your next renewal will be on the 15th of the following month."
+      },
+      "privacyLocation": {
+        "q": "Who can see my address or location?",
+        "a": "Clients only see your available time slots—times when no appointment has been booked yet. They don’t see your address, your route, or the travel legs between appointments. Only you can see those details in your calendar."
+      },
+      "planningScope": {
+        "q": "Do you handle locations and travel time?",
+        "a": "Yes. Clients can provide their home address or one-off addresses for a specific session, and the calendar shows travel time between sessions. Clicking a travel time opens the route directly in Google Maps. The goal is to group sessions and reduce unnecessary driving."
+      },
+      "optimization": {
+        "q": "How does the tool help fill more time slots?",
+        "a": "The engine groups sessions during the day, reduces gaps, and accounts for travel. It prioritizes hard-to-fill slots and avoids impossible sequences by keeping safety buffers between sessions. Result: less time on the road and more billable hours."
+      },
+      "mobileApp": {
+        "q": "Is there a mobile app?",
+        "a": "Not yet. MagicHango is currently optimized for the browser (mobile and desktop). A dedicated mobile app may come later depending on the most requested needs."
+      },
+      "calendarSync": {
+        "q": "Can I sync Google/Outlook calendars?",
+        "a": "Not yet. Calendar sync isn’t available for now, but it’s on the roadmap."
+      },
+      "cancellations": {
+        "q": "How do you handle cancellations and replacements?",
+        "a": "When a client cancels, the slot can be offered to another client who indicated availability for that time. The trainer sees the slot as replaced only after confirmation via the notification email."
+      },
+      "support": {
+        "q": "How do support and billing work?",
+        "a": "Invoices are generated in the app via Stripe and grouped in a dedicated page. If you run into an issue, you can contact support from inside the app to get a fast response."
+      },
+      "security": {
+        "q": "Are my data and my clients’ data secure?",
+        "a": "Yes. We apply standard security measures (access controls, account/organization isolation, and data protection best practices). You keep ownership of your data and can request an export at any time."
+      },
+      "enterprise": {
+        "q": "What if I need something more advanced than a simple calendar?",
+        "a": "If you manage multiple trainers, multiple zones, complex rules (areas, priorities, travel constraints, daily capacity) or need specific integrations, we can offer an agency/Enterprise version. Contact us — we’ll analyze your case and recommend the right setup."
+      }
+    }
+  }
+}

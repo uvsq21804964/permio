@@ -1,0 +1,19 @@
+{
+  "header": {
+    "title": "Choisir un type de service",
+    "subtitle": "Sélectionnez le service que vous souhaitez réserver avant de choisir un créneau dans l’agenda."
+  },
+  "errors": {
+    "loadServicesApi": "Impossible de récupérer les services de votre moniteur.",
+    "loadServicesGeneric": "Erreur lors du chargement des services de votre moniteur."
+  },
+  "empty": {
+    "noServices": "Votre moniteur n’a pas encore configuré de services."
+  },
+  "category": {
+    "noServices": "Aucun service disponible dans cette catégorie pour l’instant."
+  },
+  "button": {
+    "chooseService": "Choisir ce service"
+  }
+}

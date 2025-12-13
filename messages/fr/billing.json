@@ -1,0 +1,60 @@
+{
+  "header": {
+    "title": "Facturation",
+    "subtitle": "Gérez votre abonnement, vos factures et vos moyens de paiement."
+  },
+  "noCustomer": {
+    "description": "Aucune formule n’est active pour le moment. Choisissez un plan pour démarrer.",
+    "choosePlanAria": "Choisir une formule",
+    "chooseStarter": "Choisir Starter",
+    "choosePro": "Choisir Pro"
+  },
+  "subscription": {
+    "sectionLabel": "Abonnement",
+    "subscriptionLabel": "Souscription",
+    "renewalLabel": "Renouvellement",
+    "trialEndLabel": "Fin d’essai",
+    "closurePlanned": "Clôture planifiée. L’abonnement ne sera pas reconduit.",
+    "closed": "Abonnement clôturé.",
+    "interval": {
+      "year": "an",
+      "month": "mois"
+    }
+  },
+  "status": {
+    "closed": "Clôturé",
+    "closurePlanned": "Clôture planifiée",
+    "active": "Actif",
+    "trialing": "Période d’essai",
+    "paymentPending": "Paiement en attente"
+  },
+  "actions": {
+    "manageSubscription": "Gérer l'abonnement",
+    "cancelClosure": "Annuler la clôture",
+    "scheduleClosure": "Clore l’abonnement (fin de période)",
+    "upgradeStarter": "Passer à Starter",
+    "upgradePro": "Passer à Pro",
+    "upgradeMagic": "Passer à Full Magic",
+    "comparePlans": "Comparer les formules"
+  },
+  "invoices": {
+    "title": "Factures",
+    "subtitle": "Dernières 10 factures",
+    "empty": "Aucune facture pour le moment.",
+    "columns": {
+      "date": "Date",
+      "reference": "Référence",
+      "status": "Statut",
+      "amount": "Montant",
+      "action": "Action"
+    },
+    "actions": {
+      "downloadPdf": "Télécharger PDF",
+      "viewOnline": "Voir en ligne"
+    }
+  },
+  "help": {
+    "text": "Besoin d’aide ? Rendez-vous sur",
+    "contactLink": "/contact"
+  }
+}

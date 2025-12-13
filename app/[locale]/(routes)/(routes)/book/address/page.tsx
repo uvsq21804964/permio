@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, FormEvent } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Script from 'next/script';
+import { useTranslations } from 'next-intl';
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -46,6 +47,8 @@ function encodeAddress(addr: BookingAddress): string {
 }
 
 export default function BookAddressPage() {
+  const t = useTranslations('bookAddress');
+
   const searchParams = useSearchParams();
   const router = useRouter();
   const serviceId = searchParams.get('serviceId');
@@ -82,11 +85,9 @@ export default function BookAddressPage() {
   // 1) Protéger si pas de serviceId
   useEffect(() => {
     if (!serviceId) {
-      setError(
-        'Aucun service sélectionné. Veuillez revenir à la page précédente.'
-      );
+      setError(t('errorNoService'));
     }
-  }, [serviceId]);
+  }, [serviceId, t]);
 
   // 2) Charger l’adresse enregistrée du user (via ton API profil / me)
   useEffect(() => {
@@ -126,10 +127,7 @@ export default function BookAddressPage() {
 
   // 3) Initialiser l'autocomplete Google (seulement en mode "custom")
   useEffect(() => {
-    // Google pas prêt → stop
     if (!isMapsReady) return;
-
-    // On ne monte l'autocomplete que si on est en mode "adresse ponctuelle"
     if (addressMode !== 'custom') return;
 
     if (!window.google || !window.google.maps) return;
@@ -161,9 +159,7 @@ export default function BookAddressPage() {
       const place = autocomplete.getPlace();
 
       if (!place.geometry || !place.geometry.location) {
-        setError(
-          'Impossible de récupérer la géolocalisation de cette adresse.'
-        );
+        setError(t('errorGeocoding'));
         setSelectedAddress(null);
         return;
       }
@@ -191,11 +187,10 @@ export default function BookAddressPage() {
       setError(null);
     });
 
-    // cleanup quand le composant change / se démonte
     return () => {
       window.google.maps.event.clearInstanceListeners(autocomplete);
     };
-  }, [isMapsReady, addressMode]);
+  }, [isMapsReady, addressMode, t]);
 
   // 4) Initialisation / mise à jour de la carte (uniquement pour adresse ponctuelle)
   useEffect(() => {
@@ -203,14 +198,11 @@ export default function BookAddressPage() {
     if (addressMode !== 'custom') return;
     if (!window.google || !window.google.maps) return;
     if (!mapRef.current) return;
-
-    // Pour la carte, on ne prend QUE l'adresse ponctuelle sélectionnée
     if (!selectedAddress) return;
 
     const coords = { lat: selectedAddress.lat, lng: selectedAddress.lng };
 
     if (!mapInstanceRef.current) {
-      // Création de la carte
       mapInstanceRef.current = new window.google.maps.Map(mapRef.current, {
         center: coords,
         zoom: 14,
@@ -222,7 +214,6 @@ export default function BookAddressPage() {
         map: mapInstanceRef.current,
       });
     } else {
-      // Mise à jour de la position
       mapInstanceRef.current.setCenter(coords);
       if (markerRef.current) {
         markerRef.current.setPosition(coords);
@@ -245,17 +236,13 @@ export default function BookAddressPage() {
 
     if (addressMode === 'saved') {
       if (!savedAddress) {
-        setError(
-          "Vous n'avez pas d'adresse enregistrée. Choisissez une adresse ponctuelle."
-        );
+        setError(t('errorNoSavedAddress'));
         return;
       }
       addr = savedAddress;
     } else {
       if (!selectedAddress) {
-        setError(
-          'Veuillez choisir une adresse dans les suggestions Google pour ce rendez-vous.'
-        );
+        setError(t('errorNoCustomAddress'));
         return;
       }
       addr = selectedAddress;
@@ -282,21 +269,16 @@ export default function BookAddressPage() {
         onLoad={() => setIsMapsReady(true)}
         onError={(e) => {
           console.error('Erreur chargement Google Maps', e);
-          setError(
-            "Impossible de charger l'autocomplétion Google. Vérifiez votre connexion."
-          );
+          setError(t('errorMapsScript'));
         }}
       />
 
       <div className="mx-auto max-w-xl">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base md:text-lg">
-              Où aura lieu ce rendez-vous ?
-            </CardTitle>
+            <CardTitle className="text-base md:text-lg">{t('title')}</CardTitle>
             <p className="text-xs text-muted-foreground mt-1">
-              Votre adresse nous permet de calculer les temps de trajet de votre
-              moniteur avant d&apos;afficher les créneaux disponibles.
+              {t('subtitle')}
             </p>
           </CardHeader>
           <CardContent>
@@ -314,15 +296,15 @@ export default function BookAddressPage() {
                       disabled={savedAddressLoading || !savedAddress}
                     />
                     <span>
-                      Utiliser mon adresse enregistrée
+                      {t('modeSavedLabel')}
                       {savedAddressLoading && (
                         <span className="ml-1 text-[11px] text-muted-foreground">
-                          (chargement…)
+                          {t('modeSavedLoading')}
                         </span>
                       )}
                       {!savedAddressLoading && !savedAddress && (
                         <span className="ml-1 text-[11px] text-red-500">
-                          (aucune adresse enregistrée)
+                          {t('modeSavedNone')}
                         </span>
                       )}
                     </span>
@@ -330,7 +312,9 @@ export default function BookAddressPage() {
 
                   {savedAddress && addressMode === 'saved' && (
                     <div className="ml-5 rounded border bg-muted/50 p-2 text-[11px] space-y-1">
-                      <div className="font-semibold">Adresse enregistrée :</div>
+                      <div className="font-semibold">
+                        {t('savedAddressTitle')}
+                      </div>
                       <div>{savedAddress.formattedAddress}</div>
                       <div>
                         {savedAddress.postalCode} {savedAddress.city} (
@@ -350,7 +334,7 @@ export default function BookAddressPage() {
                       checked={addressMode === 'custom'}
                       onChange={() => setAddressMode('custom')}
                     />
-                    <span>Utiliser une autre adresse pour ce rendez-vous</span>
+                    <span>{t('modeCustomLabel')}</span>
                   </label>
 
                   {addressMode === 'custom' && (
@@ -358,12 +342,11 @@ export default function BookAddressPage() {
                       <input
                         ref={addressInputRef}
                         className="border rounded px-3 py-2 text-xs md:text-sm w-full"
-                        placeholder="Commencez à taper et choisissez une suggestion Google"
+                        placeholder={t('addressPlaceholder')}
                         value={addressInput}
                         onChange={(e) => {
                           const v = e.target.value;
                           setAddressInput(v);
-                          // si le texte ne correspond plus à l’adresse choisie, on invalide
                           setSelectedAddress((current) => {
                             if (!current) return null;
                             if (current.formattedAddress === v) return current;
@@ -372,8 +355,7 @@ export default function BookAddressPage() {
                         }}
                       />
                       <p className="text-[11px] text-muted-foreground">
-                        Sélectionnez une adresse proposée par Google pour
-                        garantir qu&apos;elle soit géolocalisable.
+                        {t('addressHelp')}
                       </p>
                     </div>
                   )}
@@ -384,14 +366,12 @@ export default function BookAddressPage() {
               {addressMode === 'custom' && (
                 <div className="space-y-1.5">
                   <span className="text-xs font-medium text-foreground">
-                    Carte
+                    {t('mapLabel')}
                   </span>
                   <div className="border rounded-md bg-muted/40 h-52 overflow-hidden relative">
                     {(!isMapsReady || !hasCoords) && (
                       <div className="flex h-full w-full items-center justify-center px-2 text-center text-[11px] text-muted-foreground">
-                        {!isMapsReady
-                          ? 'Chargement de la carte…'
-                          : 'Aucune adresse géolocalisée pour l’instant.'}
+                        {!isMapsReady ? t('mapLoading') : t('mapNoCoords')}
                       </div>
                     )}
                     <div
@@ -414,7 +394,7 @@ export default function BookAddressPage() {
 
               <div className="flex justify-end">
                 <Button type="submit" size="sm" disabled={!canSubmit}>
-                  Continuer vers les créneaux
+                  {t('submitLabel')}
                 </Button>
               </div>
             </form>

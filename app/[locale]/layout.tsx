@@ -1,22 +1,22 @@
 // app/[locale]/layout.tsx
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getMessages } from '@/src/i18n/getMessages';
 import { ClerkProvider } from '@clerk/nextjs';
 import { frFR, enUS } from '@clerk/localizations';
-import { roRO } from '@/src/i18n/clerk.ro';
+import type { Locale } from '@/src/lib/i18n';
 
 type Props = {
   children: React.ReactNode;
-  params: { locale: 'fr' | 'en' | 'ro' };
+  params: Promise<{ locale: Locale }>;
 };
 
 export default async function LocaleLayout({ children, params }: Props) {
-  const { locale } = params;
+  // ⬇️ c’est ça que Next 15 veut maintenant
+  const { locale } = await params;
 
-  const clerkLocalization =
-    locale === 'fr' ? frFR : locale === 'ro' ? roRO : enUS;
+  const clerkLocalization = locale === 'fr' ? frFR : enUS;
 
-  const messages = await getMessages({ locale });
+  const messages = await getMessages(locale);
 
   return (
     <ClerkProvider
@@ -36,5 +36,5 @@ export default async function LocaleLayout({ children, params }: Props) {
 }
 
 export function generateStaticParams() {
-  return [{ locale: 'fr' }, { locale: 'en' }, { locale: 'ro' }];
+  return [{ locale: 'fr' }, { locale: 'en' }];
 }

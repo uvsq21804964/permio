@@ -1,0 +1,25 @@
+{
+  "title": "Where will this appointment take place?",
+  "subtitle": "We use your address to calculate your instructor's travel time before showing available time slots.",
+
+  "modeSavedLabel": "Use my saved address",
+  "modeSavedLoading": "(loading…)",
+  "modeSavedNone": "(no saved address)",
+  "savedAddressTitle": "Saved address:",
+
+  "modeCustomLabel": "Use another address for this appointment",
+  "addressPlaceholder": "Start typing and pick a suggestion from Google",
+  "addressHelp": "Select an address suggested by Google to make sure it can be geolocated.",
+
+  "mapLabel": "Map",
+  "mapLoading": "Loading map…",
+  "mapNoCoords": "No geolocated address yet.",
+
+  "submitLabel": "Continue to time slots",
+
+  "errorNoService": "No service selected. Please go back to the previous page.",
+  "errorGeocoding": "We couldn't retrieve the geolocation for this address.",
+  "errorNoSavedAddress": "You don't have a saved address. Please choose a one-off address.",
+  "errorNoCustomAddress": "Please choose an address from Google's suggestions for this appointment.",
+  "errorMapsScript": "We couldn't load Google autocomplete. Please check your connection."
+}

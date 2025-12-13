@@ -1,0 +1,69 @@
+{
+  "title": "Mes services et tarifs",
+  "subtitle": "Vos services sont disponibles à la commande pour vos clients qui peuvent réserver un créneau en autonomie.",
+  "buttons": {
+    "addCategory": "Ajouter une catégorie",
+    "addService": "Service",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "save": "Enregistrer",
+    "create": "Créer",
+    "saving": "Enregistrement…",
+    "creating": "Création…"
+  },
+  "empty": {
+    "noCategoryOrService": "Aucune catégorie ou service configuré pour l’instant.",
+    "noServiceInCategory": "Aucun service dans cette catégorie pour l’instant."
+  },
+  "alerts": {
+    "errorGeneric": "Erreur lors du chargement des services.",
+    "successServiceCreated": "Service créé avec succès.",
+    "successServiceUpdated": "Service mis à jour avec succès.",
+    "successServiceDeleted": "Service supprimé avec succès.",
+    "successCategoryCreated": "Catégorie créée avec succès.",
+    "successCategoryDeleted": "Catégorie supprimée avec succès."
+  },
+  "errors": {
+    "loadServices": "Impossible de charger les services.",
+    "serviceNameRequired": "Le nom du service est obligatoire.",
+    "serviceCategoryRequired": "La catégorie est obligatoire.",
+    "serviceDescriptionRequired": "La description du service est obligatoire.",
+    "serviceDurationRequired": "La durée (en minutes) est obligatoire.",
+    "serviceDurationInvalid": "La durée doit être un nombre supérieur ou égal à 0.",
+    "servicePriceRequired": "Le prix est obligatoire.",
+    "servicePriceInvalid": "Le prix doit être un nombre supérieur ou égal à 0.",
+    "createService": "Erreur lors de la création du service.",
+    "updateService": "Erreur lors de la mise à jour du service.",
+    "deleteService": "Erreur lors de la suppression du service.",
+    "categoryNameRequired": "Le nom de la catégorie est obligatoire.",
+    "categoryDescriptionRequired": "La description de la catégorie est obligatoire.",
+    "createCategory": "Erreur lors de la création de la catégorie.",
+    "deleteCategory": "Erreur lors de la suppression de la catégorie.",
+    "deleteCategoryHasServices": "Impossible de supprimer cette catégorie car elle contient encore des services. Supprime ou déplace les services avant."
+  },
+  "confirm": {
+    "deleteService": "Supprimer le service \"{name}\" ? Cette action est définitive.",
+    "deleteCategory": "Supprimer la catégorie \"{name}\" ? Tous les services doivent être supprimés ou déplacés avant."
+  },
+  "category": {
+    "createTitle": "Créer une catégorie",
+    "nameLabel": "Nom de la catégorie",
+    "descriptionLabel": "Description"
+  },
+  "service": {
+    "createTitle": "Créer un service",
+    "editTitle": "Modifier le service & tarif",
+    "categoryLabel": "Catégorie",
+    "categoryPlaceholder": "Sélectionner une catégorie…",
+    "nameLabel": "Nom du service",
+    "descriptionLabel": "Description",
+    "durationLabel": "Durée (min)",
+    "priceLabel": "Prix ($)",
+    "durationPlaceholder": "ex : 30",
+    "pricePlaceholder": "ex : 45",
+    "includesTransportLabel": "Inclut le transport",
+    "badgeIncludesTransport": "Inclut le transport"
+  }
+}

@@ -1,0 +1,77 @@
+{
+  "faq": {
+    "badge": "FAQ",
+    "title": "Foire aux questions",
+    "subtitle": "Tout ce qu’il faut savoir sur les plans, la facturation et la gestion des trajets.",
+    "items": {
+      "whoFor": {
+        "q": "À qui s’adresse l’outil ?",
+        "a": "Aux éducateurs canins et promeneurs de chiens qui se déplacent à domicile et veulent réduire leurs temps de trajet tout en remplissant un maximum de créneaux dans la journée. L’outil s’adresse aussi à ceux qui en ont assez de gérer toute la planification eux-mêmes et de passer leurs soirées à envoyer et lire des mails."
+      },
+      "whyUse": {
+        "q": "Pourquoi utiliser MagicHango plutôt qu’un agenda classique ?",
+        "a": "Parce que l’objectif n’est pas seulement de “prendre des rendez-vous”, mais d’optimiser votre semaine. MagicHango vous aide à réduire les allers-retours, à éviter les trous entre deux séances et à regrouper les rendez-vous de façon réaliste en tenant compte des temps de trajet. Vous gagnez du temps, de la clarté, et vous facturez davantage d’heures utiles."
+      },
+      "publicBooking": {
+        "q": "Proposez-vous une page de réservation publique ?",
+        "a": "Oui. Vos clients réservent eux-mêmes leurs créneaux via une page de réservation sur la base des disponibilités que vous avez configurées. Ils ne paient pas sur la plateforme, mais peuvent sélectionner précisément un des services que vous proposez."
+      },
+      "payments": {
+        "q": "Qui paie et comment ?",
+        "a": "L’abonnement est payé par l’éducateur canin ou l’agence (via Stripe). Les clients n’ont aucun paiement à effectuer. EUR et USD sont pris en charge."
+      },
+      "hiddenFees": {
+        "q": "Y a-t-il des frais cachés ?",
+        "a": "Non. Pas de frais de mise en place, pas de frais d’annulation, pas de frais “surprise”. Vous payez uniquement l’abonnement affiché. Les taxes peuvent s’appliquer selon votre pays."
+      },
+      "cancelAnytime": {
+        "q": "Est-il possible d’annuler à tout moment ?",
+        "a": "Oui. Vous pouvez arrêter quand vous voulez. Une fois résilié, vous n’êtes plus facturé et vous gardez l’accès à vos données selon la période prévue dans l’app (export possible)."
+      },
+      "trialPricing": {
+        "q": "Y a-t-il un essai gratuit et quelles sont les formules ?",
+        "a": "Essai 1 mois sans carte. Une seule offre : Full Magic. Vous pouvez arrêter votre abonnement à tout moment."
+      },
+      "prorata": {
+        "q": "Si je m’inscris en cours de mois, est-ce au prorata ?",
+        "a": "Votre cycle de facturation démarre le jour de votre inscription. Par exemple, si vous démarrez le 15, votre renouvellement se fera le 15 du mois suivant."
+      },
+      "privacyLocation": {
+        "q": "Qui peut voir mon adresse ou savoir où je suis ?",
+        "a": "Vos clients n’accèdent qu’à une page avec vos créneaux disponibles, c’est-à-dire les moments où aucun rendez-vous n’est encore réservé. Ils ne voient ni votre adresse, ni votre trajet, ni les déplacements prévus entre deux rendez-vous. Seul vous avez accès à ces informations détaillées dans votre agenda."
+      },
+      "planningScope": {
+        "q": "Gérez-vous les lieux ou les temps de trajet ?",
+        "a": "Oui. Vos élèves peuvent fournir leur adresse de domicile ou des adresses ponctuelles pour un créneau particulier et l’agenda affiche un temps de trajet entre deux séances. Un clic sur ce temps de trajet ouvre directement l’itinéraire correspondant dans Google Maps. L’objectif est de regrouper les cours et de limiter les allers-retours dans la journée."
+      },
+      "optimization": {
+        "q": "Comment l’outil aide à remplir plus de créneaux ?",
+        "a": "Le moteur regroupe les rendez-vous dans la journée, limite les trous et prend en compte vos trajets. Il privilégie les créneaux difficiles à remplir et évite les enchaînements impossibles en gardant des marges de sécurité entre deux cours. Résultat : moins de temps perdu sur la route, plus d’heures facturables."
+      },
+      "mobileApp": {
+        "q": "Existe-t-il une application mobile ?",
+        "a": "Pas encore. MagicHango est pour l’instant optimisé pour le navigateur (mobile et desktop). Une application mobile pourra venir ensuite, selon les besoins les plus demandés."
+      },
+      "calendarSync": {
+        "q": "Puis-je synchroniser Google/Outlook ?",
+        "a": "Pas de synchronisation d’agenda pour le moment. Cette intégration est prévue en revanche."
+      },
+      "cancellations": {
+        "q": "Comment gérez-vous les annulations et remplacements ?",
+        "a": "Lorsqu’un élève annule, le créneau peut être reproposé à un autre élève ayant indiqué sa disponibilité sur ce créneau. Le professeur voit le créneau comme remplacé uniquement après confirmation via l’email de notification."
+      },
+      "support": {
+        "q": "Comment fonctionne le support et la facturation ?",
+        "a": "Les factures sont générées dans l’app via Stripe et regroupées dans une page dédiée. Si vous avez un souci, vous pouvez contacter le support depuis l’app pour obtenir une réponse rapide."
+      },
+      "security": {
+        "q": "Mes données et celles de mes clients sont-elles en sécurité ?",
+        "a": "Oui. Nous appliquons des mesures de sécurité standard (contrôles d’accès, isolation par compte/organisation, et bonnes pratiques de protection des données). Vous gardez la propriété de vos données et pouvez demander une exportation à tout moment."
+      },
+      "enterprise": {
+        "q": "Et si j’ai besoin d’une solution plus avancée qu’un simple calendrier ?",
+        "a": "Si vous avez plusieurs éducateurs, plusieurs zones à couvrir, des règles complexes (secteurs, priorités, contraintes de trajets, capacités par jour) ou besoin d’intégrations spécifiques, nous pouvons proposer une version “agence/Enterprise”. Contactez-nous : on analysera votre cas et on vous proposera la bonne configuration."
+      }
+    }
+  }
+}

@@ -608,29 +608,6 @@ export default function ProfilePage() {
                 </p>
               </div>
             </div>
-
-            {/* Petites infos dont dernière semaine validée */}
-            <div className="grid grid-cols-2 md:grid-cols-Z gap-2 md:gap-3 w-full md:w-auto">
-              <div className="rounded-xl border bg-background px-3 py-2.5 text-xs md:text-sm">
-                <div className="text-[11px] uppercase text-muted-foreground tracking-wide">
-                  Dernière semaine validée
-                </div>
-                <div className="font-semibold">
-                  {formatDate(profile.last_validated_week_start)}
-                </div>
-                <div className="text-[11px] text-muted-foreground">
-                  Semaine de référence
-                </div>
-              </div>
-              <div className="rounded-xl border bg-background px-3 py-2.5 text-xs md:text-sm">
-                <div className="text-[11px] uppercase text-muted-foreground tracking-wide">
-                  Validée le
-                </div>
-                <div className="font-semibold text-xs md:text-sm">
-                  {formatDateTime(profile.last_validated_at)}
-                </div>
-              </div>
-            </div>
           </section>
 
           <div className="grid gap-6 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1.4fr)]">
@@ -694,40 +671,6 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 </div>
-              </section>
-
-              {/* Validation planning */}
-              <section className="rounded-2xl border bg-card p-4 md:p-5 space-y-3">
-                <div className="flex items-center justify-between gap-2">
-                  <h2 className="text-sm font-semibold">
-                    Validation du planning
-                  </h2>
-                </div>
-
-                <div className="grid gap-3 md:grid-cols-2 text-sm">
-                  <div className="space-y-1.5">
-                    <span className="text-xs font-medium text-foreground">
-                      Dernière semaine validée
-                    </span>
-                    <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground">
-                      {formatDate(profile.last_validated_week_start)}
-                    </p>
-                  </div>
-                  <div className="space-y-1.5">
-                    <span className="text-xs font-medium text-foreground">
-                      Date de validation
-                    </span>
-                    <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground">
-                      {formatDateTime(profile.last_validated_at)}
-                    </p>
-                  </div>
-                </div>
-
-                <p className="text-[11px] text-muted-foreground">
-                  Ces informations sont mises à jour automatiquement lorsque tu
-                  valides ta prochaine semaine via l&apos;interface prévue à cet
-                  effet.
-                </p>
               </section>
 
               {/* Suppression du compte */}

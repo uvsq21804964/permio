@@ -1,11 +1,15 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 export default function SuccessPage({
   searchParams,
 }: {
   searchParams: { session_id?: string };
 }) {
+  const t = useTranslations('success');
   const sessionId = searchParams.session_id;
 
   return (
@@ -23,14 +27,14 @@ export default function SuccessPage({
             >
               <Image
                 src="/IconeSansFond.png"
-                alt="Logo"
+                alt={t('logoAlt')}
                 width={50}
                 height={50}
                 className="md:w-[50px] md:h-[50px]"
               />
             </div>
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-black break-words">
-              Paiement confirmé
+              {t('title')}
             </h1>
 
             {sessionId ? (
@@ -38,7 +42,7 @@ export default function SuccessPage({
                 className="mt-2 text-xs md:text-sm text-black/60 break-words"
                 style={{ hyphens: 'auto' }}
               >
-                Session&nbsp;:&nbsp;
+                {t('sessionLabel')}&nbsp;
                 <span className="font-mono break-all">{sessionId}</span>
               </p>
             ) : null}
@@ -48,8 +52,7 @@ export default function SuccessPage({
             className="mt-6 text-center text-black/80 break-words"
             style={{ hyphens: 'auto' }}
           >
-            Ton abonnement est actif. Tu peux accéder à ton espace pour définir
-            tes disponibilités et commencer à planifier.
+            {t('message')}
           </p>
 
           {/* CTA principal */}
@@ -64,7 +67,7 @@ export default function SuccessPage({
                   'motion-safe:transition motion-safe:duration-200',
                 ].join(' ')}
               >
-                Accéder à l’application
+                {t('primaryCta')}
               </span>
             </Link>
           </div>
@@ -75,7 +78,7 @@ export default function SuccessPage({
               href="/billing"
               className="text-sm text-black/70 underline-offset-4 hover:underline motion-safe:transition break-words"
             >
-              Voir ma facturation
+              {t('secondaryCta')}
             </Link>
           </div>
         </div>
@@ -85,12 +88,12 @@ export default function SuccessPage({
           className="mt-6 text-center text-xs text-black/60 break-words"
           style={{ hyphens: 'auto' }}
         >
-          Besoin d’aide&nbsp;? Contacte-nous via la page&nbsp;
+          {t('help.text')}{' '}
           <Link
             href="/contact"
             className="underline underline-offset-4 hover:no-underline"
           >
-            contact
+            {t('help.contactLink')}
           </Link>
           .
         </p>

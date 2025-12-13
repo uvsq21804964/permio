@@ -1,0 +1,78 @@
+{
+  "competitors": {
+    "table": {
+      "marketSolutions": "Market solutions",
+      "moreInfo": "More info"
+    },
+    "headers": {
+      "platforms": {
+        "label": "Marketplace platforms",
+        "subtitle": "Send you clients"
+      },
+      "allInOne": {
+        "label": "Management software",
+        "subtitle": "Handle admin tasks"
+      },
+      "freeTools": {
+        "label": "Basic tools",
+        "subtitle": "Calendar, spreadsheet, notes…"
+      },
+      "ourTool": {
+        "label": "Magic Hango",
+        "subtitle": "Organizes your day"
+      }
+    },
+    "sections": {
+      "booking": "Getting clients & booking",
+      "travel": "Travel organization",
+      "daily": "Your day-to-day",
+      "price": "Pricing"
+    },
+    "rows": {
+      "bringsClients": {
+        "label": "Brings you new clients",
+        "tooltip": "Platforms rent you their audience. This assistant: your booking page helps you attract your own clients (website, social, word of mouth)."
+      },
+      "selfBookingLogicalSlots": {
+        "label": "Clients self-book into realistic time slots",
+        "tooltip": "Platforms mostly show “free” hours. Here, clients only see slots that match your hours AND your travel time."
+      },
+      "includesTravelTime": {
+        "label": "Includes travel time"
+      },
+      "groupsByArea": {
+        "label": "Groups appointments by area"
+      },
+      "dailyRouteInMaps": {
+        "label": "Daily route ready in Google Maps"
+      },
+      "timeSpentPlanning": {
+        "label": "Time spent planning your week",
+        "tooltip": "Messages, adjustments, filling gaps…"
+      },
+      "madeForInHome": {
+        "label": "Built for in-home dog professionals"
+      },
+      "realCost": {
+        "label": "What it really costs you",
+        "tooltip": "Some solutions are “free” but take a cut on every session. Here: no commission—the price stays the same no matter your revenue."
+      }
+    },
+    "values": {
+      "extraFee": "+ fee",
+      "sometimes": "Sometimes",
+      "rarely": "Rarely",
+      "yesNoTravel": "Yes, but no travel logic",
+      "yesSimpleCalendar": "Yes, basic calendar",
+      "yesOptimizedWithTravel": "Yes, optimized with travel time",
+      "high": "High",
+      "medium": "Medium",
+      "veryHigh": "Very high",
+      "veryLow": "Very low",
+      "platformCommission": "15–25% commission",
+      "managementSoftwarePrice": "$40–$100/month",
+      "basicToolsPrice": "$0–$5/month",
+      "ourToolPrice": "$38/month, no commission"
+    }
+  }
+}

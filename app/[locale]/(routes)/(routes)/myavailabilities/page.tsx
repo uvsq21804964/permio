@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
+import { useTranslations } from 'next-intl';
 
 import { AvailabilityAgenda } from '@/components/availability-agenda';
 import { DailyOverridesCard } from '@/components/availability/DailyOverridesCard';
@@ -17,6 +18,7 @@ type MeRoleResponse = {
 };
 
 export default function MyAvailabilitiesPage() {
+  const t = useTranslations('myAvailabilities');
   const { isLoaded, isSignedIn } = useAuth();
 
   const [me, setMe] = useState<MeRoleResponse | null>(null);
@@ -51,14 +53,14 @@ export default function MyAvailabilitiesPage() {
       } catch (e: any) {
         console.error('[MyAvailabilitiesPage] /api/me/role error:', e);
         setMe(null);
-        setRoleError(e?.message ?? 'Erreur de chargement du rôle');
+        setRoleError(e?.message ?? t('errors.loadRole'));
       } finally {
         setRoleLoading(false);
       }
     };
 
-    loadMe();
-  }, [isLoaded, isSignedIn]);
+    void loadMe();
+  }, [isLoaded, isSignedIn, t]);
 
   const meRole = me?.role ?? null;
   const isClient = meRole === 'student';
@@ -76,7 +78,7 @@ export default function MyAvailabilitiesPage() {
   if (!isLoaded) {
     return (
       <div className="p-6 text-sm text-muted-foreground">
-        Chargement de votre session…
+        {t('loading.session')}
       </div>
     );
   }
@@ -84,7 +86,7 @@ export default function MyAvailabilitiesPage() {
   if (!isSignedIn) {
     return (
       <div className="p-6 text-sm text-muted-foreground">
-        Vous devez être connecté pour gérer vos disponibilités.
+        {t('auth.signInRequired')}
       </div>
     );
   }
@@ -93,7 +95,7 @@ export default function MyAvailabilitiesPage() {
   if (roleLoading) {
     return (
       <div className="p-6 text-sm text-muted-foreground">
-        Chargement de vos droits…
+        {t('loading.rights')}
       </div>
     );
   }
@@ -106,13 +108,8 @@ export default function MyAvailabilitiesPage() {
     <div className="min-h-screen bg-background p-6">
       <div className="mx-auto max-w-7xl space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">
-            Mes disponibilités
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Définissez votre semaine type, ajoutez des exceptions jour par jour
-            et visualisez le tout dans un agenda hebdomadaire.
-          </p>
+          <h1 className="text-3xl font-bold text-foreground">{t('title')}</h1>
+          <p className="text-muted-foreground mt-2">{t('subtitle')}</p>
         </div>
 
         {/* ✅ Switch affiché uniquement si NON client */}
@@ -127,7 +124,7 @@ export default function MyAvailabilitiesPage() {
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              Configurer
+              {t('tabs.configure')}
             </button>
             <button
               type="button"
@@ -138,7 +135,7 @@ export default function MyAvailabilitiesPage() {
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              Vue globale
+              {t('tabs.global')}
             </button>
           </div>
         )}
@@ -152,7 +149,9 @@ export default function MyAvailabilitiesPage() {
         )}
 
         {/* ✅ Global toujours accessible, et forcé pour client */}
-        {effectiveView === 'global' && <WeeklyGlobalAgenda meRole={meRole} />}
+        {effectiveView === 'global' && (
+          <WeeklyGlobalAgenda meRole={meRole as Role} />
+        )}
       </div>
     </div>
   );

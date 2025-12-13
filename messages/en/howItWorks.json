@@ -1,0 +1,38 @@
+{
+  "workflow": {
+    "heading": "An assistant that organizes your sessions and supports your clients",
+    "subheading": "Give your clients a simple, instant experience: booking becomes fast, frictionless, and effortless.",
+    "nav": {
+      "prev": "Previous",
+      "next": "Next"
+    },
+    "steps": [
+      {
+        "title": "Set up your workspace",
+        "description": "Create your account, set your weekly availability, and add the services you offer. In just a few minutes, everything is ready."
+      },
+      {
+        "title": "Bring your clients in",
+        "description": "Clients book directly on your private calendar. Travel times are automatically included, without ever revealing your address."
+      },
+      {
+        "title": "Finally take time for yourself",
+        "description": "Your schedule builds and reshuffles automatically. Less back-and-forth, less stress, and more time to breathe… or enjoy your day."
+      },
+      {
+        "title": "Run your day",
+        "description": "Each day, access your optimized route in one click. Open Google Maps instantly to get to your next appointment."
+      },
+      {
+        "title": "Watch your revenue grow",
+        "description": "By optimizing your schedule and cutting unnecessary driving, you free up more bookable time, more sessions, less fatigue."
+      }
+    ],
+    "bottom": {
+      "pitchLine1": "Bring the magic.",
+      "pitchLine2": "More spontaneous bookings, instant client trust… ",
+      "pitchLine3": "Let us prove it to you.",
+      "cta": "Try it free for 1 month!"
+    }
+  }
+}

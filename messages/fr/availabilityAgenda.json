@@ -1,0 +1,57 @@
+{
+  "title": "Disponibilités par défaut (Semaine type)",
+  "description": "Les créneaux que vous ajoutez ou supprimez ici définissent votre semaine type (disponibilités récurrentes). Ils seront utilisés comme base pour vos futurs plannings.",
+  "hoursLabel": "Heures (rest./tot.) :",
+  "editing": {
+    "hintOn": "Cliquez sur une case vide pour ajouter des disponibilités, ou sur une disponibilité existante pour la supprimer.",
+    "hintOff": "Mode lecture : activez le mode édition pour modifier votre semaine type."
+  },
+  "userLabel": {
+    "instructor": "Moniteur",
+    "student": "Élève",
+    "selfFallback": "Moi"
+  },
+  "buttons": {
+    "editOn": "Terminer les modifications",
+    "editOff": "Modifier la semaine type",
+    "addSlot": "Ajouter une plage",
+    "cancel": "Annuler",
+    "submit": "Ajouter"
+  },
+  "table": {
+    "hourColumn": "Heure"
+  },
+  "dialog": {
+    "title": "Ajouter des disponibilités",
+    "dayLabel": "Jour",
+    "rangesLabel": "Plages horaires",
+    "startLabel": "Début",
+    "endLabel": "Fin"
+  },
+  "notices": {
+    "slotDeleted": "Plage supprimée",
+    "oneAdded": "Plage ajoutée ({start}–{end})",
+    "manyAdded": "{count} plages ajoutées"
+  },
+  "errors": {
+    "currentUser": "Impossible de charger l'utilisateur courant.",
+    "createRange": "Erreur lors de la création des disponibilités.",
+    "rangeOrder": "Plage {index}: L'heure de fin doit être après l'heure de début.",
+    "rangeBounds": "Plage {index}: Les horaires doivent être entre 8h00 et 20h00.",
+    "loadStatusOrAvailabilities": "Impossible de récupérer votre statut ou vos disponibilités.",
+    "loadAvailabilities": "Chargement de vos disponibilités…",
+    "loadingGeneric": "Chargement…"
+  },
+  "meta": {
+    "lastUpdate": "Dernière modification {value}"
+  },
+  "days": {
+    "0": "Lundi",
+    "1": "Mardi",
+    "2": "Mercredi",
+    "3": "Jeudi",
+    "4": "Vendredi",
+    "5": "Samedi",
+    "6": "Dimanche"
+  }
+}

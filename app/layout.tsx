@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: 'Magic Hango - Create time together, magically',
   description: 'Created with v0',
   generator: 'v0.app',
-  icons: { icon: { url: '/iconeOfficiel.png', type: 'image/png' } },
+  icons: { icon: { url: '/iconeSansFond.png', type: 'image/png' } },
 };
 
 export default function RootLayout({

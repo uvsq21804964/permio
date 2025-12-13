@@ -1,0 +1,38 @@
+{
+  "workflow": {
+    "heading": "Un assistant qui organise vos séances et accompagne vos clients",
+    "subheading": "Offrez à vos clients une expérience simple et immédiate : réserver devient rapide, sans hésitation et sans friction.",
+    "nav": {
+      "prev": "Précédent",
+      "next": "Suivant"
+    },
+    "steps": [
+      {
+        "title": "Configurez votre espace",
+        "description": "Créez votre compte, définissez vos disponibilités hebdomadaires et ajoutez les services que vous proposez. En quelques minutes, tout est prêt."
+      },
+      {
+        "title": "Amenez vos clients",
+        "description": "Vos clients réservent eux-mêmes sur votre agenda privé. Les temps de trajet sont automatiquement intégrés, sans jamais révéler votre adresse."
+      },
+      {
+        "title": "Prenez enfin du temps pour vous",
+        "description": "Votre planning se construit et se réorganise automatiquement. Moins d’allers-retours, moins de stress, plus de temps pour souffler… ou profiter de votre journée."
+      },
+      {
+        "title": "Pilotez votre journée",
+        "description": "Chaque jour, accédez en un clic à votre tournée optimisée. Lancez Google Maps instantanément pour vous rendre au prochain rendez-vous."
+      },
+      {
+        "title": "Observez votre revenu augmenter",
+        "description": "En optimisant votre planning et en limitant les trajets inutiles, vous libérez des créneaux pour facturer plus de séances, avec moins de fatigue au quotidien."
+      }
+    ],
+    "bottom": {
+      "pitchLine1": "Adoptez la magie.",
+      "pitchLine2": "Plus de réservations spontanées, une confiance immédiate de vos clients…",
+      "pitchLine3": "Laissez-nous vous le prouver.",
+      "cta": "Essayez pendant 1 mois gratuit !"
+    }
+  }
+}

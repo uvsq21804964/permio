@@ -1,0 +1,25 @@
+{
+  "title": "Où aura lieu ce rendez-vous ?",
+  "subtitle": "Votre adresse nous permet de calculer les temps de trajet de votre moniteur avant d'afficher les créneaux disponibles.",
+
+  "modeSavedLabel": "Utiliser mon adresse enregistrée",
+  "modeSavedLoading": "(chargement…)",
+  "modeSavedNone": "(aucune adresse enregistrée)",
+  "savedAddressTitle": "Adresse enregistrée :",
+
+  "modeCustomLabel": "Utiliser une autre adresse pour ce rendez-vous",
+  "addressPlaceholder": "Commencez à taper et choisissez une suggestion Google",
+  "addressHelp": "Sélectionnez une adresse proposée par Google pour garantir qu'elle soit géolocalisable.",
+
+  "mapLabel": "Carte",
+  "mapLoading": "Chargement de la carte…",
+  "mapNoCoords": "Aucune adresse géolocalisée pour l’instant.",
+
+  "submitLabel": "Continuer vers les créneaux",
+
+  "errorNoService": "Aucun service sélectionné. Veuillez revenir à la page précédente.",
+  "errorGeocoding": "Impossible de récupérer la géolocalisation de cette adresse.",
+  "errorNoSavedAddress": "Vous n'avez pas d'adresse enregistrée. Choisissez une adresse ponctuelle.",
+  "errorNoCustomAddress": "Veuillez choisir une adresse dans les suggestions Google pour ce rendez-vous.",
+  "errorMapsScript": "Impossible de charger l'autocomplétion Google. Vérifiez votre connexion."
+}

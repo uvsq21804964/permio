@@ -1,0 +1,27 @@
+{
+  "plans": {
+    "heading": "Save time on driving, without changing how you work",
+    "subheading": "Clients book on their own, your appointments get grouped, and your whole schedule lives in one place.",
+    "banner": {
+      "label": "Best value",
+      "text": "Group appointments, reduce back-and-forth driving, and open Google Maps in one click from your calendar."
+    },
+    "badge": "Made for dog trainers",
+    "perMonth": "/month",
+    "note": "Ideal if you travel to clients’ homes.",
+    "ctaPrimary": "Try it for one month",
+    "ctaSecondary": "Choose this plan",
+    "disclaimer": "No card required to start. Cancel anytime.",
+    "plan": {
+      "title": "Full Magic",
+      "features": [
+        "Clients can book 24/7",
+        "Travel times included, no scheduling conflicts",
+        "Fewer gaps and less back-and-forth driving",
+        "Google Maps integration",
+        "Calendar, routes, and client details in one place",
+        "Unlimited services and appointments"
+      ]
+    }
+  }
+}

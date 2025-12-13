@@ -1,0 +1,39 @@
+{
+  "header_title": "Weekly agenda – global view",
+  "header_period": "Week from {from} to {to}.",
+  "legend_dogsitter": "Blue = default availabilities · Green = one-off availabilities · Pink = one-off unavailabilities · Purple = booked slots · Orange = travels.",
+  "legend_default": "Hover a slot to see more details.",
+  "earnings_label_prefix": "Total earned this week:",
+  "earnings_none": "—",
+  "nav_prev_week": "← Previous week",
+  "nav_next_week": "Next week →",
+  "error_load_week": "Unable to fetch your slots for this week.",
+  "loading_overlay": "Loading this week…",
+  "column_hour": "Time",
+
+  "default_block_title": "Default {start}–{end}",
+  "default_block_label": "Default week",
+
+  "override_block_label_available": "One-off availability",
+  "override_block_label_unavailable": "Unavailable",
+
+  "notice_missing_address": "Cannot open directions: missing address for this travel.",
+  "travel_label": "Travel",
+  "travel_tooltip_time": "Travel {start}–{end}",
+  "travel_tooltip_destination": "Destination: {address}",
+  "travel_tooltip_origin": "Origin: {address}",
+
+  "slot_client_unknown": "Unknown client",
+  "slot_instructor_unknown": "Unknown instructor",
+  "slot_main_label_client": "Client",
+  "slot_main_label_instructor": "Dogsitter",
+
+  "slot_tooltip_time": "{start}–{end}",
+  "slot_tooltip_main": "{label}: {name}",
+  "slot_tooltip_you": "You: {name}",
+  "slot_tooltip_client": "Client: {name}",
+  "slot_tooltip_service_with_price": "Service: {service} ({price})",
+  "slot_tooltip_service": "Service: {service}",
+  "slot_tooltip_price": "Price: {price}",
+  "slot_tooltip_address": "Address: {address}"
+}

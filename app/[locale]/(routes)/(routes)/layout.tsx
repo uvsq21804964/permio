@@ -31,19 +31,38 @@ export default async function RootLayout({
   const logo_mobile = '/IconeMobile.png';
 
   const pages = [
-    { name: 'Ma semaine', link: '/myweek', visible: 2 },
-    { name: 'Mes clients', link: '/gestion', visible: 0 },
-    { name: 'Mes services', link: '/services', visible: 0 },
-    { name: 'Mes dispos', link: '/myavailabilities', visible: 0 },
-    { name: 'Mes factures', link: '/billing', visible: 0 },
-    { name: 'Réserver', link: '/book/services', visible: 1 },
-    // { name: 'Configuration', link: '/configuration', visible: 2 },
-    { name: 'Subscribe', link: '/plans', visible: 0 },
-    { name: 'Paramètres', link: '/profile', visible: 2 },
-    { name: 'Se déconnecter', link: '/sign-out', visible: 2 },
+    { nameFR: 'Ma semaine', nameEN: 'Schedule', link: '/myweek', visible: 2 },
+    { nameFR: 'Mes clients', nameEN: 'Clients', link: '/gestion', visible: 0 },
+    {
+      nameFR: 'Mes services',
+      nameEN: 'Services',
+      link: '/services',
+      visible: 0,
+    },
+    {
+      nameFR: 'Mes dispos',
+      nameEN: 'My availability',
+      link: '/availability',
+      visible: 0,
+    },
+    { nameFR: 'Factures', nameEN: 'Invoices', link: '/invoices', visible: 0 }, // ou Facturation/Billing
+    { nameFR: 'Réserver', nameEN: 'Book', link: '/book/services', visible: 1 },
+    {
+      nameFR: 'Abonnement',
+      nameEN: 'Subscription',
+      link: '/plans',
+      visible: 0,
+    },
+    { nameFR: 'Paramètres', nameEN: 'Settings', link: '/profile', visible: 2 },
+    {
+      nameFR: 'Se déconnecter',
+      nameEN: 'Log out',
+      link: '/sign-out',
+      visible: 2,
+    },
   ] as const;
 
-  const activeLink = '/accueil';
+  const activeLink = '/myweek';
 
   return (
     <>
