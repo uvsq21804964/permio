@@ -109,7 +109,7 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
         </>
       ) : (
         <>
-          Your dog can’t wait 🐾
+          Your dog can't wait 🐾
           <br />
           Let's find his next trainer !
         </>
