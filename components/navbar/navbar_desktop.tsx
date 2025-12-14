@@ -129,9 +129,6 @@ export default function DesktopNavbar({
         <div className="flex-1">
           <div className="mx-auto max-w-7xl pr-4 sm:pr-6">
             <div className="flex h-16 items-center justify-end gap-2">
-              <div className="fixed right-2 top-1 z-50 text-black">
-                <LocaleSwitcher />
-              </div>
               {/* Liens desktop */}
               <div className="hidden md:flex items-center gap-2">
                 {mainNavPages.map((p) => {
@@ -233,6 +230,7 @@ export default function DesktopNavbar({
                     )}
                   </div>
                 )}
+                <LocaleSwitcher />
               </div>
 
               {/* Burger (mobile) — inchangé */}

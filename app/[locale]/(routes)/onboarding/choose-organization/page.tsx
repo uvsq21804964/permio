@@ -20,7 +20,7 @@ type Props = {
   className?: string;
 };
 
-type AddressDetails = {
+export type AddressDetails = {
   formattedAddress: string;
   lat: number;
   lng: number;
@@ -65,7 +65,7 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
   const { setActive } = useOrganizationList();
   const { user, isLoaded: isUserLoaded } = useUser();
 
-  // Mode (client / trainer) + step trainer
+  // Mode (client / trainer) + trainer step
   const [mode, setMode] = useState<'trainer' | 'client' | null>(null);
   const [trainerStep, setTrainerStep] = useState<'address' | 'availability'>(
     'address'
@@ -76,6 +76,10 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Trainer form (extra fields)
+  const [trainerAgencyName, setTrainerAgencyName] = useState('');
+  const [trainerWebsiteUrl, setTrainerWebsiteUrl] = useState('');
+
   // Google address (used by client + trainer)
   const [isMapsReady, setIsMapsReady] = useState(false);
   const addressInputRef = useRef<HTMLInputElement | null>(null);
@@ -84,13 +88,10 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
     null
   );
   const autocompleteRef = useRef<any>(null);
+
   useEffect(() => {
     if (typeof window === 'undefined') return;
-
-    // ✅ Si le script est déjà chargé, on ne dépend pas de onLoad()
-    if (window.google?.maps?.places?.Autocomplete) {
-      setIsMapsReady(true);
-    }
+    if (window.google?.maps?.places?.Autocomplete) setIsMapsReady(true);
   }, []);
 
   const firstName = user?.firstName || '';
@@ -109,9 +110,9 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
         </>
       ) : (
         <>
-          Your dog can't wait 🐾
+          Your dog can&apos;t wait 🐾
           <br />
-          Let's find his next trainer !
+          Let&apos;s find his next trainer !
         </>
       );
     }
@@ -121,13 +122,13 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
           <>
             Côté pro ✨
             <br />
-            Dites-nous d'où vous vous déplacerez.
+            Parlez-nous de votre activité.
           </>
         ) : (
           <>
             Pro mode ✨
             <br />
-            Tell us where you will travel from !
+            Tell us about your activity.
           </>
         );
       }
@@ -141,14 +142,29 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
         <>
           Perfect ✅
           <br />
-          Now, let's choose your work schedule !
+          Now, let&apos;s choose your work schedule !
         </>
       );
     }
     return null;
   }, [mode, trainerStep, locale]);
 
-  // Google places init (when we show an address input)
+  const resetAll = () => {
+    setMode(null);
+    setTrainerStep('address');
+    setCode('');
+    setLoading(false);
+    setError(null);
+
+    setTrainerAgencyName('');
+    setTrainerWebsiteUrl('');
+
+    setIsMapsReady((prev) => prev);
+    setAddressInput('');
+    setSelectedAddress(null);
+  };
+
+  // Init Google Places Autocomplete only when the address input is visible
   useEffect(() => {
     const needAddressInput =
       mode === 'client' || (mode === 'trainer' && trainerStep === 'address');
@@ -160,7 +176,6 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
     const AutocompleteCtor = window.google?.maps?.places?.Autocomplete;
     if (!AutocompleteCtor) return;
 
-    // ✅ Cleanup ancienne instance si on ré-init (changement de mode/step)
     if (autocompleteRef.current) {
       window.google?.maps?.event?.clearInstanceListeners(
         autocompleteRef.current
@@ -213,7 +228,6 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
     });
 
     return () => {
-      // retire proprement le listener + l'instance
       window.google?.maps?.event?.removeListener?.(listener);
       window.google?.maps?.event?.clearInstanceListeners(ac);
       if (autocompleteRef.current === ac) autocompleteRef.current = null;
@@ -293,39 +307,38 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
     !!selectedAddress &&
     !!addressInput.trim();
 
-  const canContinueTrainerAddress = !!selectedAddress && !!addressInput.trim();
+  const canContinueTrainerAddress =
+    !!selectedAddress &&
+    !!addressInput.trim() &&
+    !!trainerAgencyName.trim() &&
+    !!trainerWebsiteUrl.trim();
 
-  const ModeChip = ({
-    value,
-    label,
-  }: {
-    value: 'client' | 'trainer';
-    label: string;
-  }) => {
-    const active = mode === value;
-    return (
-      <button
-        type="button"
-        onClick={() => {
-          setError(null);
-          setMode(value);
-          if (value === 'trainer') setTrainerStep('address');
-        }}
-        className={[
-          'rounded-full px-3 py-1.5 text-[11px] md:text-sm font-semibold transition whitespace-nowrap',
-          active
-            ? 'bg-primary text-white shadow-sm'
-            : 'bg-white/80 text-primary border border-primary/30 hover:bg-primary hover:text-white',
-        ].join(' ')}
-      >
-        {label}
-      </button>
-    );
+  const validateTrainerStep = () => {
+    if (!trainerAgencyName.trim()) {
+      setError(
+        locale.startsWith('fr')
+          ? "Veuillez renseigner le nom de l'agence."
+          : 'Please provide the agency name.'
+      );
+      return false;
+    }
+    if (!trainerWebsiteUrl.trim()) {
+      setError(
+        locale.startsWith('fr')
+          ? "Veuillez renseigner l'URL de votre site."
+          : 'Please provide your website URL.'
+      );
+      return false;
+    }
+    if (!selectedAddress || !addressInput.trim()) {
+      setError(t('error.addressRequired'));
+      return false;
+    }
+    return true;
   };
 
   return (
     <div className="bg-[#f9ffc6]/80 min-h-screen">
-      {/* NAVBAR */}
       <header className="fixed top-0 left-0 right-0 z-40 border-b border-black/10 bg-gradient-to-r from-primary to-[#d400ff] text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-2.5 md:px-8 md:py-3">
           <Link
@@ -353,7 +366,7 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
                 type="button"
                 className="text-[11px] md:text-sm font-medium text-white/80 hover:text-white transition"
               >
-                Déconnexion
+                {locale.startsWith('fr') ? 'Déconnexion' : 'Sign out'}
               </button>
             </SignOutButton>
             <LocaleSwitcher />
@@ -372,18 +385,19 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
           }}
         />
 
-        {/* Screen 1: selection */}
         {mode === null ? (
           <div className="min-h-[calc(100vh-56px)] md:min-h-[calc(100vh-64px)] flex items-center justify-center px-4">
             <div className="w-full max-w-xl text-center">
               <h1 className="text-2xl md:text-4xl font-extrabold tracking-tight text-black">
                 {isUserLoaded && displayName ? (
                   <>
-                    Bienvenue{' '}
+                    {locale.startsWith('fr') ? 'Bienvenue ' : 'Welcome '}
                     <span className="text-primary">{displayName}</span>
                   </>
+                ) : locale.startsWith('fr') ? (
+                  'Bienvenue'
                 ) : (
-                  <>Bienvenue</>
+                  'Welcome'
                 )}
               </h1>
 
@@ -397,8 +411,15 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
                 <button
                   type="button"
                   onClick={() => {
-                    setMode('client');
                     setError(null);
+                    setMode('client');
+                    setTrainerStep('address');
+                    // reset only trainer fields
+                    setTrainerAgencyName('');
+                    setTrainerWebsiteUrl('');
+                    setAddressInput('');
+                    setSelectedAddress(null);
+                    setCode('');
                   }}
                   className="inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm md:text-base font-semibold
                     bg-primary text-white shadow-sm border border-primary
@@ -412,9 +433,14 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
                 <button
                   type="button"
                   onClick={() => {
+                    setError(null);
                     setMode('trainer');
                     setTrainerStep('address');
-                    setError(null);
+                    // reset only client fields
+                    setCode('');
+                    setLoading(false);
+                    setAddressInput('');
+                    setSelectedAddress(null);
                   }}
                   className="inline-flex items-center justify-center rounded-full border border-primary bg-white/95 px-5 py-2.5 text-sm md:text-base font-semibold
                     text-primary shadow-sm
@@ -432,11 +458,10 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
             className={[
               'mx-auto px-4 py-10',
               mode === 'trainer' && trainerStep === 'availability'
-                ? 'max-w-6xl' // ✅ plus large
+                ? 'max-w-6xl'
                 : 'max-w-2xl',
             ].join(' ')}
           >
-            {/* Minimal header */}
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <div className="text-lg md:text-xl font-bold text-black">
@@ -451,33 +476,18 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
               </div>
 
               <div className="flex items-center gap-2">
-                {/* <ModeChip
-                  value="client"
-                  label={locale.startsWith('fr') ? 'Réserver' : 'Book'}
-                />
-                <ModeChip
-                  value="trainer"
-                  label={locale.startsWith('fr') ? 'Éducateur' : 'Trainer'}
-                /> */}
-                {trainerStep === 'address' && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setError(null);
-                      setMode(null);
-                      setTrainerStep('address');
-                    }}
-                    className="ml-1 text-sm text-black/60 hover:text-black underline underline-offset-4 whitespace-nowrap"
-                  >
-                    {locale.startsWith('fr')
-                      ? 'Retourner au choix des rôles'
-                      : 'Go back to selection'}
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={resetAll}
+                  className="ml-1 text-sm text-black/60 hover:text-black underline underline-offset-4 whitespace-nowrap"
+                >
+                  {locale.startsWith('fr')
+                    ? 'Retour au choix des rôles'
+                    : 'Back to role selection'}
+                </button>
               </div>
             </div>
 
-            {/* CLIENT: code + address */}
             {mode === 'client' ? (
               <form
                 onSubmit={onSubmitClient}
@@ -512,13 +522,13 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
 
                   <div>
                     <label
-                      htmlFor="agency_address"
+                      htmlFor="client_address"
                       className="text-sm font-medium text-black/80"
                     >
                       {t('label.address')}
                     </label>
                     <input
-                      id="agency_address"
+                      id="client_address"
                       ref={addressInputRef}
                       className="mt-2 w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm outline-none
                         focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition"
@@ -559,7 +569,6 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
               </form>
             ) : null}
 
-            {/* TRAINER: Step 1 address -> Step 2 availability */}
             {mode === 'trainer' ? (
               <>
                 {trainerStep === 'address' ? (
@@ -572,6 +581,49 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
                       .join(' ')}
                   >
                     <div className="space-y-4">
+                      <div>
+                        <label
+                          htmlFor="trainer_agency"
+                          className="text-sm font-medium text-black/80"
+                        >
+                          {locale.startsWith('fr')
+                            ? "Nom de l'agence"
+                            : 'Agency name'}
+                        </label>
+                        <input
+                          id="trainer_agency"
+                          className="mt-2 w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm outline-none
+                            focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition"
+                          placeholder={
+                            locale.startsWith('fr')
+                              ? 'Ex: Smile & Wag'
+                              : 'e.g. Smile & Wag'
+                          }
+                          value={trainerAgencyName}
+                          onChange={(e) => setTrainerAgencyName(e.target.value)}
+                        />
+                      </div>
+
+                      <div>
+                        <label
+                          htmlFor="trainer_website"
+                          className="text-sm font-medium text-black/80"
+                        >
+                          {locale.startsWith('fr')
+                            ? 'URL du site'
+                            : 'Website URL'}
+                        </label>
+                        <input
+                          id="trainer_website"
+                          className="mt-2 w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm outline-none
+                            focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition"
+                          placeholder="https://..."
+                          value={trainerWebsiteUrl}
+                          onChange={(e) => setTrainerWebsiteUrl(e.target.value)}
+                          inputMode="url"
+                        />
+                      </div>
+
                       <div>
                         <label
                           htmlFor="trainer_address"
@@ -616,11 +668,8 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
                           type="button"
                           disabled={!canContinueTrainerAddress}
                           onClick={() => {
-                            if (!selectedAddress) {
-                              setError(t('error.addressRequired'));
-                              return;
-                            }
                             setError(null);
+                            if (!validateTrainerStep()) return;
                             setTrainerStep('availability');
                           }}
                           className="inline-flex items-center justify-center rounded-full bg-white/95 px-5 py-2.5 text-sm md:text-base font-semibold
@@ -642,12 +691,29 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
                         className="text-sm text-black/60 hover:text-black underline underline-offset-4"
                       >
                         {locale.startsWith('fr')
-                          ? '← Modifier l’adresse'
-                          : '← Edit address'}
+                          ? '← Modifier les infos'
+                          : '← Edit info'}
                       </button>
                     </div>
 
-                    <AssociateAgencyAvailability />
+                    <AssociateAgencyAvailability
+                      onboarding={
+                        selectedAddress
+                          ? {
+                              address: selectedAddress,
+                              rawInput: addressInput,
+                              agencyName: trainerAgencyName.trim(),
+                              websiteUrl: trainerWebsiteUrl.trim(),
+                            }
+                          : null
+                      }
+                      onOnboarded={async ({ organizationId }) => {
+                        if (organizationId && setActive) {
+                          await setActive({ organization: organizationId });
+                        }
+                        router.push(`/${locale}/myweek`);
+                      }}
+                    />
                   </div>
                 )}
               </>

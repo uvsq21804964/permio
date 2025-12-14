@@ -20,7 +20,7 @@ const START_HOUR = 8;
 const PIXELS_PER_HOUR = 72;
 
 type Availability = {
-  id?: string; // ✅ draft: pas d'id tant que non enregistré
+  id?: string;
   dayOfWeek: number; // 0..6
   startTime: string;
   endTime: string;
@@ -29,6 +29,34 @@ type Availability = {
 type TimeRange = {
   startTime: string;
   endTime: string;
+};
+
+type AddressDetails = {
+  formattedAddress: string;
+  lat: number;
+  lng: number;
+  street?: string;
+  streetNumber?: string;
+  postalCode?: string;
+  city?: string;
+  country?: string;
+  countryCode?: string;
+  googlePlaceId?: string;
+};
+
+type Props = {
+  onboarding?: {
+    address: AddressDetails;
+    rawInput: string;
+    agencyName: string;
+    websiteUrl: string;
+  } | null;
+  onOnboarded?: (data: { organizationId?: string }) => void; // ✅ modif
+};
+
+const timeToMinutes = (time: string): number => {
+  const [h, m] = time.split(':').map(Number);
+  return h * 60 + m;
 };
 
 const minutesToTime = (m: number) => {
@@ -40,7 +68,6 @@ const minutesToTime = (m: number) => {
 };
 
 function mergeAvailabilities(list: Availability[]): Availability[] {
-  // group by day
   const byDay = new Map<number, Availability[]>();
   for (const a of list) {
     const arr = byDay.get(a.dayOfWeek) ?? [];
@@ -51,7 +78,6 @@ function mergeAvailabilities(list: Availability[]): Availability[] {
   const merged: Availability[] = [];
 
   for (const [day, arr] of byDay.entries()) {
-    // sort by start then end
     const sorted = [...arr]
       .map((x) => ({
         ...x,
@@ -67,12 +93,9 @@ function mergeAvailabilities(list: Availability[]): Availability[] {
         continue;
       }
       const last = out[out.length - 1];
-
-      // ✅ chevauchement OU adjacent => fusion
+      // chevauchement ou adjacent => fusion
       if (x._s <= last.e) {
         last.e = Math.max(last.e, x._e);
-      } else if (x._s === last.e) {
-        last.e = x._e;
       } else {
         out.push({ s: x._s, e: x._e });
       }
@@ -87,7 +110,6 @@ function mergeAvailabilities(list: Availability[]): Availability[] {
     }
   }
 
-  // keep stable order (day then start)
   return merged.sort(
     (a, b) =>
       a.dayOfWeek - b.dayOfWeek ||
@@ -97,11 +119,6 @@ function mergeAvailabilities(list: Availability[]): Availability[] {
 
 const slotKey = (a: Availability) =>
   `${a.dayOfWeek}|${a.startTime}|${a.endTime}`;
-
-const timeToMinutes = (time: string): number => {
-  const [h, m] = time.split(':').map(Number);
-  return h * 60 + m;
-};
 
 const getBlockStyle = (startTime: string, endTime: string) => {
   const startMinutes = timeToMinutes(startTime);
@@ -123,19 +140,16 @@ const getDurationClass = (startTime: string, endTime: string) => {
   return 'bg-purple-50 border-purple-300 text-purple-900';
 };
 
-const sameSlot = (a: Availability, b: Availability) =>
-  a.dayOfWeek === b.dayOfWeek &&
-  a.startTime === b.startTime &&
-  a.endTime === b.endTime;
-
-export default function AssociateAgencyAvailability() {
+export default function AssociateAgencyAvailability({
+  onboarding = null,
+  onOnboarded,
+}: Props) {
   const t = useTranslations('availabilityAgenda');
   const locale = useLocale();
 
-  // ✅ saved = ce qui vient de l’API, draft = ce qu’on édite
   const [saved, setSaved] = useState<Availability[]>([]);
   const [draft, setDraft] = useState<Availability[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(!onboarding);
 
   const [saving, setSaving] = useState(false);
 
@@ -152,6 +166,13 @@ export default function AssociateAgencyAvailability() {
   );
 
   const fetchAvailabilities = async () => {
+    if (onboarding) {
+      setLoading(false);
+      setSaved([]);
+      setDraft([]);
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch('/api/availabilities', {
@@ -231,7 +252,6 @@ export default function AssociateAgencyAvailability() {
     });
   };
 
-  // ✅ AJOUT LOCAL (pas d’API ici)
   const handleSubmitDraft = (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedDay === null) return;
@@ -261,7 +281,7 @@ export default function AssociateAgencyAvailability() {
           endTime: r.endTime,
         });
       }
-      return mergeAvailabilities(next); // ✅ fusion immédiate
+      return mergeAvailabilities(next);
     });
 
     setDialogOpen(false);
@@ -272,54 +292,79 @@ export default function AssociateAgencyAvailability() {
     setDraft((prev) => prev.filter((x) => slotKey(x) !== slotKey(slot)));
   };
 
-  // ✅ ENREGISTRER EN 1 ACTION (UX)
-  // Ici on “remplace tout” : delete existants puis post tout le draft.
-  // (Même si techniquement ça fait plusieurs requêtes, l’utilisateur clique une seule fois)
+  const resetDraft = () => {
+    setDraft(saved);
+    setError('');
+  };
+
   const saveAll = async () => {
     setSaving(true);
     setError('');
     try {
-      // 1) delete tout ce qui existe (id only)
-      const ids = saved.map((a) => a.id).filter(Boolean) as string[];
-      await Promise.all(
-        ids.map((id) =>
-          fetch(`/api/availabilities/${id}`, {
-            method: 'DELETE',
-            credentials: 'include',
-          })
-        )
-      );
-
       const normalizedDraft = mergeAvailabilities(draft);
-      const payload = normalizedDraft.map((d) => ({
+      if (normalizedDraft.length === 0) {
+        setError(
+          locale.startsWith('fr')
+            ? 'Ajoutez au moins une disponibilité.'
+            : 'Please add at least one availability.'
+        );
+        return;
+      }
+
+      const payloadAvailabilities = normalizedDraft.map((d) => ({
         dayOfWeek: d.dayOfWeek,
         startTime: d.startTime,
         endTime: d.endTime,
       }));
 
-      for (const item of payload) {
-        const res = await fetch('/api/availabilities', {
+      // ✅ ONBOARDING TRAINER: 1 seule API => crée "User" puis insert dispos
+      if (onboarding) {
+        const res = await fetch('/api/onboarding/trainer', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
-          body: JSON.stringify(item),
+          body: JSON.stringify({
+            agencyName: onboarding.agencyName,
+            websiteUrl: onboarding.websiteUrl,
+            address: onboarding.address,
+            rawInput: onboarding.rawInput,
+            availabilities: payloadAvailabilities,
+          }),
         });
-        if (!res.ok) {
-          throw new Error(await res.text().catch(() => `HTTP ${res.status}`));
-        }
+
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok)
+          throw new Error(data?.details || data?.error || `HTTP ${res.status}`);
+
+        onOnboarded?.({
+          organizationId: data?.organizationId || data?.clerkOrgId,
+        });
+        return;
+      }
+
+      // ✅ HORS ONBOARDING: bulk replace (delete all + insert)
+      const res = await fetch('/api/availabilities/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ availabilities: payloadAvailabilities }),
+      });
+      if (!res.ok) {
+        const txt = await res.text().catch(() => '');
+        throw new Error(txt || `HTTP ${res.status}`);
       }
 
       await fetchAvailabilities();
-    } catch {
-      setError(t('errors.createRange'));
+    } catch (e: any) {
+      setError(
+        e?.message ||
+          (locale.startsWith('fr')
+            ? "Impossible d'enregistrer vos disponibilités."
+            : 'Unable to save your availability.')
+      );
     } finally {
       setSaving(false);
     }
-  };
-
-  const resetDraft = () => {
-    setDraft(saved);
-    setError('');
   };
 
   if (loading) {
@@ -333,7 +378,6 @@ export default function AssociateAgencyAvailability() {
   return (
     <>
       <div className="rounded-3xl bg-white/95 border border-black/10 shadow-[0_18px_60px_rgba(0,0,0,0.10)] p-5 md:p-6 w-full">
-        {/* Header minimal + actions */}
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
             <div className="text-base md:text-lg font-semibold text-black">
@@ -349,7 +393,7 @@ export default function AssociateAgencyAvailability() {
           </div>
 
           <div className="flex items-center gap-2">
-            {dirty ? (
+            {!onboarding && dirty ? (
               <span className="text-xs text-black/50 whitespace-nowrap">
                 {locale.startsWith('fr')
                   ? 'Modifications non enregistrées'
@@ -357,7 +401,7 @@ export default function AssociateAgencyAvailability() {
               </span>
             ) : null}
 
-            {dirty ? (
+            {!onboarding && dirty ? (
               <Button
                 type="button"
                 variant="outline"
@@ -368,7 +412,11 @@ export default function AssociateAgencyAvailability() {
               </Button>
             ) : null}
 
-            <Button type="button" onClick={saveAll} disabled={!dirty || saving}>
+            <Button
+              type="button"
+              onClick={saveAll}
+              disabled={saving || (!onboarding && !dirty)}
+            >
               {saving
                 ? locale.startsWith('fr')
                   ? 'Validation…'
@@ -389,7 +437,6 @@ export default function AssociateAgencyAvailability() {
           </div>
         ) : null}
 
-        {/* Grid (large) */}
         <div className="mt-5 overflow-x-auto">
           <div className="min-w-[980px]">
             <div className="grid grid-cols-8">
@@ -439,9 +486,7 @@ export default function AssociateAgencyAvailability() {
 
                     return (
                       <div
-                        key={`${a.id ?? 'draft'}-${dayIndex}-${a.startTime}-${
-                          a.endTime
-                        }-${idx}`}
+                        key={`${dayIndex}-${a.startTime}-${a.endTime}-${idx}`}
                         className={[
                           'absolute left-1 right-1 rounded-xl border px-2 py-1 text-[11px]',
                           'shadow-[0_10px_25px_rgba(0,0,0,0.08)] group',
@@ -480,7 +525,6 @@ export default function AssociateAgencyAvailability() {
         </div>
       </div>
 
-      {/* Dialog add ranges (draft only) */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
