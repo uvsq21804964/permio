@@ -1,27 +1,28 @@
 import { SignedIn, SignedOut, SignIn } from '@clerk/nextjs';
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
-import { sql } from '@/lib/db'; // ⬅️ on interroge la DB côté serveur
+import { sql } from '@/lib/db';
 import { Toaster } from '@/components/ui/sonner';
 import DesktopNavbar from '@/components/navbar/navbar_desktop';
 import MobileNavbar from '@/components/navbar/navbar_mobile';
 
 export default async function RootLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+  params,
+}: Readonly<{ children: React.ReactNode; params: { locale: string } }>) {
+  const locale = params?.locale ?? 'fr';
+
   const { userId } = await auth();
   if (!userId) {
-    redirect('/sign-in');
+    redirect(`/${locale}/sign-in`);
   }
 
-  // Récupère le rôle depuis ta table User
   let meRole: 'student' | 'instructor' | 'admin' | string | null = null;
   try {
     const rows = await sql`
       SELECT role FROM "User" WHERE id = ${userId} LIMIT 1
     `;
     meRole = rows[0]?.role ?? null;
-    console.log('MeRole', meRole);
   } catch (e) {
     console.error('[layout] error fetching role:', e);
     meRole = null;
@@ -45,7 +46,7 @@ export default async function RootLayout({
       link: '/availability',
       visible: 0,
     },
-    { nameFR: 'Factures', nameEN: 'Invoices', link: '/invoices', visible: 0 }, // ou Facturation/invoices
+    { nameFR: 'Factures', nameEN: 'Invoices', link: '/invoices', visible: 0 },
     { nameFR: 'Réserver', nameEN: 'Book', link: '/book/services', visible: 1 },
     {
       nameFR: 'Abonnement',
@@ -62,8 +63,6 @@ export default async function RootLayout({
     },
   ] as const;
 
-  const activeLink = '/myweek';
-
   return (
     <>
       <Toaster
@@ -77,10 +76,18 @@ export default async function RootLayout({
           },
         }}
       />
+
       <SignedOut>
         <div className="p-6">
-          <p className="mb-4">Veuillez vous connecter</p>
-          <SignIn fallbackRedirectUrl="/" forceRedirectUrl="/" />
+          <p className="mb-4">
+            {locale.startsWith('fr')
+              ? 'Veuillez vous connecter'
+              : 'Please sign in'}
+          </p>
+          <SignIn
+            fallbackRedirectUrl={`/${locale}/`}
+            forceRedirectUrl={`/${locale}/`}
+          />
         </div>
       </SignedOut>
 
@@ -90,18 +97,19 @@ export default async function RootLayout({
             <DesktopNavbar
               logo={logo}
               pages={pages as any}
-              activeLink={activeLink}
               meRole={meRole}
+              // ✅ activeLink optionnel : DesktopNavbar détecte via usePathname
             />
           </div>
+
           <div className="md:hidden h-[40px] fixed inset-y-0 w-full z-50">
             <MobileNavbar
               logo={logo_mobile}
               pages={pages as any}
-              activeLink={activeLink}
               meRole={meRole}
             />
           </div>
+
           <div className="flex-1 h-[92%] bg-navbar">{children}</div>
         </div>
       </SignedIn>

@@ -1,0 +1,92 @@
+{
+  "common": {
+    "user": "Utilisateur",
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "saving": "Enregistrement…",
+    "retry": "Réessayer"
+  },
+  "header": {
+    "title": "Mon profil",
+    "connectedAs": "Connecté comme",
+    "createdOn": "Compte créé le {date}"
+  },
+  "identity": {
+    "title": "Identité",
+    "displayName": {
+      "label": "Nom affiché",
+      "edit": "Modifier le nom",
+      "empty": "Non renseigné"
+    },
+    "role": "Rôle",
+    "agency": "Agence",
+    "educatorCode": {
+      "label": "Code éducateur",
+      "copy": "Copier",
+      "copied": "Copié ✓",
+      "copyTitle": "Copier le code",
+      "help": "Ce code est unique et ne peut pas être modifié."
+    }
+  },
+  "delete": {
+    "title": "Supprimer mon compte",
+    "body": "Cette action est définitive : ton profil sera supprimé de la base de données et de notre système d'authentification. Tu devras créer un nouveau compte si tu souhaites revenir plus tard.",
+    "button": "Supprimer mon compte définitivement",
+    "inProgress": "Suppression en cours…",
+    "confirmPrompt": "Es-tu sûr de vouloir supprimer définitivement ton compte ? Cette action est irréversible."
+  },
+  "address": {
+    "title": "Adresse principale",
+    "subtitle": "Utilisée pour estimer les trajets et regrouper les interventions par zones.",
+    "edit": "Modifier l’adresse",
+    "label": "Label",
+    "formatted": "Adresse formatée",
+    "street": "Rue",
+    "number": "Numéro",
+    "postalCode": "Code postal",
+    "city": "Ville",
+    "country": "Pays",
+    "countryCode": "Code pays (ISO)",
+    "coords": {
+      "label": "Coordonnées (lat, lng)",
+      "empty": "Non défini"
+    },
+    "placeId": {
+      "label": "Google Place ID"
+    },
+    "map": {
+      "label": "Carte",
+      "loading": "Chargement de la carte…",
+      "noCoords": "Aucune adresse géolocalisée pour l’instant."
+    }
+  },
+  "modals": {
+    "name": {
+      "title": "Modifier le nom",
+      "helper": "Le nom affiché est utilisé dans l'interface et pour certaines notifications. Modifie-le uniquement si nécessaire.",
+      "newName": "Nouveau nom"
+    },
+    "address": {
+      "title": "Modifier l’adresse principale",
+      "helper": "L'adresse est utilisée pour calculer les trajets et regrouper les interventions. Choisis une suggestion Google pour garantir une adresse géolocalisable.",
+      "labelPlaceholder": "Domicile, Bureau, Parc…",
+      "formattedPlaceholder": "Commence à taper et choisis une suggestion Google",
+      "selectedTitle": "Adresse sélectionnée :",
+      "selectedStreet": "Rue :",
+      "selectedCity": "Ville :"
+    }
+  },
+  "success": {
+    "nameUpdated": "Nom mis à jour avec succès.",
+    "addressUpdated": "Adresse mise à jour avec succès."
+  },
+  "errors": {
+    "loadProfile": "Impossible de charger le profil",
+    "mapsLoad": "Impossible de charger l'autocomplétion d'adresse Google. Vérifiez la clé API.",
+    "geocodeFail": "Impossible de récupérer la géolocalisation de cette adresse.",
+    "addressEmpty": "L'adresse formatée ne peut pas être vide.",
+    "addressNeedSuggestion": "Veuillez choisir une adresse dans les suggestions Google avant d'enregistrer.",
+    "deleteFailed": "Erreur lors de la suppression du compte."
+  }
+}

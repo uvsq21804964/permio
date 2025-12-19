@@ -4,8 +4,7 @@
 import { SignOutButton } from '@clerk/nextjs';
 import Link from 'next/link';
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
-// Si LocaleSwitcher ou LocaleLink utilisent next-intl/useLocale, on les évite ici
-// pour ne pas recréer le problème de contexte.
+import { useLocale } from 'next-intl';
 
 type Props = {
   title: string;
@@ -16,6 +15,11 @@ type Props = {
   cancelUrl: string;
 };
 
+function withLocalePath(path: string, locale: string) {
+  const p = path.startsWith('/') ? path : `/${path}`;
+  return p.startsWith(`/${locale}/`) ? p : `/${locale}${p}`;
+}
+
 export default function SignOutClient({
   title,
   question,
@@ -24,6 +28,23 @@ export default function SignOutClient({
   redirectUrl,
   cancelUrl,
 }: Props) {
+  const locale = useLocale();
+  const isFR = locale.startsWith('fr');
+
+  // ✅ sécurise les urls si jamais elles arrivent sans préfixe
+  const cancelHref = withLocalePath(cancelUrl, locale);
+  const redirectHref = withLocalePath(redirectUrl, locale);
+
+  // Fallback au cas où (mais normalement inutile si messages OK)
+  const fallback = {
+    title: isFR ? 'Se déconnecter' : 'Log out',
+    question: isFR
+      ? 'Voulez-vous vraiment vous déconnecter ?'
+      : 'Are you sure you want to log out?',
+    confirm: isFR ? 'Confirmer' : 'Confirm',
+    cancel: isFR ? 'Annuler' : 'Cancel',
+  };
+
   return (
     <>
       <div className="fixed top-4 right-8 z-50">
@@ -31,21 +52,25 @@ export default function SignOutClient({
       </div>
 
       <div className="max-w-md mx-auto p-8">
-        <h1 className="text-xl font-semibold mb-2">{title}</h1>
-        <p className="text-sm text-muted-foreground mb-6">{question}</p>
+        <h1 className="text-xl font-semibold mb-2">
+          {title || fallback.title}
+        </h1>
+        <p className="text-sm text-muted-foreground mb-6">
+          {question || fallback.question}
+        </p>
 
         <div className="flex items-center gap-3">
-          <SignOutButton signOutOptions={{ redirectUrl }}>
+          <SignOutButton signOutOptions={{ redirectUrl: redirectHref }}>
             <button className="px-4 py-2 rounded bg-black text-white">
-              {confirm}
+              {confirm || fallback.confirm}
             </button>
           </SignOutButton>
 
           <Link
-            href={cancelUrl}
+            href={cancelHref}
             className="px-4 py-2 rounded border hover:bg-muted transition"
           >
-            {cancel}
+            {cancel || fallback.cancel}
           </Link>
         </div>
       </div>

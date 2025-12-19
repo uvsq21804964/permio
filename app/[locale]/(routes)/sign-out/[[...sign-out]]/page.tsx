@@ -1,35 +1,25 @@
 // app/[locale]/sign-out/[[...sign-out]]/page.tsx
-import { getTranslations } from 'next-intl/server';
 import type { Locale } from '@/src/lib/i18n';
-import { withLocale } from '@/src/lib/i18n';
+import { getTranslations } from 'next-intl/server';
 import SignOutClient from './SignOutClient';
 
-type Props = {
-  params: {
-    locale: Locale;
-  };
-};
+export default async function SignOutPage({
+  params,
+}: {
+  params: Promise<{ locale: Locale }>;
+}) {
+  const { locale } = await params;
 
-export default async function SignOutPage({ params: { locale } }: Props) {
-  const t = await getTranslations('SignOut');
-
-  const title = t('title');
-  const question = t('question');
-  const confirm = t('confirm');
-  const cancel = t('cancel');
-
-  // URLs déjà localisées
-  const redirectUrl = withLocale('/sign-in', locale);
-  const cancelUrl = withLocale('/myweek', locale);
+  const t = await getTranslations({ locale, namespace: 'SignOut' });
 
   return (
     <SignOutClient
-      title={title}
-      question={question}
-      confirm={confirm}
-      cancel={cancel}
-      redirectUrl={redirectUrl}
-      cancelUrl={cancelUrl}
+      title={t('title')}
+      question={t('question')}
+      confirm={t('confirm')}
+      cancel={t('cancel')}
+      redirectUrl={`/${locale}/sign-in`}
+      cancelUrl={`/${locale}/myweek`}
     />
   );
 }

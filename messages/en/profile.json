@@ -1,0 +1,92 @@
+{
+  "common": {
+    "user": "User",
+    "close": "Close",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving…",
+    "retry": "Try again"
+  },
+  "header": {
+    "title": "My profile",
+    "connectedAs": "Signed in as",
+    "createdOn": "Account created on {date}"
+  },
+  "identity": {
+    "title": "Identity",
+    "displayName": {
+      "label": "Display name",
+      "edit": "Edit name",
+      "empty": "Not provided"
+    },
+    "role": "Role",
+    "agency": "Agency",
+    "educatorCode": {
+      "label": "Trainer code",
+      "copy": "Copy",
+      "copied": "Copied ✓",
+      "copyTitle": "Copy code",
+      "help": "This code is unique and cannot be changed."
+    }
+  },
+  "delete": {
+    "title": "Delete my account",
+    "body": "This action is permanent: your profile will be deleted from the database and our authentication system. You will need to create a new account if you want to come back later.",
+    "button": "Delete my account permanently",
+    "inProgress": "Deleting…",
+    "confirmPrompt": "Are you sure you want to permanently delete your account? This action cannot be undone."
+  },
+  "address": {
+    "title": "Primary address",
+    "subtitle": "Used to estimate travel time and group appointments by area.",
+    "edit": "Edit address",
+    "label": "Label",
+    "formatted": "Formatted address",
+    "street": "Street",
+    "number": "Number",
+    "postalCode": "Postal code",
+    "city": "City",
+    "country": "Country",
+    "countryCode": "Country code (ISO)",
+    "coords": {
+      "label": "Coordinates (lat, lng)",
+      "empty": "Not set"
+    },
+    "placeId": {
+      "label": "Google Place ID"
+    },
+    "map": {
+      "label": "Map",
+      "loading": "Loading map…",
+      "noCoords": "No geocoded address yet."
+    }
+  },
+  "modals": {
+    "name": {
+      "title": "Edit name",
+      "helper": "Your display name is used across the interface and for some notifications. Change it only if needed.",
+      "newName": "New name"
+    },
+    "address": {
+      "title": "Edit primary address",
+      "helper": "This address is used to compute travel time and group appointments. Select a Google suggestion to ensure the address can be geocoded.",
+      "labelPlaceholder": "Home, Office, Park…",
+      "formattedPlaceholder": "Start typing and pick a Google suggestion",
+      "selectedTitle": "Selected address:",
+      "selectedStreet": "Street:",
+      "selectedCity": "City:"
+    }
+  },
+  "success": {
+    "nameUpdated": "Name updated successfully.",
+    "addressUpdated": "Address updated successfully."
+  },
+  "errors": {
+    "loadProfile": "Could not load profile",
+    "mapsLoad": "Could not load Google address autocomplete. Please check your API key.",
+    "geocodeFail": "Could not retrieve geolocation for this address.",
+    "addressEmpty": "Formatted address cannot be empty.",
+    "addressNeedSuggestion": "Please select an address from Google suggestions before saving.",
+    "deleteFailed": "Error while deleting the account."
+  }
+}

@@ -1,8 +1,15 @@
+// app/[locale]/profile/page.tsx
 'use client';
 
-import { useEffect, useState, FormEvent, ChangeEvent, useRef } from 'react';
-import Link from 'next/link';
+import {
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from 'react';
 import Script from 'next/script';
+import { useLocale, useTranslations } from 'next-intl';
 
 type UserProfile = {
   id: string;
@@ -15,6 +22,10 @@ type UserProfile = {
   last_validated_at: string | null;
   createdAt: string;
   updatedAt: string;
+
+  // ✅ Ajout: code éducateur (join code agence)
+  // ⚠️ nécessite que /api/me/profile renvoie joinCode (sinon affichera "—")
+  joinCode?: string | null;
 
   formatted_address: string | null;
   lat: number | null;
@@ -61,27 +72,41 @@ function extractComponent(
   return useShort ? found.short_name ?? '' : found.long_name ?? '';
 }
 
-function formatDate(value: string | null) {
+function formatDate(value: string | null, locale: string) {
   if (!value) return '—';
-  return new Date(value).toLocaleDateString();
+  return new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(
+    new Date(value)
+  );
 }
 
-function formatDateTime(value: string | null) {
+function formatDateTime(value: string | null, locale: string) {
   if (!value) return '—';
-  return new Date(value).toLocaleString();
+  return new Intl.DateTimeFormat(locale, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  }).format(new Date(value));
 }
 
-function formatMinutesToHours(min: number | null | undefined) {
+function formatMinutesToHours(min: number | null | undefined, locale: string) {
   if (min == null) return '—';
   const m = Math.max(0, min);
   const h = Math.floor(m / 60);
   const rest = m % 60;
-  if (h === 0) return `${rest} min`;
-  if (rest === 0) return `${h} h`;
-  return `${h} h ${rest} min`;
+
+  // Simple i18n-friendly formatting (can be improved via messages if you want)
+  const isFR = locale.startsWith('fr');
+  const minLabel = isFR ? 'min' : 'min';
+  const hourLabel = isFR ? 'h' : 'h';
+
+  if (h === 0) return `${rest} ${minLabel}`;
+  if (rest === 0) return `${h} ${hourLabel}`;
+  return `${h} ${hourLabel} ${rest} ${minLabel}`;
 }
 
 export default function ProfilePage() {
+  const t = useTranslations('profile');
+  const locale = useLocale();
+
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -90,7 +115,7 @@ export default function ProfilePage() {
   const [nameModalOpen, setNameModalOpen] = useState(false);
   const [addressModalOpen, setAddressModalOpen] = useState(false);
 
-  // Drafts pour les modales
+  // Drafts
   const [draftName, setDraftName] = useState('');
   const [savingName, setSavingName] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
@@ -121,6 +146,20 @@ export default function ProfilePage() {
   const [isMapsReady, setIsMapsReady] = useState(false);
   const formattedAddressRef = useRef<HTMLInputElement | null>(null);
 
+  // Copy educator code
+  const [copied, setCopied] = useState(false);
+  const copyJoinCode = async () => {
+    const code = profile?.joinCode || '';
+    if (!code) return;
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1200);
+    } catch {
+      alert(code);
+    }
+  };
+
   // Google Maps / carte
   const mapRef = useRef<HTMLDivElement | null>(null);
   const mapInstanceRef = useRef<any | null>(null);
@@ -130,16 +169,17 @@ export default function ProfilePage() {
     try {
       setLoading(true);
       setError(null);
+
       const res = await fetch('/api/me/profile');
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || 'Failed to load profile');
+        throw new Error(data.error || t('errors.loadProfile'));
       }
       const data = await res.json();
       setProfile(data.user);
     } catch (err: any) {
       console.error(err);
-      setError(err?.message || 'Impossible de charger le profil');
+      setError(err?.message || t('errors.loadProfile'));
       setProfile(null);
     } finally {
       setLoading(false);
@@ -148,9 +188,10 @@ export default function ProfilePage() {
 
   useEffect(() => {
     loadProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Initialisation de l'autocomplete Google sur "Adresse formatée"
+  // Autocomplete Google sur "Adresse formatée"
   useEffect(() => {
     if (!addressModalOpen) return;
     if (!isMapsReady) return;
@@ -175,9 +216,7 @@ export default function ProfilePage() {
       const place = autocomplete.getPlace();
 
       if (!place.geometry || !place.geometry.location) {
-        setAddressError(
-          'Impossible de récupérer la géolocalisation de cette adresse.'
-        );
+        setAddressError(t('errors.geocodeFail'));
         setSelectedAddress(null);
         return;
       }
@@ -218,17 +257,15 @@ export default function ProfilePage() {
     return () => {
       window.google.maps.event.clearInstanceListeners(autocomplete);
     };
-  }, [addressModalOpen, isMapsReady, draftAddress.formatted_address]);
+  }, [addressModalOpen, isMapsReady, draftAddress.formatted_address, t]);
 
-  // Initialisation / mise à jour de la carte
+  // Init / update carte
   useEffect(() => {
     if (!isMapsReady) return;
     if (!window.google || !window.google.maps) return;
     if (!mapRef.current) return;
     if (!profile) return;
 
-    // On privilégie l'adresse sélectionnée dans la modale si elle existe,
-    // sinon on utilise les coordonnées enregistrées dans le profil
     const coords = selectedAddress
       ? { lat: selectedAddress.lat, lng: selectedAddress.lng }
       : profile.lat != null && profile.lng != null
@@ -261,47 +298,33 @@ export default function ProfilePage() {
     }
   }, [isMapsReady, profile, selectedAddress]);
 
-  // ─────────────────────────  HANDLER SUPPRESSION COMPTE  ─────────────────────────
-
+  // Suppression compte
   const handleDeleteAccount = async () => {
-    if (
-      !window.confirm(
-        'Es-tu sûr de vouloir supprimer définitivement ton compte ? Cette action est irréversible.'
-      )
-    ) {
-      return;
-    }
+    if (!window.confirm(t('delete.confirmPrompt'))) return;
 
     try {
       setDeleting(true);
       setDeleteError(null);
       setSuccessMessage(null);
 
-      const res = await fetch('/api/me/delete-account', {
-        method: 'DELETE',
-      });
+      const res = await fetch('/api/me/delete-account', { method: 'DELETE' });
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(
-          data.error || 'Impossible de supprimer le compte utilisateur.'
-        );
+        throw new Error(data.error || t('errors.deleteFailed'));
       }
 
-      // Redirection après suppression
-      window.location.href = '/home';
+      // Redirection après suppression (avec locale)
+      window.location.href = `/${locale}/home`;
     } catch (err: any) {
       console.error(err);
-      setDeleteError(
-        err?.message || 'Erreur lors de la suppression du compte.'
-      );
+      setDeleteError(err?.message || t('errors.deleteFailed'));
     } finally {
       setDeleting(false);
     }
   };
 
-  // ─────────────────────────  UI STATES  ─────────────────────────
-
+  // UI states
   if (loading) {
     return (
       <>
@@ -310,10 +333,8 @@ export default function ProfilePage() {
           strategy="afterInteractive"
           onLoad={() => setIsMapsReady(true)}
           onError={(e) => {
-            console.error('Erreur de chargement du script Google Maps', e);
-            setAddressError(
-              "Impossible de charger l'autocomplétion d'adresse Google. Vérifiez la clé API."
-            );
+            console.error('Google Maps script load error', e);
+            setAddressError(t('errors.mapsLoad'));
           }}
         />
         <main className="min-h-screen bg-background flex items-center justify-center p-6">
@@ -344,22 +365,18 @@ export default function ProfilePage() {
           strategy="afterInteractive"
           onLoad={() => setIsMapsReady(true)}
           onError={(e) => {
-            console.error('Erreur de chargement du script Google Maps', e);
-            setAddressError(
-              "Impossible de charger l'autocomplétion d'adresse Google. Vérifiez la clé API."
-            );
+            console.error('Google Maps script load error', e);
+            setAddressError(t('errors.mapsLoad'));
           }}
         />
         <main className="min-h-screen bg-background flex items-center justify-center p-6">
           <div className="w-full max-w-md rounded-xl border bg-card p-6 shadow-sm space-y-4 text-center">
-            <p className="text-sm text-red-600">
-              Impossible de charger le profil utilisateur.
-            </p>
+            <p className="text-sm text-red-600">{t('errors.loadProfile')}</p>
             <button
               onClick={loadProfile}
               className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
             >
-              Réessayer
+              {t('common.retry')}
             </button>
           </div>
         </main>
@@ -378,8 +395,7 @@ export default function ProfilePage() {
   const hasCoords =
     (profile.lat != null && profile.lng != null) || selectedAddress != null;
 
-  // ─────────────────────────  HANDLERS MODALE NOM  ─────────────────────────
-
+  // Handlers modale nom
   const openNameModal = () => {
     setDraftName(profile.name || '');
     setNameError(null);
@@ -394,10 +410,9 @@ export default function ProfilePage() {
 
   const handleSaveName = async (e: FormEvent) => {
     e.preventDefault();
-    if (!profile) return;
 
     if (!draftName.trim()) {
-      setNameError('Le nom ne peut pas être vide.');
+      setNameError(t('errors.nameEmpty'));
       return;
     }
 
@@ -424,23 +439,22 @@ export default function ProfilePage() {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || 'Failed to update name');
+        throw new Error(data.error || t('errors.updateNameFailed'));
       }
 
       const data = await res.json();
       setProfile(data.user);
-      setSuccessMessage('Nom mis à jour avec succès.');
+      setSuccessMessage(t('success.nameUpdated'));
       setNameModalOpen(false);
     } catch (err: any) {
       console.error(err);
-      setNameError(err?.message || 'Erreur lors de la mise à jour du nom.');
+      setNameError(err?.message || t('errors.updateNameFailed'));
     } finally {
       setSavingName(false);
     }
   };
 
-  // ─────────────────────────  HANDLERS MODALE ADRESSE  ─────────────────────────
-
+  // Handlers modale adresse
   const openAddressModal = () => {
     setDraftAddress({
       address_label: profile.address_label || '',
@@ -495,16 +509,9 @@ export default function ProfilePage() {
     }));
 
     if (name === 'formatted_address') {
-      // On n'invalide la sélection que si l'utilisateur change vraiment le texte
       setSelectedAddress((current) => {
         if (!current) return null;
-
-        // Si la valeur correspond à l'adresse sélectionnée, on garde la sélection
-        if (current.formattedAddress === value) {
-          return current;
-        }
-
-        // Sinon, l'utilisateur a modifié le texte => on invalide
+        if (current.formattedAddress === value) return current;
         return null;
       });
     }
@@ -512,17 +519,14 @@ export default function ProfilePage() {
 
   const handleSaveAddress = async (e: FormEvent) => {
     e.preventDefault();
-    if (!profile) return;
 
     if (!draftAddress.formatted_address.trim()) {
-      setAddressError("L'adresse formatée ne peut pas être vide.");
+      setAddressError(t('errors.addressEmpty'));
       return;
     }
 
     if (!selectedAddress) {
-      setAddressError(
-        "Veuillez choisir une adresse dans les suggestions Google avant d'enregistrer."
-      );
+      setAddressError(t('errors.addressNeedSuggestion'));
       return;
     }
 
@@ -553,25 +557,21 @@ export default function ProfilePage() {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || 'Failed to update address');
+        throw new Error(data.error || t('errors.updateAddressFailed'));
       }
 
       const data = await res.json();
       setProfile(data.user);
-      setSuccessMessage('Adresse mise à jour avec succès.');
+      setSuccessMessage(t('success.addressUpdated'));
       setAddressModalOpen(false);
       setSelectedAddress(null);
     } catch (err: any) {
       console.error(err);
-      setAddressError(
-        err?.message || 'Erreur lors de la mise à jour de l’adresse.'
-      );
+      setAddressError(err?.message || t('errors.updateAddressFailed'));
     } finally {
       setSavingAddress(false);
     }
   };
-
-  // ─────────────────────────  RENDER  ─────────────────────────
 
   return (
     <>
@@ -580,38 +580,40 @@ export default function ProfilePage() {
         strategy="afterInteractive"
         onLoad={() => setIsMapsReady(true)}
         onError={(e) => {
-          console.error('Erreur de chargement du script Google Maps', e);
-          setAddressError(
-            "Impossible de charger l'autocomplétion d'adresse Google. Vérifiez la clé API."
-          );
+          console.error('Google Maps script load error', e);
+          setAddressError(t('errors.mapsLoad'));
         }}
       />
 
       <main className="min-h-screen bg-background flex items-center justify-center p-4 md:p-8">
         <div className="w-full max-w-5xl space-y-6">
-          {/* HEADER + RÉSUMÉ */}
+          {/* HEADER */}
           <section className="rounded-2xl border bg-card p-5 md:p-6 shadow-sm flex flex-col gap-4 md:gap-0 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-4">
               <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold text-lg">
                 {initials}
               </div>
               <div className="space-y-1">
-                <h1 className="text-lg md:text-xl font-semibold">Mon profil</h1>
+                <h1 className="text-lg md:text-xl font-semibold">
+                  {t('header.title')}
+                </h1>
                 <p className="text-sm text-muted-foreground">
-                  Connecté comme{' '}
+                  {t('header.connectedAs')}{' '}
                   <span className="font-medium">
-                    {profile.name || 'Utilisateur'}
-                  </span>{' '}
+                    {profile.name || t('common.user')}
+                  </span>
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Compte créé le {formatDate(profile.createdAt)}
+                  {t('header.createdOn', {
+                    date: formatDate(profile.createdAt, locale),
+                  })}
                 </p>
               </div>
             </div>
           </section>
 
           <div className="grid gap-6 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1.4fr)]">
-            {/* COLONNE GAUCHE : IDENTITÉ + VALIDATION + SUPPRESSION */}
+            {/* COLONNE GAUCHE */}
             <div className="space-y-6">
               {error && (
                 <div className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-xs md:text-sm text-red-700">
@@ -632,30 +634,66 @@ export default function ProfilePage() {
               {/* Identité */}
               <section className="rounded-2xl border bg-card p-4 md:p-5 space-y-4">
                 <div className="flex items-center justify-between gap-2">
-                  <h2 className="text-sm font-semibold">Identité</h2>
-                  <button
-                    type="button"
-                    onClick={openNameModal}
-                    className="inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-medium text-primary hover:bg-primary/5"
-                  >
-                    Modifier le nom
-                  </button>
+                  <h2 className="text-sm font-semibold">
+                    {t('identity.title')}
+                  </h2>
                 </div>
 
                 <div className="space-y-3 text-sm">
                   <div className="space-y-1.5">
                     <span className="text-xs font-medium text-foreground">
-                      Nom affiché
+                      {t('identity.displayName.label')}
                     </span>
-                    <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground">
-                      {profile.name || 'Non renseigné'}
-                    </p>
+
+                    <div className="flex items-center gap-2">
+                      <p className="flex-1 border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground font-mono">
+                        {profile.name || t('identity.displayName.empty')}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={openNameModal}
+                        className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-[11px] font-medium text-primary hover:bg-primary/5 disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        {t('identity.displayName.edit')}
+                      </button>
+                    </div>
                   </div>
+
+                  {/* ✅ Code éducateur (non modifiable) */}
+                  {profile.role === 'instructor' && (
+                    <div className="space-y-1.5">
+                      <span className="text-xs font-medium text-foreground">
+                        {t('identity.educatorCode.label')}
+                      </span>
+
+                      <div className="flex items-center gap-2">
+                        <p className="flex-1 border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground font-mono">
+                          {profile.joinCode || '—'}
+                        </p>
+
+                        <button
+                          type="button"
+                          onClick={copyJoinCode}
+                          disabled={!profile.joinCode}
+                          className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-[11px] font-medium text-primary hover:bg-primary/5 disabled:opacity-60 disabled:cursor-not-allowed"
+                          title={t('identity.educatorCode.copyTitle')}
+                        >
+                          {copied
+                            ? t('identity.educatorCode.copied')
+                            : t('identity.educatorCode.copy')}
+                        </button>
+                      </div>
+
+                      <p className="text-[11px] text-muted-foreground">
+                        {t('identity.educatorCode.help')}
+                      </p>
+                    </div>
+                  )}
 
                   <div className="grid gap-3 md:grid-cols-2">
                     <div className="space-y-1.5">
                       <span className="text-xs font-medium text-foreground">
-                        Rôle
+                        {t('identity.role')}
                       </span>
                       <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground">
                         {profile.role}
@@ -663,49 +701,61 @@ export default function ProfilePage() {
                     </div>
                     <div className="space-y-1.5">
                       <span className="text-xs font-medium text-foreground">
-                        Agence
+                        {t('identity.agency')}
                       </span>
                       <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground">
                         {profile.agencyId}
                       </p>
                     </div>
                   </div>
+
+                  {/* (optionnel) si tu veux afficher planned/remaining avec i18n : */}
+                  {/* <div className="grid gap-3 md:grid-cols-2">
+                    <div className="space-y-1.5">
+                      <span className="text-xs font-medium text-foreground">
+                        Planned
+                      </span>
+                      <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground">
+                        {formatMinutesToHours(profile.planned_minutes, locale)}
+                      </p>
+                    </div>
+                    <div className="space-y-1.5">
+                      <span className="text-xs font-medium text-foreground">
+                        Remaining
+                      </span>
+                      <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground">
+                        {formatMinutesToHours(profile.remaining_minutes, locale)}
+                      </p>
+                    </div>
+                  </div> */}
                 </div>
               </section>
 
-              {/* Suppression du compte */}
+              {/* Suppression */}
               <section className="rounded-2xl border p-4 md:p-5 space-y-3">
-                <h2 className="text-sm font-semibold">Supprimer mon compte</h2>
-                <p className="text-xs">
-                  Cette action est définitive : ton profil sera supprimé de la
-                  base de données et de notre système d&apos;authentification.
-                  Tu devras créer un nouveau compte si tu souhaites revenir plus
-                  tard.
-                </p>
+                <h2 className="text-sm font-semibold">{t('delete.title')}</h2>
+                <p className="text-xs">{t('delete.body')}</p>
                 <button
                   type="button"
                   onClick={handleDeleteAccount}
                   disabled={deleting}
                   className="inline-flex items-center justify-center rounded-md bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {deleting
-                    ? 'Suppression en cours…'
-                    : 'Supprimer mon compte définitivement'}
+                  {deleting ? t('delete.inProgress') : t('delete.button')}
                 </button>
               </section>
             </div>
 
-            {/* COLONNE DROITE : ADRESSE */}
+            {/* COLONNE DROITE */}
             <div className="space-y-6">
               <section className="rounded-2xl border bg-card p-4 md:p-5 space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <h2 className="text-sm font-semibold">
-                      Adresse principale
+                      {t('address.title')}
                     </h2>
                     <p className="text-xs text-muted-foreground">
-                      Utilisée pour estimer les trajets et regrouper les
-                      interventions par zones.
+                      {t('address.subtitle')}
                     </p>
                   </div>
                   <div className="flex gap-2">
@@ -714,7 +764,7 @@ export default function ProfilePage() {
                       onClick={openAddressModal}
                       className="inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-medium text-primary hover:bg-primary/5"
                     >
-                      Modifier l&apos;adresse
+                      {t('address.edit')}
                     </button>
                   </div>
                 </div>
@@ -722,26 +772,26 @@ export default function ProfilePage() {
                 <div className="space-y-3 text-sm">
                   <div className="space-y-1.5">
                     <span className="text-xs font-medium text-foreground">
-                      Label
+                      {t('address.label')}
                     </span>
                     <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground">
-                      {profile.address_label || 'Non renseigné'}
+                      {profile.address_label || '—'}
                     </p>
                   </div>
 
                   <div className="space-y-1.5">
                     <span className="text-xs font-medium text-foreground">
-                      Adresse formatée
+                      {t('address.formatted')}
                     </span>
                     <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground whitespace-pre-line">
-                      {profile.formatted_address || 'Non renseignée'}
+                      {profile.formatted_address || '—'}
                     </p>
                   </div>
 
                   <div className="grid gap-3 md:grid-cols-[2fr_1fr]">
                     <div className="space-y-1.5">
                       <span className="text-xs font-medium text-foreground">
-                        Rue
+                        {t('address.street')}
                       </span>
                       <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground">
                         {profile.street || '—'}
@@ -749,7 +799,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="space-y-1.5">
                       <span className="text-xs font-medium text-foreground">
-                        Numéro
+                        {t('address.number')}
                       </span>
                       <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground">
                         {profile.street_number || '—'}
@@ -760,7 +810,7 @@ export default function ProfilePage() {
                   <div className="grid gap-3 md:grid-cols-3">
                     <div className="space-y-1.5">
                       <span className="text-xs font-medium text-foreground">
-                        Code postal
+                        {t('address.postalCode')}
                       </span>
                       <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground">
                         {profile.postal_code || '—'}
@@ -768,7 +818,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="space-y-1.5 md:col-span-2">
                       <span className="text-xs font-medium text-foreground">
-                        Ville
+                        {t('address.city')}
                       </span>
                       <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground">
                         {profile.city || '—'}
@@ -779,7 +829,7 @@ export default function ProfilePage() {
                   <div className="grid gap-3 md:grid-cols-2">
                     <div className="space-y-1.5">
                       <span className="text-xs font-medium text-foreground">
-                        Pays
+                        {t('address.country')}
                       </span>
                       <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground">
                         {profile.country || '—'}
@@ -787,7 +837,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="space-y-1.5">
                       <span className="text-xs font-medium text-foreground">
-                        Code pays (ISO)
+                        {t('address.countryCode')}
                       </span>
                       <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground">
                         {profile.country_code || '—'}
@@ -799,19 +849,19 @@ export default function ProfilePage() {
                   <div className="grid gap-3 md:grid-cols-2 text-xs md:text-sm">
                     <div className="space-y-1.5">
                       <span className="font-medium text-foreground">
-                        Coordonnées (lat, lng)
+                        {t('address.coords.label')}
                       </span>
                       <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground">
                         {profile.lat != null && profile.lng != null
                           ? `${profile.lat.toFixed(6)}, ${profile.lng.toFixed(
                               6
                             )}`
-                          : 'Non défini'}
+                          : t('address.coords.empty')}
                       </p>
                     </div>
                     <div className="space-y-1.5">
                       <span className="font-medium text-foreground">
-                        Google Place ID
+                        {t('address.placeId.label')}
                       </span>
                       <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground text-[11px] break-all">
                         {profile.google_place_id || '—'}
@@ -822,14 +872,14 @@ export default function ProfilePage() {
                   {/* Carte */}
                   <div className="space-y-1.5">
                     <span className="text-xs font-medium text-foreground">
-                      Carte
+                      {t('address.map.label')}
                     </span>
                     <div className="border rounded-md bg-muted/40 h-52 overflow-hidden relative">
                       {(!isMapsReady || !hasCoords) && (
                         <div className="flex h-full w-full items-center justify-center px-2 text-center text-[11px] text-muted-foreground">
                           {!isMapsReady
-                            ? 'Chargement de la carte…'
-                            : 'Aucune adresse géolocalisée pour l’instant.'}
+                            ? t('address.map.loading')
+                            : t('address.map.noCoords')}
                         </div>
                       )}
                       <div
@@ -840,29 +890,47 @@ export default function ProfilePage() {
                       />
                     </div>
                   </div>
+
+                  {/* (optionnel) dates debug */}
+                  {/* <div className="grid gap-3 md:grid-cols-2 text-xs md:text-sm">
+                    <div className="space-y-1.5">
+                      <span className="font-medium text-foreground">Updated</span>
+                      <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground">
+                        {formatDateTime(profile.updatedAt, locale)}
+                      </p>
+                    </div>
+                    <div className="space-y-1.5">
+                      <span className="font-medium text-foreground">Last validated</span>
+                      <p className="border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground">
+                        {formatDateTime(profile.last_validated_at, locale)}
+                      </p>
+                    </div>
+                  </div> */}
                 </div>
               </section>
             </div>
           </div>
         </div>
 
-        {/* MODALE MODIF NOM */}
+        {/* MODALE NOM */}
         {nameModalOpen && (
           <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4">
             <div className="w-full max-w-md rounded-2xl bg-card border shadow-lg p-5 space-y-4">
               <div className="flex items-center justify-between gap-2">
-                <h2 className="text-sm font-semibold">Modifier le nom</h2>
+                <h2 className="text-sm font-semibold">
+                  {t('modals.name.title')}
+                </h2>
                 <button
                   type="button"
                   onClick={closeNameModal}
                   className="text-xs text-muted-foreground hover:text-foreground"
                 >
-                  Fermer
+                  {t('common.close')}
                 </button>
               </div>
+
               <p className="text-xs text-muted-foreground">
-                Le nom affiché est utilisé dans l&apos;interface et pour
-                certaines notifications. Modifie-le uniquement si nécessaire.
+                {t('modals.name.helper')}
               </p>
 
               <form onSubmit={handleSaveName} className="space-y-3">
@@ -871,7 +939,7 @@ export default function ProfilePage() {
                     htmlFor="new_name"
                     className="text-xs font-medium text-foreground"
                   >
-                    Nouveau nom
+                    {t('modals.name.newName')}
                   </label>
                   <input
                     id="new_name"
@@ -893,14 +961,14 @@ export default function ProfilePage() {
                     disabled={savingName}
                     className="inline-flex items-center justify-center rounded-md border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    Annuler
+                    {t('common.cancel')}
                   </button>
                   <button
                     type="submit"
                     disabled={savingName}
                     className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {savingName ? 'Enregistrement…' : 'Enregistrer'}
+                    {savingName ? t('common.saving') : t('common.save')}
                   </button>
                 </div>
               </form>
@@ -908,26 +976,25 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {/* MODALE MODIF ADRESSE (UNIQUEMENT LABEL + ADRESSE FORMATÉE) */}
+        {/* MODALE ADRESSE */}
         {addressModalOpen && (
           <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/40 px-4">
             <div className="w-full max-w-xl rounded-2xl bg-card border shadow-lg p-5 space-y-4 max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between gap-2">
                 <h2 className="text-sm font-semibold">
-                  Modifier l&apos;adresse principale
+                  {t('modals.address.title')}
                 </h2>
                 <button
                   type="button"
                   onClick={closeAddressModal}
                   className="text-xs text-muted-foreground hover:text-foreground"
                 >
-                  Fermer
+                  {t('common.close')}
                 </button>
               </div>
+
               <p className="text-xs text-muted-foreground">
-                L&apos;adresse est utilisée pour calculer les trajets et
-                regrouper les interventions. Choisis une suggestion Google pour
-                garantir une adresse géolocalisable.
+                {t('modals.address.helper')}
               </p>
 
               <form onSubmit={handleSaveAddress} className="space-y-3 text-sm">
@@ -936,14 +1003,14 @@ export default function ProfilePage() {
                     htmlFor="address_label"
                     className="text-xs font-medium text-foreground"
                   >
-                    Label
+                    {t('address.label')}
                   </label>
                   <input
                     id="address_label"
                     name="address_label"
                     value={draftAddress.address_label}
                     onChange={handleAddressDraftChange}
-                    placeholder="Domicile, Bureau, Studio de musique…"
+                    placeholder={t('modals.address.labelPlaceholder')}
                     className="w-full rounded-md border px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   />
                 </div>
@@ -953,7 +1020,7 @@ export default function ProfilePage() {
                     htmlFor="formatted_address"
                     className="text-xs font-medium text-foreground"
                   >
-                    Adresse formatée
+                    {t('address.formatted')}
                   </label>
                   <input
                     id="formatted_address"
@@ -962,20 +1029,26 @@ export default function ProfilePage() {
                     value={draftAddress.formatted_address}
                     onChange={handleAddressDraftChange}
                     className="w-full rounded-md border px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-primary"
-                    placeholder="Commence à taper et choisis une suggestion Google"
+                    placeholder={t('modals.address.formattedPlaceholder')}
                   />
                 </div>
 
                 {selectedAddress && (
                   <div className="mt-1 rounded bg-gray-50 border text-xs p-2 space-y-1">
-                    <div className="font-semibold">Adresse sélectionnée :</div>
+                    <div className="font-semibold">
+                      {t('modals.address.selectedTitle')}
+                    </div>
                     <div>{selectedAddress.formattedAddress}</div>
                     <div>
-                      <span className="font-medium">Rue : </span>
+                      <span className="font-medium">
+                        {t('modals.address.selectedStreet')}{' '}
+                      </span>
                       {selectedAddress.streetNumber} {selectedAddress.street}
                     </div>
                     <div>
-                      <span className="font-medium">Ville : </span>
+                      <span className="font-medium">
+                        {t('modals.address.selectedCity')}{' '}
+                      </span>
                       {selectedAddress.postalCode} {selectedAddress.city} (
                       {selectedAddress.country})
                     </div>
@@ -993,14 +1066,14 @@ export default function ProfilePage() {
                     disabled={savingAddress}
                     className="inline-flex items-center justify-center rounded-md border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    Annuler
+                    {t('common.cancel')}
                   </button>
                   <button
                     type="submit"
                     disabled={savingAddress}
                     className="inline-flex items-center justify-center rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
                   >
-                    {savingAddress ? 'Enregistrement…' : 'Enregistrer'}
+                    {savingAddress ? t('common.saving') : t('common.save')}
                   </button>
                 </div>
               </form>

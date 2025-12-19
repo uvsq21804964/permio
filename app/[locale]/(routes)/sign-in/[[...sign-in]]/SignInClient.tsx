@@ -12,8 +12,22 @@ type Props = {
   redirectUrl: string;
 };
 
+function withLocalePath(path: string, locale: string) {
+  const p = path.startsWith('/') ? path : `/${path}`;
+  return p.startsWith(`/${locale}/`) ? p : `/${locale}${p}`;
+}
+
 export default function SignInClient({ locale, redirectUrl }: Props) {
   const logo = '/IconeSansFond.png';
+  const isFR = String(locale).startsWith('fr');
+
+  const copy = {
+    noAccount: isFR
+      ? "Je n'ai pas encore de compte"
+      : "I don't have an account yet",
+    brand: 'MagicHango',
+  };
+
   return (
     <div className="min-h-screen bg-[#f9ffc6]/80">
       {/* NAVBAR FIXE EN HAUT */}
@@ -21,10 +35,9 @@ export default function SignInClient({ locale, redirectUrl }: Props) {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-2.5 md:px-8 md:py-3">
           {/* Logo / marque */}
           <Link
-            href={`/${locale}/home`}
+            href={withLocalePath('/home', locale)}
             className="flex items-center gap-2 min-w-0"
           >
-            {/* ✅ conteneur dimensionné + relative pour fill */}
             <span className="relative h-7 w-7 shrink-0 md:h-8 md:w-8">
               <Image
                 src={logo}
@@ -37,30 +50,28 @@ export default function SignInClient({ locale, redirectUrl }: Props) {
             </span>
 
             <span className="truncate text-sm md:text-base font-semibold tracking-tight">
-              MagicHango
+              {copy.brand}
             </span>
           </Link>
 
           {/* Actions à droite */}
           <nav className="flex items-center gap-2 md:gap-3">
-            {/* CTA créer un compte */}
             <Link
-              href={`/${locale}/sign-up`}
+              href={withLocalePath('/sign-up', locale)}
               className="inline-flex items-center rounded-full bg-white/95 hover:text-white hover:bg-primary px-3 py-1.5 text-[11px] md:text-sm font-semibold text-primary shadow-sm transition whitespace-nowrap"
             >
-              Je n'ai pas encore de compte
+              {copy.noAccount}
             </Link>
-            {/* Switcher de langue */}
+
             <LocaleSwitcher />
           </nav>
         </div>
       </header>
 
-      {/* CONTENU : on décale pour ne pas passer sous la navbar */}
+      {/* CONTENU */}
       <main className="pt-16 md:pt-20">
         <div className="max-w-md mx-auto px-4 py-8">
           <SignIn
-            // Clerk est déjà localisé via ClerkProvider dans le layout
             fallbackRedirectUrl={redirectUrl}
             forceRedirectUrl={redirectUrl}
           />

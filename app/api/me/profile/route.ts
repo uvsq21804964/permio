@@ -13,31 +13,36 @@ export async function GET(req: NextRequest) {
 
     const rows = await sql`
       SELECT
-        "id",
-        "name",
-        "role",
-        "agencyId",
-        "planned_minutes",
-        "remaining_minutes",
-        "last_validated_week_start",
-        "last_validated_at",
-        "createdAt",
-        "updatedAt",
-        "formatted_address",
-        "lat",
-        "lng",
-        "street",
-        "street_number",
-        "postal_code",
-        "city",
-        "country",
-        "country_code",
-        "google_place_id",
-        "raw_input",
-        "address_label",
-        "is_primary"
-      FROM "User"
-      WHERE "id" = ${userId}
+        u."id",
+        u."name",
+        u."role",
+        u."agencyId",
+        u."planned_minutes",
+        u."remaining_minutes",
+        u."last_validated_week_start",
+        u."last_validated_at",
+        u."createdAt",
+        u."updatedAt",
+        u."formatted_address",
+        u."lat",
+        u."lng",
+        u."street",
+        u."street_number",
+        u."postal_code",
+        u."city",
+        u."country",
+        u."country_code",
+        u."google_place_id",
+        u."raw_input",
+        u."address_label",
+        u."is_primary",
+
+        -- ✅ NEW: code d'association (éducateur) depuis Agency
+        a.join_code AS "joinCode",
+        a.name AS "agencyName"
+      FROM "User" u
+      LEFT JOIN "Agency" a ON a.id = u."agencyId"
+      WHERE u."id" = ${userId}
       LIMIT 1
     `;
 
@@ -83,6 +88,8 @@ export async function PATCH(req: NextRequest) {
       lng,
       google_place_id,
       raw_input,
+      // ⚠️ si quelqu'un tente d'envoyer joinCode, on l'ignore (non modifiable)
+      // joinCode,
     } = body;
 
     if (planned_minutes != null && planned_minutes < 0) {
@@ -141,7 +148,27 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'USER_NOT_FOUND' }, { status: 404 });
     }
 
-    return NextResponse.json({ ok: true, user: updated[0] }, { status: 200 });
+    // ✅ IMPORTANT : on renvoie aussi joinCode/joinName après PATCH (comme GET)
+    // pour que le front garde la même shape sans refetch.
+    const agencyRes = await sql`
+      SELECT a.join_code AS "joinCode", a.name AS "agencyName"
+      FROM "User" u
+      LEFT JOIN "Agency" a ON a.id = u."agencyId"
+      WHERE u."id" = ${userId}
+      LIMIT 1
+    `;
+
+    return NextResponse.json(
+      {
+        ok: true,
+        user: {
+          ...updated[0],
+          joinCode: agencyRes?.[0]?.joinCode ?? null,
+          agencyName: agencyRes?.[0]?.agencyName ?? null,
+        },
+      },
+      { status: 200 }
+    );
   } catch (err: any) {
     console.error('[PATCH /api/me/profile] error:', err);
     return NextResponse.json(

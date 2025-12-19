@@ -4,15 +4,30 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
+import { usePathname } from 'next/navigation';
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
 
 type Page = {
   nameFR: string;
   nameEN: string;
-  link: string;
+  link: string; // routes "nues" : "/myweek", "/services", etc.
   visible: number;
   cta?: boolean;
 };
+
+function withLocalePath(path: string, locale: string) {
+  const p = path.startsWith('/') ? path : `/${path}`;
+  // évite double prefix si déjà préfixé
+  return p.startsWith(`/${locale}/`) ? p : `/${locale}${p}`;
+}
+
+function stripLocalePrefix(path: string, locale: string) {
+  const p = path || '';
+  const prefix = `/${locale}`;
+  if (p === prefix) return '/';
+  if (p.startsWith(prefix + '/')) return p.slice(prefix.length);
+  return p;
+}
 
 export default function DesktopNavbar({
   logo,
@@ -27,6 +42,9 @@ export default function DesktopNavbar({
 }) {
   const locale = useLocale();
   const isFR = locale.startsWith('fr');
+
+  const pathname = usePathname();
+  const currentPath = activeLink ?? pathname ?? '';
 
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -44,17 +62,13 @@ export default function DesktopNavbar({
           // 1 = client, 2 = les deux
           return p.visible === 1 || p.visible === 2;
         }
-        if (meRole === 'admin') {
-          // admin voit tout
-          return true;
-        }
-        // rôle inconnu / non connecté → seulement les pages visibles par les deux
+        if (meRole === 'admin') return true;
         return p.visible === 2;
       }),
     [pages, meRole]
   );
 
-  // On base le menu "profil" sur les links, pas sur le texte (indépendant de la langue)
+  // menu profil basé sur les routes "nues"
   const PROFILE_LINKS = new Set([
     '/services',
     '/availability',
@@ -62,7 +76,7 @@ export default function DesktopNavbar({
     '/plans',
     '/profile',
     '/sign-out',
-    '/gestion', // éventuel : à retirer si tu ne veux pas "Mes clients" dans le menu profil
+    '/gestion',
   ]);
 
   const profileItems = useMemo(
@@ -103,14 +117,16 @@ export default function DesktopNavbar({
   const accountLabel = isFR ? 'Mon compte' : 'Account';
   const burgerSrLabel = isFR ? 'Ouvrir le menu' : 'Open menu';
 
+  // ✅ comparaison “active” robuste : compare sans le prefix /fr ou /en
+  const currentNoLocale = stripLocalePrefix(currentPath, locale);
+
   return (
     <nav className="fixed inset-x-0 top-0 z-50 border-b border-neutral-200 bg-white/90 text-white backdrop-blur supports-[backdrop-filter]:bg-[#8920D1] dark:border-neutral-800 dark:bg-neutral-900/80">
-      {/* Barre full-bleed pour coller le logo à gauche */}
       <div className="flex h-12 items-center justify-between px-0">
-        {/* LOGO collé au bord gauche du viewport */}
+        {/* ✅ LOGO : préfixé */}
         <Link
-          href="/myweek"
-          className="h-10 w-[12rem] pl-0  dark:focus:ring-neutral-600"
+          href={withLocalePath('/myweek', locale)}
+          className="h-10 w-[12rem] pl-0 dark:focus:ring-neutral-600"
         >
           <span className="sr-only">{homeSrLabel}</span>
           <div className="relative h-full w-full">
@@ -125,30 +141,32 @@ export default function DesktopNavbar({
           </div>
         </Link>
 
-        {/* Tout le reste centré dans le container */}
         <div className="flex-1">
           <div className="mx-auto max-w-7xl pr-4 sm:pr-6">
             <div className="flex h-16 items-center justify-end gap-2">
-              {/* Liens desktop */}
               <div className="hidden md:flex items-center gap-2">
                 {mainNavPages.map((p) => {
                   const label = isFR ? p.nameFR : p.nameEN;
-                  const isActive = activeLink === p.link;
+
+                  const href = withLocalePath(p.link, locale);
+                  const isActive = currentNoLocale === p.link;
+
                   if (p.cta) {
                     return (
                       <Link
                         key={p.link}
-                        href={p.link}
+                        href={href}
                         className="inline-flex items-center justify-center rounded-md bg-navbar px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110 active:translate-y-px focus:outline-none focus:ring-2 focus:ring-navbar/60 focus:ring-offset-2"
                       >
                         {label}
                       </Link>
                     );
                   }
+
                   return (
                     <Link
                       key={p.link}
-                      href={p.link}
+                      href={href}
                       className={`group relative rounded-md px-3 py-2 text-sm font-medium transition hover:bg-neutral-100/60 focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:ring-offset-2 dark:hover:bg-neutral-800/60 dark:focus:ring-neutral-700 ${
                         isActive
                           ? 'text-white dark:text-white'
@@ -167,7 +185,7 @@ export default function DesktopNavbar({
                   );
                 })}
 
-                {/* Mon profil / Account */}
+                {/* ✅ Profil */}
                 {profileItems.length > 0 && (
                   <div className="relative">
                     <button
@@ -204,12 +222,14 @@ export default function DesktopNavbar({
                         <ul className="py-1 text-sm">
                           {profileItems.map((p) => {
                             const label = isFR ? p.nameFR : p.nameEN;
-                            const isActive = activeLink === p.link;
+                            const href = withLocalePath(p.link, locale);
+                            const isActive = currentNoLocale === p.link;
+
                             return (
                               <li key={p.link}>
                                 <Link
                                   role="menuitem"
-                                  href={p.link}
+                                  href={href}
                                   onClick={() => setProfileOpen(false)}
                                   className={`flex items-center justify-between px-3 py-2 transition hover:bg-neutral-100 focus:bg-neutral-100 focus:outline-none dark:hover:bg-neutral-800 dark:focus:bg-neutral-800 ${
                                     isActive
@@ -230,6 +250,7 @@ export default function DesktopNavbar({
                     )}
                   </div>
                 )}
+
                 <LocaleSwitcher />
               </div>
 

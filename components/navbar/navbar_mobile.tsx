@@ -1,16 +1,17 @@
 'use client';
 
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
+import { usePathname } from 'next/navigation';
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
 
 type Page = {
   nameFR: string;
   nameEN: string;
-  link: string;
+  link: string; // routes "nues" : "/myweek", "/services", etc.
   visible: number;
   cta?: boolean;
 };
@@ -22,6 +23,19 @@ interface NavbarProps {
   meRole: 'student' | 'instructor' | 'admin' | string | null;
 }
 
+function withLocalePath(path: string, locale: string) {
+  const p = path.startsWith('/') ? path : `/${path}`;
+  return p.startsWith(`/${locale}/`) ? p : `/${locale}${p}`;
+}
+
+function stripLocalePrefix(path: string, locale: string) {
+  const p = path || '';
+  const prefix = `/${locale}`;
+  if (p === prefix) return '/';
+  if (p.startsWith(prefix + '/')) return p.slice(prefix.length);
+  return p;
+}
+
 const MobileNavbar: React.FC<NavbarProps> = ({
   logo,
   pages,
@@ -31,23 +45,24 @@ const MobileNavbar: React.FC<NavbarProps> = ({
   const locale = useLocale();
   const isFR = locale.startsWith('fr');
 
+  const pathname = usePathname();
+  const currentPath = activeLink ?? pathname ?? '';
+  const currentNoLocale = stripLocalePrefix(currentPath, locale);
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleMenu = () => setIsMenuOpen((v) => !v);
 
   // Filtre : selon le rôle
-  const visiblePages = pages.filter((p) => {
-    if (meRole === 'instructor') {
-      return p.visible === 0 || p.visible === 2;
-    }
-    if (meRole === 'student') {
-      return p.visible === 1 || p.visible === 2;
-    }
-    if (meRole === 'admin') {
-      return true;
-    }
-    // rôle inconnu / non connecté → seulement les pages pour les deux
-    return p.visible === 2;
-  });
+  const visiblePages = useMemo(
+    () =>
+      pages.filter((p) => {
+        if (meRole === 'instructor') return p.visible === 0 || p.visible === 2;
+        if (meRole === 'student') return p.visible === 1 || p.visible === 2;
+        if (meRole === 'admin') return true;
+        return p.visible === 2;
+      }),
+    [pages, meRole]
+  );
 
   const homeSrLabel = isFR ? 'Aller à l’accueil' : 'Go to home';
   const burgerSrLabel = isFR ? 'Ouvrir le menu' : 'Open menu';
@@ -59,8 +74,9 @@ const MobileNavbar: React.FC<NavbarProps> = ({
           {/* Logo */}
           <div className="flex items-center gap-4">
             <Link
-              href="/myweek"
+              href={withLocalePath('/myweek', locale)}
               className="relative h-10 w-24 block focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 dark:focus:ring-neutral-600 rounded"
+              onClick={() => setIsMenuOpen(false)}
             >
               <span className="sr-only">{homeSrLabel}</span>
               <Image
@@ -78,13 +94,14 @@ const MobileNavbar: React.FC<NavbarProps> = ({
           <div className="hidden md:flex items-center gap-1">
             {visiblePages.map((p) => {
               const label = isFR ? p.nameFR : p.nameEN;
-              const isActive = activeLink ? activeLink === p.link : false;
+              const href = withLocalePath(p.link, locale);
+              const isActive = currentNoLocale === p.link;
 
               if (p.cta) {
                 return (
                   <Link
                     key={p.link}
-                    href={p.link}
+                    href={href}
                     className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold
                                bg-navbar text-white shadow-sm transition hover:brightness-110 active:translate-y-px
                                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navbar/60"
@@ -97,7 +114,7 @@ const MobileNavbar: React.FC<NavbarProps> = ({
               return (
                 <Link
                   key={p.link}
-                  href={p.link}
+                  href={href}
                   className={`group relative px-3 py-2 text-sm font-medium rounded-md transition 
                   hover:bg-neutral-100/60 dark:hover:bg-neutral-800/60 
                   focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700
@@ -164,13 +181,14 @@ const MobileNavbar: React.FC<NavbarProps> = ({
           <div className="flex flex-col gap-1">
             {visiblePages.map((p) => {
               const label = isFR ? p.nameFR : p.nameEN;
-              const isActive = activeLink ? activeLink === p.link : false;
+              const href = withLocalePath(p.link, locale);
+              const isActive = currentNoLocale === p.link;
 
               if (p.cta) {
                 return (
                   <Link
                     key={p.link}
-                    href={p.link}
+                    href={href}
                     className="w-full rounded-lg px-3 py-2 text-sm font-medium transition 
                                bg-navbar text-white shadow-sm hover:brightness-110 active:translate-y-px
                                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700"
@@ -184,7 +202,7 @@ const MobileNavbar: React.FC<NavbarProps> = ({
               return (
                 <Link
                   key={p.link}
-                  href={p.link}
+                  href={href}
                   className={`w-full rounded-lg px-3 py-2 text-sm font-medium transition 
                   hover:bg-neutral-100 dark:hover:bg-neutral-800
                   focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700
