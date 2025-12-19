@@ -8,9 +8,9 @@
     "button": "Back to the address step"
   },
   "errors": {
-    "loadServicesApi": "We couldn’t retrieve your instructor’s services.",
-    "loadServicesGeneric": "An error occurred while loading your instructor’s services.",
-    "loadAgendaApi": "We couldn’t retrieve your instructor’s availability.",
+    "loadServicesApi": "We couldn’t retrieve your dog trainer’s services.",
+    "loadServicesGeneric": "An error occurred while loading your dog trainer’s services.",
+    "loadAgendaApi": "We couldn’t retrieve your dog trainer’s availability.",
     "generateSlots": "An error occurred while computing suggested time slots.",
     "slotAlreadyBooked": "This time slot has just been booked by someone else. Please pick another one.",
     "createBooking": "We couldn’t create your booking. Please try again.",

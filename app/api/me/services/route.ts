@@ -68,7 +68,22 @@ export async function GET(req: NextRequest) {
       ORDER BY c.id, s.id
     `;
 
-    return NextResponse.json({ categories, services }, { status: 200 });
+    // ✅ NEW: join code de l'agence (association code)
+    const agencyRes = await sql`
+      SELECT a.join_code, a.name AS agency_name
+      FROM "User" u
+      JOIN "Agency" a ON a.id = u."agencyId"
+      WHERE u.id = ${userId}
+      LIMIT 1
+    `;
+
+    const joinCode = agencyRes?.[0]?.join_code ?? null;
+    const agencyName = agencyRes?.[0]?.agency_name ?? null;
+
+    return NextResponse.json(
+      { categories, services, joinCode, agencyName },
+      { status: 200 }
+    );
   } catch (err: any) {
     console.error('[GET /api/me/services] error:', err);
     return NextResponse.json(

@@ -54,7 +54,7 @@
         "zones": "Reduce travel time by grouping by zones/days.",
         "noShows": "Tackle no-shows (reminders, cancellation policy, Stripe deposits).",
         "calendar": "Integrate Google/Outlook Calendar and sync your events.",
-        "import": "Import your students/clients (CSV/Google Contacts) and clean addresses.",
+        "import": "Import your clients (CSV/Google Contacts) and clean addresses.",
         "holes": "Optimise “gap” slots to fill your day without extra travel.",
         "billing": "Billing/subscription questions (upgrade, invoices, VAT, coupons).",
         "partnership": "Partnerships (schools, teacher networks, integrators)."
@@ -63,9 +63,9 @@
   },
   "mail": {
     "subject": "Information / Demo request",
-    "body": "Hi,\n\nI’d like to contact you about schedule and route optimisation.\nMy context:\n- Number of students/clients:\n- Zones / cities:\n- Current tools:\n\nThanks!"
+    "body": "Hi,\n\nI’d like to contact you about schedule and route optimisation.\nMy context:\n- Number of clients:\n- Zones / cities:\n- Current tools:\n\nThanks!"
   },
   "whatsapp": {
-    "text": "Hi 👋 — I’d like more information about the tool (planning + route optimisation). — Quick context: [students/clients, zones, tools]"
+    "text": "Hi 👋 — I’d like more information about the tool (planning + route optimisation). — Quick context: [clients, zones, tools]"
   }
 }

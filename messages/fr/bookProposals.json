@@ -8,9 +8,9 @@
     "button": "Revenir à l’étape adresse"
   },
   "errors": {
-    "loadServicesApi": "Impossible de récupérer les services de votre moniteur.",
-    "loadServicesGeneric": "Erreur lors du chargement des services de votre moniteur.",
-    "loadAgendaApi": "Impossible de récupérer les disponibilités du moniteur.",
+    "loadServicesApi": "Impossible de récupérer les services de votre éducateur canin.",
+    "loadServicesGeneric": "Erreur lors du chargement des services de votre éducateur canin.",
+    "loadAgendaApi": "Impossible de récupérer les disponibilités du éducateur canin.",
     "generateSlots": "Erreur lors de la génération des créneaux proposés.",
     "slotAlreadyBooked": "Ce créneau a déjà été réservé entre-temps. Veuillez en choisir un autre.",
     "createBooking": "Impossible de créer la réservation. Veuillez réessayer.",

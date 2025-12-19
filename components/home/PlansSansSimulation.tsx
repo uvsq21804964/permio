@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import { Poppins } from 'next/font/google';
 import { Button } from '@/components/ui/button';
@@ -21,6 +20,11 @@ type Plan = {
   highlighted?: boolean;
 };
 
+type Props = {
+  /** true => version d'essai ; false => sans essai */
+  withTrial: boolean;
+};
+
 function getCurrencyFromLocale(locale: string): Currency {
   return locale === 'en' ? 'USD' : 'EUR';
 }
@@ -30,17 +34,26 @@ function formatCurrency(amount: number, currency: Currency, locale: string) {
 
   return new Intl.NumberFormat(nfLocale, {
     style: 'currency',
-    currency, // ✅ c’est ça qui décide € vs $
+    currency,
     currencyDisplay: 'narrowSymbol',
     maximumFractionDigits: 0,
   }).format(amount);
 }
 
-export default function Plans() {
+// ✅ map plan -> Stripe lookup_key (adapte si besoin)
+function getPriceLookupKey(planId: string, currency: Currency) {
+  // Si tu n’as qu’un plan “pro”
+  // - et que tes lookup_keys sont genre: pro_monthly_eur / pro_monthly_usd
+  const c = currency.toLowerCase(); // 'eur' | 'usd'
+  if (planId === 'pro') return `magic_monthly_${c}`;
+
+  // fallback
+  return `magic_monthly_${c}`;
+}
+
+export default function Plans({ withTrial }: Props) {
   const t = useTranslations('plans');
   const locale = useLocale(); // 'fr' | 'en'
-  const router = useRouter();
-
   const currency = getCurrencyFromLocale(locale);
 
   const plans: readonly Plan[] = [
@@ -60,9 +73,9 @@ export default function Plans() {
     },
   ];
 
-  const handleSelect = (plan: Plan) => {
-    router.push(`/${locale}/sign-up?plan=${plan.id}`);
-  };
+  // 🔁 URLs de retour (ex: après checkout, revenir sur /billing)
+  const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/billing?success=1&session_id={CHECKOUT_SESSION_ID}`;
+  const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/billing?canceled=1`;
 
   return (
     <main className="bg-[#f9ffc6]">
@@ -96,6 +109,8 @@ export default function Plans() {
           {plans.map((plan) => {
             const isHighlighted = Boolean(plan.highlighted);
             const price = plan.prices[currency];
+
+            const priceLookupKey = getPriceLookupKey(plan.id, currency);
 
             return (
               <article
@@ -143,26 +158,40 @@ export default function Plans() {
                   </ul>
                 </div>
 
-                <Button
-                  onClick={() => handleSelect(plan)}
-                  className={clsx(
-                    'mt-6 w-full rounded-xl px-4 py-3 text-sm font-semibold transition shadow',
-                    'text-white bg-gradient-to-r from-primary to-[#d400ff] hover:opacity-95'
-                  )}
+                {/* ✅ Checkout Stripe (POST) */}
+                <form
+                  action="/api/stripe/checkout"
+                  method="POST"
+                  className="mt-6"
                 >
-                  {t('plans.ctaPrimary')}
-                </Button>
+                  <input
+                    type="hidden"
+                    name="priceLookupKey"
+                    value={priceLookupKey}
+                  />
+                  <input type="hidden" name="mode" value="subscription" />
+                  <input type="hidden" name="successUrl" value={successUrl} />
+                  <input type="hidden" name="cancelUrl" value={cancelUrl} />
 
-                <Button
-                  onClick={() => handleSelect(plan)}
-                  variant="outline"
-                  className={clsx(
-                    'mt-3 w-full rounded-xl px-4 py-3 text-sm font-semibold transition',
-                    'border-[#d400ff]/40 text-[#d400ff] hover:bg-[#d400ff]/5'
-                  )}
-                >
-                  {t('plans.ctaSecondary')}
-                </Button>
+                  {/* Optionnel: tu peux passer l’info au serveur (ne casse rien si ignoré) */}
+                  <input
+                    type="hidden"
+                    name="trialMode"
+                    value={withTrial ? 'trial' : 'no_trial'}
+                  />
+
+                  <Button
+                    type="submit"
+                    className={clsx(
+                      'w-full rounded-xl px-4 py-3 text-sm font-semibold transition shadow',
+                      'text-white bg-gradient-to-r from-primary to-[#d400ff] hover:opacity-95'
+                    )}
+                  >
+                    {withTrial
+                      ? t('plans.ctaPrimary')
+                      : t('plans.ctaSecondary')}
+                  </Button>
+                </form>
 
                 <p className="mt-3 text-center text-xs text-black/50">
                   {t('plans.disclaimer')}

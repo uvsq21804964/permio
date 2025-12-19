@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 
   const form = await req.formData();
   const subscriptionId = String(form.get('subscriptionId') || '');
-  const returnUrl = String(form.get('returnUrl') || '/billing');
+  const returnUrl = String(form.get('returnUrl') || '/invoices');
 
   if (!subscriptionId)
     return new NextResponse('Missing subscriptionId', { status: 400 });

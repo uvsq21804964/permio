@@ -4,8 +4,8 @@
     "range": "• {range}"
   },
   "roles": {
-    "instructor": "Instructor",
-    "student": "Student",
+    "instructor": "Dog trainer",
+    "student": "Client",
     "admin": "Admin"
   },
   "buttons": {
@@ -45,13 +45,13 @@
     "tooltipTime": "Travel {start}–{end}"
   },
   "counterpart": {
-    "instructor": "Instructor",
-    "student": "Student",
+    "instructor": "Dog trainer",
+    "student": "Client",
     "generic": "Partner"
   },
   "legend": {
-    "unknownStudent": "Unknown student",
-    "unknownInstructor": "Unknown instructor",
+    "unknownStudent": "Unknown client",
+    "unknownInstructor": "Unknown dog trainer",
     "unknownPartner": "Unknown partner"
   },
   "slot": {

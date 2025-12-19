@@ -7,8 +7,8 @@
     "hintOff": "Read-only mode: enable edit mode to modify your typical week."
   },
   "userLabel": {
-    "instructor": "Instructor",
-    "student": "Student",
+    "instructor": "Dog trainer",
+    "student": "Client",
     "selfFallback": "Me"
   },
   "buttons": {

@@ -4,8 +4,8 @@
     "range": "• {range}"
   },
   "roles": {
-    "instructor": "Moniteur",
-    "student": "Élève",
+    "instructor": "Éducateur canin",
+    "student": "Client",
     "admin": "Admin"
   },
   "buttons": {
@@ -45,13 +45,13 @@
     "tooltipTime": "Trajet {start}–{end}"
   },
   "counterpart": {
-    "instructor": "Moniteur",
-    "student": "Élève",
+    "instructor": "Éducateur canin",
+    "student": "Client",
     "generic": "Intervenant"
   },
   "legend": {
-    "unknownStudent": "Élève inconnu",
-    "unknownInstructor": "Moniteur inconnu",
+    "unknownStudent": "Client inconnu",
+    "unknownInstructor": "Éducateur canin inconnu",
     "unknownPartner": "Intervenant inconnu"
   },
   "slot": {

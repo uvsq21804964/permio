@@ -12,7 +12,7 @@ function getPrimaryEmail(user: any): string | undefined {
 }
 
 // Construit un return_url fiable si NEXT_PUBLIC_APP_URL n'est pas défini
-function makeReturnUrl(req: Request, fallbackPath = '/billing') {
+function makeReturnUrl(req: Request, fallbackPath = '/invoices') {
   const envBase = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/+$/, '');
   if (envBase) return `${envBase}${fallbackPath}`;
   try {
@@ -91,7 +91,7 @@ export async function POST(req: Request) {
     }
 
     // 3) return_url (priorité au formulaire)
-    let returnUrl = makeReturnUrl(req, '/billing');
+    let returnUrl = makeReturnUrl(req, '/invoices');
     try {
       const form = await req.formData();
       const fromForm = form.get('returnUrl');

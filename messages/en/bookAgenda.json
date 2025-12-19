@@ -1,6 +1,6 @@
 {
   "loadingSession": "Loading your session…",
-  "mustBeSignedIn": "You must be signed in to see your instructor’s availability.",
+  "mustBeSignedIn": "You must be signed in to see your dog trainer's availability.",
   "buttons": {
     "prevWeek": "← Previous week",
     "nextWeek": "Next week →",
@@ -13,8 +13,8 @@
     "bookingSuccess": "Slot booked successfully ✅"
   },
   "errors": {
-    "loadAgendaApi": "Unable to fetch your instructor’s availability.",
-    "loadAgendaGeneric": "An error occurred while loading your instructor’s agenda.",
+    "loadAgendaApi": "Unable to fetch your dog trainer’s availability.",
+    "loadAgendaGeneric": "An error occurred while loading your dog trainer’s agenda.",
     "loadServicesApi": "Unable to fetch the list of services.",
     "selectedServiceLoad": "Unable to fetch the selected service.",
     "invalidServiceUrl": "Invalid service in the URL.",
@@ -28,7 +28,7 @@
     "alignNoDuration": "This service does not have a defined duration. Its alignment cannot be adjusted in the slot."
   },
   "agenda": {
-    "title": "Your instructor’s agenda",
+    "title": "Your dog trainer’s agenda",
     "weekLabel": "Week from {start} to {end}.",
     "help": "The displayed slots take into account other bookings and travel time needed to come to your place. Days without any bookable slot are slightly greyed out.",
     "hourColumn": "Time",

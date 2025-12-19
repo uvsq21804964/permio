@@ -7,8 +7,8 @@
     "hintOff": "Mode lecture : activez le mode édition pour modifier votre semaine type."
   },
   "userLabel": {
-    "instructor": "Moniteur",
-    "student": "Élève",
+    "instructor": "Éducateur",
+    "student": "Client",
     "selfFallback": "Moi"
   },
   "buttons": {

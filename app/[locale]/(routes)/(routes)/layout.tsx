@@ -45,7 +45,7 @@ export default async function RootLayout({
       link: '/availability',
       visible: 0,
     },
-    { nameFR: 'Factures', nameEN: 'Invoices', link: '/invoices', visible: 0 }, // ou Facturation/Billing
+    { nameFR: 'Factures', nameEN: 'Invoices', link: '/invoices', visible: 0 }, // ou Facturation/invoices
     { nameFR: 'Réserver', nameEN: 'Book', link: '/book/services', visible: 1 },
     {
       nameFR: 'Abonnement',

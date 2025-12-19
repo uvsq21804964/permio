@@ -63,7 +63,14 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
   const t = useTranslations('associateAgency');
   const router = useRouter();
   const { setActive } = useOrganizationList();
-  const { user, isLoaded: isUserLoaded } = useUser();
+  const { user, isLoaded: isUserLoaded, isSignedIn } = useUser();
+
+  // ✅ Toujours déclarer tous les hooks avant tout "return" conditionnel
+
+  // check DB
+  const [checkingDb, setCheckingDb] = useState(true);
+  const [redirecting, setRedirecting] = useState(false);
+  const [blockingMessage, setBlockingMessage] = useState<string | null>(null);
 
   // Mode (client / trainer) + trainer step
   const [mode, setMode] = useState<'trainer' | 'client' | null>(null);
@@ -89,16 +96,56 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
   );
   const autocompleteRef = useRef<any>(null);
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (window.google?.maps?.places?.Autocomplete) setIsMapsReady(true);
-  }, []);
-
+  // (just for display)
   const firstName = user?.firstName || '';
   const lastName = user?.lastName || '';
   const fullName = [firstName, lastName].filter(Boolean).join(' ').trim();
   const email = user?.primaryEmailAddress?.emailAddress || '';
   const displayName = fullName || firstName || '';
+
+  // ✅ 1) wait for google maps already injected sometimes
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    if (window.google?.maps?.places?.Autocomplete) setIsMapsReady(true);
+  }, []);
+
+  // ✅ 2) block onboarding if already in DB
+  useEffect(() => {
+    if (!isUserLoaded) return;
+
+    // Not signed in => do not block (but in practice this page is protected)
+    if (!isSignedIn) {
+      setCheckingDb(false);
+      return;
+    }
+
+    const run = async () => {
+      try {
+        const res = await fetch('/api/me/account_bdd', {
+          credentials: 'include',
+        });
+        const data = await res.json().catch(() => ({}));
+        const exists = Boolean(data?.exists);
+
+        if (exists) {
+          setBlockingMessage(
+            locale.startsWith('fr')
+              ? 'Votre compte est déjà configuré. Redirection vers votre semaine…'
+              : 'Your account is already set up. Redirecting to your week…'
+          );
+          setRedirecting(true);
+          router.replace(`/${locale}/myweek`);
+          return;
+        }
+      } catch {
+        // If it fails, don't block onboarding
+      } finally {
+        setCheckingDb(false);
+      }
+    };
+
+    void run();
+  }, [isUserLoaded, isSignedIn, router, locale]);
 
   const greetingNode = useMemo(() => {
     if (mode === 'client') {
@@ -317,8 +364,8 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
     if (!trainerAgencyName.trim()) {
       setError(
         locale.startsWith('fr')
-          ? "Veuillez renseigner le nom de l'agence."
-          : 'Please provide the agency name.'
+          ? 'Veuillez renseigner le nom de votre entreprise.'
+          : 'Please provide the company name.'
       );
       return false;
     }
@@ -337,6 +384,45 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
     return true;
   };
 
+  // ✅ maintenant seulement : rendu conditionnel
+  const showBlockingScreen = !isUserLoaded || checkingDb || redirecting;
+
+  if (showBlockingScreen) {
+    return (
+      <div className="min-h-screen bg-[#f9ffc6]/80 flex items-center justify-center px-4">
+        <div className="w-full max-w-md rounded-3xl bg-white/95 border border-black/10 shadow-[0_18px_60px_rgba(0,0,0,0.10)] p-6 text-center">
+          <div className="mx-auto mb-3 flex items-center justify-center gap-2">
+            <span className="relative h-9 w-9">
+              <Image
+                src={logo}
+                alt="MagicHango"
+                fill
+                sizes="36px"
+                className="object-contain"
+                priority
+              />
+            </span>
+            <span className="text-base font-semibold text-black">
+              MagicHango
+            </span>
+          </div>
+
+          <div className="text-lg font-bold text-black">
+            {locale.startsWith('fr') ? 'Chargement…' : 'Loading…'}
+          </div>
+
+          <p className="mt-2 text-sm text-black/60">
+            {blockingMessage ||
+              (locale.startsWith('fr')
+                ? 'Vérification de votre compte…'
+                : 'Checking your account…')}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ✅ le reste de ton JSX (identique)
   return (
     <div className="bg-[#f9ffc6]/80 min-h-screen">
       <header className="fixed top-0 left-0 right-0 z-40 border-b border-black/10 bg-gradient-to-r from-primary to-[#d400ff] text-white">
@@ -414,7 +500,6 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
                     setError(null);
                     setMode('client');
                     setTrainerStep('address');
-                    // reset only trainer fields
                     setTrainerAgencyName('');
                     setTrainerWebsiteUrl('');
                     setAddressInput('');
@@ -436,7 +521,6 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
                     setError(null);
                     setMode('trainer');
                     setTrainerStep('address');
-                    // reset only client fields
                     setCode('');
                     setLoading(false);
                     setAddressInput('');
@@ -587,8 +671,8 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
                           className="text-sm font-medium text-black/80"
                         >
                           {locale.startsWith('fr')
-                            ? "Nom de l'agence"
-                            : 'Agency name'}
+                            ? "Nom de l'entreprise"
+                            : 'Company name'}
                         </label>
                         <input
                           id="trainer_agency"

@@ -36,7 +36,6 @@ const CallToAction: React.FC<CallToActionProps> = ({
     [contactEmail, subject, body]
   );
 
-  // ✅ Préfixe locale pour les routes internes
   const primaryHrefWithLocale = `/${locale}${
     primaryHref.startsWith('/') ? '' : '/'
   }${primaryHref.replace(/^\//, '')}`;

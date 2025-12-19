@@ -1,6 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useLocale, useTranslations } from 'next-intl';
+import { useUser } from '@clerk/nextjs';
 
 import CallToAction from '@/components/home/CallToAction';
 import HowItWorks from '@/components/home/HowItWorks';
@@ -9,21 +14,111 @@ import CompetitorComparison from '@/components/home/PropositionValeur';
 import HeroSection from '@/components/home/HeroSection';
 import Comparison from '@/components/home/Comparison';
 import FAQ from '@/components/home/FAQ';
-import Link from 'next/link';
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
-import Image from 'next/image';
-import { useLocale, useTranslations } from 'next-intl';
 
 export default function HomePage() {
   const logo = '/IconeSansFond.png';
   const t = useTranslations('home');
   const locale = useLocale();
-  //  `/${locale}/sign-in`
+  const router = useRouter();
+
+  const { isLoaded, isSignedIn } = useUser();
+  const [redirecting, setRedirecting] = useState(false);
+
+  useEffect(() => {
+    if (!isLoaded) return;
+    if (!isSignedIn) return;
+
+    setRedirecting(true);
+    const to = setTimeout(() => {
+      router.replace(`/${locale}/plans`);
+    }, 400);
+
+    return () => clearTimeout(to);
+  }, [isLoaded, isSignedIn, locale, router]);
+
+  // ✅ Attendre la fin du chargement Clerk
+  if (!isLoaded) {
+    return (
+      <div className="min-h-screen bg-[#f9ffc6]/80 flex items-center justify-center px-4">
+        <div className="w-full max-w-md rounded-3xl bg-white/95 border border-black/10 shadow-[0_18px_60px_rgba(0,0,0,0.10)] p-6 text-center">
+          <div className="mx-auto mb-3 flex items-center justify-center gap-2">
+            <span className="relative h-9 w-9">
+              <Image
+                src={logo}
+                alt="MagicHango"
+                fill
+                sizes="36px"
+                className="object-contain"
+                priority
+              />
+            </span>
+            <span className="text-base font-semibold text-black">
+              MagicHango
+            </span>
+          </div>
+
+          <div className="text-lg font-bold text-black">
+            {locale.startsWith('fr') ? 'Chargement…' : 'Loading…'}
+          </div>
+          <p className="mt-2 text-sm text-black/60">
+            {locale.startsWith('fr')
+              ? 'Vérification de votre session…'
+              : 'Checking your session…'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // ✅ Utilisateur connecté => redirection + message
+  if (redirecting) {
+    return (
+      <div className="min-h-screen bg-[#f9ffc6]/80 flex items-center justify-center px-4">
+        <div className="w-full max-w-md rounded-3xl bg-white/95 border border-black/10 shadow-[0_18px_60px_rgba(0,0,0,0.10)] p-6 text-center">
+          <div className="mx-auto mb-3 flex items-center justify-center gap-2">
+            <span className="relative h-9 w-9">
+              <Image
+                src={logo}
+                alt="MagicHango"
+                fill
+                sizes="36px"
+                className="object-contain"
+                priority
+              />
+            </span>
+            <span className="text-base font-semibold text-black">
+              MagicHango
+            </span>
+          </div>
+
+          <div className="text-lg font-bold text-black">
+            {locale.startsWith('fr') ? 'Redirection…' : 'Redirecting…'}
+          </div>
+          <p className="mt-2 text-sm text-black/60">
+            {locale.startsWith('fr')
+              ? 'Vous êtes déjà connecté. Direction les offres.'
+              : 'You are already signed in. Taking you to the plans page.'}
+          </p>
+
+          <div className="mt-5">
+            <Link
+              href={`/${locale}/plans`}
+              className="inline-flex items-center justify-center rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:opacity-95 transition"
+            >
+              {locale.startsWith('fr') ? 'Aller aux offres' : 'Go to plans'}
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ✅ Non connecté => Home
   return (
     <div className="min-h-screen bg-[#f9ffc6]/80">
       <header className="fixed top-0 left-0 right-0 z-40 border-b border-[#f9ffc6]/80 bg-gradient-to-r from-primary to-[#d400ff] text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-2.5 md:px-8 md:py-3">
-          {/* Logo / marque */}
           <Link
             href={`/${locale}/home`}
             className="flex items-center gap-2 min-w-0"
@@ -31,7 +126,7 @@ export default function HomePage() {
             <span className="relative h-7 w-7 shrink-0 md:h-8 md:w-8">
               <Image
                 src={logo}
-                alt={'MagicHango'}
+                alt="MagicHango"
                 fill
                 sizes="32px"
                 className="object-contain"
@@ -67,7 +162,7 @@ export default function HomePage() {
       <main className="pt-16 md:pt-20">
         <HeroSection />
         <HowItWorks />
-        <Plans />
+        <Plans withTrial={true} />
         <Comparison />
         <FAQ />
         <CompetitorComparison />

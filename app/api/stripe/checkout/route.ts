@@ -19,11 +19,11 @@ export async function POST(req: Request) {
     | 'payment';
   const successUrl = String(
     form.get('successUrl') ||
-      `${process.env.NEXT_PUBLIC_APP_URL}/billing?success=1`
+      `${process.env.NEXT_PUBLIC_APP_URL}/invoices?success=1`
   );
   const cancelUrl = String(
     form.get('cancelUrl') ||
-      `${process.env.NEXT_PUBLIC_APP_URL}/billing?canceled=1`
+      `${process.env.NEXT_PUBLIC_APP_URL}/invoices?canceled=1`
   );
 
   if (!priceLookupKey)
@@ -43,8 +43,8 @@ export async function POST(req: Request) {
     ...(customerId ? { customer: customerId } : {}),
     line_items: [{ price: price.id, quantity: 1 }],
     allow_promotion_codes: true,
-    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing?success=1&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/billing?canceled=1`,
+    success_url: `${process.env.NEXT_PUBLIC_APP_URL}/invoices?success=1&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/invoices?canceled=1`,
   });
 
   return NextResponse.redirect(session.url!, { status: 303 });

@@ -19,8 +19,8 @@
     "noEmail": "—"
   },
   "roles": {
-    "student": "Student",
-    "instructor": "Instructor",
+    "student": "Client",
+    "instructor": "Dog trainer",
     "admin": "Admin"
   },
   "empty": {
@@ -42,7 +42,7 @@
     }
   },
   "editHours": {
-    "defaultStudentName": "student",
+    "defaultStudentName": "client",
     "remainingPrompt": "Remaining hours (in minutes: \"48\" or \"48 m\"; in hours: \"3.5 h\") for {name}:",
     "totalPrompt": "Total hours (in minutes: \"48\" or \"48 m\"; in hours: \"3.5 h\") for {name}:"
   }

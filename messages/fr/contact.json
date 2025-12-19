@@ -54,7 +54,7 @@
         "zones": "Réduire les trajets en regroupant par zones/jours.",
         "noShows": "Régler les no-shows (rappels, politique d’annulation, arrhes Stripe).",
         "calendar": "Intégrer Google/Outlook Calendar et synchroniser vos événements.",
-        "import": "Importer vos élèves/clients (CSV/Google Contacts) et nettoyer les adresses.",
+        "import": "Importer vos clients (CSV/Google Contacts) et nettoyer les adresses.",
         "holes": "Optimiser les créneaux “trou” pour remplir la journée sans sur-trajets.",
         "billing": "Questions facturation/abonnement (upgrade, factures, TVA, coupons).",
         "partnership": "Partenariat (écoles, réseaux de professeurs, intégrateurs)."
@@ -63,9 +63,9 @@
   },
   "mail": {
     "subject": "Demande d’information / Démo",
-    "body": "Bonjour,\n\nJ’aimerais vous contacter au sujet de l’optimisation d’agenda et de trajets.\nMon contexte :\n- Nombre d’élèves/clients : \n- Zones / villes : \n- Outils actuels : \n\nMerci !"
+    "body": "Bonjour,\n\nJ’aimerais vous contacter au sujet de l’optimisation d’agenda et de trajets.\nMon contexte :\n- Nombre de clients : \n- Zones / villes : \n- Outils actuels : \n\nMerci !"
   },
   "whatsapp": {
-    "text": "Bonjour 👋 — Je souhaite des infos sur l’outil (planning + optimisation des trajets). — Contexte rapide : [élèves/clients, zones, outils]"
+    "text": "Bonjour 👋 — Je souhaite des infos sur l’outil (planning + optimisation des trajets). — Contexte rapide : [clients, zones, outils]"
   }
 }

@@ -1,4 +1,4 @@
-// app/[locale]/(routes)/(routes)/billing/page.tsx
+// app/[locale]/(routes)/(routes)/invoices/page.tsx
 export const runtime = 'nodejs'; // Stripe SDK = Node (pas d’Edge)
 
 import { stripe } from '@/lib/stripe';
@@ -101,7 +101,6 @@ export default async function BillingPage({
   try {
     user = await clerk.users.getUser(userId);
   } catch (e) {
-    // Si Clerk tombe, on redirige proprement
     redirect(`/${locale}/sign-in`);
   }
 
@@ -129,11 +128,11 @@ export default async function BillingPage({
         customerId = cid;
       }
     } catch {
-      // silencieux, on retombe sur la recherche email
+      // silencieux
     }
   }
 
-  // 2) Fallback: recherche par email Stripe (utile après Billing Portal)
+  // 2) Fallback: recherche par email Stripe
   if (!customerId) {
     const email = getPrimaryEmail(user);
     if (email) {
@@ -158,11 +157,12 @@ export default async function BillingPage({
     }
   }
 
-  // --- État sans client Stripe → proposition d’abonnement
-  if (!customerId) {
-    const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/billing?success=1&session_id={CHECKOUT_SESSION_ID}`;
-    const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/billing?canceled=1`;
+  // URLs locales
+  const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/invoices?success=1&session_id={CHECKOUT_SESSION_ID}`;
+  const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/invoices?canceled=1`;
 
+  // --- État sans client Stripe → proposition Full Magic uniquement
+  if (!customerId) {
     return (
       <main className="min-h-screen bg-[#f9ffc6] px-4 py-16 md:py-24">
         <div className="mx-auto w-full max-w-3xl space-y-6">
@@ -176,38 +176,27 @@ export default async function BillingPage({
           </header>
 
           <section className={`${cardBase} ${cardPadding}`}>
-            <div
-              className="flex flex-wrap items-center gap-3"
-              role="group"
-              aria-label={t('noCustomer.choosePlanAria')}
-            >
+            <div className="flex flex-wrap items-center gap-3">
               <form action="/api/stripe/checkout" method="POST">
                 <input
                   type="hidden"
                   name="priceLookupKey"
-                  value="starter_monthly_eur"
+                  value="magic_monthly_eur"
                 />
                 <input type="hidden" name="mode" value="subscription" />
                 <input type="hidden" name="successUrl" value={successUrl} />
                 <input type="hidden" name="cancelUrl" value={cancelUrl} />
-                <button className={btnPrimary}>
-                  {t('noCustomer.chooseStarter')}
+                <button
+                  className={btnMagic}
+                  aria-label={t('actions.upgradeMagic')}
+                >
+                  {t('actions.upgradeMagic')}
                 </button>
               </form>
 
-              <form action="/api/stripe/checkout" method="POST">
-                <input
-                  type="hidden"
-                  name="priceLookupKey"
-                  value="pro_monthly_eur"
-                />
-                <input type="hidden" name="mode" value="subscription" />
-                <input type="hidden" name="successUrl" value={successUrl} />
-                <input type="hidden" name="cancelUrl" value={cancelUrl} />
-                <button className={btnGhost}>
-                  {t('noCustomer.choosePro')}
-                </button>
-              </form>
+              <Link href={`/${locale}/plans?from=billing`} className={btnGhost}>
+                {t('actions.comparePlans')}
+              </Link>
             </div>
           </section>
         </div>
@@ -215,7 +204,7 @@ export default async function BillingPage({
     );
   }
 
-  // -------- Abonnement et factures (active -> trialing -> all)
+  // -------- Abonnement (active -> trialing -> all)
   let sub: SubWithPeriods | undefined;
   try {
     const resActive = await stripe.subscriptions.list({
@@ -278,15 +267,13 @@ export default async function BillingPage({
     }
   }
 
-  // Clé du plan actuel (pour cacher l’option identique)
   const currentPlanRaw =
     (sub?.items.data[0]?.price as Stripe.Price | undefined)?.lookup_key ??
     (sub?.items.data[0]?.price as Stripe.Price | undefined)?.nickname ??
     '';
   const currentPlan = String(currentPlanRaw).toLowerCase();
-  const isCurrent = (prefix: string) => currentPlan.startsWith(prefix);
+  const isCurrentMagic = currentPlan.startsWith('magic');
 
-  // Métadonnées + dates robustes
   const subId = sub?.id;
   const status = sub?.status ?? 'inconnu';
 
@@ -299,13 +286,10 @@ export default async function BillingPage({
     (sub as any)?.current_period_end ??
     firstItem?.current_period_end ??
     undefined;
-  const cancelAtSec = (sub as any)?.cancel_at ?? undefined;
   const trialEndSec = (sub as any)?.trial_end ?? undefined;
 
-  // 1) règle d’affichage : si annulé (définitif) OU clôture planifiée → on masque le bloc date
   const hideRenewalCompletely = isCanceled || isCancelScheduled;
 
-  // 2) sinon on choisit un libellé/date “normale”
   let renewalLabel = '—';
   let renewalDate: string = '—';
 
@@ -325,24 +309,9 @@ export default async function BillingPage({
     }
   }
 
-  // Date de souscription
   const startedOn = (sub as any)?.start_date
     ? new Date((sub as any).start_date * 1000).toLocaleDateString(localeTag)
     : '—';
-
-  const endSec =
-    (sub as any)?.current_period_end ??
-    firstItem?.current_period_end ??
-    (sub as any)?.trial_end ??
-    (isCancelScheduled ? (sub as any)?.cancel_at : undefined);
-
-  const endDate = endSec
-    ? new Date(endSec * 1000).toLocaleDateString(localeTag)
-    : '—';
-
-  // URLs locales
-  const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/billing?success=1&session_id={CHECKOUT_SESSION_ID}`;
-  const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/billing?canceled=1`;
 
   function renderStatusBadge(s: string) {
     if (isCanceled)
@@ -374,25 +343,7 @@ export default async function BillingPage({
           <p className="text-sm text-black/70">{t('header.subtitle')}</p>
         </header>
 
-        {/* Souscription globale */}
-        <div className="space-y-1">
-          <dt className="text-sm text-black/60">
-            {t('subscription.subscriptionLabel')}
-          </dt>
-          <dd className="text-base font-medium text-black">{startedOn}</dd>
-        </div>
-        {isCancelScheduled && (
-          <p className="mt-2 text-xs text-black/60">
-            {t('subscription.closurePlanned')}
-          </p>
-        )}
-        {isCanceled && (
-          <p className="mt-2 text-xs text-black/60">
-            {t('subscription.closed')}
-          </p>
-        )}
-
-        {/* Renouvellement / Fin d’essai — masqué si cancel planifiée ou déjà annulé */}
+        {/* Renouvellement / Fin d’essai */}
         {!hideRenewalCompletely && (
           <div className="space-y-1">
             <dt className="text-sm text-black/60">{renewalLabel}</dt>
@@ -430,12 +381,14 @@ export default async function BillingPage({
                 </dd>
               </div>
 
-              <div className="space-y-1">
-                <dt className="text-sm text-black/60">{renewalLabel}</dt>
-                <dd className="text-base font-medium text-black">
-                  {renewalDate}
-                </dd>
-              </div>
+              {!hideRenewalCompletely && (
+                <div className="space-y-1">
+                  <dt className="text-sm text-black/60">{renewalLabel}</dt>
+                  <dd className="text-base font-medium text-black">
+                    {renewalDate}
+                  </dd>
+                </div>
+              )}
 
               {subId ? (
                 <div className="space-y-1 sm:col-span-2">
@@ -449,7 +402,6 @@ export default async function BillingPage({
 
             {/* Actions */}
             <div className="flex flex-col items-stretch gap-3 md:items-end">
-              {/* Portail de facturation */}
               <form
                 action="/api/stripe/portal"
                 method="POST"
@@ -458,7 +410,7 @@ export default async function BillingPage({
                 <input
                   type="hidden"
                   name="returnUrl"
-                  value={`${process.env.NEXT_PUBLIC_APP_URL}/${locale}/billing`}
+                  value={`${process.env.NEXT_PUBLIC_APP_URL}/${locale}/invoices`}
                 />
                 <button
                   type="submit"
@@ -469,7 +421,6 @@ export default async function BillingPage({
                 </button>
               </form>
 
-              {/* Annuler / Résumer la clôture */}
               {subId && isCancelScheduled ? (
                 <form
                   action="/api/stripe/subscription/resume"
@@ -480,7 +431,7 @@ export default async function BillingPage({
                   <input
                     type="hidden"
                     name="returnUrl"
-                    value={`${process.env.NEXT_PUBLIC_APP_URL}/${locale}/billing`}
+                    value={`${process.env.NEXT_PUBLIC_APP_URL}/${locale}/invoices`}
                   />
                   <button className={btnGhost}>
                     {t('actions.cancelClosure')}
@@ -496,7 +447,7 @@ export default async function BillingPage({
                   <input
                     type="hidden"
                     name="returnUrl"
-                    value={`${process.env.NEXT_PUBLIC_APP_URL}/${locale}/billing`}
+                    value={`${process.env.NEXT_PUBLIC_APP_URL}/${locale}/invoices`}
                   />
                   <button className={btnDanger}>
                     {t('actions.scheduleClosure')}
@@ -504,87 +455,42 @@ export default async function BillingPage({
                 </form>
               ) : null}
 
-              {/* Upsell (on cache le plan en cours) */}
-              {!isCancelScheduled && (
+              {/* Upsell -> uniquement Full Magic + compare plans */}
+              {!isCancelScheduled && !isCurrentMagic && (
                 <div
                   className="mt-2 flex flex-wrap gap-2 md:justify-end"
                   role="group"
-                  aria-label={t('noCustomer.choosePlanAria')}
                 >
-                  {!isCurrent('starter') && (
-                    <form action="/api/stripe/checkout" method="POST">
-                      <input
-                        type="hidden"
-                        name="priceLookupKey"
-                        value="starter_monthly_eur"
-                      />
-                      <input type="hidden" name="mode" value="subscription" />
-                      <input
-                        type="hidden"
-                        name="successUrl"
-                        value={successUrl}
-                      />
-                      <input type="hidden" name="cancelUrl" value={cancelUrl} />
-                      <button className={btnGhost}>
-                        {t('actions.upgradeStarter')}
-                      </button>
-                    </form>
-                  )}
-                  {!isCurrent('pro') && (
-                    <form action="/api/stripe/checkout" method="POST">
-                      <input
-                        type="hidden"
-                        name="priceLookupKey"
-                        value="pro_monthly_eur"
-                      />
-                      <input type="hidden" name="mode" value="subscription" />
-                      <input
-                        type="hidden"
-                        name="successUrl"
-                        value={successUrl}
-                      />
-                      <input type="hidden" name="cancelUrl" value={cancelUrl} />
-                      <button className={btnGhost}>
-                        {t('actions.upgradePro')}
-                      </button>
-                    </form>
-                  )}
-                  {!isCurrent('magic') && (
-                    <form action="/api/stripe/checkout" method="POST">
-                      <input
-                        type="hidden"
-                        name="priceLookupKey"
-                        value="magic_monthly_eur"
-                      />
-                      <input type="hidden" name="mode" value="subscription" />
-                      <input
-                        type="hidden"
-                        name="successUrl"
-                        value={successUrl}
-                      />
-                      <input type="hidden" name="cancelUrl" value={cancelUrl} />
-                      <button
-                        className={btnMagic}
-                        aria-label={t('actions.upgradeMagic')}
-                      >
-                        {t('actions.upgradeMagic')}
-                      </button>
+                  <form action="/api/stripe/checkout" method="POST">
+                    <input
+                      type="hidden"
+                      name="priceLookupKey"
+                      value="magic_monthly_eur"
+                    />
+                    <input type="hidden" name="mode" value="subscription" />
+                    <input type="hidden" name="successUrl" value={successUrl} />
+                    <input type="hidden" name="cancelUrl" value={cancelUrl} />
+                    <button
+                      className={btnMagic}
+                      aria-label={t('actions.upgradeMagic')}
+                    >
+                      {t('actions.upgradeMagic')}
+                    </button>
+                  </form>
 
-                      <Link
-                        href={`/${locale}/plans?from=billing`}
-                        className={btnGhost}
-                      >
-                        {t('actions.comparePlans')}
-                      </Link>
-                    </form>
-                  )}
+                  <Link
+                    href={`/${locale}/plans?from=billing`}
+                    className={btnGhost}
+                  >
+                    {t('actions.comparePlans')}
+                  </Link>
                 </div>
               )}
             </div>
           </div>
         </section>
 
-        {/* Bloc factures */}
+        {/* Bloc factures OU CTA si aucune facture */}
         <section className={`${cardBase} ${cardPadding}`}>
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-black">
@@ -596,7 +502,35 @@ export default async function BillingPage({
           </div>
 
           {invoices.data.length === 0 ? (
-            <div className="text-sm text-black/70">{t('invoices.empty')}</div>
+            <div className="space-y-4">
+              <div className="text-sm text-black/70">{t('invoices.empty')}</div>
+
+              <div className="flex flex-wrap gap-3">
+                <form action="/api/stripe/checkout" method="POST">
+                  <input
+                    type="hidden"
+                    name="priceLookupKey"
+                    value="magic_monthly_eur"
+                  />
+                  <input type="hidden" name="mode" value="subscription" />
+                  <input type="hidden" name="successUrl" value={successUrl} />
+                  <input type="hidden" name="cancelUrl" value={cancelUrl} />
+                  <button
+                    className={btnMagic}
+                    aria-label={t('actions.upgradeMagic')}
+                  >
+                    {t('actions.upgradeMagic')}
+                  </button>
+                </form>
+
+                <Link
+                  href={`/${locale}/plans?from=billing`}
+                  className={btnGhost}
+                >
+                  {t('actions.comparePlans')}
+                </Link>
+              </div>
+            </div>
           ) : (
             <div className="overflow-x-auto -mx-2 md:mx-0">
               <table className="min-w-full table-fixed border-collapse text-sm">

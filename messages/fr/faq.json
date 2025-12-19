@@ -42,7 +42,7 @@
       },
       "planningScope": {
         "q": "Gérez-vous les lieux ou les temps de trajet ?",
-        "a": "Oui. Vos élèves peuvent fournir leur adresse de domicile ou des adresses ponctuelles pour un créneau particulier et l’agenda affiche un temps de trajet entre deux séances. Un clic sur ce temps de trajet ouvre directement l’itinéraire correspondant dans Google Maps. L’objectif est de regrouper les cours et de limiter les allers-retours dans la journée."
+        "a": "Oui. Vos clients peuvent fournir leur adresse de domicile ou des adresses ponctuelles pour un créneau particulier et l’agenda affiche un temps de trajet entre deux séances. Un clic sur ce temps de trajet ouvre directement l’itinéraire correspondant dans Google Maps. L’objectif est de regrouper les cours et de limiter les allers-retours dans la journée."
       },
       "optimization": {
         "q": "Comment l’outil aide à remplir plus de créneaux ?",
@@ -58,7 +58,7 @@
       },
       "cancellations": {
         "q": "Comment gérez-vous les annulations et remplacements ?",
-        "a": "Lorsqu’un élève annule, le créneau peut être reproposé à un autre élève ayant indiqué sa disponibilité sur ce créneau. Le professeur voit le créneau comme remplacé uniquement après confirmation via l’email de notification."
+        "a": "Lorsqu’un client annule, le créneau peut être reproposé à un autre client ayant indiqué sa disponibilité sur ce créneau. Le professeur voit le créneau comme remplacé uniquement après confirmation via l’email de notification."
       },
       "support": {
         "q": "Comment fonctionne le support et la facturation ?",

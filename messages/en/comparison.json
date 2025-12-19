@@ -100,7 +100,7 @@
       "free": {
         "title": "Free",
         "features": [
-          "Up to 2 students",
+          "Up to 2 clients",
           "Visual planner with manual session creation",
           "Simple view of available time slots",
           "Email support"
@@ -109,7 +109,7 @@
       "magic": {
         "title": "Full Magic",
         "features": [
-          "Unlimited students",
+          "Unlimited clients",
           "Self-booking, advanced prioritization and complex scenarios",
           "Multi-trainer grouping and multi-area optimization",
           "Detailed travel times and full routes, clickable to Google Maps",

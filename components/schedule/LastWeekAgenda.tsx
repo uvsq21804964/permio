@@ -1,9 +1,17 @@
 // app/(...)/LastWeekAgenda.tsx
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
+import { Info, Copy, Check } from 'lucide-react';
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 const DAYS = [
   'Lundi',
@@ -14,6 +22,7 @@ const DAYS = [
   'Samedi',
   'Dimanche',
 ] as const;
+
 const HOURS = Array.from({ length: 12 }, (_, i) => i + 8); // 08 → 19
 const START_HOUR = 8;
 const PIXELS_PER_HOUR = 80;
@@ -77,6 +86,17 @@ type ApiResponse = {
 
   // 🔶 map date ISO -> trajets calculés (présent pour instructor/admin uniquement)
   travelsByDate?: Record<string, TravelSlot[]>;
+};
+
+// --- /api/me/services response
+type ServicesApiResponse = {
+  categories: any[];
+  services: any[];
+  joinCode?: string | null; // ✅ NEW
+  agencyName?: string | null; // ✅ optionnel
+  error?: string;
+  message?: string;
+  detail?: string;
 };
 
 // ---------- Utils ----------
@@ -205,14 +225,17 @@ function buildTravelMapsUrl(travel: TravelSlot): string | null {
   if (!origin && !destination) return null;
 
   const params: string[] = ['api=1'];
-  if (origin) {
-    params.push(`origin=${encodeURIComponent(origin)}`);
-  }
-  if (destination) {
+  if (origin) params.push(`origin=${encodeURIComponent(origin)}`);
+  if (destination)
     params.push(`destination=${encodeURIComponent(destination)}`);
-  }
 
   return `https://www.google.com/maps/dir/?${params.join('&')}`;
+}
+
+// Préfixe locale pour les routes internes
+function withLocalePath(path: string, locale: string) {
+  const p = path.startsWith('/') ? path : `/${path}`;
+  return p.startsWith(`/${locale}/`) ? p : `/${locale}${p}`;
 }
 
 // ---------- Composant ----------
@@ -233,6 +256,16 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
     }
   );
 
+  // ✅ Services count + popup + join code
+  const [servicesCount, setServicesCount] = useState<number | null>(null);
+  const [servicesLoading, setServicesLoading] = useState(false);
+  const [servicesErr, setServicesErr] = useState<string | null>(null);
+  const [showNoServicesModal, setShowNoServicesModal] = useState(false);
+
+  const [joinCode, setJoinCode] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  // Fetch agenda
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -278,6 +311,73 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
       }
     })();
   }, [userId, currentWeekStartISO, t]);
+
+  // ✅ Fetch services count + joinCode (instructor only)
+  // ✅ Modal obligatoire à chaque arrivée si 0 service
+  useEffect(() => {
+    const role = data?.user?.role;
+    if (!role || role !== 'instructor') {
+      setServicesCount(null);
+      setServicesErr(null);
+      setServicesLoading(false);
+      setShowNoServicesModal(false);
+      setJoinCode(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    (async () => {
+      setServicesLoading(true);
+      setServicesErr(null);
+      try {
+        const res = await fetch('/api/me/services', {
+          credentials: 'include',
+        });
+
+        const payload = (await res
+          .json()
+          .catch(() => null)) as ServicesApiResponse | null;
+
+        if (!res.ok) {
+          const msg =
+            payload?.message ||
+            payload?.detail ||
+            payload?.error ||
+            `Erreur HTTP ${res.status}`;
+          if (!cancelled) setServicesErr(msg);
+          if (!cancelled) setServicesCount(null);
+          if (!cancelled) setJoinCode(null);
+          // IMPORTANT : si on ne sait pas (erreur), on ne force pas le pop-up
+          if (!cancelled) setShowNoServicesModal(false);
+          return;
+        }
+
+        const count = Array.isArray(payload?.services)
+          ? payload!.services.length
+          : 0;
+
+        const code = payload?.joinCode ? String(payload.joinCode) : null;
+
+        if (!cancelled) setServicesCount(count);
+        if (!cancelled) setJoinCode(code);
+
+        // ✅ Pop-up obligatoire si aucun service
+        if (!cancelled) setShowNoServicesModal(count === 0);
+      } catch (e: any) {
+        if (!cancelled) setServicesErr(e?.message || 'Failed to load services');
+        if (!cancelled) setServicesCount(null);
+        if (!cancelled) setJoinCode(null);
+        if (!cancelled) setShowNoServicesModal(false);
+      } finally {
+        if (!cancelled) setServicesLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [data?.user?.role]);
 
   const daysMap = useMemo(() => {
     const m = new Map<number, ApiDay>();
@@ -387,8 +487,42 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
   const weekdayLocale =
     locale === 'fr' || locale.startsWith('fr') ? 'fr-FR' : 'en-US';
 
+  // ⚠️ tu m'as demandé /myservices, mais ton projet utilise /services
+  // Si ta page s'appelle vraiment /myservices, remplace '/services' par '/myservices'
+  const myServicesUrl = withLocalePath('/services', locale);
+
   return (
     <div className="rounded-lg border bg-card">
+      {/* ✅ Modal si aucun service (obligatoire) */}
+      {showNoServicesModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-2xl border bg-white p-5 shadow-xl">
+            <div className="text-base font-semibold text-black">
+              {locale.startsWith('fr')
+                ? 'Ajoutez vos services pour obtenir votre code'
+                : 'Add your services to get your code'}
+            </div>
+            <p className="mt-2 text-sm text-black/70">
+              {locale.startsWith('fr')
+                ? "Vous n'avez aucun service enregistré. Pour générer votre code d’association (client ↔ éducateur), vous devez d’abord renseigner vos services."
+                : "You don't have any services yet. To generate your association code (client ↔ trainer), you must first add your services."}
+            </p>
+
+            <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => router.push(myServicesUrl)}
+                className="rounded-xl px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-primary to-[#d400ff] hover:opacity-95"
+              >
+                {locale.startsWith('fr')
+                  ? 'Aller à mes services'
+                  : 'Go to my services'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="p-4 border-b">
         <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
           <div className="text-sm font-medium">
@@ -397,6 +531,125 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
               <span className="text-neutral-500">
                 {t('header.range', { range: headerRange })}
               </span>
+            )}
+            {/* ✅ Affichage du nombre de services + lien /myservices (instructor only) */}
+            {viewerRole === 'instructor' && (
+              <div className="mt-2 flex flex-col gap-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="inline-flex items-center gap-2 rounded-md border bg-muted/50 px-2 py-1 text-xs">
+                    <span className="font-medium">
+                      {locale.startsWith('fr') ? 'Services' : 'Services'} :
+                    </span>
+                    <span>
+                      {servicesLoading
+                        ? locale.startsWith('fr')
+                          ? 'Chargement…'
+                          : 'Loading…'
+                        : servicesCount == null
+                        ? '—'
+                        : servicesCount}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => router.push(myServicesUrl)}
+                    className="text-xs px-2 py-1 rounded-md border border-primary text-primary hover:bg-primary/5"
+                  >
+                    {locale.startsWith('fr')
+                      ? 'Gérer mes services'
+                      : 'Manage my services'}
+                  </button>
+
+                  {servicesErr && (
+                    <span className="text-xs text-amber-700">
+                      {locale.startsWith('fr')
+                        ? `Info services indisponible (${servicesErr})`
+                        : `Services info unavailable (${servicesErr})`}
+                    </span>
+                  )}
+                </div>
+
+                {/* ✅ Ligne code d'association (API) + tooltip + copie */}
+                <div className="flex items-center gap-2 text-[11px] text-black/60">
+                  <span className="font-medium">
+                    {locale.startsWith('fr')
+                      ? "Code d'association"
+                      : 'Association code'}
+                  </span>
+
+                  <TooltipProvider delayDuration={150}>
+                    <Tooltip>
+                      <TooltipTrigger
+                        aria-label={
+                          locale.startsWith('fr') ? "Plus d'infos" : 'More info'
+                        }
+                        className="inline-flex items-center"
+                      >
+                        <Info
+                          className="h-4 w-4"
+                          style={{ color: '#8920d1' }}
+                        />
+                      </TooltipTrigger>
+
+                      <TooltipContent className="max-w-[320px] text-xs bg-white text-black border border-[#d400ff]/40 shadow-lg">
+                        {locale.startsWith('fr')
+                          ? 'Affiche ce code sur ton site web personnel. Les clients devront le saisir pour te trouver et réserver.'
+                          : 'Display this code on your personal website. Clients will need to enter it to find you and book.'}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+
+                  {servicesCount != null && servicesCount > 0 && joinCode ? (
+                    <div className="inline-flex items-center gap-2">
+                      <span className="inline-flex items-center rounded-full border px-2 py-0.5 text-[11px] font-mono bg-white/70 text-black border-black/15">
+                        {joinCode}
+                      </span>
+
+                      <button
+                        type="button"
+                        onClick={async () => {
+                          try {
+                            await navigator.clipboard.writeText(joinCode);
+                            setCopied(true);
+                            window.setTimeout(() => setCopied(false), 1200);
+                          } catch {
+                            alert(
+                              locale.startsWith('fr')
+                                ? 'Impossible de copier automatiquement. Copie le code manuellement.'
+                                : 'Auto-copy failed. Please copy the code manually.'
+                            );
+                          }
+                        }}
+                        className="inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] hover:bg-muted"
+                        title={
+                          locale.startsWith('fr')
+                            ? 'Copier le code'
+                            : 'Copy code'
+                        }
+                      >
+                        {copied ? (
+                          <>
+                            <Check className="h-3.5 w-3.5" />
+                            {locale.startsWith('fr') ? 'Copié' : 'Copied'}
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-3.5 w-3.5" />
+                            {locale.startsWith('fr') ? 'Copier' : 'Copy'}
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  ) : (
+                    <span className="text-black/50">
+                      {locale.startsWith('fr')
+                        ? 'Ajoutez au moins un service pour afficher le code.'
+                        : 'Add at least one service to display the code.'}
+                    </span>
+                  )}
+                </div>
+              </div>
             )}
             {partnerLegend.length > 0 && (
               <div className="mt-2 flex flex-wrap gap-2">
@@ -562,6 +815,7 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                 const slots = (d as any)?.slots ?? [];
                 const isToday = dayHeaders[dayIndex]?.isToday;
                 const isoDate = dayHeaders[dayIndex]?.iso;
+
                 const travelsForDay: TravelSlot[] =
                   isoDate && travelsByDate[isoDate]
                     ? travelsByDate[isoDate]

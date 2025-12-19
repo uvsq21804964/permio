@@ -4,11 +4,11 @@
     "subtitle": "Select the service you want to book before choosing a time slot in the agenda."
   },
   "errors": {
-    "loadServicesApi": "We couldn’t retrieve your instructor’s services.",
-    "loadServicesGeneric": "An error occurred while loading your instructor’s services."
+    "loadServicesApi": "We couldn’t retrieve your dog trainer-s services.",
+    "loadServicesGeneric": "An error occurred while loading your dog trainer's services."
   },
   "empty": {
-    "noServices": "Your instructor has not configured any services yet."
+    "noServices": "Your dog trainer has not configured any services yet."
   },
   "category": {
     "noServices": "No service is currently available in this category."

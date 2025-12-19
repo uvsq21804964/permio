@@ -75,7 +75,7 @@ export default function SuccessPage({
           {/* Lien secondaire (optionnel) */}
           <div className="mt-4 text-center">
             <Link
-              href="/billing"
+              href="/invoices"
               className="text-sm text-black/70 underline-offset-4 hover:underline motion-safe:transition break-words"
             >
               {t('secondaryCta')}
