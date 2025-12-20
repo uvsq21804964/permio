@@ -779,6 +779,11 @@ export default async function BillingPage({
                   >
                     <input
                       type="hidden"
+                      name="checkoutLocale"
+                      value={locale === 'fr' ? 'fr' : 'en'}
+                    />
+                    <input
+                      type="hidden"
                       name="priceLookupKey"
                       value={defaultPriceLookupKey}
                     />
@@ -875,6 +880,11 @@ export default async function BillingPage({
                       role="group"
                     >
                       <form action="/api/stripe/checkout" method="POST">
+                        <input
+                          type="hidden"
+                          name="checkoutLocale"
+                          value={locale === 'fr' ? 'fr' : 'en'}
+                        />
                         <input
                           type="hidden"
                           name="priceLookupKey"
