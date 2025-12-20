@@ -7,7 +7,11 @@
     "description": "You don’t have an active plan yet. Choose a plan to get started.",
     "choosePlanAria": "Choose a plan",
     "chooseStarter": "Choose Starter",
-    "choosePro": "Choose Pro"
+    "choosePro": "Choose Pro",
+    "trialActiveUntil": "Your trial is active until {date}.",
+    "trialEndsSoon": "Your trial ends on {date} (in {days} day(s)).",
+    "trialEnded": "Your trial ended on {date}. A subscription is required to continue.",
+    "ctaHiddenHint": "You’ll be able to subscribe as the trial gets close to ending, or from the Subscription page."
   },
   "subscription": {
     "sectionLabel": "Subscription",
@@ -19,14 +23,19 @@
     "interval": {
       "year": "year",
       "month": "month"
-    }
+    },
+    "endsOnLabel": "Access ends on",
+    "trialDaysLeft": "{days} days remaining",
+    "trialUntilHint": "Until {date}"
   },
   "status": {
     "closed": "Canceled",
     "closurePlanned": "Cancellation scheduled",
     "active": "Active",
-    "trialing": "Trial period",
-    "paymentPending": "Payment pending"
+    "trialing": "Active trial period",
+    "paymentPending": "Payment pending",
+    "trialingClosurePlanned": "Trial (cancellation scheduled)",
+    "accessUntil": "Active trial period"
   },
   "actions": {
     "manageSubscription": "Manage subscription",

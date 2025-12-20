@@ -3,7 +3,7 @@
 
 import { cn } from '@/lib/utils';
 import { Check, X, Info } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 import {
   Tooltip,
@@ -114,6 +114,21 @@ function renderCell(v: CellValue, extraFeeLabel: string) {
 
 export function CompetitorComparison({ className }: { className?: string }) {
   const t = useTranslations('valueProposition');
+  const locale = useLocale();
+
+  const priceEnv = locale.startsWith('fr')
+    ? process.env.NEXT_PUBLIC_PRICE_EUR
+    : process.env.NEXT_PUBLIC_PRICE_DOL;
+
+  const priceNumber = priceEnv ? Number(priceEnv) : NaN;
+
+  const ourToolPriceValue = Number.isFinite(priceNumber)
+    ? `${priceNumber}${t('competitors.values.ourToolPrice')}`
+    : '—';
+
+  const ourToolPriceValueENFR = locale.startsWith('fr')
+    ? ourToolPriceValue
+    : '$' + ourToolPriceValue;
 
   const HEADERS: { key: ColumnKey; label: string; subtitle?: string }[] =
     HEADERS_KEYS.map((key) => ({
@@ -219,7 +234,7 @@ export function CompetitorComparison({ className }: { className?: string }) {
         platforms: t('competitors.values.platformCommission'),
         allInOne: t('competitors.values.managementSoftwarePrice'),
         freeTools: t('competitors.values.basicToolsPrice'),
-        ourTool: t('competitors.values.ourToolPrice'),
+        ourTool: ourToolPriceValueENFR,
       },
     },
   ];

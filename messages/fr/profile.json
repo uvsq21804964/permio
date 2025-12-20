@@ -88,5 +88,12 @@
     "addressEmpty": "L'adresse formatée ne peut pas être vide.",
     "addressNeedSuggestion": "Veuillez choisir une adresse dans les suggestions Google avant d'enregistrer.",
     "deleteFailed": "Erreur lors de la suppression du compte."
+  },
+  "toasts": {
+    "subscriptionRequired": {
+      "title": "Accès restreint",
+      "descriptionInstructor": "Un abonnement actif est requis pour accéder à cette page.",
+      "descriptionStudent": "L’accès est temporairement désactivé car l’abonnement de votre éducateur n’est pas actif."
+    }
   }
 }

@@ -115,7 +115,10 @@ export const PLANS: Plan[] = [
   {
     id: 'magic',
     title: 'Full Magic',
-    prices: { EUR: 32, USD: 38 },
+    prices: {
+      EUR: Number(process.env.NEXT_PUBLIC_PRICE_EUR),
+      USD: Number(process.env.NEXT_PUBLIC_PRICE_DOL),
+    },
     lookupKeys: { EUR: 'magic_monthly_eur', USD: 'magic_monthly_usd' },
     features: [
       'Étudiants illimités',

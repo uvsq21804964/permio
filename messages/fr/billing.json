@@ -4,10 +4,14 @@
     "subtitle": "Gérez votre abonnement, vos factures et vos moyens de paiement."
   },
   "noCustomer": {
-    "description": "Aucune formule n’est active pour le moment. Choisissez un plan pour démarrer.",
+    "description": "Aucune formule n’est active pour le moment. Abonnez-vous à Full Magic pour démarrer.",
     "choosePlanAria": "Choisir une formule",
     "chooseStarter": "Choisir Starter",
-    "choosePro": "Choisir Pro"
+    "choosePro": "Choisir Pro",
+    "trialActiveUntil": "Votre période d’essai est active jusqu’au {date}.",
+    "trialEndsSoon": "Votre période d’essai se termine le {date} (dans {days} jour(s)).",
+    "trialEnded": "Votre période d’essai s’est terminée le {date}. Un abonnement est nécessaire pour continuer.",
+    "ctaHiddenHint": "Vous pourrez vous abonner à l’approche de la fin de l’essai, ou depuis la page Abonnement."
   },
   "subscription": {
     "sectionLabel": "Abonnement",
@@ -19,17 +23,22 @@
     "interval": {
       "year": "an",
       "month": "mois"
-    }
+    },
+    "endsOnLabel": "Fin d’accès le",
+    "trialDaysLeft": "{days} jours restants",
+    "trialUntilHint": "Jusqu’au {date}"
   },
   "status": {
     "closed": "Clôturé",
     "closurePlanned": "Clôture planifiée",
     "active": "Actif",
-    "trialing": "Période d’essai",
-    "paymentPending": "Paiement en attente"
+    "trialing": "Période d’essai active",
+    "paymentPending": "Paiement en attente",
+    "trialingClosurePlanned": "Essai (clôture planifiée)",
+    "accessUntil": "Période d'essai active"
   },
   "actions": {
-    "manageSubscription": "Gérer l'abonnement",
+    "manageSubscription": "Gérer mon abonnement",
     "cancelClosure": "Annuler la clôture",
     "scheduleClosure": "Clore l’abonnement (fin de période)",
     "upgradeStarter": "Passer à Starter",

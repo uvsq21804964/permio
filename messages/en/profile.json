@@ -88,5 +88,12 @@
     "addressEmpty": "Formatted address cannot be empty.",
     "addressNeedSuggestion": "Please select an address from Google suggestions before saving.",
     "deleteFailed": "Error while deleting the account."
+  },
+  "toasts": {
+    "subscriptionRequired": {
+      "title": "Access restricted",
+      "descriptionInstructor": "An active subscription is required to access this page.",
+      "descriptionStudent": "Access is temporarily disabled because your dog trainer's subscription is not active."
+    }
   }
 }

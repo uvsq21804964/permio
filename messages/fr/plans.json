@@ -22,6 +22,7 @@
         "Agenda, trajets et infos clients réunis au même endroit",
         "Nombre illimité de services et de rendez-vous"
       ]
-    }
+    },
+    "alreadySubscribed": "Vous avez déjà un abonnement actif"
   }
 }

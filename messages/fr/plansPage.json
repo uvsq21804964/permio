@@ -1,0 +1,8 @@
+{
+  "toasts": {
+    "subscriptionRequired": {
+      "title": "Abonnement requis",
+      "description": "Vous devez activer un abonnement pour accéder à cette page."
+    }
+  }
+}

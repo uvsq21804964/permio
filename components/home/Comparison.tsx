@@ -149,7 +149,10 @@ export function PlanComparison({ className }: { className?: string }) {
     {
       id: 'magic',
       title: t('comparison.plans.magic.title'),
-      prices: { EUR: 32, USD: 38 },
+      prices: {
+        EUR: Number(process.env.NEXT_PUBLIC_PRICE_EUR),
+        USD: Number(process.env.NEXT_PUBLIC_PRICE_DOL),
+      },
       lookupKeys: { EUR: 'magic_monthly_eur', USD: 'magic_monthly_usd' },
       features: [
         t('comparison.plans.magic.features.0'),

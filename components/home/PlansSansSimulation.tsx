@@ -4,6 +4,7 @@ import clsx from 'clsx';
 import { Poppins } from 'next/font/google';
 import { Button } from '@/components/ui/button';
 import { useLocale, useTranslations } from 'next-intl';
+import React, { useEffect, useMemo, useState } from 'react';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -25,12 +26,21 @@ type Props = {
   withTrial: boolean;
 };
 
+type MeSubscription = {
+  loggedIn: boolean;
+  role: string | null;
+  subscription_status: string | null;
+};
+
 function getCurrencyFromLocale(locale: string): Currency {
-  return locale === 'en' ? 'USD' : 'EUR';
+  return locale?.startsWith('en') ? 'USD' : 'EUR';
 }
 
 function formatCurrency(amount: number, currency: Currency, locale: string) {
-  const nfLocale = locale === 'en' ? 'en-US' : 'fr-FR';
+  const nfLocale = locale?.startsWith('en') ? 'en-US' : 'fr-FR';
+
+  // Si l'env est manquante -> amount = NaN, on affiche un fallback propre
+  if (!Number.isFinite(amount)) return currency === 'USD' ? '$—' : '—€';
 
   return new Intl.NumberFormat(nfLocale, {
     style: 'currency',
@@ -42,40 +52,107 @@ function formatCurrency(amount: number, currency: Currency, locale: string) {
 
 // ✅ map plan -> Stripe lookup_key (adapte si besoin)
 function getPriceLookupKey(planId: string, currency: Currency) {
-  // Si tu n’as qu’un plan “pro”
-  // - et que tes lookup_keys sont genre: pro_monthly_eur / pro_monthly_usd
   const c = currency.toLowerCase(); // 'eur' | 'usd'
   if (planId === 'pro') return `magic_monthly_${c}`;
-
-  // fallback
   return `magic_monthly_${c}`;
 }
 
+type MeStatus = 'loading' | 'done';
+
 export default function Plans({ withTrial }: Props) {
   const t = useTranslations('plans');
-  const locale = useLocale(); // 'fr' | 'en'
+  const locale = useLocale(); // ex: 'fr' | 'en'
   const currency = getCurrencyFromLocale(locale);
 
-  const plans: readonly Plan[] = [
-    {
-      id: 'pro',
-      title: t('plans.plan.title'),
-      prices: { EUR: 32, USD: 34 },
-      features: [
-        t('plans.plan.features.0'),
-        t('plans.plan.features.1'),
-        t('plans.plan.features.2'),
-        t('plans.plan.features.3'),
-        t('plans.plan.features.4'),
-        t('plans.plan.features.5'),
-      ],
-      highlighted: true,
-    },
-  ];
+  const [me, setMe] = useState<MeSubscription | null>(null);
 
-  // 🔁 URLs de retour (ex: après checkout, revenir sur /billing)
-  const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/billing?success=1&session_id={CHECKOUT_SESSION_ID}`;
-  const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/billing?canceled=1`;
+  // ✅ IMPORTANT: en mode sans trial, on démarre DIRECT en "loading"
+  // pour éviter que le bouton soit cliquable au 1er rendu.
+  const [meStatus, setMeStatus] = useState<MeStatus>(() =>
+    withTrial ? 'done' : 'loading'
+  );
+
+  // On ne vérifie le statut que dans la version sans trial
+  useEffect(() => {
+    let cancelled = false;
+
+    if (withTrial) {
+      setMe(null);
+      setMeStatus('done');
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    // Mode no-trial: on bloque l'UI immédiatement
+    setMe(null);
+    setMeStatus('loading');
+
+    const load = async () => {
+      try {
+        const res = await fetch('/api/me/subscription', {
+          cache: 'no-store',
+        });
+
+        if (res.ok) {
+          const data = (await res.json()) as MeSubscription;
+          if (!cancelled) setMe(data);
+        }
+        // si res.ok === false, on laisse me=null => on montrera le bouton après check
+      } catch {
+        // erreur réseau: me=null => on montrera le bouton après check
+      } finally {
+        if (!cancelled) setMeStatus('done');
+      }
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [withTrial]);
+
+  const plans: readonly Plan[] = useMemo(
+    () => [
+      {
+        id: 'pro',
+        title: t('plans.plan.title'),
+        prices: {
+          EUR: Number(process.env.NEXT_PUBLIC_PRICE_EUR),
+          USD: Number(process.env.NEXT_PUBLIC_PRICE_DOL),
+        },
+        features: [
+          t('plans.plan.features.0'),
+          t('plans.plan.features.1'),
+          t('plans.plan.features.2'),
+          t('plans.plan.features.3'),
+          t('plans.plan.features.4'),
+          t('plans.plan.features.5'),
+        ],
+        highlighted: true,
+      },
+    ],
+    [t]
+  );
+
+  // 🔁 URLs de retour
+  const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/invoices?success=1&session_id={CHECKOUT_SESSION_ID}`;
+  const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/invoices?canceled=1`;
+
+  // ✅ Cacher le CTA checkout si:
+  // - page éducateur (withTrial=false)
+  // - connecté
+  // - role instructor
+  // - subscription active
+  const hideCheckoutButton =
+    !withTrial &&
+    me?.loggedIn === true &&
+    me?.role === 'instructor' &&
+    me?.subscription_status === 'active';
+
+  // ✅ Doit-on attendre la vérification avant d'afficher un CTA cliquable ?
+  const waitingForSubscriptionCheck = !withTrial && meStatus === 'loading';
 
   return (
     <main className="bg-[#f9ffc6]">
@@ -109,7 +186,6 @@ export default function Plans({ withTrial }: Props) {
           {plans.map((plan) => {
             const isHighlighted = Boolean(plan.highlighted);
             const price = plan.prices[currency];
-
             const priceLookupKey = getPriceLookupKey(plan.id, currency);
 
             return (
@@ -158,44 +234,71 @@ export default function Plans({ withTrial }: Props) {
                   </ul>
                 </div>
 
-                {/* ✅ Checkout Stripe (POST) */}
-                <form
-                  action="/api/stripe/checkout"
-                  method="POST"
-                  className="mt-6"
-                >
-                  <input
-                    type="hidden"
-                    name="priceLookupKey"
-                    value={priceLookupKey}
-                  />
-                  <input type="hidden" name="mode" value="subscription" />
-                  <input type="hidden" name="successUrl" value={successUrl} />
-                  <input type="hidden" name="cancelUrl" value={cancelUrl} />
+                {/* ✅ CTA */}
+                {waitingForSubscriptionCheck ? (
+                  <div className="mt-6">
+                    <Button
+                      type="button"
+                      disabled
+                      className={clsx(
+                        'w-full rounded-xl px-4 py-3 text-sm font-semibold shadow',
+                        'opacity-60 cursor-not-allowed'
+                      )}
+                    >
+                      {locale?.startsWith('en')
+                        ? 'Checking subscription…'
+                        : 'Vérification de l’abonnement…'}
+                    </Button>
+                  </div>
+                ) : hideCheckoutButton ? (
+                  <p className="mt-6 text-center text-sm text-black/70">
+                    {t('plans.alreadySubscribed')}
+                  </p>
+                ) : (
+                  <>
+                    <form
+                      action="/api/stripe/checkout"
+                      method="POST"
+                      className="mt-6"
+                    >
+                      <input
+                        type="hidden"
+                        name="priceLookupKey"
+                        value={priceLookupKey}
+                      />
+                      <input type="hidden" name="mode" value="subscription" />
+                      <input
+                        type="hidden"
+                        name="successUrl"
+                        value={successUrl}
+                      />
+                      <input type="hidden" name="cancelUrl" value={cancelUrl} />
+                      <input
+                        type="hidden"
+                        name="trialMode"
+                        value={withTrial ? 'trial' : 'no_trial'}
+                      />
 
-                  {/* Optionnel: tu peux passer l’info au serveur (ne casse rien si ignoré) */}
-                  <input
-                    type="hidden"
-                    name="trialMode"
-                    value={withTrial ? 'trial' : 'no_trial'}
-                  />
+                      <Button
+                        type="submit"
+                        className={clsx(
+                          'w-full rounded-xl px-4 py-3 text-sm font-semibold transition shadow',
+                          'text-white bg-gradient-to-r from-primary to-[#d400ff] hover:opacity-95'
+                        )}
+                      >
+                        {withTrial
+                          ? t('plans.ctaPrimary')
+                          : t('plans.ctaSecondary')}
+                      </Button>
+                    </form>
 
-                  <Button
-                    type="submit"
-                    className={clsx(
-                      'w-full rounded-xl px-4 py-3 text-sm font-semibold transition shadow',
-                      'text-white bg-gradient-to-r from-primary to-[#d400ff] hover:opacity-95'
+                    {withTrial && (
+                      <p className="mt-3 text-center text-xs text-black/50">
+                        {t('plans.disclaimer')}
+                      </p>
                     )}
-                  >
-                    {withTrial
-                      ? t('plans.ctaPrimary')
-                      : t('plans.ctaSecondary')}
-                  </Button>
-                </form>
-
-                <p className="mt-3 text-center text-xs text-black/50">
-                  {t('plans.disclaimer')}
-                </p>
+                  </>
+                )}
               </article>
             );
           })}

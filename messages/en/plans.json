@@ -22,6 +22,7 @@
         "Calendar, routes, and client details in one place",
         "Unlimited services and appointments"
       ]
-    }
+    },
+    "alreadySubscribed": "You already have an active subscription"
   }
 }

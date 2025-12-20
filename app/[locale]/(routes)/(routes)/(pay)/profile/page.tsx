@@ -11,6 +11,9 @@ import {
 import Script from 'next/script';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { toast } from 'sonner';
+
 type UserProfile = {
   id: string;
   name: string;
@@ -107,6 +110,11 @@ export default function ProfilePage() {
   const t = useTranslations('profile');
   const locale = useLocale();
 
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const accessToastShownRef = useRef(false);
+
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -190,6 +198,51 @@ export default function ProfilePage() {
     loadProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    // show only once, and only if redirected by guard
+    const required = searchParams.get('reason') === 'subscription';
+    if (!required) return;
+    if (!profile) return;
+    if (accessToastShownRef.current) return;
+
+    accessToastShownRef.current = true;
+
+    const isFR = locale.startsWith('fr');
+
+    // message différent selon rôle (au cas où)
+    if (profile.role === 'instructor') {
+      toast.error(
+        isFR
+          ? t('toasts.subscriptionRequired.title')
+          : t('toasts.subscriptionRequired.title'),
+        {
+          description: isFR
+            ? t('toasts.subscriptionRequired.descriptionInstructor')
+            : t('toasts.subscriptionRequired.descriptionInstructor'),
+        }
+      );
+    } else {
+      toast.error(
+        isFR
+          ? t('toasts.subscriptionRequired.title')
+          : t('toasts.subscriptionRequired.title'),
+        {
+          description: isFR
+            ? t('toasts.subscriptionRequired.descriptionStudent')
+            : t('toasts.subscriptionRequired.descriptionStudent'),
+        }
+      );
+    }
+
+    // retire le param pour éviter que le toast revienne au refresh
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('required');
+    const nextUrl = params.toString()
+      ? `${pathname}?${params.toString()}`
+      : pathname;
+    router.replace(nextUrl, { scroll: false });
+  }, [searchParams, profile, locale, router, pathname, t]);
 
   // Autocomplete Google sur "Adresse formatée"
   useEffect(() => {

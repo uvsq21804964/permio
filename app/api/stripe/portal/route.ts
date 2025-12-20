@@ -23,8 +23,18 @@ function makeReturnUrl(req: Request, fallbackPath = '/invoices') {
   }
 }
 
+function normalizePortalLocale(v: unknown): 'fr' | 'en' | 'auto' {
+  if (typeof v !== 'string') return 'auto';
+  const s = v.trim().toLowerCase();
+  if (s === 'fr' || s.startsWith('fr-')) return 'fr';
+  if (s === 'en' || s.startsWith('en-')) return 'en';
+  if (s === 'auto') return 'auto';
+  return 'auto';
+}
+
 export async function POST(req: Request) {
   const isDev = process.env.NODE_ENV !== 'production';
+
   try {
     const { userId } = await auth();
     if (!userId) return new NextResponse('Unauthorized', { status: 401 });
@@ -35,6 +45,29 @@ export async function POST(req: Request) {
         isDev ? 'Missing STRIPE_SECRET_KEY' : 'Internal Server Error',
         { status: 500 }
       );
+    }
+
+    // ✅ Lire le form UNE seule fois
+    let form: FormData | null = null;
+    try {
+      form = await req.formData();
+    } catch {
+      form = null;
+    }
+
+    const portalLocale = normalizePortalLocale(form?.get('portalLocale'));
+    const fallbackPath =
+      portalLocale === 'fr'
+        ? '/fr/invoices'
+        : portalLocale === 'en'
+        ? '/en/invoices'
+        : '/invoices';
+
+    // 3) return_url (priorité au formulaire)
+    let returnUrl = makeReturnUrl(req, fallbackPath);
+    const fromForm = form?.get('returnUrl');
+    if (typeof fromForm === 'string' && fromForm.trim()) {
+      returnUrl = fromForm.trim();
     }
 
     const clerk = await getClerkClient();
@@ -55,7 +88,6 @@ export async function POST(req: Request) {
         const hit = found.data[0];
         if (hit?.id) {
           customerId = hit.id;
-          // Persistance Clerk
           await clerk.users.updateUser(userId, {
             privateMetadata: {
               ...(user.privateMetadata || {}),
@@ -90,32 +122,19 @@ export async function POST(req: Request) {
       );
     }
 
-    // 3) return_url (priorité au formulaire)
-    let returnUrl = makeReturnUrl(req, '/invoices');
-    try {
-      const form = await req.formData();
-      const fromForm = form.get('returnUrl');
-      if (typeof fromForm === 'string' && fromForm.trim()) {
-        returnUrl = fromForm;
-      }
-    } catch {
-      /* ignore */
-    }
-
     // 4) Créer la session Billing Portal
     const portal = await stripe.billingPortal.sessions.create({
       customer: customerId,
       return_url: returnUrl,
-    });
+      locale: portalLocale === 'auto' ? 'auto' : portalLocale,
+    } as any);
 
     return NextResponse.redirect(portal.url, { status: 303 });
   } catch (err: any) {
-    // Log détaillé serveur
     console.error('[portal] Unhandled error', {
       msg: err?.message,
       stack: err?.stack,
     });
-    // Message neutre en prod, verbeux en dev
     return new NextResponse(
       process.env.NODE_ENV !== 'production'
         ? `Portal error: ${err?.message || 'unknown'}`
