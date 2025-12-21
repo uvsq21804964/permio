@@ -36,30 +36,55 @@ export async function POST(req: Request) {
     form.get('successUrl') ||
       `${process.env.NEXT_PUBLIC_APP_URL}/invoices?success=1&session_id={CHECKOUT_SESSION_ID}`
   );
+
   const cancelUrl = String(
     form.get('cancelUrl') ||
       `${process.env.NEXT_PUBLIC_APP_URL}/invoices?canceled=1`
   );
 
+  // ✅ langue Stripe Checkout (UI)
   const checkoutLocale = normalizeCheckoutLocale(form.get('checkoutLocale'));
 
-  // ✅ règle devise
+  // ✅ devise attendue: FR => EUR, sinon USD
   const expectedCurrency = checkoutLocale === 'fr' ? 'eur' : 'usd';
 
-  // ✅ slug base (si tu veux le garder flexible)
+  // ✅ slug base (optionnel)
   const planSlug = String(form.get('planSlug') || 'magic_monthly');
 
   // ✅ lookup key final
-  const priceLookupKey = `${planSlug}_${expectedCurrency}`; // magic_monthly_eur | magic_monthly_usd
+  const priceLookupKey = `${planSlug}_${expectedCurrency}`;
 
-  // ✅ Récupère le price via lookup_key
+  // --- DEBUG ---
+  console.log('[checkout] raw checkoutLocale:', form.get('checkoutLocale'));
+  console.log('[checkout] normalized checkoutLocale:', checkoutLocale);
+  console.log('[checkout] expectedCurrency:', expectedCurrency);
+  console.log('[checkout] priceLookupKey:', priceLookupKey);
+  console.log(
+    '[checkout] STRIPE_SECRET_KEY prefix:',
+    process.env.STRIPE_SECRET_KEY?.slice(0, 8) // sk_test_ ou sk_live_
+  );
+  // ------------
+
+  // ✅ 1) Récupère le price via lookup_key
   const prices = await stripe.prices.list({
     lookup_keys: [priceLookupKey],
     active: true,
     limit: 10,
   });
 
-  // ✅ Sélection stricte
+  console.log(
+    '[checkout] prices found:',
+    prices.data.map((p) => ({
+      id: p.id,
+      lookup_key: p.lookup_key,
+      currency: p.currency,
+      active: p.active,
+      unit_amount: p.unit_amount,
+      recurring: p.recurring,
+    }))
+  );
+
+  // ✅ 2) Sélection stricte
   const price = prices.data.find(
     (p) => p.lookup_key === priceLookupKey && p.currency === expectedCurrency
   );
@@ -71,17 +96,16 @@ export async function POST(req: Request) {
     );
   }
 
-  // 1) Lire stripe_customer_id en BDD
+  // 3) Lire stripe_customer_id en BDD
   const db = await sql`
     select stripe_customer_id
     from "User"
     where id = ${userId}
     limit 1
   `;
-
   let customerId = db[0]?.stripe_customer_id ?? null;
 
-  // 2) Si absent, créer un customer Stripe + persister en BDD
+  // 4) Si absent, créer un customer Stripe + persister en BDD
   if (!customerId) {
     const customer = await stripe.customers.create({
       ...(email ? { email } : {}),
@@ -97,7 +121,7 @@ export async function POST(req: Request) {
     `;
   }
 
-  // 3) Checkout Session
+  // 5) Créer la Checkout Session
   const session = await stripe.checkout.sessions.create({
     mode,
     customer: customerId,
@@ -121,9 +145,32 @@ export async function POST(req: Request) {
       : {}),
   });
 
+  // --- DEBUG SESSION ---
+  console.log('[checkout] session.id:', session.id);
+  console.log('[checkout] session.url:', session.url);
+
+  // ✅ Imparable: re-fetch la session avec line_items expand pour voir la vraie devise
+  const sessionFull = await stripe.checkout.sessions.retrieve(session.id, {
+    expand: ['line_items.data.price'],
+  });
+
+  console.log(
+    '[checkout] sessionFull line items:',
+    sessionFull.line_items?.data.map((li) => ({
+      lineItemId: li.id,
+      quantity: li.quantity,
+      priceId: li.price?.id,
+      currency: li.price?.currency,
+      unit_amount: li.price?.unit_amount,
+      lookup_key: (li.price as any)?.lookup_key,
+    }))
+  );
+  // ---------------------
+
   if (!session.url) {
     return new NextResponse('Stripe session has no URL', { status: 500 });
   }
 
+  // 303 = normal (redirect POST -> GET)
   return NextResponse.redirect(session.url, { status: 303 });
 }
