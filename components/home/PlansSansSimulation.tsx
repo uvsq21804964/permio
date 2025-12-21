@@ -22,7 +22,6 @@ type Plan = {
 };
 
 type Props = {
-  /** true => version d'essai ; false => sans essai */
   withTrial: boolean;
 };
 
@@ -32,14 +31,20 @@ type MeSubscription = {
   subscription_status: string | null;
 };
 
-function getCurrencyFromLocale(locale: string): Currency {
-  return locale?.startsWith('en') ? 'USD' : 'EUR';
+type MeStatus = 'loading' | 'done';
+
+function normalizeLang(locale: string): 'fr' | 'en' {
+  const raw = (locale ?? '').toLowerCase();
+  return raw.startsWith('fr') ? 'fr' : 'en';
 }
 
-function formatCurrency(amount: number, currency: Currency, locale: string) {
-  const nfLocale = locale?.startsWith('en') ? 'en-US' : 'fr-FR';
+function getCurrencyFromLang(lang: 'fr' | 'en'): Currency {
+  return lang === 'fr' ? 'EUR' : 'USD';
+}
 
-  // Si l'env est manquante -> amount = NaN, on affiche un fallback propre
+function formatCurrency(amount: number, currency: Currency, lang: 'fr' | 'en') {
+  const nfLocale = lang === 'fr' ? 'fr-FR' : 'en-US';
+
   if (!Number.isFinite(amount)) return currency === 'USD' ? '$—' : '—€';
 
   return new Intl.NumberFormat(nfLocale, {
@@ -50,29 +55,19 @@ function formatCurrency(amount: number, currency: Currency, locale: string) {
   }).format(amount);
 }
 
-// ✅ map plan -> Stripe lookup_key (adapte si besoin)
-function getPriceLookupKey(planId: string, currency: Currency) {
-  const c = currency.toLowerCase(); // 'eur' | 'usd'
-  if (planId === 'pro') return `magic_monthly_${c}`;
-  return `magic_monthly_${c}`;
-}
-
-type MeStatus = 'loading' | 'done';
-
 export default function Plans({ withTrial }: Props) {
   const t = useTranslations('plans');
-  const locale = useLocale(); // ex: 'fr' | 'en'
-  const currency = getCurrencyFromLocale(locale);
+
+  const locale = useLocale(); // ex: 'fr' | 'fr-FR' | 'en' | 'en-US'
+  const lang = normalizeLang(locale); // ✅ 'fr' ou 'en'
+  const currency = getCurrencyFromLang(lang);
 
   const [me, setMe] = useState<MeSubscription | null>(null);
 
-  // ✅ IMPORTANT: en mode sans trial, on démarre DIRECT en "loading"
-  // pour éviter que le bouton soit cliquable au 1er rendu.
   const [meStatus, setMeStatus] = useState<MeStatus>(() =>
     withTrial ? 'done' : 'loading'
   );
 
-  // On ne vérifie le statut que dans la version sans trial
   useEffect(() => {
     let cancelled = false;
 
@@ -84,30 +79,24 @@ export default function Plans({ withTrial }: Props) {
       };
     }
 
-    // Mode no-trial: on bloque l'UI immédiatement
     setMe(null);
     setMeStatus('loading');
 
     const load = async () => {
       try {
-        const res = await fetch('/api/me/subscription', {
-          cache: 'no-store',
-        });
-
+        const res = await fetch('/api/me/subscription', { cache: 'no-store' });
         if (res.ok) {
           const data = (await res.json()) as MeSubscription;
           if (!cancelled) setMe(data);
         }
-        // si res.ok === false, on laisse me=null => on montrera le bouton après check
       } catch {
-        // erreur réseau: me=null => on montrera le bouton après check
+        // ignore
       } finally {
         if (!cancelled) setMeStatus('done');
       }
     };
 
     load();
-
     return () => {
       cancelled = true;
     };
@@ -116,7 +105,7 @@ export default function Plans({ withTrial }: Props) {
   const plans: readonly Plan[] = useMemo(
     () => [
       {
-        id: 'pro',
+        id: 'full-magic', // id interne UI (pas Stripe)
         title: t('plans.plan.title'),
         prices: {
           EUR: Number(process.env.NEXT_PUBLIC_PRICE_EUR),
@@ -136,28 +125,20 @@ export default function Plans({ withTrial }: Props) {
     [t]
   );
 
-  // 🔁 URLs de retour
-  const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/invoices?success=1&session_id={CHECKOUT_SESSION_ID}`;
-  const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/invoices?canceled=1`;
+  const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${lang}/invoices?success=1&session_id={CHECKOUT_SESSION_ID}`;
+  const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${lang}/invoices?canceled=1`;
 
-  // ✅ Cacher le CTA checkout si:
-  // - page éducateur (withTrial=false)
-  // - connecté
-  // - role instructor
-  // - subscription active
   const hideCheckoutButton =
     !withTrial &&
     me?.loggedIn === true &&
     me?.role === 'instructor' &&
     me?.subscription_status === 'active';
 
-  // ✅ Doit-on attendre la vérification avant d'afficher un CTA cliquable ?
   const waitingForSubscriptionCheck = !withTrial && meStatus === 'loading';
 
   return (
     <main className="bg-[#f9ffc6]">
       <div className="mx-auto max-w-6xl px-4 py-10 sm:py-12">
-        {/* Header */}
         <header className="text-center">
           <h2
             className={clsx(
@@ -171,7 +152,6 @@ export default function Plans({ withTrial }: Props) {
 
           <p className="mt-2 text-sm text-black/70">{t('plans.subheading')}</p>
 
-          {/* Bandeau */}
           <div className="mx-auto mt-4 max-w-2xl rounded-xl border border-[#d400ff]/30 bg-white/70 backdrop-blur p-4 text-sm text-black/80">
             <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#d400ff]">
               {t('plans.banner.label')}
@@ -181,12 +161,10 @@ export default function Plans({ withTrial }: Props) {
           </div>
         </header>
 
-        {/* Cards */}
         <section className="mt-8 flex justify-center">
           {plans.map((plan) => {
             const isHighlighted = Boolean(plan.highlighted);
             const price = plan.prices[currency];
-            const priceLookupKey = getPriceLookupKey(plan.id, currency);
 
             return (
               <article
@@ -213,7 +191,7 @@ export default function Plans({ withTrial }: Props) {
 
                   <div className="mt-2 flex items-end gap-1">
                     <span className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#d400ff]">
-                      {formatCurrency(price, currency, locale)}
+                      {formatCurrency(price, currency, lang)}
                     </span>
                     <span className="text-sm text-black/60">
                       {t('plans.perMonth')}
@@ -234,7 +212,6 @@ export default function Plans({ withTrial }: Props) {
                   </ul>
                 </div>
 
-                {/* ✅ CTA */}
                 {waitingForSubscriptionCheck ? (
                   <div className="mt-6">
                     <Button
@@ -245,7 +222,7 @@ export default function Plans({ withTrial }: Props) {
                         'opacity-60 cursor-not-allowed'
                       )}
                     >
-                      {locale?.startsWith('en')
+                      {lang === 'en'
                         ? 'Checking subscription…'
                         : 'Vérification de l’abonnement…'}
                     </Button>
@@ -257,15 +234,22 @@ export default function Plans({ withTrial }: Props) {
                 ) : (
                   <>
                     <form
-                      action="/api/stripe/checkout"
+                      action={
+                        withTrial ? `/${lang}/sign-up` : '/api/stripe/checkout'
+                      }
                       method="POST"
                       className="mt-6"
                     >
+                      {/* ✅ juste la langue normalisée */}
+                      <input type="hidden" name="checkoutLocale" value={lang} />
+
+                      {/* ✅ optional : si un jour tu ajoutes d'autres plans */}
                       <input
                         type="hidden"
-                        name="priceLookupKey"
-                        value={priceLookupKey}
+                        name="planSlug"
+                        value="magic_monthly"
                       />
+
                       <input type="hidden" name="mode" value="subscription" />
                       <input
                         type="hidden"

@@ -36,9 +36,7 @@ const CallToAction: React.FC<CallToActionProps> = ({
     [contactEmail, subject, body]
   );
 
-  const primaryHrefWithLocale = `/${locale}${
-    primaryHref.startsWith('/') ? '' : '/'
-  }${primaryHref.replace(/^\//, '')}`;
+  const primaryHrefWithLocale = `/${locale}${primaryHref}`;
 
   return (
     <section id="cta" aria-labelledby="cta-heading" className="relative">

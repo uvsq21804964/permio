@@ -11,13 +11,8 @@ function normalizeCheckoutLocale(
   value: FormDataEntryValue | null
 ): Stripe.Checkout.SessionCreateParams.Locale {
   const raw = String(value ?? 'auto').toLowerCase();
-
-  // accepte 'en', 'en-US', 'en_GB', etc.
-  if (raw.startsWith('en')) return 'en';
-
-  // accepte 'fr', 'fr-FR', etc.
   if (raw.startsWith('fr')) return 'fr';
-
+  if (raw.startsWith('en')) return 'en';
   return 'auto';
 }
 
@@ -33,7 +28,6 @@ export async function POST(req: Request) {
 
   const form = await req.formData();
 
-  const priceLookupKey = String(form.get('priceLookupKey') || '');
   const mode = String(form.get('mode') || 'subscription') as
     | 'subscription'
     | 'payment';
@@ -47,22 +41,34 @@ export async function POST(req: Request) {
       `${process.env.NEXT_PUBLIC_APP_URL}/invoices?canceled=1`
   );
 
-  // ✅ Locale Stripe Checkout (en/fr/auto)
   const checkoutLocale = normalizeCheckoutLocale(form.get('checkoutLocale'));
 
-  if (!priceLookupKey) {
-    return new NextResponse('Missing priceLookupKey', { status: 400 });
-  }
+  // ✅ règle devise
+  const expectedCurrency = checkoutLocale === 'fr' ? 'eur' : 'usd';
 
-  // Récupère l'ID du price via lookup_key
+  // ✅ slug base (si tu veux le garder flexible)
+  const planSlug = String(form.get('planSlug') || 'magic_monthly');
+
+  // ✅ lookup key final
+  const priceLookupKey = `${planSlug}_${expectedCurrency}`; // magic_monthly_eur | magic_monthly_usd
+
+  // ✅ Récupère le price via lookup_key
   const prices = await stripe.prices.list({
     lookup_keys: [priceLookupKey],
-    expand: ['data.product'],
+    active: true,
+    limit: 10,
   });
 
-  const price = prices.data[0];
+  // ✅ Sélection stricte
+  const price = prices.data.find(
+    (p) => p.lookup_key === priceLookupKey && p.currency === expectedCurrency
+  );
+
   if (!price) {
-    return new NextResponse('Unknown price lookup key', { status: 400 });
+    return new NextResponse(
+      `Price not found for lookup_key=${priceLookupKey} currency=${expectedCurrency}`,
+      { status: 400 }
+    );
   }
 
   // 1) Lire stripe_customer_id en BDD
@@ -91,17 +97,15 @@ export async function POST(req: Request) {
     `;
   }
 
-  // 3) Créer la Checkout Session
+  // 3) Checkout Session
   const session = await stripe.checkout.sessions.create({
     mode,
     customer: customerId,
     line_items: [{ price: price.id, quantity: 1 }],
     allow_promotion_codes: true,
 
-    // ✅ Force la langue de la page Checkout Stripe
     locale: checkoutLocale,
 
-    // 🔗 lien user -> Stripe (indispensable pour webhook robuste)
     client_reference_id: userId,
     metadata: { clerkUserId: userId },
 
@@ -111,7 +115,7 @@ export async function POST(req: Request) {
     ...(mode === 'subscription'
       ? {
           subscription_data: {
-            metadata: { clerkUserId: userId }, // ✅ userId directement sur la Subscription
+            metadata: { clerkUserId: userId },
           },
         }
       : {}),
