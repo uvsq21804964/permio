@@ -16,11 +16,11 @@ function withLocalePath(path: string, locale: string) {
 export default function SignInPage() {
   const locale = useLocale() as Locale;
   const isFR = String(locale).startsWith('fr');
-  const logo = '/IconeSansFond.png';
+  const logo = '/NouveauLogoRogne2.png';
 
   const copy = {
     alreadyAccount: isFR ? "J'ai déjà un compte" : 'I already have an account',
-    brand: 'MagicHango',
+    brand: 'DingDog',
   };
 
   const next = withLocalePath('/onboarding/choose-organization', locale);

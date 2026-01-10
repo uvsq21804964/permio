@@ -20,16 +20,18 @@ type ServicePricing = {
   duration_minutes: number | null;
   price: number | string;
   includes_transport: boolean;
+  is_remote: boolean; // ✅ NOUVEAU
 };
 
 type ServiceDraft = {
-  id: number | null; // null = création, !null = édition
+  id: number | null;
   categoryId: number;
   name: string;
   description: string;
   duration_minutes: string;
   price: string;
   includes_transport: boolean;
+  is_remote: boolean; // ✅ NOUVEAU
 };
 
 type CategoryDraft = {
@@ -105,7 +107,9 @@ export default function ServicesPage() {
       duration_minutes: '',
       price: '',
       includes_transport: false,
+      is_remote: false, // ✅
     });
+
     setServiceFormError(null);
     setSuccessMessage(null);
     setServiceModalOpen(true);
@@ -124,7 +128,9 @@ export default function ServicesPage() {
           : '',
       price: service.price != null ? String(service.price) : '',
       includes_transport: service.includes_transport ?? false,
+      is_remote: service.is_remote ?? false, // ✅
     });
+
     setServiceFormError(null);
     setSuccessMessage(null);
     setServiceModalOpen(true);
@@ -216,7 +222,10 @@ export default function ServicesPage() {
       description,
       duration_minutes: duration,
       price,
-      includes_transport: serviceDraft.includes_transport,
+      includes_transport: serviceDraft.is_remote
+        ? false
+        : serviceDraft.includes_transport,
+      is_remote: serviceDraft.is_remote, // ✅
     };
 
     try {
@@ -547,9 +556,24 @@ export default function ServicesPage() {
                         >
                           <div className="space-y-1">
                             <div className="flex items-start justify-between gap-2">
-                              <h3 className="text-sm font-semibold flex-1 break-words">
-                                {service.name}
-                              </h3>
+                              <div className="min-w-0 flex-1">
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <h3 className="text-sm font-semibold break-words">
+                                    {service.name}
+                                  </h3>
+
+                                  {service.is_remote ? (
+                                    <span className="inline-flex items-center rounded-full bg-violet-500/10 border border-violet-500/20 px-2 py-0.5 text-[11px] font-medium text-violet-700">
+                                      {t('badges.remote')}
+                                    </span>
+                                  ) : service.includes_transport ? (
+                                    <span className="inline-flex items-center rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
+                                      {t('badges.transportIncluded')}
+                                    </span>
+                                  ) : null}
+                                </div>
+                              </div>
+
                               <div className="flex gap-1 shrink-0">
                                 <button
                                   type="button"
@@ -584,11 +608,6 @@ export default function ServicesPage() {
                                 </span>
                               )}
                             </div>
-                            {service.includes_transport && (
-                              <span className="inline-flex items-center rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[11px] text-emerald-700">
-                                {t('service.badgeIncludesTransport')}
-                              </span>
-                            )}
                           </div>
                         </div>
                       );
@@ -717,17 +736,30 @@ export default function ServicesPage() {
                   />
                 </div>
 
-                <div className="flex items-end">
+                <div className="flex flex-col gap-2">
                   <label className="inline-flex items-center gap-2 text-xs font-medium text-foreground">
                     <input
                       type="checkbox"
-                      name="includes_transport"
-                      checked={serviceDraft.includes_transport}
+                      name="is_remote"
+                      checked={serviceDraft.is_remote}
                       onChange={handleServiceDraftChange}
                       className="rounded border"
                     />
-                    {t('service.includesTransportLabel')}
+                    {t('service.remoteLabel')}
                   </label>
+
+                  {!serviceDraft.is_remote && (
+                    <label className="inline-flex items-center gap-2 text-xs font-medium text-foreground">
+                      <input
+                        type="checkbox"
+                        name="includes_transport"
+                        checked={serviceDraft.includes_transport}
+                        onChange={handleServiceDraftChange}
+                        className="rounded border"
+                      />
+                      {t('service.includesTransportLabel')}
+                    </label>
+                  )}
                 </div>
               </div>
 

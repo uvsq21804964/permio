@@ -22,6 +22,11 @@ type BookingAddress = {
   googlePlaceId?: string;
 };
 
+type ServicePricingLite = {
+  id: number;
+  is_remote: boolean;
+};
+
 type AddressMode = 'saved' | 'custom';
 
 declare global {
@@ -88,6 +93,34 @@ export default function BookAddressPage() {
       setError(t('errorNoService'));
     }
   }, [serviceId, t]);
+
+  // ✅ Si service remote, on skip l'adresse et on va direct aux propositions
+  useEffect(() => {
+    if (!serviceId) return;
+
+    const run = async () => {
+      try {
+        const res = await fetch('/api/me/instructor-services', {
+          credentials: 'include',
+        });
+        if (!res.ok) return;
+
+        const data = await res.json().catch(() => null);
+        const numericId = Number(serviceId);
+        const service: ServicePricingLite | undefined = (
+          data?.services || []
+        ).find((s: any) => Number(s.id) === numericId);
+
+        if (service?.is_remote) {
+          router.replace(`/book/proposals?serviceId=${serviceId}`);
+        }
+      } catch (e) {
+        console.error('Remote service check failed', e);
+      }
+    };
+
+    run();
+  }, [serviceId, router]);
 
   // 2) Charger l’adresse enregistrée du user (via ton API profil / me)
   useEffect(() => {

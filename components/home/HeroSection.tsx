@@ -62,7 +62,7 @@ export default function HeroSection() {
               {t('hero.titleSuffix')}{' '}
               <span className="inline-flex items-baseline gap-2 whitespace-nowrap">
                 <span className="bg-gradient-to-r from-primary to-[#d400ff] bg-clip-text text-transparent">
-                  MagicHango
+                  DingDog
                 </span>
                 <Sparkles
                   aria-hidden

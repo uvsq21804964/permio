@@ -4,7 +4,7 @@
 
     "headers": {
       "free": "Alone",
-      "magic": "With MagicHango"
+      "magic": "With DingDog"
     },
 
     "table": {
@@ -92,7 +92,7 @@
       },
       "whatProspectsSee": {
         "label": "What prospects see",
-        "tooltip": "Personal site: few proofs. MagicHango page: reviews + experience visible."
+        "tooltip": "Personal site: few proofs. DingDog page: reviews + experience visible."
       }
     },
 

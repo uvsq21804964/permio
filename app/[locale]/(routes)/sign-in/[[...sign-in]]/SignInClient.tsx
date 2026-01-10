@@ -18,14 +18,14 @@ function withLocalePath(path: string, locale: string) {
 }
 
 export default function SignInClient({ locale, redirectUrl }: Props) {
-  const logo = '/IconeSansFond.png';
+  const logo = '/NouveauLogoRogne2.png';
   const isFR = String(locale).startsWith('fr');
 
   const copy = {
     noAccount: isFR
       ? "Je n'ai pas encore de compte"
       : "I don't have an account yet",
-    brand: 'MagicHango',
+    brand: 'DingDog',
   };
 
   return (

@@ -122,7 +122,7 @@ export default function DesktopNavbar({
 
   return (
     <nav className="fixed inset-x-0 top-0 z-50 border-b border-neutral-200 bg-white/90 text-white backdrop-blur supports-[backdrop-filter]:bg-[#8920D1] dark:border-neutral-800 dark:bg-neutral-900/80">
-      <div className="flex h-12 items-center justify-between px-0">
+      <div className="flex h-10 items-center justify-between px-0">
         {/* ✅ LOGO : préfixé */}
         <Link
           href={withLocalePath('/myweek', locale)}

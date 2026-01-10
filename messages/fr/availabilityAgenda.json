@@ -37,7 +37,8 @@
     "currentUser": "Impossible de charger l'utilisateur courant.",
     "createRange": "Erreur lors de la création des disponibilités.",
     "rangeOrder": "Plage {index}: L'heure de fin doit être après l'heure de début.",
-    "rangeBounds": "Plage {index}: Les horaires doivent être entre 8h00 et 20h00.",
+    "rangeBounds": "Plage {index}: Les horaires doivent être entre 05h00 et 23h00.",
+    "rangeStep": "Plage {index}: Utilisez des pas de 5 minutes.",
     "loadStatusOrAvailabilities": "Impossible de récupérer votre statut ou vos disponibilités.",
     "loadAvailabilities": "Chargement de vos disponibilités…",
     "loadingGeneric": "Chargement…"

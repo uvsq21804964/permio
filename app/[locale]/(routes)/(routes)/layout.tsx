@@ -28,8 +28,8 @@ export default async function RootLayout({
     meRole = null;
   }
 
-  const logo = '/IconeAvecTitreLoin.png';
-  const logo_mobile = '/IconeMobile.png';
+  const logo = '/NouveauLogoRogne2.png';
+  const logo_mobile = '/NouveauLogoRogne2.png';
 
   const pages = [
     { nameFR: 'Ma semaine', nameEN: 'Schedule', link: '/myweek', visible: 2 },

@@ -6,10 +6,10 @@ import { Analytics } from '@vercel/analytics/next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Magic Hango - Create time together, magically',
+  title: 'DingDog - Smart Reservations for Dog Trainers',
   description: 'Created with v0',
   generator: 'v0.app',
-  icons: { icon: { url: '/iconeSansFond.png', type: 'image/png' } },
+  icons: { icon: { url: '/Icone.png', type: 'image/png' } },
 };
 
 export default function RootLayout({

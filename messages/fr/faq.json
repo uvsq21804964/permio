@@ -9,8 +9,8 @@
         "a": "Aux éducateurs canins et promeneurs de chiens qui se déplacent à domicile et veulent réduire leurs temps de trajet tout en remplissant un maximum de créneaux dans la journée. L’outil s’adresse aussi à ceux qui en ont assez de gérer toute la planification eux-mêmes et de passer leurs soirées à envoyer et lire des mails."
       },
       "whyUse": {
-        "q": "Pourquoi utiliser MagicHango plutôt qu’un agenda classique ?",
-        "a": "Parce que l’objectif n’est pas seulement de “prendre des rendez-vous”, mais d’optimiser votre semaine. MagicHango vous aide à réduire les allers-retours, à éviter les trous entre deux séances et à regrouper les rendez-vous de façon réaliste en tenant compte des temps de trajet. Vous gagnez du temps, de la clarté, et vous facturez davantage d’heures utiles."
+        "q": "Pourquoi utiliser DingDog plutôt qu’un agenda classique ?",
+        "a": "Parce que l’objectif n’est pas seulement de “prendre des rendez-vous”, mais d’optimiser votre semaine. DingDog vous aide à réduire les allers-retours, à éviter les trous entre deux séances et à regrouper les rendez-vous de façon réaliste en tenant compte des temps de trajet. Vous gagnez du temps, de la clarté, et vous facturez davantage d’heures utiles."
       },
       "publicBooking": {
         "q": "Proposez-vous une page de réservation publique ?",
@@ -50,7 +50,7 @@
       },
       "mobileApp": {
         "q": "Existe-t-il une application mobile ?",
-        "a": "Pas encore. MagicHango est pour l’instant optimisé pour le navigateur (mobile et desktop). Une application mobile pourra venir ensuite, selon les besoins les plus demandés."
+        "a": "Pas encore. DingDog est pour l’instant optimisé pour le navigateur (mobile et desktop). Une application mobile pourra venir ensuite, selon les besoins les plus demandés."
       },
       "calendarSync": {
         "q": "Puis-je synchroniser Google/Outlook ?",

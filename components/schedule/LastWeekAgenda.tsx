@@ -23,8 +23,8 @@ const DAYS = [
   'Dimanche',
 ] as const;
 
-const HOURS = Array.from({ length: 12 }, (_, i) => i + 8); // 08 → 19
-const START_HOUR = 8;
+const HOURS = Array.from({ length: 19 }, (_, i) => i + 5); // 05 → 23
+const START_HOUR = 5;
 const PIXELS_PER_HOUR = 80;
 
 // Palette de classes Tailwind {bg + border + text} plus contrastée
@@ -155,6 +155,14 @@ function timeToMinutes(t: string) {
   return h * 60 + (m || 0);
 }
 
+/** Supprime les secondes si présentes ("HH:MM:SS" -> "HH:MM"). */
+function stripSeconds(t: string) {
+  const parts = t.split(':');
+  if (parts.length >= 2)
+    return `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
+  return t;
+}
+
 function getBlockStyle(startTime: string, endTime: string) {
   const start = timeToMinutes(stripSeconds(startTime));
   const end = timeToMinutes(stripSeconds(endTime));
@@ -166,25 +174,57 @@ function getBlockStyle(startTime: string, endTime: string) {
   };
 }
 
-/** Supprime les secondes si présentes ("HH:MM:SS" -> "HH:MM"). */
-function stripSeconds(t: string) {
-  const parts = t.split(':');
-  if (parts.length >= 2)
-    return `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
-  return t;
-}
-
 /** Parse "YYYY-MM-DD" sans décalage de fuseau (local). */
 function parseISODateLocal(iso: string): Date {
   const [y, m, d] = iso.split('-').map(Number);
   return new Date(y, (m || 1) - 1, d || 1, 0, 0, 0, 0);
 }
 
-/** Format court "dd/mm". */
+/** Format court FR "dd/mm". */
 function fmtDDMM(date: Date): string {
   const dd = String(date.getDate()).padStart(2, '0');
   const mm = String(date.getMonth() + 1).padStart(2, '0');
   return `${dd}/${mm}`;
+}
+
+/** Format court EN "mm/dd". */
+function fmtMMDD(date: Date): string {
+  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  return `${mm}/${dd}`;
+}
+
+function isFrLocale(locale: string) {
+  return locale === 'fr' || locale.startsWith('fr');
+}
+
+/** Format date courte selon la langue (FR: dd/mm, EN: mm/dd) */
+function formatShortDate(date: Date, locale: string): string {
+  return isFrLocale(locale) ? fmtDDMM(date) : fmtMMDD(date);
+}
+
+/** Format heure selon la langue (FR: 08:30, EN: 8:30 AM) */
+function formatTime(t: string, locale: string): string {
+  const clean = stripSeconds(t);
+  const [hh, mm] = clean.split(':').map(Number);
+  const d = new Date(2000, 0, 1, hh || 0, mm || 0, 0, 0);
+
+  const intlLocale = isFrLocale(locale) ? 'fr-FR' : 'en-US';
+  return new Intl.DateTimeFormat(intlLocale, {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: !isFrLocale(locale),
+  }).format(d);
+}
+
+/** Label de la colonne des heures (FR: 08:00, EN: 8 AM) */
+function formatHourLabel(hour: number, locale: string): string {
+  if (isFrLocale(locale)) return `${String(hour).padStart(2, '0')}:00`;
+  const d = new Date(2000, 0, 1, hour, 0, 0, 0);
+  return new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    hour12: true,
+  }).format(d);
 }
 
 /** Re-dump en "YYYY-MM-DD" pour comparaisons. */
@@ -412,21 +452,26 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
       const iso = toISO(dt);
       return {
         label: dayLabel(i),
-        dateLabel: fmtDDMM(dt),
+        dateLabel: formatShortDate(dt, locale), // ✅ FR/EN
         iso,
         isToday: iso === todayISO,
       };
     });
-  }, [data?.weekShown, daysMap, t]);
+  }, [data?.weekShown, daysMap, t, locale]);
 
-  // En-tête lisible: "dd/mm → dd/mm"
+  // En-tête lisible: "dd/mm → dd/mm" (FR) / "mm/dd – mm/dd" (EN)
   const headerRange = useMemo(() => {
     if (!data?.weekShown) return '';
     const start = parseISODateLocal(data.weekShown);
     const end = new Date(start);
     end.setDate(start.getDate() + 6);
-    return `${fmtDDMM(start)} → ${fmtDDMM(end)}`;
-  }, [data?.weekShown]);
+
+    const sep = isFrLocale(locale) ? ' → ' : ' – ';
+    return `${formatShortDate(start, locale)}${sep}${formatShortDate(
+      end,
+      locale
+    )}`;
+  }, [data?.weekShown, locale]);
 
   // Détermine pour chaque slot quel “nom” afficher (moniteur ou élève)
   const getCounterpartName = (slot: Slot) =>
@@ -725,7 +770,7 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
               <div className="flex flex-wrap gap-2">
                 {upcoming.map((s, idx) => {
                   const d = parseISODateLocal(s.date);
-                  const dateLabel = fmtDDMM(d);
+                  const dateLabel = formatShortDate(d, locale); // ✅ FR/EN
                   const weekday = d.toLocaleDateString(weekdayLocale, {
                     weekday: 'short',
                   });
@@ -738,7 +783,8 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                         {weekday} {dateLabel}
                       </span>
                       <span className="text-[11px]">
-                        {stripSeconds(s.startTime)} – {stripSeconds(s.endTime)}
+                        {formatTime(s.startTime, locale)} –{' '}
+                        {formatTime(s.endTime, locale)}
                       </span>
                       {s.counterpartName && (
                         <span className="text-[11px] text-neutral-600">
@@ -804,7 +850,7 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                     className="text-sm text-muted-foreground p-2 border-r border-b"
                     style={{ height: `${PIXELS_PER_HOUR}px` }}
                   >
-                    {String(hour).padStart(2, '0')}:00
+                    {formatHourLabel(hour, locale)} {/* ✅ FR/EN */}
                   </div>
                 ))}
               </div>
@@ -852,8 +898,8 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                         const tooltipLines: string[] = [];
                         tooltipLines.push(
                           `${t('travel.tooltipTime', {
-                            start: stripSeconds(tTravel.startTime),
-                            end: stripSeconds(tTravel.endTime),
+                            start: formatTime(tTravel.startTime, locale), // ✅
+                            end: formatTime(tTravel.endTime, locale), // ✅
                           })}`
                         );
                         if (tTravel.fromLabel) {
@@ -891,8 +937,8 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                           >
                             <div className="flex h-full flex-col items-start justify-center px-1 py-0.5 gap-0.5">
                               <span className="text-[9px] leading-tight font-mono truncate">
-                                {stripSeconds(tTravel.startTime)} –{' '}
-                                {stripSeconds(tTravel.endTime)}
+                                {formatTime(tTravel.startTime, locale)} –{' '}
+                                {formatTime(tTravel.endTime, locale)}
                               </span>
                               <span className="text-[8px] leading-tight uppercase tracking-wide opacity-80 truncate">
                                 {t('travel.label')}
@@ -912,8 +958,8 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
                         );
                         const cc = getSlotColorClass(s, viewerRole);
 
-                        const start = stripSeconds(s.startTime);
-                        const end = stripSeconds(s.endTime);
+                        const start = formatTime(s.startTime, locale); // ✅
+                        const end = formatTime(s.endTime, locale); // ✅
                         const counterpart = getCounterpartName(s);
 
                         const labelCounterpart =

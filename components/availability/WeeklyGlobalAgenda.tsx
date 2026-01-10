@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import { Loader2 } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -46,6 +46,73 @@ function formatServicePrice(
   }
 }
 
+function isFrLocale(locale: string) {
+  return locale === 'fr' || locale.startsWith('fr');
+}
+
+/** Parse YYYY-MM-DD sans décalage de fuseau */
+function parseISODateLocal(iso: string): Date {
+  const [y, m, d] = iso.slice(0, 10).split('-').map(Number);
+  return new Date(y || 2000, (m || 1) - 1, d || 1, 0, 0, 0, 0);
+}
+
+function fmtDDMM(date: Date): string {
+  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  return `${dd}/${mm}`;
+}
+
+function fmtMMDD(date: Date): string {
+  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  return `${mm}/${dd}`;
+}
+
+/** Date courte selon la langue (FR: dd/mm, EN: mm/dd) */
+function formatShortDateISO(iso: string, locale: string): string {
+  const d = parseISODateLocal(iso);
+  return isFrLocale(locale) ? fmtDDMM(d) : fmtMMDD(d);
+}
+
+/** Jour court stable (FR/EN) */
+function formatWeekdayShortISO(iso: string, locale: string): string {
+  const d = parseISODateLocal(iso);
+  const weekdayLocale = isFrLocale(locale) ? 'fr-FR' : 'en-US';
+  return d.toLocaleDateString(weekdayLocale, { weekday: 'short' });
+}
+
+/** Supprime secondes si présentes */
+function stripSeconds(t: string) {
+  const parts = t.split(':');
+  if (parts.length >= 2)
+    return `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
+  return t;
+}
+
+/** Heure selon la langue (FR: 08:30, EN: 8:30 AM) */
+function formatTimeForLocale(t: string, locale: string): string {
+  const clean = stripSeconds(t);
+  const [hh, mm] = clean.split(':').map(Number);
+  const d = new Date(2000, 0, 1, hh || 0, mm || 0, 0, 0);
+
+  const intlLocale = isFrLocale(locale) ? 'fr-FR' : 'en-US';
+  return new Intl.DateTimeFormat(intlLocale, {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: !isFrLocale(locale),
+  }).format(d);
+}
+
+/** Label colonne heures (FR: 08:00, EN: 8 AM) */
+function formatHourLabel(hour: number, locale: string): string {
+  if (isFrLocale(locale)) return `${String(hour).padStart(2, '0')}:00`;
+  const d = new Date(2000, 0, 1, hour, 0, 0, 0);
+  return new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    hour12: true,
+  }).format(d);
+}
+
 function buildGoogleMapsUrl(travel: Travel): string | null {
   // Origine = dogsitter
   let origin: string | null = null;
@@ -80,6 +147,7 @@ function buildGoogleMapsUrl(travel: Travel): string | null {
 
 export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
   const t = useTranslations('weeklyAgenda');
+  const locale = useLocale();
   const { user, isLoaded: isUserLoaded } = useUser();
   const currentUserId = user?.id ?? null;
 
@@ -381,9 +449,10 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
           <CardTitle>{t('header_title')}</CardTitle>
           <p className="text-sm text-muted-foreground mt-1">
             {t('header_period', {
-              from: formatDDMM(weekStart),
-              to: formatDDMM(weekEndISO),
+              from: formatShortDateISO(weekStart, locale),
+              to: formatShortDateISO(weekEndISO, locale),
             })}
+
             <br />
             {isDogsitterForWeek ? (
               <span className="text-xs text-muted-foreground">
@@ -451,9 +520,9 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
                   key={dateIso}
                   className="p-2 border-b border-l text-center text-xs md:text-sm font-medium"
                 >
-                  <div>{DAY_LABELS_SHORT[idx]}</div>
+                  <div>{formatWeekdayShortISO(dateIso, locale)}</div>
                   <div className="text-[11px] text-muted-foreground">
-                    {formatDDMM(dateIso)}
+                    {formatShortDateISO(dateIso, locale)}
                   </div>
                 </div>
               ))}
@@ -469,7 +538,7 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
                     className="border-b text-xs md:text-sm text-muted-foreground px-2 flex items-start"
                     style={{ height: `${PIXELS_PER_HOUR}px` }}
                   >
-                    {h}:00
+                    {formatHourLabel(h, locale)}
                   </div>
                 ))}
               </div>
@@ -503,6 +572,11 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
                         a.startTime,
                         a.endTime
                       );
+                      const startLabel = formatTimeForLocale(
+                        a.startTime,
+                        locale
+                      );
+                      const endLabel = formatTimeForLocale(a.endTime, locale);
                       const colorClass = getDefaultBlockColor();
 
                       return (
@@ -516,13 +590,13 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
                             opacity: 0.85,
                           }}
                           title={t('default_block_title', {
-                            start: a.startTime,
-                            end: a.endTime,
+                            start: startLabel,
+                            end: endLabel,
                           })}
                         >
                           <div className="flex h-full flex-col items-start justify-center px-1 py-0.5">
                             <span className="text-[10px] leading-tight truncate">
-                              {a.startTime} – {a.endTime}
+                              {startLabel} – {endLabel}
                             </span>
                             <span className="text-[8px] leading-tight uppercase opacity-70 mt-0.5">
                               {t('default_block_label')}
@@ -537,6 +611,14 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
                       const { top, height } = getBlockStyle(
                         entry.startTime,
                         entry.endTime
+                      );
+                      const startLabel = formatTimeForLocale(
+                        entry.startTime,
+                        locale
+                      );
+                      const endLabel = formatTimeForLocale(
+                        entry.endTime,
+                        locale
                       );
                       const colorClass = getDayOverrideColor(entry.kind);
 
@@ -554,11 +636,11 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
                             height: `${height}px`,
                             minHeight: '24px',
                           }}
-                          title={`${entry.startTime}–${entry.endTime}`}
+                          title={`${startLabel}–${endLabel}`}
                         >
                           <div className="flex h-full flex-col items-start justify-center px-1 py-0.5">
-                            <span className="text-[10px] leading-tight truncate">
-                              {entry.startTime} – {entry.endTime}
+                            <span>
+                              {startLabel} – {endLabel}
                             </span>
                             <span className="text-[8px] leading-tight uppercase opacity-80 mt-0.5">
                               {label}
@@ -574,12 +656,19 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
                         travel.startTime,
                         travel.endTime
                       );
-
+                      const startLabel = formatTimeForLocale(
+                        travel.startTime,
+                        locale
+                      );
+                      const endLabel = formatTimeForLocale(
+                        travel.endTime,
+                        locale
+                      );
                       const tooltipLines: string[] = [];
                       tooltipLines.push(
                         t('travel_tooltip_time', {
-                          start: travel.startTime,
-                          end: travel.endTime,
+                          start: startLabel,
+                          end: endLabel,
                         })
                       );
                       if (travel.client_formatted_address) {
@@ -623,8 +712,8 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
                           }}
                         >
                           <div className="flex h-full flex-col items-start justify-center px-1 py-0.5 gap-0.5">
-                            <span className="text-[9px] leading-tight font-mono truncate">
-                              {travel.startTime} – {travel.endTime}
+                            <span>
+                              {startLabel} – {endLabel}
                             </span>
                             <span className="text-[8px] leading-tight uppercase tracking-wide opacity-80 truncate">
                               {t('travel_label')}
@@ -639,6 +728,14 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
                       const { top, height } = getBlockStyle(
                         slot.startTime,
                         slot.endTime
+                      );
+                      const startLabel = formatTimeForLocale(
+                        slot.startTime,
+                        locale
+                      );
+                      const endLabel = formatTimeForLocale(
+                        slot.endTime,
+                        locale
                       );
                       const colorClass = getSlotBlockColor();
 
@@ -662,8 +759,8 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
                       const tooltipLines: string[] = [];
                       tooltipLines.push(
                         t('slot_tooltip_time', {
-                          start: slot.startTime,
-                          end: slot.endTime,
+                          start: startLabel,
+                          end: endLabel,
                         })
                       );
                       tooltipLines.push(

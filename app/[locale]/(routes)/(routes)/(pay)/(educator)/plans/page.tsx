@@ -43,7 +43,7 @@ export default function HomePage() {
       <Plans withTrial={false} />
       <Comparison />
       <FAQ />
-      <CompetitorComparison />
+      {/* <CompetitorComparison /> */}
     </div>
   );
 }

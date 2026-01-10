@@ -22,6 +22,7 @@ type ServicePricing = {
   duration_minutes: number | null;
   price: number | string;
   includes_transport: boolean;
+  is_remote: boolean; // ✅
 };
 
 type ApiResponse = {
@@ -30,17 +31,24 @@ type ApiResponse = {
   services: ServicePricing[];
 };
 
-// Format prix en EUR, localisé
+// Format prix localisé (EUR en FR, USD en EN)
 function formatPrice(price: number | string, locale: string): string {
   const num = Number(price);
-  if (Number.isNaN(num)) return `${price} €`;
+  const isFr = locale === 'fr' || locale.startsWith('fr');
+  const currency = isFr ? 'EUR' : 'USD';
+
+  if (Number.isNaN(num)) return isFr ? `${price} €` : `$${price}`;
+
   try {
-    return new Intl.NumberFormat(locale, {
+    // ✅ Intl gère automatiquement le symbole (€ / $) selon la devise
+    return new Intl.NumberFormat(isFr ? 'fr-FR' : 'en-US', {
       style: 'currency',
-      currency: 'EUR',
+      currency,
     }).format(num);
   } catch {
-    return `${num.toFixed(2)} €`;
+    // fallback simple si Intl casse
+    const fixed = num.toFixed(2);
+    return isFr ? `${fixed} €` : `$${fixed}`;
   }
 }
 
@@ -85,6 +93,13 @@ export default function SelectServicePage() {
       serviceId: String(service.id),
     });
 
+    // ✅ Remote => skip address
+    if (service.is_remote) {
+      router.push(`/book/proposals?${params.toString()}`);
+      return;
+    }
+
+    // Sinon => adresse obligatoire
     router.push(`/book/address?${params.toString()}`);
   };
 
@@ -171,9 +186,22 @@ export default function SelectServicePage() {
                           className="text-left rounded-xl border bg-background p-3 flex flex-col justify-between hover:border-primary hover:shadow-sm transition"
                         >
                           <div className="space-y-1">
-                            <h3 className="text-sm font-semibold break-words">
-                              {service.name}
-                            </h3>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h3 className="text-sm font-semibold break-words">
+                                {service.name}
+                              </h3>
+
+                              {service.is_remote ? (
+                                <span className="inline-flex items-center rounded-full bg-violet-500/10 border border-violet-500/20 px-2 py-0.5 text-[11px] font-medium text-violet-700">
+                                  {t('badges.remote')}
+                                </span>
+                              ) : service.includes_transport ? (
+                                <span className="inline-flex items-center rounded-full bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[11px] font-medium text-emerald-700">
+                                  {t('badges.transportIncluded')}
+                                </span>
+                              ) : null}
+                            </div>
+
                             {service.description && (
                               <p className="text-xs text-muted-foreground whitespace-pre-line">
                                 {service.description}

@@ -37,7 +37,8 @@
     "currentUser": "Unable to load current user.",
     "createRange": "Error while creating availabilities.",
     "rangeOrder": "Range {index}: end time must be after start time.",
-    "rangeBounds": "Range {index}: times must be between 8:00 and 20:00.",
+    "rangeBounds": "Range {index}: times must be between 05:00 and 23:00.",
+    "rangeStep": "Range {index}: please use 5-minute increments.",
     "loadStatusOrAvailabilities": "Unable to fetch your status or availabilities.",
     "loadAvailabilities": "Loading your availabilities…",
     "loadingGeneric": "Loading…"

@@ -28,6 +28,38 @@ type DefaultAvailability = {
   endTime: string;
 };
 
+/** Supprime les secondes si présentes ("HH:MM:SS" -> "HH:MM"). */
+function stripSeconds(t: string) {
+  const parts = t.split(':');
+  if (parts.length >= 2)
+    return `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
+  return t;
+}
+
+/** Affiche une heure selon la langue (FR: 08:30, EN: 8:30 AM) */
+function formatTimeForLocale(t: string, locale: string): string {
+  const clean = stripSeconds(t);
+  const [hh, mm] = clean.split(':').map(Number);
+  const d = new Date(2000, 0, 1, hh || 0, mm || 0, 0, 0);
+
+  const intlLocale = isFrLocale(locale) ? 'fr-FR' : 'en-US';
+  return new Intl.DateTimeFormat(intlLocale, {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: !isFrLocale(locale),
+  }).format(d);
+}
+
+/** Label de la colonne des heures (FR: 08:00, EN: 8 AM) */
+function formatHourLabel(hour: number, locale: string): string {
+  if (isFrLocale(locale)) return `${String(hour).padStart(2, '0')}:00`;
+  const d = new Date(2000, 0, 1, hour, 0, 0, 0);
+  return new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    hour12: true,
+  }).format(d);
+}
+
 type SelectedSlot = {
   date: string;
 
@@ -138,7 +170,10 @@ type ServicePricing = {
   duration_minutes: number | null;
   price: string;
   includes_transport: boolean;
+  is_remote: boolean; // ✅ AJOUT
 };
+
+const BOOKING_BUFFER_MIN = 5;
 
 type ServicesApiResponse = {
   instructorId: string;
@@ -178,6 +213,37 @@ function isoToDateOnly(iso: string): Date {
   return new Date(y, (m || 1) - 1, d || 1);
 }
 
+function isFrLocale(locale: string) {
+  return locale === 'fr' || locale.startsWith('fr');
+}
+
+function fmtDDMM(date: Date): string {
+  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  return `${dd}/${mm}`;
+}
+
+function fmtMMDD(date: Date): string {
+  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  return `${mm}/${dd}`;
+}
+
+/** Date courte selon la langue (FR: dd/mm, EN: mm/dd) */
+function formatShortDateFromISO(iso: string, locale: string): string {
+  const d = isoToDateOnly(iso);
+  return isFrLocale(locale) ? fmtDDMM(d) : fmtMMDD(d);
+}
+
+/** Nom du jour court stable (FR/EN) */
+function formatWeekdayShortFromISO(iso: string, locale: string): string {
+  const d = isoToDateOnly(iso);
+  const weekdayLocale = isFrLocale(locale) ? 'fr-FR' : 'en-US';
+  return d.toLocaleDateString(weekdayLocale, { weekday: 'short' });
+}
+
+/** "Mon 01/10" (FR) / "Mon 10/01" (EN) */
+
 function dateToISO(d: Date): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -193,9 +259,16 @@ function formatDDMM(iso: string): string {
 }
 
 function formatDayAndDate(iso: string, locale: string): string {
-  const d = isoToDateOnly(iso);
-  const dayLabel = d.toLocaleDateString(locale, { weekday: 'short' });
-  return `${dayLabel} ${formatDDMM(iso)}`;
+  return `${formatWeekdayShortFromISO(iso, locale)} ${formatShortDateFromISO(
+    iso,
+    locale
+  )}`;
+}
+
+function addMinutesToTime(time: string, deltaMinutes: number): string {
+  const base = timeToMinutes(time);
+  const next = base + deltaMinutes;
+  return minutesToTime(next);
 }
 
 function startOfWeekMondayISO(base?: string): string {
@@ -220,8 +293,9 @@ function timeToMinutes(time: string): number {
 }
 
 function minutesToTime(m: number): string {
-  const h = Math.floor(m / 60);
-  const mm = m % 60;
+  const normalized = ((m % 1440) + 1440) % 1440; // 0..1439
+  const h = Math.floor(normalized / 60);
+  const mm = normalized % 60;
   return `${String(h).padStart(2, '0')}:${String(mm).padStart(2, '0')}`;
 }
 
@@ -343,6 +417,7 @@ export default function BookPage() {
     name: string;
     categoryName: string;
     durationMinutes: number | null;
+    isRemote: boolean; // ✅
   } | null>(null);
 
   const [selectedSlot, setSelectedSlot] = useState<SelectedSlot | null>(null);
@@ -415,7 +490,8 @@ export default function BookPage() {
   // Charger l’agenda hebdo du moniteur
   useEffect(() => {
     if (!isLoaded || !isSignedIn) return;
-    if (!bookingAddress) return;
+    if (!selectedService) return;
+    if (!selectedService.isRemote && !bookingAddress) return;
 
     const fetchAgenda = async () => {
       try {
@@ -427,15 +503,20 @@ export default function BookPage() {
           window.location.origin
         );
         url.searchParams.set('weekStart', weekStart);
-        url.searchParams.set('clientLat', String(bookingAddress.lat));
-        url.searchParams.set('clientLng', String(bookingAddress.lng));
-        url.searchParams.set(
-          'clientFormatted',
-          bookingAddress.formattedAddress
-        );
+
+        if (selectedService.isRemote) {
+          url.searchParams.set('isRemote', '1');
+        } else {
+          // bookingAddress est garanti non-null ici
+          url.searchParams.set('clientLat', String(bookingAddress!.lat));
+          url.searchParams.set('clientLng', String(bookingAddress!.lng));
+          url.searchParams.set(
+            'clientFormatted',
+            bookingAddress!.formattedAddress
+          );
+        }
 
         const res = await fetch(url.toString(), { credentials: 'include' });
-
         if (!res.ok) {
           const body = await res.json().catch(() => ({}));
           throw new Error(body.error || t('errors.loadAgendaApi'));
@@ -452,7 +533,16 @@ export default function BookPage() {
     };
 
     fetchAgenda();
-  }, [weekStart, isLoaded, isSignedIn, bookingAddress, agendaReloadKey, t]);
+  }, [
+    weekStart,
+    isLoaded,
+    isSignedIn,
+    bookingAddress,
+    selectedService?.id,
+    selectedService?.isRemote,
+    agendaReloadKey,
+    t,
+  ]);
 
   // Charger les infos du service sélectionné (nom + catégorie)
   useEffect(() => {
@@ -498,6 +588,7 @@ export default function BookPage() {
           name: service.name,
           categoryName: service.category_name,
           durationMinutes: service.duration_minutes,
+          isRemote: !!service.is_remote,
         });
       } catch (e: any) {
         console.error('Error fetching selected service', e);
@@ -845,8 +936,8 @@ export default function BookPage() {
               <CardTitle>{t('agenda.title')}</CardTitle>
               <p className="text-sm text-muted-foreground">
                 {t('agenda.weekLabel', {
-                  start: formatDDMM(weekStart),
-                  end: formatDDMM(weekEnd),
+                  start: formatShortDateFromISO(weekStart, locale),
+                  end: formatShortDateFromISO(weekEnd, locale),
                 })}
               </p>
               <p className="text-xs text-muted-foreground">
@@ -872,10 +963,10 @@ export default function BookPage() {
                       const isDisabledDay = dayDisabled[dateIso] ?? false;
                       const isToday = dateIso === todayIso;
 
-                      const d = isoToDateOnly(dateIso);
-                      const dayLabel = d.toLocaleDateString(locale, {
-                        weekday: 'short',
-                      });
+                      const dayLabel = formatWeekdayShortFromISO(
+                        dateIso,
+                        locale
+                      );
 
                       return (
                         <div
@@ -895,7 +986,7 @@ export default function BookPage() {
                         >
                           <div>{dayLabel}</div>
                           <div className="text-[11px] text-muted-foreground">
-                            {formatDDMM(dateIso)}
+                            {formatShortDateFromISO(dateIso, locale)}
                           </div>
                         </div>
                       );
@@ -912,7 +1003,7 @@ export default function BookPage() {
                           className="border-b text-xs md:text-sm text-muted-foreground px-2 flex items-start"
                           style={{ height: `${PIXELS_PER_HOUR}px` }}
                         >
-                          {h}:00
+                          {formatHourLabel(h, locale)}
                         </div>
                       ))}
                     </div>
@@ -923,6 +1014,33 @@ export default function BookPage() {
                         data.clientSlotsByDate?.[dateIso] ?? [];
 
                       let availableSlots: ClientSlot[] = [...clientSlotsForDay];
+                      availableSlots = availableSlots
+                        .map((slot) => {
+                          const bufferedStart = addMinutesToTime(
+                            slot.startTime,
+                            BOOKING_BUFFER_MIN
+                          );
+                          const bufferedEnd = addMinutesToTime(
+                            slot.endTime,
+                            -BOOKING_BUFFER_MIN
+                          );
+
+                          // si le buffer rend le slot invalide, on le jette via filter ensuite
+                          return {
+                            ...slot,
+                            startTime: bufferedStart,
+                            endTime: bufferedEnd,
+                            travelBeforeMinutes: slot.travelBeforeMinutes ?? 0,
+                            travelAfterMinutes: slot.travelAfterMinutes ?? 0,
+                            fromLabel: slot.fromLabel ?? '',
+                            toLabel: slot.toLabel ?? '',
+                          };
+                        })
+                        .filter(
+                          (slot) =>
+                            timeToMinutes(slot.endTime) >
+                            timeToMinutes(slot.startTime)
+                        );
 
                       if (selectedService?.durationMinutes != null) {
                         const serviceDuration = selectedService.durationMinutes;
@@ -989,10 +1107,19 @@ export default function BookPage() {
                               selectedSlot.windowStartTime === slot.startTime &&
                               selectedSlot.windowEndTime === slot.endTime;
 
+                            const startLabel = formatTimeForLocale(
+                              slot.startTime,
+                              locale
+                            );
+                            const endLabel = formatTimeForLocale(
+                              slot.endTime,
+                              locale
+                            );
+
                             const tooltipLines = [
                               t('agenda.slotTooltip.slot', {
-                                start: slot.startTime,
-                                end: slot.endTime,
+                                start: startLabel,
+                                end: endLabel,
                               }),
                               t('agenda.slotTooltip.travelBefore', {
                                 minutes: slot.travelBeforeMinutes,
@@ -1033,8 +1160,9 @@ export default function BookPage() {
                               >
                                 <div className="flex h-full flex-col items-start justify-center px-1 py-0.5">
                                   <span className="text-[10px] leading-tight truncate">
-                                    {slot.startTime} – {slot.endTime}
+                                    {startLabel} – {endLabel}
                                   </span>
+
                                   <span className="text-[8px] leading-tight uppercase opacity-80 mt-0.5">
                                     {isSelected
                                       ? t('agenda.badgeSelected')
@@ -1081,6 +1209,24 @@ export default function BookPage() {
           'end'
         );
 
+        const startAlignedLabelStart = formatTimeForLocale(
+          startAligned.serviceStartTime,
+          locale
+        );
+        const startAlignedLabelEnd = formatTimeForLocale(
+          startAligned.serviceEndTime,
+          locale
+        );
+
+        const endAlignedLabelStart = formatTimeForLocale(
+          endAligned.serviceStartTime,
+          locale
+        );
+        const endAlignedLabelEnd = formatTimeForLocale(
+          endAligned.serviceEndTime,
+          locale
+        );
+
         return (
           <>
             <DialogHeader>
@@ -1113,8 +1259,8 @@ export default function BookPage() {
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">
                   {t('alignmentModal.alignStartBody', {
-                    start: startAligned.serviceStartTime,
-                    end: startAligned.serviceEndTime,
+                    start: startAlignedLabelStart,
+                    end: startAlignedLabelEnd,
                   })}
                 </p>
               </button>

@@ -153,6 +153,7 @@ export async function POST(req: NextRequest) {
         duration_minutes,
         price,
         includes_transport,
+        is_remote,
       } = body;
 
       if (!category_id) {
@@ -161,6 +162,8 @@ export async function POST(req: NextRequest) {
           { status: 400 }
         );
       }
+
+      const isRemote = Boolean(is_remote);
 
       const nameTrimmed = typeof name === 'string' ? name.trim() : '';
       const descTrimmed =
@@ -219,32 +222,36 @@ export async function POST(req: NextRequest) {
 
       const inserted = await sql`
     INSERT INTO services_pricing (
-      user_id,
-      category_id,
-      name,
-      description,
-      duration_minutes,
-      price,
-      includes_transport
-    )
-    VALUES (
-      ${userId},
-      ${category_id},
-      ${nameTrimmed},
-      ${descTrimmed},
-      ${duration_minutes},
-      ${price},
-      ${includes_transport ?? false}
-    )
+  user_id,
+  category_id,
+  name,
+  description,
+  duration_minutes,
+  price,
+  includes_transport,
+  is_remote
+)
+VALUES (
+  ${userId},
+  ${category_id},
+  ${nameTrimmed},
+  ${descTrimmed},
+  ${duration_minutes},
+  ${price},
+  ${includes_transport ?? false},
+  ${isRemote}
+)
+
     RETURNING
-      id,
-      user_id,
-      category_id,
-      name,
-      description,
-      duration_minutes,
-      price,
-      includes_transport
+  id,
+  user_id,
+  category_id,
+  name,
+  description,
+  duration_minutes,
+  price,
+  includes_transport,
+  is_remote
   `;
 
       const categoryRow = await sql`
@@ -300,6 +307,7 @@ export async function PATCH(req: NextRequest) {
       duration_minutes,
       price,
       includes_transport,
+      is_remote,
     } = body;
 
     if (!id) {
@@ -308,6 +316,8 @@ export async function PATCH(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    const isRemote = Boolean(is_remote);
 
     const nameTrimmed = typeof name === 'string' ? name.trim() : '';
     const descTrimmed =
@@ -379,17 +389,19 @@ export async function PATCH(req: NextRequest) {
     description = ${descTrimmed},
     duration_minutes = ${duration_minutes},
     price = ${price},
-    includes_transport = ${includes_transport}
+    includes_transport = ${includes_transport},
+    is_remote = ${isRemote}
   WHERE id = ${id} AND user_id = ${userId}
   RETURNING
-    id,
-    user_id,
-    category_id,
-    name,
-    description,
-    duration_minutes,
-    price,
-    includes_transport
+  id,
+  user_id,
+  category_id,
+  name,
+  description,
+  duration_minutes,
+  price,
+  includes_transport,
+  is_remote
 `;
 
     if (updated.length === 0) {

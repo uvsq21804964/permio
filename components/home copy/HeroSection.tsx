@@ -58,7 +58,7 @@ const HeroSection: React.FC = () => {
           , {/* Bloc nom + icône alignés */}
           <span className="inline-flex items-center gap-2 align-baseline whitespace-nowrap">
             <span className="bg-gradient-to-r from-primary to-[#d400ff] bg-clip-text text-transparent">
-              MagicHango
+              DingDog
             </span>
             <Sparkles
               aria-hidden
@@ -81,7 +81,7 @@ const HeroSection: React.FC = () => {
         </h2>
         <span className="mt-12 mb-12 inline-block align-baseline">
           <Image
-            src="/IconeSansFond.png"
+            src="/NouveauLogoRogne2.png"
             alt="Logo"
             width={200}
             height={200}

@@ -56,7 +56,7 @@ const withLocaleClient = (path: string, locale: string) => {
 };
 
 export default function AssociateAgency({ onSuccess, className }: Props) {
-  const logo = '/IconeSansFond.png';
+  const logo = '/NouveauLogoRogne2.png';
   const locale = useLocale();
   const redirectUrl = withLocaleClient('/home', locale);
 
@@ -395,16 +395,14 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
             <span className="relative h-9 w-9">
               <Image
                 src={logo}
-                alt="MagicHango"
+                alt="DingDog"
                 fill
                 sizes="36px"
                 className="object-contain"
                 priority
               />
             </span>
-            <span className="text-base font-semibold text-black">
-              MagicHango
-            </span>
+            <span className="text-base font-semibold text-black">DingDog</span>
           </div>
 
           <div className="text-lg font-bold text-black">
@@ -434,7 +432,7 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
             <span className="relative h-7 w-7 shrink-0 md:h-8 md:w-8">
               <Image
                 src={logo}
-                alt="MagicHango"
+                alt="DingDog"
                 fill
                 sizes="32px"
                 className="object-contain"
@@ -442,7 +440,7 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
               />
             </span>
             <span className="truncate text-sm md:text-base font-semibold tracking-tight">
-              MagicHango
+              DingDog
             </span>
           </Link>
 

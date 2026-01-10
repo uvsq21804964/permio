@@ -289,7 +289,7 @@ const ROWS: FeatureRow[] = [
     kind: 'feature',
     label: 'Heures gagnées moy. (h/sem/élève)',
     tooltip:
-      'Valeur moyenne indicative des heures supplémentaires effectuées et rémunérées grâce à MagicHango, calculée en fonction du nombre d’élèves par semaine.',
+      'Valeur moyenne indicative des heures supplémentaires effectuées et rémunérées grâce à DingDog, calculée en fonction du nombre d’élèves par semaine.',
     values: {
       free: planById.free.hoursSavedAvg, // 0.1
       starter: planById.starter.hoursSavedAvg, // 0.3
@@ -1013,7 +1013,7 @@ export function PlanComparison({ className }: { className?: string }) {
                   <div className="inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs text-muted-foreground/90 bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/40">
                     <Sparkles className="h-3.5 w-3.5 text-primary" />
                     <span className="whitespace-normal break-words">
-                      MagicHango • Optimisez chaque créneau
+                      DingDog • Optimisez chaque créneau
                     </span>
                   </div>
 

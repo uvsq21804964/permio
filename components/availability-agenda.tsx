@@ -19,9 +19,18 @@ import { Input } from '@/components/ui/input';
 import { Trash2, Plus, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
-const HOURS = Array.from({ length: 12 }, (_, i) => i + 8); // 8:00 → 19:00
-const START_HOUR = 8;
+const START_HOUR = 5;
+const END_HOUR = 23;
+const HOURS = Array.from(
+  { length: END_HOUR - START_HOUR + 1 },
+  (_, i) => i + START_HOUR
+);
 const PIXELS_PER_HOUR = 80;
+const MIN_TIME_MINUTES = START_HOUR * 60;
+const MAX_TIME_MINUTES = END_HOUR * 60;
+const STEP_MINUTES = 5;
+
+type Meridiem = 'AM' | 'PM';
 
 type User = {
   id: string;
@@ -52,6 +61,51 @@ const timeToMinutes = (time: string): number => {
   const [hours, minutes] = time.split(':').map(Number);
   return hours * 60 + minutes;
 };
+
+const minutesToTime = (m: number) => {
+  const hh = Math.floor(m / 60)
+    .toString()
+    .padStart(2, '0');
+  const mm = (m % 60).toString().padStart(2, '0');
+  return `${hh}:${mm}`;
+};
+
+function pad2(n: number) {
+  return String(n).padStart(2, '0');
+}
+
+function clamp(n: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, n));
+}
+
+function minutesToParts(mins: number) {
+  const hh24 = Math.floor(mins / 60);
+  const mm = mins % 60;
+
+  const ampm: Meridiem = hh24 < 12 ? 'AM' : 'PM';
+  const hh12 = ((hh24 + 11) % 12) + 1;
+
+  return { hh24, mm, hh12, ampm };
+}
+
+function partsToMinutes(hh12: number, mm: number, ampm: Meridiem) {
+  const h = hh12 % 12;
+  const hh24 = ampm === 'AM' ? h : h + 12;
+  return hh24 * 60 + mm;
+}
+
+function nearestAllowed(target: number, allowed: number[]) {
+  let best = allowed[0] ?? target;
+  let bestDiff = Math.abs(best - target);
+  for (const v of allowed) {
+    const d = Math.abs(v - target);
+    if (d < bestDiff) {
+      best = v;
+      bestDiff = d;
+    }
+  }
+  return best;
+}
 
 const getAvailabilityStyle = (startTime: string, endTime: string) => {
   const startMinutes = timeToMinutes(startTime);
@@ -90,6 +144,256 @@ function formatQty(m?: number | null): string {
   return `${m} min`;
 }
 
+function isFrLocale(locale: string) {
+  return locale === 'fr' || locale.startsWith('fr');
+}
+
+/**
+ * Time selector:
+ * - FR: HH(05..23) + MM(00/05..55)
+ * - EN: HH(1..12) + MM(00/05..55) + AM/PM
+ * value stored as "HH:MM" 24h
+ */
+function TimeSelect5mLocale({
+  id,
+  locale,
+  value,
+  onChange,
+  minMinutes,
+  maxMinutes,
+  stepMinutes,
+}: {
+  id: string;
+  locale: string;
+  value: string;
+  onChange: (next: string) => void;
+  minMinutes: number;
+  maxMinutes: number;
+  stepMinutes: number;
+}) {
+  const allowed = useMemo(() => {
+    const out: number[] = [];
+    for (let m = minMinutes; m <= maxMinutes; m += stepMinutes) out.push(m);
+    return out;
+  }, [minMinutes, maxMinutes, stepMinutes]);
+
+  const raw = timeToMinutes(value);
+  const clamped = clamp(raw, minMinutes, maxMinutes);
+  const safe = nearestAllowed(clamped, allowed);
+
+  const { hh24, mm, hh12, ampm } = minutesToParts(safe);
+
+  if (isFrLocale(locale)) {
+    const hourOptions = useMemo(() => {
+      const minH = Math.floor(minMinutes / 60);
+      const maxH = Math.floor(maxMinutes / 60);
+      const arr: number[] = [];
+      for (let h = minH; h <= maxH; h++) arr.push(h);
+      return arr;
+    }, [minMinutes, maxMinutes]);
+
+    const minuteOptions = useMemo(() => {
+      const minsForHour = allowed
+        .filter((m) => Math.floor(m / 60) === hh24)
+        .map((m) => m % 60);
+      return Array.from(new Set(minsForHour)).sort((a, b) => a - b);
+    }, [allowed, hh24]);
+
+    useEffect(() => {
+      if (!minuteOptions.includes(mm)) {
+        const fallback = minuteOptions[0] ?? 0;
+        const next = nearestAllowed(hh24 * 60 + fallback, allowed);
+        onChange(minutesToTime(next));
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [minuteOptions.join('|'), hh24]);
+
+    return (
+      <div className="grid grid-cols-2 gap-2">
+        <select
+          id={`${id}-hour`}
+          value={hh24}
+          onChange={(e) => {
+            const newH = Number(e.target.value);
+            const candidate = newH * 60 + mm;
+            const next = nearestAllowed(
+              clamp(candidate, minMinutes, maxMinutes),
+              allowed
+            );
+            onChange(minutesToTime(next));
+          }}
+          className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+          required
+        >
+          {hourOptions.map((h) => (
+            <option key={h} value={h}>
+              {pad2(h)}
+            </option>
+          ))}
+        </select>
+
+        <select
+          id={`${id}-min`}
+          value={mm}
+          onChange={(e) => {
+            const newM = Number(e.target.value);
+            const candidate = hh24 * 60 + newM;
+            const next = nearestAllowed(
+              clamp(candidate, minMinutes, maxMinutes),
+              allowed
+            );
+            onChange(minutesToTime(next));
+          }}
+          className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+          required
+        >
+          {minuteOptions.map((m) => (
+            <option key={m} value={m}>
+              {pad2(m)}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  }
+
+  const ampmOptions = useMemo(() => {
+    const s = new Set<Meridiem>();
+    for (const m of allowed) s.add(minutesToParts(m).ampm);
+    return Array.from(s);
+  }, [allowed]);
+
+  const hour12Options = useMemo(() => {
+    const s = new Set<number>();
+    for (const m of allowed) {
+      const p = minutesToParts(m);
+      if (p.ampm === ampm) s.add(p.hh12);
+    }
+    return Array.from(s).sort((a, b) => a - b);
+  }, [allowed, ampm]);
+
+  const minuteOptions = useMemo(() => {
+    const s = new Set<number>();
+    for (const m of allowed) {
+      const p = minutesToParts(m);
+      if (p.ampm === ampm && p.hh12 === hh12) s.add(p.mm);
+    }
+    return Array.from(s).sort((a, b) => a - b);
+  }, [allowed, ampm, hh12]);
+
+  useEffect(() => {
+    const safeAmpm: Meridiem = ampmOptions.includes(ampm)
+      ? ampm
+      : ampmOptions[0] ?? 'AM';
+    const safeHour12 = hour12Options.includes(hh12)
+      ? hh12
+      : hour12Options[0] ?? 12;
+    const safeMin = minuteOptions.includes(mm) ? mm : minuteOptions[0] ?? 0;
+
+    const candidate = partsToMinutes(safeHour12, safeMin, safeAmpm);
+    const next = nearestAllowed(
+      clamp(candidate, minMinutes, maxMinutes),
+      allowed
+    );
+
+    if (next !== safe) onChange(minutesToTime(next));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ampmOptions.join('|'), hour12Options.join('|'), minuteOptions.join('|')]);
+
+  return (
+    <div className="grid grid-cols-3 gap-2">
+      <select
+        id={`${id}-hour12`}
+        value={hh12}
+        onChange={(e) => {
+          const newH12 = Number(e.target.value);
+          const candidate = partsToMinutes(newH12, mm, ampm);
+          const next = nearestAllowed(
+            clamp(candidate, minMinutes, maxMinutes),
+            allowed
+          );
+          onChange(minutesToTime(next));
+        }}
+        className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+        required
+      >
+        {hour12Options.map((h) => (
+          <option key={h} value={h}>
+            {h}
+          </option>
+        ))}
+      </select>
+
+      <select
+        id={`${id}-min`}
+        value={mm}
+        onChange={(e) => {
+          const newM = Number(e.target.value);
+          const candidate = partsToMinutes(hh12, newM, ampm);
+          const next = nearestAllowed(
+            clamp(candidate, minMinutes, maxMinutes),
+            allowed
+          );
+          onChange(minutesToTime(next));
+        }}
+        className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+        required
+      >
+        {minuteOptions.map((m) => (
+          <option key={m} value={m}>
+            {pad2(m)}
+          </option>
+        ))}
+      </select>
+
+      <select
+        id={`${id}-ampm`}
+        value={ampm}
+        onChange={(e) => {
+          const newAmpm = e.target.value as Meridiem;
+          const candidate = partsToMinutes(hh12, mm, newAmpm);
+          const next = nearestAllowed(
+            clamp(candidate, minMinutes, maxMinutes),
+            allowed
+          );
+          onChange(minutesToTime(next));
+        }}
+        className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+        required
+      >
+        {ampmOptions.map((m) => (
+          <option key={m} value={m}>
+            {m}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+/** "08:30" -> "08:30" / "8:30 AM" selon locale */
+function formatTimeForLocale(t: string, locale: string): string {
+  const [hh, mm] = t.split(':').map(Number);
+  const d = new Date(2000, 0, 1, hh || 0, mm || 0, 0, 0);
+
+  const intlLocale = isFrLocale(locale) ? 'fr-FR' : 'en-US';
+  return new Intl.DateTimeFormat(intlLocale, {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: !isFrLocale(locale),
+  }).format(d);
+}
+
+/** Colonne heures : FR "08:00" / EN "8 AM" */
+function formatHourLabel(hour: number, locale: string): string {
+  if (isFrLocale(locale)) return `${String(hour).padStart(2, '0')}:00`;
+  const d = new Date(2000, 0, 1, hour, 0, 0, 0);
+  return new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    hour12: true,
+  }).format(d);
+}
+
 export function AvailabilityAgenda() {
   const t = useTranslations('availabilityAgenda');
   const locale = useLocale();
@@ -100,7 +404,7 @@ export function AvailabilityAgenda() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [timeRanges, setTimeRanges] = useState<TimeRange[]>([
-    { startTime: '08:00', endTime: '09:00' },
+    { startTime: '05:00', endTime: '05:30' },
   ]);
   const [error, setError] = useState<string>('');
   const [loadingAvail, setLoadingAvail] = useState(false);
@@ -271,34 +575,31 @@ export function AvailabilityAgenda() {
   const handleCellClick = (day: number, hour: number) => {
     if (!isEditing) return; // 👈 bloque en mode lecture
 
+    const start = Math.max(
+      MIN_TIME_MINUTES,
+      Math.min(hour * 60, MAX_TIME_MINUTES - STEP_MINUTES)
+    );
+    const end = Math.min(start + 60, MAX_TIME_MINUTES);
+
     setSelectedDay(day);
     setTimeRanges([
       {
-        startTime: `${hour.toString().padStart(2, '0')}:00`,
-        endTime: `${(hour + 1).toString().padStart(2, '0')}:00`,
+        startTime: minutesToTime(start),
+        endTime: minutesToTime(end),
       },
     ]);
+    setError('');
     setDialogOpen(true);
   };
 
   const addTimeRange = () => {
-    setTimeRanges([...timeRanges, { startTime: '08:00', endTime: '09:00' }]);
+    setTimeRanges([...timeRanges, { startTime: '05:00', endTime: '05:30' }]);
   };
 
   const removeTimeRange = (index: number) => {
     if (timeRanges.length > 1) {
       setTimeRanges(timeRanges.filter((_, i) => i !== index));
     }
-  };
-
-  const updateTimeRange = (
-    index: number,
-    field: 'startTime' | 'endTime',
-    value: string
-  ) => {
-    const updated = [...timeRanges];
-    updated[index][field] = value;
-    setTimeRanges(updated);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -320,9 +621,20 @@ export function AvailabilityAgenda() {
         );
         return;
       }
-      if (startMinutes < START_HOUR * 60 || endMinutes > 20 * 60) {
+      if (startMinutes < MIN_TIME_MINUTES || endMinutes > MAX_TIME_MINUTES) {
         setError(
           t('errors.rangeBounds', {
+            index: i + 1,
+          })
+        );
+        return;
+      }
+      if (
+        startMinutes % STEP_MINUTES !== 0 ||
+        endMinutes % STEP_MINUTES !== 0
+      ) {
+        setError(
+          t('errors.rangeStep', {
             index: i + 1,
           })
         );
@@ -366,7 +678,7 @@ export function AvailabilityAgenda() {
       setAvailabilities(list);
 
       setDialogOpen(false);
-      setTimeRanges([{ startTime: '08:00', endTime: '09:00' }]);
+      setTimeRanges([{ startTime: '05:00', endTime: '05:30' }]);
       setLastChangeAt(new Date());
 
       if (timeRanges.length > 1) {
@@ -378,8 +690,8 @@ export function AvailabilityAgenda() {
       } else {
         showNotice(
           t('notices.oneAdded', {
-            start: timeRanges[0].startTime,
-            end: timeRanges[0].endTime,
+            start: formatTimeForLocale(timeRanges[0].startTime, locale),
+            end: formatTimeForLocale(timeRanges[0].endTime, locale),
           })
         );
       }
@@ -442,14 +754,16 @@ export function AvailabilityAgenda() {
     return `${u.name} (${roleLabel})`;
   };
 
-  const dayLabels = useMemo(
-    () =>
-      Array.from(
-        { length: 7 },
-        (_, i) => t(`days.${i}` as any) // typescript est un peu chiant ici
-      ),
-    [t]
-  );
+  const dayLabels = useMemo(() => {
+    const weekdayLocale = isFrLocale(locale) ? 'fr-FR' : 'en-US';
+    // base date (lundi) juste pour générer lun/mar/...
+    const baseMonday = new Date(2000, 0, 3); // 2000-01-03 = lundi
+    return Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(baseMonday);
+      d.setDate(baseMonday.getDate() + i);
+      return d.toLocaleDateString(weekdayLocale, { weekday: 'long' }); // ou 'short'
+    });
+  }, [locale]);
 
   return (
     <>
@@ -564,7 +878,7 @@ export function AvailabilityAgenda() {
                         className="text-sm text-muted-foreground p-2 border-r border-b"
                         style={{ height: `${PIXELS_PER_HOUR}px` }}
                       >
-                        {hour}:00
+                        {formatHourLabel(hour, locale)}
                       </div>
                     ))}
                   </div>
@@ -597,6 +911,17 @@ export function AvailabilityAgenda() {
                           avail.startTime,
                           avail.endTime
                         );
+
+                        // ✅ ICI (après getAvailabilityStyle)
+                        const startLabel = formatTimeForLocale(
+                          avail.startTime,
+                          locale
+                        );
+                        const endLabel = formatTimeForLocale(
+                          avail.endTime,
+                          locale
+                        );
+
                         const colorClass = getDurationColor(
                           avail.startTime,
                           avail.endTime
@@ -621,12 +946,14 @@ export function AvailabilityAgenda() {
                                   }
                                 : undefined
                             }
-                            title={`${avail.startTime}–${avail.endTime}`}
+                            // ✅ title localisé
+                            title={`${startLabel}–${endLabel}`}
                           >
                             <div className="flex items-start justify-between gap-1 h-full">
                               <div className="flex-1 min-w-0 flex flex-col justify-center">
                                 <div className="text-[10px] font-medium leading-tight truncate">
-                                  {avail.startTime} – {avail.endTime}
+                                  {/* ✅ affichage localisé */}
+                                  {startLabel} – {endLabel}
                                 </div>
                               </div>
 
@@ -697,38 +1024,80 @@ export function AvailabilityAgenda() {
                   key={index}
                   className="flex items-center gap-2 p-3 border rounded-lg"
                 >
-                  <div className="flex-1 grid grid-cols-2 gap-2">
+                  <div className="flex-1 grid grid-cols-2 gap-3">
                     <div className="space-y-1">
-                      <Label htmlFor={`start-${index}`} className="text-xs">
+                      <Label className="text-xs">
                         {t('dialog.startLabel')}
                       </Label>
-                      <Input
+
+                      <TimeSelect5mLocale
                         id={`start-${index}`}
-                        type="time"
-                        min="08:00"
-                        max="20:00"
+                        locale={locale}
                         value={range.startTime}
-                        onChange={(e) =>
-                          updateTimeRange(index, 'startTime', e.target.value)
-                        }
-                        required
+                        minMinutes={MIN_TIME_MINUTES}
+                        maxMinutes={MAX_TIME_MINUTES - STEP_MINUTES}
+                        stepMinutes={STEP_MINUTES}
+                        onChange={(nextStart) => {
+                          const nextStartMin = timeToMinutes(nextStart);
+
+                          setTimeRanges((prev) => {
+                            const next = [...prev];
+                            const currentEndMin = timeToMinutes(
+                              next[index].endTime
+                            );
+
+                            const minEnd = Math.min(
+                              nextStartMin + STEP_MINUTES,
+                              MAX_TIME_MINUTES
+                            );
+                            const nextEndMin = clamp(
+                              currentEndMin,
+                              minEnd,
+                              MAX_TIME_MINUTES
+                            );
+
+                            next[index] = {
+                              ...next[index],
+                              startTime: nextStart,
+                              endTime: minutesToTime(nextEndMin),
+                            };
+                            return next;
+                          });
+                        }}
                       />
+
+                      <div className="text-[11px] text-muted-foreground">
+                        {formatTimeForLocale(range.startTime, locale)}
+                      </div>
                     </div>
+
                     <div className="space-y-1">
-                      <Label htmlFor={`end-${index}`} className="text-xs">
+                      <Label className="text-xs">
                         {t('dialog.endLabel')}
                       </Label>
-                      <Input
+
+                      <TimeSelect5mLocale
                         id={`end-${index}`}
-                        type="time"
-                        min="08:00"
-                        max="20:00"
+                        locale={locale}
+                        minMinutes={Math.min(
+                          timeToMinutes(range.startTime) + STEP_MINUTES,
+                          MAX_TIME_MINUTES
+                        )}
+                        maxMinutes={MAX_TIME_MINUTES}
+                        stepMinutes={STEP_MINUTES}
                         value={range.endTime}
-                        onChange={(e) =>
-                          updateTimeRange(index, 'endTime', e.target.value)
-                        }
-                        required
+                        onChange={(nextEnd) => {
+                          setTimeRanges((prev) => {
+                            const next = [...prev];
+                            next[index] = { ...next[index], endTime: nextEnd };
+                            return next;
+                          });
+                        }}
                       />
+
+                      <div className="text-[11px] text-muted-foreground">
+                        {formatTimeForLocale(range.endTime, locale)}
+                      </div>
                     </div>
                   </div>
                   {timeRanges.length > 1 && (

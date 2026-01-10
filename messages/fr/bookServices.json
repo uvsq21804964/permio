@@ -15,5 +15,9 @@
   },
   "button": {
     "chooseService": "Choisir ce service"
+  },
+  "badges": {
+    "remote": "À distance",
+    "transportIncluded": "Trajet inclus"
   }
 }

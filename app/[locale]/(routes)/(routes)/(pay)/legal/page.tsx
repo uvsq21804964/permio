@@ -9,7 +9,7 @@ const LEGAL = {
   updatedAt: '2 novembre 2025',
 
   company: {
-    name: 'Magic Hango',
+    name: 'DingDog',
     legalForm: 'SAS',
     capital: '10 000 €',
     siren: '123 456 789',

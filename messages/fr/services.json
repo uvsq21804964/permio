@@ -64,6 +64,12 @@
     "durationPlaceholder": "ex : 30",
     "pricePlaceholder": "ex : 45",
     "includesTransportLabel": "Inclut le transport",
-    "badgeIncludesTransport": "Inclut le transport"
+    "badgeIncludesTransport": "Inclut le transport",
+    "remoteLabel": "À distance (sans déplacement)",
+    "badgeRemote": "À distance"
+  },
+  "badges": {
+    "remote": "À distance",
+    "transportIncluded": "Trajet inclus"
   }
 }

@@ -17,7 +17,7 @@ import FAQ from '@/components/home/FAQ';
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
 
 export default function HomePage() {
-  const logo = '/IconeSansFond.png';
+  const logo = '/NouveauLogoRogne2.png';
   const t = useTranslations('home');
   const locale = useLocale();
   const router = useRouter();
@@ -46,16 +46,14 @@ export default function HomePage() {
             <span className="relative h-9 w-9">
               <Image
                 src={logo}
-                alt="MagicHango"
+                alt="DingDog"
                 fill
                 sizes="36px"
                 className="object-contain"
                 priority
               />
             </span>
-            <span className="text-base font-semibold text-black">
-              MagicHango
-            </span>
+            <span className="text-base font-semibold text-black">DingDog</span>
           </div>
 
           <div className="text-lg font-bold text-black">
@@ -80,16 +78,14 @@ export default function HomePage() {
             <span className="relative h-9 w-9">
               <Image
                 src={logo}
-                alt="MagicHango"
+                alt="DingDog"
                 fill
                 sizes="36px"
                 className="object-contain"
                 priority
               />
             </span>
-            <span className="text-base font-semibold text-black">
-              MagicHango
-            </span>
+            <span className="text-base font-semibold text-black">DingDog</span>
           </div>
 
           <div className="text-lg font-bold text-black">
@@ -118,24 +114,27 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-[#f9ffc6]/80">
       <header className="fixed top-0 left-0 right-0 z-40 border-b border-[#f9ffc6]/80 bg-gradient-to-r from-primary to-[#d400ff] text-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-2.5 md:px-8 md:py-3">
+        {/* ✅ navbar avec hauteur définie */}
+        <div className="mx-auto flex h-10 md:h-12 max-w-6xl items-stretch justify-between px-4 md:px-8">
+          {/* ✅ Logo: collé en bas + fait 100% de la hauteur de la navbar */}
           <Link
             href={`/${locale}/home`}
-            className="flex items-center gap-2 min-w-0"
+            className="flex items-end gap-2 min-w-0"
           >
-            <span className="relative h-7 w-7 shrink-0 md:h-8 md:w-8">
+            {/* ✅ h-full = toute la hauteur de la navbar */}
+            <span className="relative h-full w-14 md:w-16 shrink-0">
               <Image
                 src={logo}
-                alt="MagicHango"
+                alt="DingDog"
                 fill
-                sizes="32px"
-                className="object-contain"
+                sizes="64px"
+                className="object-contain object-bottom" // ✅ ancré en bas
                 priority
               />
             </span>
 
-            <span className="truncate text-sm md:text-base font-semibold tracking-tight">
-              MagicHango
+            <span className="truncate text-sm md:text-base font-semibold tracking-tight leading-none pb-1">
+              DingDog
             </span>
           </Link>
 
@@ -165,7 +164,7 @@ export default function HomePage() {
         <Plans withTrial={true} />
         <Comparison />
         <FAQ />
-        <CompetitorComparison />
+        {/* <CompetitorComparison /> */}
         <CallToAction />
       </main>
     </div>

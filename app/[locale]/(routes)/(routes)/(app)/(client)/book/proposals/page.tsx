@@ -14,7 +14,7 @@ type ServiceCategory = {
 
 type ServicePricing = {
   id: number;
-  user_id: string; // instructorId / dogsitterId
+  user_id: string;
   category_id: number;
   category_name: string;
   name: string;
@@ -22,6 +22,7 @@ type ServicePricing = {
   duration_minutes: number | null;
   price: number | string;
   includes_transport: boolean;
+  is_remote: boolean; // ✅ AJOUT
 };
 
 type ApiResponse = {
@@ -220,6 +221,7 @@ function scoreSlot(slot: SuggestedSlot, earliestAllowed: Date): number {
   }
 
   const MAX_TRAVEL = 60;
+
   const cappedTravel = Math.min(totalTravel, MAX_TRAVEL);
   const travelScore = 1 - cappedTravel / MAX_TRAVEL;
 
@@ -360,15 +362,21 @@ function computeSuggestionsFromAgenda(
       );
 
       if (slotDateTime < earliestAllowed) continue;
+      const BOOKING_BUFFER_MIN = 5;
+      const bufferedStart = addMinutesToTime(
+        slot.startTime,
+        BOOKING_BUFFER_MIN
+      );
+      const bufferedEnd = addMinutesToTime(slot.endTime, -BOOKING_BUFFER_MIN);
 
-      const slotDur =
-        timeToMinutes(slot.endTime) - timeToMinutes(slot.startTime);
+      const slotDur = timeToMinutes(bufferedEnd) - timeToMinutes(bufferedStart);
+
       if (slotDur < dur) continue;
 
       const alignment: ServiceAlignment = 'start';
       const { serviceStartTime, serviceEndTime } = computeServiceTimes(
-        slot.startTime,
-        slot.endTime,
+        bufferedStart,
+        bufferedEnd,
         dur,
         alignment
       );
@@ -376,8 +384,8 @@ function computeSuggestionsFromAgenda(
       const base: SuggestedSlot = {
         id: `${date}-${slot.startTime}-${slot.endTime}`,
         date,
-        windowStartTime: slot.startTime,
-        windowEndTime: slot.endTime,
+        windowStartTime: bufferedStart,
+        windowEndTime: bufferedEnd,
         serviceStartTime,
         serviceEndTime,
         alignment,
@@ -493,11 +501,15 @@ export default function ProposalsPage() {
     const idNum = Number(serviceIdParam);
     return services.find((s) => s.id === idNum) || null;
   }, [services, serviceIdParam]);
+  const isRemote = !!selectedService?.is_remote;
 
   // Suggestions depuis l'agenda
   useEffect(() => {
     const fetchSuggestions = async () => {
-      if (!selectedService || !instructorId || !bookingAddress) return;
+      if (!selectedService || !instructorId) return;
+
+      // ✅ non-remote => adresse obligatoire
+      if (!selectedService.is_remote && !bookingAddress) return;
 
       setLoadingSuggestions(true);
       setError(null);
@@ -508,12 +520,16 @@ export default function ProposalsPage() {
           window.location.origin
         );
 
-        url.searchParams.set('clientLat', String(bookingAddress.lat));
-        url.searchParams.set('clientLng', String(bookingAddress.lng));
-        url.searchParams.set(
-          'clientFormatted',
-          bookingAddress.formattedAddress
-        );
+        if (selectedService.is_remote) {
+          url.searchParams.set('isRemote', '1');
+        } else if (bookingAddress) {
+          url.searchParams.set('clientLat', String(bookingAddress.lat));
+          url.searchParams.set('clientLng', String(bookingAddress.lng));
+          url.searchParams.set(
+            'clientFormatted',
+            bookingAddress.formattedAddress
+          );
+        }
 
         const res = await fetch(url.toString(), { credentials: 'include' });
         if (!res.ok) {
@@ -559,6 +575,20 @@ export default function ProposalsPage() {
           date: slot.date,
           startTime: slot.serviceStartTime,
           endTime: slot.serviceEndTime,
+          bookingAddress: bookingAddress
+            ? {
+                formattedAddress: bookingAddress.formattedAddress,
+                lat: bookingAddress.lat,
+                lng: bookingAddress.lng,
+                street: bookingAddress.street,
+                streetNumber: bookingAddress.streetNumber,
+                postalCode: bookingAddress.postalCode,
+                city: bookingAddress.city,
+                country: bookingAddress.country,
+                countryCode: bookingAddress.countryCode,
+                googlePlaceId: bookingAddress.googlePlaceId,
+              }
+            : undefined,
         }),
       });
 
@@ -616,7 +646,7 @@ export default function ProposalsPage() {
     );
   }
 
-  if (!bookingAddress) {
+  if (!isRemote && !bookingAddress) {
     return (
       <main className="min-h-screen bg-background flex items-center justify-center p-6">
         <div className="w-full max-w-md rounded-2xl border bg-card p-6 space-y-3 text-sm">
@@ -735,10 +765,10 @@ export default function ProposalsPage() {
           <p className="text-xs uppercase tracking-wide text-muted-foreground">
             {t('addressSection.label')}
           </p>
-          <p className="font-medium">{bookingAddress.formattedAddress}</p>
+          <p className="font-medium">{bookingAddress?.formattedAddress}</p>
           <p className="text-muted-foreground">
-            {bookingAddress.postalCode} {bookingAddress.city} (
-            {bookingAddress.country})
+            {bookingAddress?.postalCode} {bookingAddress?.city} (
+            {bookingAddress?.country})
           </p>
         </section>
 

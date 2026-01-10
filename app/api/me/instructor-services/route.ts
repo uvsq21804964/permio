@@ -1,3 +1,4 @@
+// app/api/me/instructor-services/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 import { getAuth } from '@clerk/nextjs/server';
@@ -25,6 +26,7 @@ type ServicePricing = {
   duration_minutes: number | null;
   price: string; // NUMERIC => string côté node
   includes_transport: boolean;
+  is_remote: boolean; // ✅ AJOUT
 };
 
 export async function GET(req: NextRequest) {
@@ -35,12 +37,14 @@ export async function GET(req: NextRequest) {
     }
 
     // 1) On récupère l'utilisateur courant pour connaître son agence + rôle
-    const [me] = await sql`
+    const meRows = (await sql`
       SELECT id, role, "agencyId"
       FROM "User"
       WHERE id = ${userId}
       LIMIT 1
-    `;
+    `) as unknown as MeRow[];
+
+    const me = meRows?.[0];
 
     if (!me) {
       return NextResponse.json({ error: 'USER_NOT_FOUND' }, { status: 404 });
@@ -50,13 +54,15 @@ export async function GET(req: NextRequest) {
     let instructorId = me.id;
 
     if (me.role !== 'instructor') {
-      const [instructor] = await sql`
+      const instructorRows = (await sql`
         SELECT id
         FROM "User"
         WHERE "agencyId" = ${me.agencyId}
           AND role = 'instructor'
         LIMIT 1
-      `;
+      `) as unknown as Array<{ id: string }>;
+
+      const instructor = instructorRows?.[0];
 
       if (!instructor) {
         return NextResponse.json(
@@ -64,19 +70,20 @@ export async function GET(req: NextRequest) {
           { status: 404 }
         );
       }
+
       instructorId = instructor.id;
     }
 
     // 3) Catégories du moniteur
-    const categories = await sql`
+    const categories = (await sql`
       SELECT id, user_id, name, description
       FROM service_categories
       WHERE user_id = ${instructorId}
       ORDER BY name
-    `;
+    `) as unknown as ServiceCategory[];
 
-    // 4) Services du moniteur (avec le nom de la catégorie)
-    const services = await sql`
+    // 4) Services du moniteur (avec le nom de la catégorie) + is_remote
+    const servicesRaw = (await sql`
       SELECT
         s.id,
         s.user_id,
@@ -86,12 +93,30 @@ export async function GET(req: NextRequest) {
         s.description,
         s.duration_minutes,
         s.price,
-        s.includes_transport
+        s.includes_transport,
+        s.is_remote
       FROM services_pricing s
       JOIN service_categories c ON c.id = s.category_id
       WHERE s.user_id = ${instructorId}
       ORDER BY c.name, s.name
-    `;
+    `) as unknown as Array<any>;
+
+    // ✅ Normalisation sûre des booleans (au cas où le driver renvoie 0/1 ou "t"/"f")
+    const services: ServicePricing[] = (servicesRaw || []).map((s) => ({
+      id: Number(s.id),
+      user_id: String(s.user_id),
+      category_id: Number(s.category_id),
+      category_name: String(s.category_name),
+      name: String(s.name),
+      description: s.description ?? null,
+      duration_minutes:
+        s.duration_minutes === null || s.duration_minutes === undefined
+          ? null
+          : Number(s.duration_minutes),
+      price: String(s.price),
+      includes_transport: !!s.includes_transport,
+      is_remote: !!s.is_remote,
+    }));
 
     return NextResponse.json(
       {

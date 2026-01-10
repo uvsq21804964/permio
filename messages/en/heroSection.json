@@ -13,14 +13,14 @@
     "subtitleEmphasis": "in a blink",
     "ctaPrimary": "Create my account — 1 minute",
     "ctaSecondary": "Sign in",
-    "imageAlt": "Preview of the MagicHango schedule",
+    "imageAlt": "Preview of the DingDog schedule",
     "imageCaption": "Calendar, clients, and travel — all in one place."
   },
   "preview": {
     "badgeSchedule": "Schedule",
     "badgeRoute": "Routes",
     "caption": "Preview: optimized schedule + one-click directions.",
-    "altSchedule": "MagicHango schedule preview",
+    "altSchedule": "DingDog schedule preview",
     "altRoute": "Route preview with travel time"
   }
 }

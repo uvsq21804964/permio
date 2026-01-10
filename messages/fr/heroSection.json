@@ -13,14 +13,14 @@
     "subtitleEmphasis": "en un clin d'œil",
     "ctaPrimary": "Créer mon compte - en 1 minute",
     "ctaSecondary": "Me connecter",
-    "imageAlt": "Aperçu du planning MagicHango",
+    "imageAlt": "Aperçu du planning DingDog",
     "imageCaption": "Agenda, clients et trajets réunis au même endroit."
   },
   "preview": {
     "badgeSchedule": "Planning",
     "badgeRoute": "Trajets",
     "caption": "Aperçu : planning optimisé + itinéraire accessible en 1 clic.",
-    "altSchedule": "Aperçu du planning MagicHango",
+    "altSchedule": "Aperçu du planning DingDog",
     "altRoute": "Aperçu d'un itinéraire et des temps de trajet"
   }
 }

@@ -26,7 +26,7 @@ export default function SuccessPage({
               aria-hidden="true"
             >
               <Image
-                src="/IconeSansFond.png"
+                src="/NouveauLogoRogne2.png"
                 alt={t('logoAlt')}
                 width={50}
                 height={50}
