@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Trash2 } from 'lucide-react';
 
 import type { DayAvailability, Kind } from '@/types/availability';
-import { isoToDate, todayISO } from '@/lib/availability-utils';
+import { todayISO } from '@/lib/availability-utils';
 
 const START_HOUR = 5;
 const END_HOUR = 23;

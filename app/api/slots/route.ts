@@ -1,60 +1,9 @@
-// import { type NextRequest, NextResponse } from "next/server"
-// import { mockDb } from "@/lib/mock-db"
-
-// export async function GET() {
-//   try {
-//     const slots = await mockDb.lessonSlot.findMany({
-//       include: {
-//         instructor: {
-//           select: {
-//             name: true,
-//           },
-//         },
-//       },
-//       orderBy: [{ dayOfWeek: "asc" }, { startTime: "asc" }],
-//     })
-
-//     return NextResponse.json(slots)
-//   } catch (error) {
-//     console.error("[v0] Error fetching slots:", error)
-//     return NextResponse.json({ error: "Failed to fetch slots" }, { status: 500 })
-//   }
-// }
-
-// export async function POST(request: NextRequest) {
-//   try {
-//     const body = await request.json()
-//     const { instructorId, dayOfWeek, startTime, endTime, status } = body
-
-//     const slot = await mockDb.lessonSlot.create({
-//       data: {
-//         instructorId,
-//         dayOfWeek,
-//         startTime,
-//         endTime,
-//         status: status || "available",
-//       },
-//       include: {
-//         instructor: {
-//           select: {
-//             name: true,
-//           },
-//         },
-//       },
-//     })
-
-//     return NextResponse.json(slot, { status: 201 })
-//   } catch (error) {
-//     console.error("[v0] Error creating slot:", error)
-//     return NextResponse.json({ error: "Failed to create slot" }, { status: 500 })
-//   }
-// }
-
 // app/api/slots/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuth } from '@clerk/nextjs/server';
 import { sql } from '@/lib/db';
 import { timeToMinutes } from '@/lib/api/time';
+import { inngest } from '@/src/lib/inngest/client';
 
 type DbUserRow = {
   id: string;
@@ -77,6 +26,12 @@ type DbUserRow = {
   is_primary: boolean | null;
 };
 
+type AgencyRow = {
+  id: string;
+  name: string | null;
+  clerkOrgId: string | null;
+};
+
 type BookingAddressPayload = {
   formattedAddress: string;
   lat: number;
@@ -95,8 +50,17 @@ type CreateSlotBody = {
   date: string; // "YYYY-MM-DD"
   startTime: string; // "HH:MM"
   endTime: string; // "HH:MM"
-  bookingAddress?: BookingAddressPayload; // ⬅️ nouveau
+  bookingAddress?: BookingAddressPayload;
 };
+
+function getLocaleFromRequest(request: NextRequest): 'fr' | 'en' {
+  const header =
+    request.headers.get('x-locale') ||
+    request.headers.get('accept-language') ||
+    'fr';
+
+  return header.toLowerCase().startsWith('en') ? 'en' : 'fr';
+}
 
 /**
  * GET /api/slots
@@ -130,7 +94,7 @@ export async function GET(req: NextRequest) {
     console.error('[GET /api/slots] Error fetching slots:', error);
     return NextResponse.json(
       { error: 'Failed to fetch slots' },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -138,14 +102,26 @@ export async function GET(req: NextRequest) {
 /**
  * POST /api/slots
  * Crée un nouveau Slot dans la table "Slot" à partir du créneau sélectionné
- * et du service choisi dans BookPage.
+ * et du service choisi.
  *
  * Body attendu:
  * {
  *   serviceId: number,
  *   date: "YYYY-MM-DD",
- *   startTime: "HH:MM",   // créneau SERVICE (pas la fenêtre entière)
- *   endTime: "HH:MM"
+ *   startTime: "HH:MM",
+ *   endTime: "HH:MM",
+ *   bookingAddress?: {
+ *     formattedAddress: string,
+ *     lat: number,
+ *     lng: number,
+ *     street: string,
+ *     streetNumber: string,
+ *     postalCode: string,
+ *     city: string,
+ *     country: string,
+ *     countryCode: string,
+ *     googlePlaceId?: string
+ *   }
  * }
  */
 export async function POST(request: NextRequest) {
@@ -154,6 +130,8 @@ export async function POST(request: NextRequest) {
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    const locale = getLocaleFromRequest(request);
 
     let body: CreateSlotBody;
     try {
@@ -173,7 +151,7 @@ export async function POST(request: NextRequest) {
     ) {
       return NextResponse.json(
         { error: 'MISSING_OR_INVALID_FIELDS' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -181,12 +159,12 @@ export async function POST(request: NextRequest) {
     if (durationMinutes <= 0) {
       return NextResponse.json(
         { error: 'INVALID_TIME_RANGE' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // 1) Récupérer l'utilisateur courant (client)
-    const [me] = (await sql/* sql */ `
+    // 1) Récupérer l'utilisateur courant
+    const [me] = (await sql /* sql */ `
       SELECT
         id,
         name,
@@ -214,13 +192,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'USER_NOT_FOUND' }, { status: 404 });
     }
 
-    // 2) Trouver le moniteur (dogsitter) de la même agence
+    // 2) Trouver l'instructeur de la même agence
     let instructor: DbUserRow | null = null;
 
     if (me.role === 'instructor') {
       instructor = me;
     } else {
-      const [foundInstructor] = (await sql/* sql */ `
+      const [foundInstructor] = (await sql /* sql */ `
         SELECT
           id,
           name,
@@ -251,13 +229,26 @@ export async function POST(request: NextRequest) {
     if (!instructor) {
       return NextResponse.json(
         { error: 'INSTRUCTOR_NOT_FOUND_FOR_AGENCY' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    // 3) Déterminer la source de l'adresse :
-    //    - si bookingAddress est fourni, on l'utilise (adresse ponctuelle)
-    //    - sinon, on utilise l'adresse du profil (me)
+    // 3) Récupérer l'agence
+    const [agency] = (await sql /* sql */ `
+  SELECT
+    id,
+    name,
+    clerk_org_id as "clerkOrgId"
+  FROM "Agency"
+  WHERE id = ${instructor.agencyId}
+  LIMIT 1
+`) as AgencyRow[];
+
+    if (!agency) {
+      return NextResponse.json({ error: 'AGENCY_NOT_FOUND' }, { status: 400 });
+    }
+
+    // 4) Déterminer la source de l'adresse
     const addressSource = bookingAddress
       ? {
           formatted_address: bookingAddress.formattedAddress,
@@ -271,9 +262,7 @@ export async function POST(request: NextRequest) {
           country_code: bookingAddress.countryCode || null,
           google_place_id: bookingAddress.googlePlaceId ?? null,
           raw_input: bookingAddress.formattedAddress,
-          // label : on peut reprendre celui du profil (ex: "Domicile")
           address_label: me.address_label,
-          // adresse ponctuelle -> pas "primary"
           is_primary: false,
         }
       : {
@@ -292,78 +281,141 @@ export async function POST(request: NextRequest) {
           is_primary: me.is_primary ?? true,
         };
 
-    // 3) Créer le Slot dans la vraie table "Slot"
+    // 5) Créer le slot
     try {
       const [created] = await sql`
-  INSERT INTO "Slot" (
-    "dogsitterUserId",
-    "clientUserId",
-    "serviceId",
-    "date",
-    "startTime",
-    "endTime",
-    "durationMinutes",
-    -- bloc d'adresse (client ou adresse ponctuelle)
-    formatted_address,
-    lat,
-    lng,
-    street,
-    street_number,
-    postal_code,
-    city,
-    country,
-    country_code,
-    google_place_id,
-    raw_input,
-    address_label,
-    is_primary
-  )
-  VALUES (
-    ${instructor.id},
-    ${me.id},
-    ${serviceId},
-    ${date}::date,
-    ${startTime},
-    ${endTime},
-    ${durationMinutes},
-    ${addressSource.formatted_address},
-    ${addressSource.lat},
-    ${addressSource.lng},
-    ${addressSource.street},
-    ${addressSource.street_number},
-    ${addressSource.postal_code},
-    ${addressSource.city},
-    ${addressSource.country},
-    ${addressSource.country_code},
-    ${addressSource.google_place_id},
-    ${addressSource.raw_input},
-    ${addressSource.address_label},
-    ${addressSource.is_primary}
-  )
-  RETURNING
-    id,
-    "dogsitterUserId",
-    "clientUserId",
-    "serviceId",
-    "date"::date::text AS "date",
-    "startTime",
-    "endTime",
-    "durationMinutes"
-`;
+        INSERT INTO "Slot" (
+          "dogsitterUserId",
+          "clientUserId",
+          "serviceId",
+          "date",
+          "startTime",
+          "endTime",
+          "durationMinutes",
+          formatted_address,
+          lat,
+          lng,
+          street,
+          street_number,
+          postal_code,
+          city,
+          country,
+          country_code,
+          google_place_id,
+          raw_input,
+          address_label,
+          is_primary
+        )
+        VALUES (
+          ${instructor.id},
+          ${me.id},
+          ${serviceId},
+          ${date}::date,
+          ${startTime},
+          ${endTime},
+          ${durationMinutes},
+          ${addressSource.formatted_address},
+          ${addressSource.lat},
+          ${addressSource.lng},
+          ${addressSource.street},
+          ${addressSource.street_number},
+          ${addressSource.postal_code},
+          ${addressSource.city},
+          ${addressSource.country},
+          ${addressSource.country_code},
+          ${addressSource.google_place_id},
+          ${addressSource.raw_input},
+          ${addressSource.address_label},
+          ${addressSource.is_primary}
+        )
+        RETURNING
+          id,
+          "dogsitterUserId",
+          "clientUserId",
+          "serviceId",
+          "date"::date::text AS "date",
+          "startTime",
+          "endTime",
+          "durationMinutes"
+      `;
+
+      // 6) Emit event for instructor booking notification
+      const eventPayloadInstructor = {
+        id: `slot:${created.id}:instructor-booked`,
+        name: 'slot/booked-instructor',
+        data: {
+          slotId: created.id,
+          agencyId: agency.id,
+          agencyName: agency.name,
+          organizationId: agency.clerkOrgId,
+          instructorUserId: instructor.id,
+          clientUserId: me.id,
+          serviceId,
+          date,
+          startTime,
+          endTime,
+          locale,
+        },
+      };
+
+      try {
+        console.info(
+          '[POST /api/slots] emit event Instructor booking',
+          eventPayloadInstructor,
+        );
+        await inngest.send(eventPayloadInstructor);
+      } catch (error) {
+        console.error(
+          '[POST /api/slots] failed to emit instructor booking event:',
+          error,
+        );
+      }
+
+      // 7) Emit event for client booking confirmation
+      const eventPayloadClient = {
+        id: `slot:${created.id}:client-booked`,
+        name: 'slot/booked-client',
+        data: {
+          slotId: created.id,
+          agencyId: agency.id,
+          agencyName: agency.name,
+          organizationId: agency.clerkOrgId,
+          instructorUserId: instructor.id,
+          clientUserId: me.id,
+          serviceId,
+          date,
+          startTime,
+          endTime,
+          locale,
+        },
+      };
+
+      try {
+        console.info(
+          '[POST /api/slots] emit event Client booking',
+          eventPayloadClient,
+        );
+        await inngest.send(eventPayloadClient);
+      } catch (error) {
+        console.error(
+          '[POST /api/slots] failed to emit client booking event:',
+          error,
+        );
+      }
 
       return NextResponse.json({ slot: created }, { status: 201 });
     } catch (err: any) {
-      // Conflit sur l'unicité du slot (index slot_unique_slot_idx)
       if (err?.code === '23505') {
         return NextResponse.json(
           { error: 'SLOT_ALREADY_EXISTS' },
-          { status: 409 }
+          { status: 409 },
         );
       }
+
       console.error('[POST /api/slots] insert error:', err);
       return NextResponse.json(
         { error: 'FAILED_TO_CREATE_SLOT' },
-        { status: 500 }
+        { status: 500 },
       );
     }
   } catch (err: any) {
@@ -373,7 +425,7 @@ export async function POST(request: NextRequest) {
         error: 'UNEXPECTED_ERROR',
         detail: err?.message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

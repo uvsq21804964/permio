@@ -201,7 +201,7 @@ const END_HOUR = 20;
 const PIXELS_PER_HOUR = 60;
 const HOURS = Array.from(
   { length: END_HOUR - START_HOUR },
-  (_, i) => i + START_HOUR
+  (_, i) => i + START_HOUR,
 );
 
 function isoToDateOnly(iso: string): Date {
@@ -254,14 +254,14 @@ function dateToISO(d: Date): string {
 function formatDDMM(iso: string): string {
   const d = isoToDateOnly(iso);
   return `${String(d.getDate()).padStart(2, '0')}/${String(
-    d.getMonth() + 1
+    d.getMonth() + 1,
   ).padStart(2, '0')}`;
 }
 
 function formatDayAndDate(iso: string, locale: string): string {
   return `${formatWeekdayShortFromISO(iso, locale)} ${formatShortDateFromISO(
     iso,
-    locale
+    locale,
   )}`;
 }
 
@@ -354,7 +354,7 @@ function computeServiceTimes(
   windowStartTime: string,
   windowEndTime: string,
   serviceDuration: number,
-  alignment: ServiceAlignment
+  alignment: ServiceAlignment,
 ) {
   const windowStartM = timeToMinutes(windowStartTime);
   const windowEndM = timeToMinutes(windowEndTime);
@@ -396,11 +396,11 @@ export default function BookPage() {
   // Semaine actuelle (lundi) et bornes min/max de navigation
   const [todayWeekStart] = useState(() => startOfWeekMondayISO());
   const [maxWeekStart] = useState(() =>
-    addDaysISO(startOfWeekMondayISO(), 40 * 7)
+    addDaysISO(startOfWeekMondayISO(), 40 * 7),
   );
 
   const [weekStart, setWeekStart] = useState<string>(() =>
-    startOfWeekMondayISO()
+    startOfWeekMondayISO(),
   );
   const weekEnd = useMemo(() => addDaysISO(weekStart, 6), [weekStart]);
 
@@ -464,7 +464,7 @@ export default function BookPage() {
   const addrParam = searchParams.get('addr');
 
   const [bookingAddress, setBookingAddress] = useState<BookingAddress | null>(
-    null
+    null,
   );
 
   useEffect(() => {
@@ -484,7 +484,7 @@ export default function BookPage() {
 
   const weekDates = useMemo(
     () => Array.from({ length: 7 }, (_, i) => addDaysISO(weekStart, i)),
-    [weekStart]
+    [weekStart],
   );
 
   // Charger l’agenda hebdo du moniteur
@@ -500,7 +500,7 @@ export default function BookPage() {
 
         const url = new URL(
           `/api/me/instructor-weekly-agenda`,
-          window.location.origin
+          window.location.origin,
         );
         url.searchParams.set('weekStart', weekStart);
 
@@ -512,7 +512,7 @@ export default function BookPage() {
           url.searchParams.set('clientLng', String(bookingAddress!.lng));
           url.searchParams.set(
             'clientFormatted',
-            bookingAddress!.formattedAddress
+            bookingAddress!.formattedAddress,
           );
         }
 
@@ -612,7 +612,7 @@ export default function BookPage() {
         prev.windowStartTime,
         prev.windowEndTime,
         selectedService.durationMinutes!,
-        serviceAlignment
+        serviceAlignment,
       );
 
       if (
@@ -672,7 +672,7 @@ export default function BookPage() {
           hh,
           mm,
           0,
-          0
+          0,
         );
         return slotDateTime >= earliestAllowed;
       });
@@ -714,7 +714,7 @@ export default function BookPage() {
         slot.startTime,
         slot.endTime,
         serviceDuration,
-        serviceAlignment
+        serviceAlignment,
       );
       serviceStartTime = times.serviceStartTime;
       serviceEndTime = times.serviceEndTime;
@@ -799,7 +799,11 @@ export default function BookPage() {
         if (res.status === 409 && body?.error === 'SLOT_ALREADY_EXISTS') {
           throw new Error(t('errors.slotAlreadyBooked'));
         }
-        throw new Error(body?.error || t('errors.createBooking'));
+        throw new Error(
+          body?.detail
+            ? `${body.error || 'ERROR'}: ${body.detail}`
+            : body?.error || t('errors.createBooking'),
+        );
       }
 
       const json = await res.json().catch(() => ({}));
@@ -837,7 +841,7 @@ export default function BookPage() {
       selectedSlot.windowStartTime,
       selectedSlot.windowEndTime,
       selectedService.durationMinutes,
-      alignmentChoice
+      alignmentChoice,
     );
 
     const updatedSlot: SelectedSlot = {
@@ -965,7 +969,7 @@ export default function BookPage() {
 
                       const dayLabel = formatWeekdayShortFromISO(
                         dateIso,
-                        locale
+                        locale,
                       );
 
                       return (
@@ -1018,11 +1022,11 @@ export default function BookPage() {
                         .map((slot) => {
                           const bufferedStart = addMinutesToTime(
                             slot.startTime,
-                            BOOKING_BUFFER_MIN
+                            BOOKING_BUFFER_MIN,
                           );
                           const bufferedEnd = addMinutesToTime(
                             slot.endTime,
-                            -BOOKING_BUFFER_MIN
+                            -BOOKING_BUFFER_MIN,
                           );
 
                           // si le buffer rend le slot invalide, on le jette via filter ensuite
@@ -1039,7 +1043,7 @@ export default function BookPage() {
                         .filter(
                           (slot) =>
                             timeToMinutes(slot.endTime) >
-                            timeToMinutes(slot.startTime)
+                            timeToMinutes(slot.startTime),
                         );
 
                       if (selectedService?.durationMinutes != null) {
@@ -1068,7 +1072,7 @@ export default function BookPage() {
                           hh,
                           mm,
                           0,
-                          0
+                          0,
                         );
 
                         return slotDateTime >= earliestAllowed;
@@ -1097,7 +1101,7 @@ export default function BookPage() {
                           {availableSlots.map((slot, idx) => {
                             const { top, height } = getBlockStyle(
                               slot.startTime,
-                              slot.endTime
+                              slot.endTime,
                             );
                             const colorClass = getExceptionColor('available');
 
@@ -1109,11 +1113,11 @@ export default function BookPage() {
 
                             const startLabel = formatTimeForLocale(
                               slot.startTime,
-                              locale
+                              locale,
                             );
                             const endLabel = formatTimeForLocale(
                               slot.endTime,
-                              locale
+                              locale,
                             );
 
                             const tooltipLines = [
@@ -1200,31 +1204,31 @@ export default function BookPage() {
           selectedSlot.windowStartTime,
           selectedSlot.windowEndTime,
           selectedService.durationMinutes!,
-          'start'
+          'start',
         );
         const endAligned = computeServiceTimes(
           selectedSlot.windowStartTime,
           selectedSlot.windowEndTime,
           selectedService.durationMinutes!,
-          'end'
+          'end',
         );
 
         const startAlignedLabelStart = formatTimeForLocale(
           startAligned.serviceStartTime,
-          locale
+          locale,
         );
         const startAlignedLabelEnd = formatTimeForLocale(
           startAligned.serviceEndTime,
-          locale
+          locale,
         );
 
         const endAlignedLabelStart = formatTimeForLocale(
           endAligned.serviceStartTime,
-          locale
+          locale,
         );
         const endAlignedLabelEnd = formatTimeForLocale(
           endAligned.serviceEndTime,
-          locale
+          locale,
         );
 
         return (

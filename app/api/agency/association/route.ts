@@ -2,6 +2,7 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { clerkClient, getAuth } from '@clerk/nextjs/server';
 import { sql } from '@/lib/db';
+import { inngest } from '@/src/lib/inngest/client';
 
 type AgencyRow = {
   id: string;
@@ -43,6 +44,10 @@ export async function POST(req: NextRequest) {
   } catch {
     // no-op, on gère plus bas
   }
+  const locale =
+    typeof body?.locale === 'string' && body.locale.trim()
+      ? body.locale.trim()
+      : 'fr';
 
   // 1) Validation du code agence
   const normalized = String(body?.code || '')
@@ -51,7 +56,7 @@ export async function POST(req: NextRequest) {
   if (!normalized) {
     return NextResponse.json(
       { error: 'Missing code', details: 'Le code agence est obligatoire.' },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -66,7 +71,7 @@ export async function POST(req: NextRequest) {
         details:
           'Une adresse normalisée (provenant des suggestions Google) est obligatoire.',
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -82,7 +87,7 @@ export async function POST(req: NextRequest) {
           details:
             "L'adresse fournie est incomplète ou ne contient pas de coordonnées valides.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -115,14 +120,14 @@ export async function POST(req: NextRequest) {
         details:
           "Impossible d'interpréter l'adresse fournie. Merci de sélectionner une suggestion Google.",
       },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
   // 3) Lookup agence
   let agency: AgencyRow | undefined;
   try {
-    const rows = await sql/* sql */ `
+    const rows = await sql /* sql */ `
       SELECT id, name, clerk_org_id, join_code
       FROM "Agency"
       WHERE UPPER(join_code) = ${normalized}
@@ -140,7 +145,7 @@ export async function POST(req: NextRequest) {
         error: 'Code invalide',
         details: 'Aucune agence trouvée pour ce code.',
       },
-      { status: 404 }
+      { status: 404 },
     );
   }
 
@@ -176,14 +181,14 @@ export async function POST(req: NextRequest) {
           details:
             'Le rôle fourni pour la membership Clerk est invalide. Utilisez par exemple "org:member" ou configurez CLERK_DEFAULT_ORG_ROLE.',
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!alreadyMember) {
       return NextResponse.json(
         { error: 'Join failed', details: msg || 'unknown' },
-        { status: 400 }
+        { status: 400 },
       );
     }
     // sinon on continue (idempotent)
@@ -221,7 +226,7 @@ export async function POST(req: NextRequest) {
     // est l'adresse principale de départ de l'utilisateur.
     const addr = address!;
 
-    await sql/* sql */ `
+    await sql /* sql */ `
       INSERT INTO "User" (
         id,
         name,
@@ -288,6 +293,37 @@ export async function POST(req: NextRequest) {
     console.error('Upsert "User" failed:', e?.message || e);
     // à toi de décider si tu veux rendre ça bloquant
   }
+
+  // 7) Emit event for email notifications
+  const eventPayload = {
+    id: `agency:${agency.id}:member:${userId}`,
+    name: 'agency/member-joined',
+    data: {
+      agencyId: agency.id,
+      agencyName: agency.name,
+      organizationId,
+      userId,
+      locale,
+    },
+  };
+  console.info('[agency/association] emit event Instructor', eventPayload);
+  await inngest.send(eventPayload);
+
+  // 8) Emit event for client welcome email
+  const eventPayloadClient = {
+    id: `agency:${agency.id}:client-welcome:${userId}`,
+    name: 'agency/client-welcome',
+    data: {
+      agencyId: agency.id,
+      agencyName: agency.name,
+      organizationId,
+      userId,
+      locale,
+    },
+  };
+
+  console.info('[agency/association] emit event Client', eventPayloadClient);
+  await inngest.send(eventPayloadClient);
 
   return NextResponse.json({
     ok: true,

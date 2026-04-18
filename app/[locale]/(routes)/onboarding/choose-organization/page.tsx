@@ -304,6 +304,7 @@ export default function AssociateAgency({ onSuccess, className }: Props) {
         credentials: 'include',
         body: JSON.stringify({
           code: normalized,
+          locale,
           address: {
             formattedAddress: selectedAddress.formattedAddress,
             lat: selectedAddress.lat,
