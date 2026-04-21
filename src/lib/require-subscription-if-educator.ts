@@ -17,7 +17,7 @@ type InstructorRow = {
 };
 
 function withLocale(locale: string, path: string) {
-  const safeLocale = locale?.trim() || 'fr';
+  const safeLocale = locale?.trim() || 'en';
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
   return `/${safeLocale}${cleanPath}`;
 }

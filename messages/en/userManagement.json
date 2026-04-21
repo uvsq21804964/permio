@@ -4,19 +4,25 @@
   "toolbar": {
     "refresh": {
       "idle": "Refresh",
-      "loading": "Loading…"
+      "loading": "Loading..."
+    },
+    "export": {
+      "idle": "Export clients",
+      "loading": "Exporting..."
     }
   },
   "table": {
     "columns": {
       "name": "Name",
       "role": "Role",
-      "email": "Email"
+      "email": "Email",
+      "export": "Export"
     }
   },
   "labels": {
     "me": "Me",
-    "noEmail": "—"
+    "noEmail": "-",
+    "noExport": "-"
   },
   "roles": {
     "student": "Client",
@@ -31,12 +37,18 @@
     "roleChange": "Unable to change the role (insufficient permissions or server error).",
     "delete": "Unable to delete this user (insufficient permissions or server error).",
     "addHour": "Unable to add 1h (insufficient permissions or server error).",
+    "export": "Unable to export clients.",
+    "exportDetails": "Unable to export this client.",
     "invalidRemaining": "Invalid input for remaining hours.",
     "invalidTotal": "Invalid input for total hours.",
-    "invalidNonNegative": "Values must be \u2265 0.",
+    "invalidNonNegative": "Values must be >= 0.",
     "editHours": "Unable to update hours."
   },
   "actions": {
+    "exportRow": {
+      "idle": "Client export",
+      "loading": "Exporting..."
+    },
     "remove": {
       "confirm": "Delete user {name}?"
     }

@@ -1,0 +1,414 @@
+strict digraph "front-lib dependencies" {
+  newrank=true;
+  rankdir="LR";
+  splines="line";
+  overlap="false";
+  compound=true;
+  nodesep=1.0;
+  ranksep=1.6;
+  node [shape="box" style="rounded, filled" height="0.2" color="black" fillcolor="#ffffcc" fontcolor="black" fontname="Helvetica" fontsize="9"];
+  edge [arrowhead="normal" arrowsize="0.6" penwidth="2.0" color="#444444" fontname="Helvetica" fontsize="9"];
+
+  // Nodes
+  subgraph "cluster_app" {label="app"
+    subgraph "cluster_app/[locale]" {label="[locale]"
+      subgraph "cluster_app/[locale]/(routes)" {label="(routes)"
+        subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)"
+          subgraph "cluster_app/[locale]/(routes)/(routes)/(app)" {label="(app)"
+            subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(client)" {label="(client)"
+              subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(client)/book" {label="book"
+                subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(client)/book/address" {label="address"
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" [label=<page.tsx>, tooltip="app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx", URL="app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+                }
+                subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals" {label="proposals"
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx" [label=<page.tsx>, tooltip="app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx", URL="app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+                }
+                subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(client)/book/services" {label="services"
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/services/page.tsx" [label=<page.tsx>, tooltip="app/[locale]/(routes)/(routes)/(app)/(client)/book/services/page.tsx", URL="app/[locale]/(routes)/(routes)/(app)/(client)/book/services/page.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+                }
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" [label=<page.tsx>, tooltip="app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx", URL="app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+              }
+  "app/[locale]/(routes)/(routes)/(app)/(client)/layout.tsx" [label=<layout.tsx>, tooltip="app/[locale]/(routes)/(routes)/(app)/(client)/layout.tsx", URL="app/[locale]/(routes)/(routes)/(app)/(client)/layout.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+            }
+            subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(educator)" {label="(educator)"
+              subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(educator)/availability" {label="availability"
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" [label=<page.tsx>, tooltip="app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx", URL="app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+              }
+              subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(educator)/configuration" {label="configuration"
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/configuration/page.tsx" [label=<page.tsx>, tooltip="app/[locale]/(routes)/(routes)/(app)/(educator)/configuration/page.tsx", URL="app/[locale]/(routes)/(routes)/(app)/(educator)/configuration/page.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+              }
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/layout.tsx" [label=<layout.tsx>, tooltip="app/[locale]/(routes)/(routes)/(app)/(educator)/layout.tsx", URL="app/[locale]/(routes)/(routes)/(app)/(educator)/layout.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+            }
+            subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/myweek" {label="myweek"
+  "app/[locale]/(routes)/(routes)/(app)/myweek/page.tsx" [label=<page.tsx>, tooltip="app/[locale]/(routes)/(routes)/(app)/myweek/page.tsx", URL="app/[locale]/(routes)/(routes)/(app)/myweek/page.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+            }
+  "app/[locale]/(routes)/(routes)/(app)/layout.tsx" [label=<layout.tsx>, tooltip="app/[locale]/(routes)/(routes)/(app)/layout.tsx", URL="app/[locale]/(routes)/(routes)/(app)/layout.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+          }
+          subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)" {label="(pay)"
+            subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)" {label="(educator)"
+              subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)/gestion" {label="gestion"
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/gestion/page.tsx" [label=<page.tsx>, tooltip="app/[locale]/(routes)/(routes)/(pay)/(educator)/gestion/page.tsx", URL="app/[locale]/(routes)/(routes)/(pay)/(educator)/gestion/page.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+              }
+              subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices" {label="invoices"
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx" [label=<page.tsx>, tooltip="app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx", URL="app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+              }
+              subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)/plans" {label="plans"
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/page.tsx" [label=<page.tsx>, tooltip="app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/page.tsx", URL="app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/page.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+              }
+              subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)/services" {label="services"
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/services/page.tsx" [label=<page.tsx>, tooltip="app/[locale]/(routes)/(routes)/(pay)/(educator)/services/page.tsx", URL="app/[locale]/(routes)/(routes)/(pay)/(educator)/services/page.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+              }
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/layout.tsx" [label=<layout.tsx>, tooltip="app/[locale]/(routes)/(routes)/(pay)/(educator)/layout.tsx", URL="app/[locale]/(routes)/(routes)/(pay)/(educator)/layout.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+            }
+            subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/accueil" {label="accueil"
+  "app/[locale]/(routes)/(routes)/(pay)/accueil/page.tsx" [label=<page.tsx>, tooltip="app/[locale]/(routes)/(routes)/(pay)/accueil/page.tsx", URL="app/[locale]/(routes)/(routes)/(pay)/accueil/page.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+            }
+            subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/profile" {label="profile"
+  "app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx" [label=<page.tsx>, tooltip="app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx", URL="app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+            }
+          }
+  "app/[locale]/(routes)/(routes)/layout.tsx" [label=<layout.tsx>, tooltip="app/[locale]/(routes)/(routes)/layout.tsx", URL="app/[locale]/(routes)/(routes)/layout.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+        }
+        subgraph "cluster_app/[locale]/(routes)/home" {label="home"
+  "app/[locale]/(routes)/home/page.tsx" [label=<page.tsx>, tooltip="app/[locale]/(routes)/home/page.tsx", URL="app/[locale]/(routes)/home/page.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+        }
+        subgraph "cluster_app/[locale]/(routes)/onboarding" {label="onboarding"
+          subgraph "cluster_app/[locale]/(routes)/onboarding/choose-organization" {label="choose-organization"
+  "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" [label=<page.tsx>, tooltip="app/[locale]/(routes)/onboarding/choose-organization/page.tsx", URL="app/[locale]/(routes)/onboarding/choose-organization/page.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+          }
+        }
+      }
+      subgraph "cluster_app/[locale]/leastory" {label="leastory"
+  "app/[locale]/leastory/page.tsx" [label=<page.tsx>, tooltip="app/[locale]/leastory/page.tsx", URL="app/[locale]/leastory/page.tsx", fillcolor="#d8ebff" color="#2f6feb"];
+      }
+    }
+    subgraph "cluster_app/api" {label="api"
+      subgraph "cluster_app/api/agency" {label="agency"
+        subgraph "cluster_app/api/agency/association" {label="association"
+  "app/api/agency/association/route.ts" [label=<route.ts>, tooltip="app/api/agency/association/route.ts", URL="app/api/agency/association/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+      }
+      subgraph "cluster_app/api/availabilities" {label="availabilities"
+        subgraph "cluster_app/api/availabilities/all" {label="all"
+  "app/api/availabilities/all/route.ts" [label=<route.ts>, tooltip="app/api/availabilities/all/route.ts", URL="app/api/availabilities/all/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+        subgraph "cluster_app/api/availabilities/bulk" {label="bulk"
+  "app/api/availabilities/bulk/route.ts" [label=<route.ts>, tooltip="app/api/availabilities/bulk/route.ts", URL="app/api/availabilities/bulk/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+        subgraph "cluster_app/api/availabilities/day" {label="day"
+  "app/api/availabilities/day/route.ts" [label=<route.ts>, tooltip="app/api/availabilities/day/route.ts", URL="app/api/availabilities/day/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+  "app/api/availabilities/route.ts" [label=<route.ts>, tooltip="app/api/availabilities/route.ts", URL="app/api/availabilities/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+      }
+      subgraph "cluster_app/api/me" {label="me"
+        subgraph "cluster_app/api/me/account_bdd" {label="account_bdd"
+  "app/api/me/account_bdd/route.ts" [label=<route.ts>, tooltip="app/api/me/account_bdd/route.ts", URL="app/api/me/account_bdd/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+        subgraph "cluster_app/api/me/delete-account" {label="delete-account"
+  "app/api/me/delete-account/route.ts" [label=<route.ts>, tooltip="app/api/me/delete-account/route.ts", URL="app/api/me/delete-account/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+        subgraph "cluster_app/api/me/hours" {label="hours"
+  "app/api/me/hours/route.ts" [label=<route.ts>, tooltip="app/api/me/hours/route.ts", URL="app/api/me/hours/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+        subgraph "cluster_app/api/me/instructor-services" {label="instructor-services"
+  "app/api/me/instructor-services/route.ts" [label=<route.ts>, tooltip="app/api/me/instructor-services/route.ts", URL="app/api/me/instructor-services/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+        subgraph "cluster_app/api/me/instructor-weekly-agenda" {label="instructor-weekly-agenda"
+  "app/api/me/instructor-weekly-agenda/route.ts" [label=<route.ts>, tooltip="app/api/me/instructor-weekly-agenda/route.ts", URL="app/api/me/instructor-weekly-agenda/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+        subgraph "cluster_app/api/me/instructor-weekly-agenda-proposals" {label="instructor-weekly-agenda-proposals"
+  "app/api/me/instructor-weekly-agenda-proposals/route.ts" [label=<route.ts>, tooltip="app/api/me/instructor-weekly-agenda-proposals/route.ts", URL="app/api/me/instructor-weekly-agenda-proposals/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+        subgraph "cluster_app/api/me/profile" {label="profile"
+  "app/api/me/profile/route.ts" [label=<route.ts>, tooltip="app/api/me/profile/route.ts", URL="app/api/me/profile/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+        subgraph "cluster_app/api/me/role" {label="role"
+  "app/api/me/role/route.ts" [label=<route.ts>, tooltip="app/api/me/role/route.ts", URL="app/api/me/role/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+        subgraph "cluster_app/api/me/services" {label="services"
+  "app/api/me/services/route.ts" [label=<route.ts>, tooltip="app/api/me/services/route.ts", URL="app/api/me/services/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+        subgraph "cluster_app/api/me/subscription" {label="subscription"
+  "app/api/me/subscription/route.ts" [label=<route.ts>, tooltip="app/api/me/subscription/route.ts", URL="app/api/me/subscription/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+        subgraph "cluster_app/api/me/weeks" {label="weeks"
+  "app/api/me/weeks/route.ts" [label=<route.ts>, tooltip="app/api/me/weeks/route.ts", URL="app/api/me/weeks/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+      }
+      subgraph "cluster_app/api/onboarding" {label="onboarding"
+        subgraph "cluster_app/api/onboarding/trainer" {label="trainer"
+  "app/api/onboarding/trainer/route.ts" [label=<route.ts>, tooltip="app/api/onboarding/trainer/route.ts", URL="app/api/onboarding/trainer/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+      }
+      subgraph "cluster_app/api/schedule" {label="schedule"
+        subgraph "cluster_app/api/schedule/commit" {label="commit"
+  "app/api/schedule/commit/route.ts" [label=<route.ts>, tooltip="app/api/schedule/commit/route.ts", URL="app/api/schedule/commit/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+  "app/api/schedule/route.ts" [label=<route.ts>, tooltip="app/api/schedule/route.ts", URL="app/api/schedule/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+      }
+      subgraph "cluster_app/api/slots" {label="slots"
+        subgraph "cluster_app/api/slots/week" {label="week"
+  "app/api/slots/week/route.ts" [label=<route.ts>, tooltip="app/api/slots/week/route.ts", URL="app/api/slots/week/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+  "app/api/slots/route.ts" [label=<route.ts>, tooltip="app/api/slots/route.ts", URL="app/api/slots/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+      }
+      subgraph "cluster_app/api/stripe" {label="stripe"
+        subgraph "cluster_app/api/stripe/checkout" {label="checkout"
+  "app/api/stripe/checkout/route.ts" [label=<route.ts>, tooltip="app/api/stripe/checkout/route.ts", URL="app/api/stripe/checkout/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+        subgraph "cluster_app/api/stripe/portal" {label="portal"
+  "app/api/stripe/portal/route.ts" [label=<route.ts>, tooltip="app/api/stripe/portal/route.ts", URL="app/api/stripe/portal/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+        subgraph "cluster_app/api/stripe/subscription" {label="subscription"
+          subgraph "cluster_app/api/stripe/subscription/cancel" {label="cancel"
+  "app/api/stripe/subscription/cancel/route.ts" [label=<route.ts>, tooltip="app/api/stripe/subscription/cancel/route.ts", URL="app/api/stripe/subscription/cancel/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+          }
+          subgraph "cluster_app/api/stripe/subscription/resume" {label="resume"
+  "app/api/stripe/subscription/resume/route.ts" [label=<route.ts>, tooltip="app/api/stripe/subscription/resume/route.ts", URL="app/api/stripe/subscription/resume/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+          }
+        }
+      }
+      subgraph "cluster_app/api/travels" {label="travels"
+        subgraph "cluster_app/api/travels/week" {label="week"
+  "app/api/travels/week/route.ts" [label=<route.ts>, tooltip="app/api/travels/week/route.ts", URL="app/api/travels/week/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+        }
+      }
+      subgraph "cluster_app/api/users" {label="users"
+  "app/api/users/route.ts" [label=<route.ts>, tooltip="app/api/users/route.ts", URL="app/api/users/route.ts", fillcolor="#ccffcc" fontcolor="orange" color="orange"];
+      }
+    }
+  }
+  subgraph "cluster_lib" {label="lib"
+    subgraph "cluster_lib/client" {label="client"
+      subgraph "cluster_lib/client/api" {label="api"
+  "lib/client/api/availabilities-client.ts" [label=<availabilities-client.ts>, tooltip="lib/client/api/availabilities-client.ts", URL="lib/client/api/availabilities-client.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/api/booking-client.ts" [label=<booking-client.ts>, tooltip="lib/client/api/booking-client.ts", URL="lib/client/api/booking-client.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/api/me-client.ts" [label=<me-client.ts>, tooltip="lib/client/api/me-client.ts", URL="lib/client/api/me-client.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/api/profile-client.ts" [label=<profile-client.ts>, tooltip="lib/client/api/profile-client.ts", URL="lib/client/api/profile-client.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/api/request.ts" [label=<request.ts>, tooltip="lib/client/api/request.ts", URL="lib/client/api/request.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/api/schedule-client.ts" [label=<schedule-client.ts>, tooltip="lib/client/api/schedule-client.ts", URL="lib/client/api/schedule-client.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/api/services-client.ts" [label=<services-client.ts>, tooltip="lib/client/api/services-client.ts", URL="lib/client/api/services-client.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/api/users-client.ts" [label=<users-client.ts>, tooltip="lib/client/api/users-client.ts", URL="lib/client/api/users-client.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+      }
+      subgraph "cluster_lib/client/hooks" {label="hooks"
+  "lib/client/hooks/useAgencyUsers.ts" [label=<useAgencyUsers.ts>, tooltip="lib/client/hooks/useAgencyUsers.ts", URL="lib/client/hooks/useAgencyUsers.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useAllAvailabilities.ts" [label=<useAllAvailabilities.ts>, tooltip="lib/client/hooks/useAllAvailabilities.ts", URL="lib/client/hooks/useAllAvailabilities.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useAvailabilityCurrentUser.ts" [label=<useAvailabilityCurrentUser.ts>, tooltip="lib/client/hooks/useAvailabilityCurrentUser.ts", URL="lib/client/hooks/useAvailabilityCurrentUser.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useAvailabilityRangesDialogState.ts" [label=<useAvailabilityRangesDialogState.ts>, tooltip="lib/client/hooks/useAvailabilityRangesDialogState.ts", URL="lib/client/hooks/useAvailabilityRangesDialogState.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useAvailabilityRoleGate.ts" [label=<useAvailabilityRoleGate.ts>, tooltip="lib/client/hooks/useAvailabilityRoleGate.ts", URL="lib/client/hooks/useAvailabilityRoleGate.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useBookSlot.ts" [label=<useBookSlot.ts>, tooltip="lib/client/hooks/useBookSlot.ts", URL="lib/client/hooks/useBookSlot.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useBookingServices.ts" [label=<useBookingServices.ts>, tooltip="lib/client/hooks/useBookingServices.ts", URL="lib/client/hooks/useBookingServices.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useCommitSchedule.ts" [label=<useCommitSchedule.ts>, tooltip="lib/client/hooks/useCommitSchedule.ts", URL="lib/client/hooks/useCommitSchedule.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useDayOverrides.ts" [label=<useDayOverrides.ts>, tooltip="lib/client/hooks/useDayOverrides.ts", URL="lib/client/hooks/useDayOverrides.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useDecodedBookingAddress.ts" [label=<useDecodedBookingAddress.ts>, tooltip="lib/client/hooks/useDecodedBookingAddress.ts", URL="lib/client/hooks/useDecodedBookingAddress.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useEditableServices.ts" [label=<useEditableServices.ts>, tooltip="lib/client/hooks/useEditableServices.ts", URL="lib/client/hooks/useEditableServices.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useEditableWeeklyAvailabilityDraft.ts" [label=<useEditableWeeklyAvailabilityDraft.ts>, tooltip="lib/client/hooks/useEditableWeeklyAvailabilityDraft.ts", URL="lib/client/hooks/useEditableWeeklyAvailabilityDraft.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useGoogleMapPreview.ts" [label=<useGoogleMapPreview.ts>, tooltip="lib/client/hooks/useGoogleMapPreview.ts", URL="lib/client/hooks/useGoogleMapPreview.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useGooglePlacesAutocomplete.ts" [label=<useGooglePlacesAutocomplete.ts>, tooltip="lib/client/hooks/useGooglePlacesAutocomplete.ts", URL="lib/client/hooks/useGooglePlacesAutocomplete.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useInstructorProposalAgenda.ts" [label=<useInstructorProposalAgenda.ts>, tooltip="lib/client/hooks/useInstructorProposalAgenda.ts", URL="lib/client/hooks/useInstructorProposalAgenda.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useInstructorServices.ts" [label=<useInstructorServices.ts>, tooltip="lib/client/hooks/useInstructorServices.ts", URL="lib/client/hooks/useInstructorServices.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useInstructorWeeklyAgenda.ts" [label=<useInstructorWeeklyAgenda.ts>, tooltip="lib/client/hooks/useInstructorWeeklyAgenda.ts", URL="lib/client/hooks/useInstructorWeeklyAgenda.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useMySubscriptionStatus.ts" [label=<useMySubscriptionStatus.ts>, tooltip="lib/client/hooks/useMySubscriptionStatus.ts", URL="lib/client/hooks/useMySubscriptionStatus.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useMyWeeks.ts" [label=<useMyWeeks.ts>, tooltip="lib/client/hooks/useMyWeeks.ts", URL="lib/client/hooks/useMyWeeks.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useOwnServiceSummary.ts" [label=<useOwnServiceSummary.ts>, tooltip="lib/client/hooks/useOwnServiceSummary.ts", URL="lib/client/hooks/useOwnServiceSummary.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useRelativeTimeFormatter.ts" [label=<useRelativeTimeFormatter.ts>, tooltip="lib/client/hooks/useRelativeTimeFormatter.ts", URL="lib/client/hooks/useRelativeTimeFormatter.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useStudentHoursMutations.ts" [label=<useStudentHoursMutations.ts>, tooltip="lib/client/hooks/useStudentHoursMutations.ts", URL="lib/client/hooks/useStudentHoursMutations.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useTimedNotice.ts" [label=<useTimedNotice.ts>, tooltip="lib/client/hooks/useTimedNotice.ts", URL="lib/client/hooks/useTimedNotice.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useUserRoleMutations.ts" [label=<useUserRoleMutations.ts>, tooltip="lib/client/hooks/useUserRoleMutations.ts", URL="lib/client/hooks/useUserRoleMutations.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useWeeklyAvailabilities.ts" [label=<useWeeklyAvailabilities.ts>, tooltip="lib/client/hooks/useWeeklyAvailabilities.ts", URL="lib/client/hooks/useWeeklyAvailabilities.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/hooks/useWeeklyGlobalAgendaData.ts" [label=<useWeeklyGlobalAgendaData.ts>, tooltip="lib/client/hooks/useWeeklyGlobalAgendaData.ts", URL="lib/client/hooks/useWeeklyGlobalAgendaData.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+      }
+      subgraph "cluster_lib/client/utils" {label="utils"
+  "lib/client/utils/address.ts" [label=<address.ts>, tooltip="lib/client/utils/address.ts", URL="lib/client/utils/address.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/utils/availability-editor.ts" [label=<availability-editor.ts>, tooltip="lib/client/utils/availability-editor.ts", URL="lib/client/utils/availability-editor.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/utils/availability-time.ts" [label=<availability-time.ts>, tooltip="lib/client/utils/availability-time.ts", URL="lib/client/utils/availability-time.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/utils/booking.ts" [label=<booking.ts>, tooltip="lib/client/utils/booking.ts", URL="lib/client/utils/booking.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/utils/google-maps.ts" [label=<google-maps.ts>, tooltip="lib/client/utils/google-maps.ts", URL="lib/client/utils/google-maps.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/client/utils/schedule-display.ts" [label=<schedule-display.ts>, tooltip="lib/client/utils/schedule-display.ts", URL="lib/client/utils/schedule-display.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+      }
+    }
+  "lib/availability-utils.ts" [label=<availability-utils.ts>, tooltip="lib/availability-utils.ts", URL="lib/availability-utils.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/db.ts" [label=<db.ts>, tooltip="lib/db.ts", URL="lib/db.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/schedule-utils.ts" [label=<schedule-utils.ts>, tooltip="lib/schedule-utils.ts", URL="lib/schedule-utils.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/stripe.ts" [label=<stripe.ts>, tooltip="lib/stripe.ts", URL="lib/stripe.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  "lib/utils.ts" [label=<utils.ts>, tooltip="lib/utils.ts", URL="lib/utils.ts", fillcolor="#efe3ff" color="#7a3ff2"];
+  }
+
+  { rank=same; "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx"; "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx"; "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx"; "app/[locale]/(routes)/(routes)/(app)/(client)/book/services/page.tsx"; "app/[locale]/(routes)/(routes)/(app)/(client)/layout.tsx"; "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx"; "app/[locale]/(routes)/(routes)/(app)/(educator)/configuration/page.tsx"; "app/[locale]/(routes)/(routes)/(app)/(educator)/layout.tsx"; "app/[locale]/(routes)/(routes)/(app)/layout.tsx"; "app/[locale]/(routes)/(routes)/(app)/myweek/page.tsx"; "app/[locale]/(routes)/(routes)/(pay)/(educator)/gestion/page.tsx"; "app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx"; "app/[locale]/(routes)/(routes)/(pay)/(educator)/layout.tsx"; "app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/page.tsx"; "app/[locale]/(routes)/(routes)/(pay)/(educator)/services/page.tsx"; "app/[locale]/(routes)/(routes)/(pay)/accueil/page.tsx"; "app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx"; "app/[locale]/(routes)/(routes)/layout.tsx"; "app/[locale]/(routes)/home/page.tsx"; "app/[locale]/(routes)/onboarding/choose-organization/page.tsx"; "app/[locale]/leastory/page.tsx"; }
+  { rank=same; "lib/availability-utils.ts"; "lib/client/api/availabilities-client.ts"; "lib/client/api/booking-client.ts"; "lib/client/api/me-client.ts"; "lib/client/api/profile-client.ts"; "lib/client/api/request.ts"; "lib/client/api/schedule-client.ts"; "lib/client/api/services-client.ts"; "lib/client/api/users-client.ts"; "lib/client/hooks/useAgencyUsers.ts"; "lib/client/hooks/useAllAvailabilities.ts"; "lib/client/hooks/useAvailabilityCurrentUser.ts"; "lib/client/hooks/useAvailabilityRangesDialogState.ts"; "lib/client/hooks/useAvailabilityRoleGate.ts"; "lib/client/hooks/useBookSlot.ts"; "lib/client/hooks/useBookingServices.ts"; "lib/client/hooks/useCommitSchedule.ts"; "lib/client/hooks/useDayOverrides.ts"; "lib/client/hooks/useDecodedBookingAddress.ts"; "lib/client/hooks/useEditableServices.ts"; "lib/client/hooks/useEditableWeeklyAvailabilityDraft.ts"; "lib/client/hooks/useGoogleMapPreview.ts"; "lib/client/hooks/useGooglePlacesAutocomplete.ts"; "lib/client/hooks/useInstructorProposalAgenda.ts"; "lib/client/hooks/useInstructorServices.ts"; "lib/client/hooks/useInstructorWeeklyAgenda.ts"; "lib/client/hooks/useMySubscriptionStatus.ts"; "lib/client/hooks/useMyWeeks.ts"; "lib/client/hooks/useOwnServiceSummary.ts"; "lib/client/hooks/useRelativeTimeFormatter.ts"; "lib/client/hooks/useStudentHoursMutations.ts"; "lib/client/hooks/useTimedNotice.ts"; "lib/client/hooks/useUserRoleMutations.ts"; "lib/client/hooks/useWeeklyAvailabilities.ts"; "lib/client/hooks/useWeeklyGlobalAgendaData.ts"; "lib/client/utils/address.ts"; "lib/client/utils/availability-editor.ts"; "lib/client/utils/availability-time.ts"; "lib/client/utils/booking.ts"; "lib/client/utils/google-maps.ts"; "lib/client/utils/schedule-display.ts"; "lib/db.ts"; "lib/schedule-utils.ts"; "lib/stripe.ts"; "lib/utils.ts"; }
+  { rank=same; "app/api/agency/association/route.ts"; "app/api/availabilities/all/route.ts"; "app/api/availabilities/bulk/route.ts"; "app/api/availabilities/day/route.ts"; "app/api/availabilities/route.ts"; "app/api/me/account_bdd/route.ts"; "app/api/me/delete-account/route.ts"; "app/api/me/hours/route.ts"; "app/api/me/instructor-services/route.ts"; "app/api/me/instructor-weekly-agenda-proposals/route.ts"; "app/api/me/instructor-weekly-agenda/route.ts"; "app/api/me/profile/route.ts"; "app/api/me/role/route.ts"; "app/api/me/services/route.ts"; "app/api/me/subscription/route.ts"; "app/api/me/weeks/route.ts"; "app/api/onboarding/trainer/route.ts"; "app/api/schedule/commit/route.ts"; "app/api/schedule/route.ts"; "app/api/slots/route.ts"; "app/api/slots/week/route.ts"; "app/api/stripe/checkout/route.ts"; "app/api/stripe/portal/route.ts"; "app/api/stripe/subscription/cancel/route.ts"; "app/api/stripe/subscription/resume/route.ts"; "app/api/travels/week/route.ts"; "app/api/users/route.ts"; }
+  "app/[locale]/leastory/page.tsx" -> "lib/availability-utils.ts" [style=invis, weight=200, minlen=5];
+  "lib/utils.ts" -> "app/api/agency/association/route.ts" [style=invis, weight=200, minlen=7];
+
+  // Front -> lib links
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" -> "lib/client/api/me-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/me-client.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" -> "lib/client/api/request.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/request.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" -> "lib/client/api/services-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/services-client.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" -> "lib/client/hooks/useGoogleMapPreview.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useGoogleMapPreview.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" -> "lib/client/hooks/useGooglePlacesAutocomplete.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useGooglePlacesAutocomplete.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" -> "lib/client/utils/address.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/utils/address.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" -> "lib/client/utils/google-maps.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/utils/google-maps.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" -> "lib/utils.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/utils.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "lib/client/api/booking-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/booking-client.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "lib/client/api/request.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/request.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "lib/client/api/services-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/services-client.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "lib/client/hooks/useBookingServices.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useBookingServices.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "lib/client/hooks/useBookSlot.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useBookSlot.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "lib/client/hooks/useDecodedBookingAddress.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useDecodedBookingAddress.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "lib/client/hooks/useInstructorServices.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useInstructorServices.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "lib/client/hooks/useInstructorWeeklyAgenda.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useInstructorWeeklyAgenda.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "lib/client/utils/booking.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/utils/booking.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "lib/utils.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/utils.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx" -> "lib/client/api/booking-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/booking-client.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx" -> "lib/client/api/request.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/request.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx" -> "lib/client/api/services-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/services-client.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx" -> "lib/client/hooks/useBookingServices.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useBookingServices.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx" -> "lib/client/hooks/useBookSlot.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useBookSlot.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx" -> "lib/client/hooks/useDecodedBookingAddress.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useDecodedBookingAddress.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx" -> "lib/client/hooks/useInstructorProposalAgenda.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useInstructorProposalAgenda.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx" -> "lib/client/hooks/useInstructorServices.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useInstructorServices.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx" -> "lib/client/utils/booking.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/utils/booking.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/services/page.tsx" -> "lib/client/api/request.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/request.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/services/page.tsx" -> "lib/client/api/services-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/services-client.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/book/services/page.tsx" -> "lib/client/hooks/useInstructorServices.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useInstructorServices.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(client)/layout.tsx" -> "lib/db.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/db.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "lib/availability-utils.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/availability-utils.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "lib/client/api/availabilities-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/availabilities-client.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "lib/client/api/me-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/me-client.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "lib/client/api/request.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/request.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "lib/client/hooks/useAvailabilityCurrentUser.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useAvailabilityCurrentUser.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "lib/client/hooks/useAvailabilityRangesDialogState.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useAvailabilityRangesDialogState.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "lib/client/hooks/useAvailabilityRoleGate.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useAvailabilityRoleGate.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "lib/client/hooks/useDayOverrides.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useDayOverrides.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "lib/client/hooks/useRelativeTimeFormatter.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useRelativeTimeFormatter.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "lib/client/hooks/useTimedNotice.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useTimedNotice.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "lib/client/hooks/useWeeklyAvailabilities.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useWeeklyAvailabilities.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "lib/client/hooks/useWeeklyGlobalAgendaData.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useWeeklyGlobalAgendaData.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "lib/client/utils/availability-editor.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/utils/availability-editor.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "lib/client/utils/availability-time.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/utils/availability-time.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "lib/client/utils/schedule-display.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/utils/schedule-display.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "lib/utils.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/utils.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/configuration/page.tsx" -> "lib/client/api/availabilities-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/availabilities-client.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/configuration/page.tsx" -> "lib/client/api/request.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/request.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/configuration/page.tsx" -> "lib/client/api/schedule-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/schedule-client.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/configuration/page.tsx" -> "lib/client/api/users-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/users-client.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/configuration/page.tsx" -> "lib/client/hooks/useAgencyUsers.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useAgencyUsers.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/configuration/page.tsx" -> "lib/client/hooks/useAllAvailabilities.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useAllAvailabilities.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/configuration/page.tsx" -> "lib/client/hooks/useCommitSchedule.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useCommitSchedule.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/configuration/page.tsx" -> "lib/client/utils/schedule-display.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/utils/schedule-display.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/configuration/page.tsx" -> "lib/schedule-utils.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/schedule-utils.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/configuration/page.tsx" -> "lib/utils.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/utils.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/(educator)/layout.tsx" -> "lib/db.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/db.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/layout.tsx" -> "lib/db.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/db.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/myweek/page.tsx" -> "lib/client/api/request.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/request.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/myweek/page.tsx" -> "lib/client/api/schedule-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/schedule-client.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/myweek/page.tsx" -> "lib/client/api/services-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/services-client.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/myweek/page.tsx" -> "lib/client/hooks/useMyWeeks.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useMyWeeks.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/myweek/page.tsx" -> "lib/client/hooks/useOwnServiceSummary.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useOwnServiceSummary.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/myweek/page.tsx" -> "lib/client/utils/schedule-display.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/utils/schedule-display.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/myweek/page.tsx" -> "lib/db.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/db.ts"];
+  "app/[locale]/(routes)/(routes)/(app)/myweek/page.tsx" -> "lib/utils.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/utils.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/gestion/page.tsx" -> "lib/client/api/request.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/request.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/gestion/page.tsx" -> "lib/client/api/users-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/users-client.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/gestion/page.tsx" -> "lib/client/hooks/useAgencyUsers.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useAgencyUsers.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/gestion/page.tsx" -> "lib/client/hooks/useStudentHoursMutations.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useStudentHoursMutations.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/gestion/page.tsx" -> "lib/client/hooks/useUserRoleMutations.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useUserRoleMutations.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/gestion/page.tsx" -> "lib/db.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/db.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx" -> "lib/db.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/db.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx" -> "lib/stripe.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/stripe.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/layout.tsx" -> "lib/db.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/db.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/page.tsx" -> "lib/client/api/me-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/me-client.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/page.tsx" -> "lib/client/api/request.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/request.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/page.tsx" -> "lib/client/hooks/useMySubscriptionStatus.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useMySubscriptionStatus.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/page.tsx" -> "lib/utils.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/utils.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/services/page.tsx" -> "lib/client/api/request.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/request.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/services/page.tsx" -> "lib/client/api/services-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/services-client.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/services/page.tsx" -> "lib/client/hooks/useEditableServices.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useEditableServices.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/accueil/page.tsx" -> "lib/utils.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/utils.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx" -> "lib/client/api/profile-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/profile-client.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx" -> "lib/client/api/request.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/request.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx" -> "lib/client/hooks/useGoogleMapPreview.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useGoogleMapPreview.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx" -> "lib/client/hooks/useGooglePlacesAutocomplete.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useGooglePlacesAutocomplete.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx" -> "lib/client/utils/address.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/utils/address.ts"];
+  "app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx" -> "lib/client/utils/google-maps.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/utils/google-maps.ts"];
+  "app/[locale]/(routes)/(routes)/layout.tsx" -> "lib/db.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/db.ts"];
+  "app/[locale]/(routes)/home/page.tsx" -> "lib/client/api/me-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/me-client.ts"];
+  "app/[locale]/(routes)/home/page.tsx" -> "lib/client/api/request.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/request.ts"];
+  "app/[locale]/(routes)/home/page.tsx" -> "lib/client/hooks/useMySubscriptionStatus.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useMySubscriptionStatus.ts"];
+  "app/[locale]/(routes)/home/page.tsx" -> "lib/utils.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/utils.ts"];
+  "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" -> "lib/client/api/availabilities-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/availabilities-client.ts"];
+  "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" -> "lib/client/api/profile-client.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/profile-client.ts"];
+  "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" -> "lib/client/api/request.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/api/request.ts"];
+  "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" -> "lib/client/hooks/useAvailabilityRangesDialogState.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useAvailabilityRangesDialogState.ts"];
+  "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" -> "lib/client/hooks/useEditableWeeklyAvailabilityDraft.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useEditableWeeklyAvailabilityDraft.ts"];
+  "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" -> "lib/client/hooks/useGooglePlacesAutocomplete.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/hooks/useGooglePlacesAutocomplete.ts"];
+  "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" -> "lib/client/utils/address.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/utils/address.ts"];
+  "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" -> "lib/client/utils/availability-editor.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/utils/availability-editor.ts"];
+  "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" -> "lib/client/utils/availability-time.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/utils/availability-time.ts"];
+  "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" -> "lib/client/utils/google-maps.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/client/utils/google-maps.ts"];
+  "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" -> "lib/utils.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/utils.ts"];
+  "app/[locale]/leastory/page.tsx" -> "lib/utils.ts" [color="#1f6feb", penwidth=2.2, tooltip="front-to-lib-transitive: lib/utils.ts"];
+
+  // API color legend
+  subgraph "cluster_api_legend" {label="API colors"
+    "legend:/api/agency/association" [label="/api/agency/association", shape="note", style="filled", fillcolor="#c526c5", color="#c526c5", fontcolor="black", tooltip="/api/agency/association"];
+    "legend:/api/availabilities" [label="/api/availabilities", shape="note", style="filled", fillcolor="#b7ce1c", color="#b7ce1c", fontcolor="black", tooltip="/api/availabilities"];
+    "legend:/api/availabilities/all" [label="/api/availabilities/all", shape="note", style="filled", fillcolor="#97b422", color="#97b422", fontcolor="black", tooltip="/api/availabilities/all"];
+    "legend:/api/availabilities/bulk" [label="/api/availabilities/bulk", shape="note", style="filled", fillcolor="#19c233", color="#19c233", fontcolor="black", tooltip="/api/availabilities/bulk"];
+    "legend:/api/availabilities/day" [label="/api/availabilities/day", shape="note", style="filled", fillcolor="#1eb0be", color="#1eb0be", fontcolor="black", tooltip="/api/availabilities/day"];
+    "legend:/api/me/account_bdd" [label="/api/me/account_bdd", shape="note", style="filled", fillcolor="#581cce", color="#581cce", fontcolor="black", tooltip="/api/me/account_bdd"];
+    "legend:/api/me/delete-account" [label="/api/me/delete-account", shape="note", style="filled", fillcolor="#1fdb35", color="#1fdb35", fontcolor="black", tooltip="/api/me/delete-account"];
+    "legend:/api/me/hours" [label="/api/me/hours", shape="note", style="filled", fillcolor="#225cb9", color="#225cb9", fontcolor="black", tooltip="/api/me/hours"];
+    "legend:/api/me/instructor-services" [label="/api/me/instructor-services", shape="note", style="filled", fillcolor="#9722b4", color="#9722b4", fontcolor="black", tooltip="/api/me/instructor-services"];
+    "legend:/api/me/instructor-weekly-agenda" [label="/api/me/instructor-weekly-agenda", shape="note", style="filled", fillcolor="#c31d70", color="#c31d70", fontcolor="black", tooltip="/api/me/instructor-weekly-agenda"];
+    "legend:/api/me/instructor-weekly-agenda-proposals" [label="/api/me/instructor-weekly-agenda-proposals", shape="note", style="filled", fillcolor="#c52645", color="#c52645", fontcolor="black", tooltip="/api/me/instructor-weekly-agenda-proposals"];
+    "legend:/api/me/profile" [label="/api/me/profile", shape="note", style="filled", fillcolor="#db1f54", color="#db1f54", fontcolor="black", tooltip="/api/me/profile"];
+    "legend:/api/me/role" [label="/api/me/role", shape="note", style="filled", fillcolor="#70c31d", color="#70c31d", fontcolor="black", tooltip="/api/me/role"];
+    "legend:/api/me/services" [label="/api/me/services", shape="note", style="filled", fillcolor="#3220d5", color="#3220d5", fontcolor="black", tooltip="/api/me/services"];
+    "legend:/api/me/subscription" [label="/api/me/subscription", shape="note", style="filled", fillcolor="#1a6ce0", color="#1a6ce0", fontcolor="black", tooltip="/api/me/subscription"];
+    "legend:/api/me/weeks" [label="/api/me/weeks", shape="note", style="filled", fillcolor="#9824d6", color="#9824d6", fontcolor="black", tooltip="/api/me/weeks"];
+    "legend:/api/onboarding/trainer" [label="/api/onboarding/trainer", shape="note", style="filled", fillcolor="#bc711a", color="#bc711a", fontcolor="black", tooltip="/api/onboarding/trainer"];
+    "legend:/api/schedule" [label="/api/schedule", shape="note", style="filled", fillcolor="#20d532", color="#20d532", fontcolor="black", tooltip="/api/schedule"];
+    "legend:/api/schedule/commit" [label="/api/schedule/commit", shape="note", style="filled", fillcolor="#bf229a", color="#bf229a", fontcolor="black", tooltip="/api/schedule/commit"];
+    "legend:/api/slots" [label="/api/slots", shape="note", style="filled", fillcolor="#70b81e", color="#70b81e", fontcolor="black", tooltip="/api/slots"];
+    "legend:/api/slots/week" [label="/api/slots/week", shape="note", style="filled", fillcolor="#cf2058", color="#cf2058", fontcolor="black", tooltip="/api/slots/week"];
+    "legend:/api/stripe/checkout" [label="/api/stripe/checkout", shape="note", style="filled", fillcolor="#9fdb1f", color="#9fdb1f", fontcolor="black", tooltip="/api/stripe/checkout"];
+    "legend:/api/stripe/portal" [label="/api/stripe/portal", shape="note", style="filled", fillcolor="#b99e22", color="#b99e22", fontcolor="black", tooltip="/api/stripe/portal"];
+    "legend:/api/stripe/subscription/cancel" [label="/api/stripe/subscription/cancel", shape="note", style="filled", fillcolor="#cfbb20", color="#cfbb20", fontcolor="black", tooltip="/api/stripe/subscription/cancel"];
+    "legend:/api/stripe/subscription/resume" [label="/api/stripe/subscription/resume", shape="note", style="filled", fillcolor="#b21abc", color="#b21abc", fontcolor="black", tooltip="/api/stripe/subscription/resume"];
+    "legend:/api/travels/week" [label="/api/travels/week", shape="note", style="filled", fillcolor="#20cfbb", color="#20cfbb", fontcolor="black", tooltip="/api/travels/week"];
+    "legend:/api/users" [label="/api/users", shape="note", style="filled", fillcolor="#d45c1c", color="#d45c1c", fontcolor="black", tooltip="/api/users"];
+  }
+
+  // API edges for kept front/lib nodes
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx" -> "app/api/stripe/checkout/route.ts" [color="#9fdb1f", fontcolor="#9fdb1f", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/stripe/checkout\ncolor: #9fdb1f", weight=8, minlen=1];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx" -> "app/api/stripe/portal/route.ts" [color="#b99e22", fontcolor="#b99e22", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/stripe/portal\ncolor: #b99e22", weight=8, minlen=1];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx" -> "app/api/stripe/subscription/cancel/route.ts" [color="#cfbb20", fontcolor="#cfbb20", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/stripe/subscription/cancel\ncolor: #cfbb20", weight=8, minlen=1];
+  "app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx" -> "app/api/stripe/subscription/resume/route.ts" [color="#b21abc", fontcolor="#b21abc", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/stripe/subscription/resume\ncolor: #b21abc", weight=8, minlen=1];
+  "lib/client/api/availabilities-client.ts" -> "app/api/availabilities/route.ts" [color="#b7ce1c", fontcolor="#b7ce1c", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/availabilities\ncolor: #b7ce1c", weight=8, minlen=1];
+  "lib/client/api/availabilities-client.ts" -> "app/api/availabilities/all/route.ts" [color="#97b422", fontcolor="#97b422", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/availabilities/all\ncolor: #97b422", weight=8, minlen=1];
+  "lib/client/api/availabilities-client.ts" -> "app/api/availabilities/bulk/route.ts" [color="#19c233", fontcolor="#19c233", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/availabilities/bulk\ncolor: #19c233", weight=8, minlen=1];
+  "lib/client/api/availabilities-client.ts" -> "app/api/availabilities/day/route.ts" [color="#1eb0be", fontcolor="#1eb0be", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/availabilities/day\ncolor: #1eb0be", weight=8, minlen=1];
+  "lib/client/api/availabilities-client.ts" -> "app/api/slots/week/route.ts" [color="#cf2058", fontcolor="#cf2058", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/slots/week\ncolor: #cf2058", weight=8, minlen=1];
+  "lib/client/api/availabilities-client.ts" -> "app/api/travels/week/route.ts" [color="#20cfbb", fontcolor="#20cfbb", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/travels/week\ncolor: #20cfbb", weight=8, minlen=1];
+  "lib/client/api/booking-client.ts" -> "app/api/me/instructor-weekly-agenda/route.ts" [color="#c31d70", fontcolor="#c31d70", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/me/instructor-weekly-agenda\ncolor: #c31d70", weight=8, minlen=1];
+  "lib/client/api/booking-client.ts" -> "app/api/me/instructor-weekly-agenda-proposals/route.ts" [color="#c52645", fontcolor="#c52645", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/me/instructor-weekly-agenda-proposals\ncolor: #c52645", weight=8, minlen=1];
+  "lib/client/api/booking-client.ts" -> "app/api/slots/route.ts" [color="#70b81e", fontcolor="#70b81e", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/slots\ncolor: #70b81e", weight=8, minlen=1];
+  "lib/client/api/me-client.ts" -> "app/api/me/hours/route.ts" [color="#225cb9", fontcolor="#225cb9", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/me/hours\ncolor: #225cb9", weight=8, minlen=1];
+  "lib/client/api/me-client.ts" -> "app/api/me/profile/route.ts" [color="#db1f54", fontcolor="#db1f54", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/me/profile\ncolor: #db1f54", weight=8, minlen=1];
+  "lib/client/api/me-client.ts" -> "app/api/me/role/route.ts" [color="#70c31d", fontcolor="#70c31d", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/me/role\ncolor: #70c31d", weight=8, minlen=1];
+  "lib/client/api/me-client.ts" -> "app/api/me/subscription/route.ts" [color="#1a6ce0", fontcolor="#1a6ce0", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/me/subscription\ncolor: #1a6ce0", weight=8, minlen=1];
+  "lib/client/api/profile-client.ts" -> "app/api/agency/association/route.ts" [color="#c526c5", fontcolor="#c526c5", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/agency/association\ncolor: #c526c5", weight=8, minlen=1];
+  "lib/client/api/profile-client.ts" -> "app/api/me/account_bdd/route.ts" [color="#581cce", fontcolor="#581cce", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/me/account_bdd\ncolor: #581cce", weight=8, minlen=1];
+  "lib/client/api/profile-client.ts" -> "app/api/me/delete-account/route.ts" [color="#1fdb35", fontcolor="#1fdb35", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/me/delete-account\ncolor: #1fdb35", weight=8, minlen=1];
+  "lib/client/api/profile-client.ts" -> "app/api/me/profile/route.ts" [color="#db1f54", fontcolor="#db1f54", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/me/profile\ncolor: #db1f54", weight=8, minlen=1];
+  "lib/client/api/profile-client.ts" -> "app/api/onboarding/trainer/route.ts" [color="#bc711a", fontcolor="#bc711a", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/onboarding/trainer\ncolor: #bc711a", weight=8, minlen=1];
+  "lib/client/api/schedule-client.ts" -> "app/api/me/weeks/route.ts" [color="#9824d6", fontcolor="#9824d6", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/me/weeks\ncolor: #9824d6", weight=8, minlen=1];
+  "lib/client/api/schedule-client.ts" -> "app/api/schedule/route.ts" [color="#20d532", fontcolor="#20d532", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/schedule\ncolor: #20d532", weight=8, minlen=1];
+  "lib/client/api/schedule-client.ts" -> "app/api/schedule/commit/route.ts" [color="#bf229a", fontcolor="#bf229a", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/schedule/commit\ncolor: #bf229a", weight=8, minlen=1];
+  "lib/client/api/services-client.ts" -> "app/api/me/instructor-services/route.ts" [color="#9722b4", fontcolor="#9722b4", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/me/instructor-services\ncolor: #9722b4", weight=8, minlen=1];
+  "lib/client/api/services-client.ts" -> "app/api/me/services/route.ts" [color="#3220d5", fontcolor="#3220d5", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/me/services\ncolor: #3220d5", weight=8, minlen=1];
+  "lib/client/api/users-client.ts" -> "app/api/users/route.ts" [color="#d45c1c", fontcolor="#d45c1c", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/users\ncolor: #d45c1c", weight=8, minlen=1];
+  "lib/client/hooks/useAvailabilityCurrentUser.ts" -> "app/api/me/hours/route.ts" [color="#225cb9", fontcolor="#225cb9", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/me/hours\ncolor: #225cb9", weight=8, minlen=1];
+  "lib/client/hooks/useAvailabilityCurrentUser.ts" -> "app/api/me/role/route.ts" [color="#70c31d", fontcolor="#70c31d", style="dashed", penwidth=2.2, arrowsize=0.9, tooltip="api-occurrence: /api/me/role\ncolor: #70c31d", weight=8, minlen=1];
+}

@@ -6,28 +6,14 @@ import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
-
-type Page = {
-  nameFR: string;
-  nameEN: string;
-  link: string; // routes "nues" : "/myweek", "/services", etc.
-  visible: number;
-  cta?: boolean;
-};
-
-function withLocalePath(path: string, locale: string) {
-  const p = path.startsWith('/') ? path : `/${path}`;
-  // évite double prefix si déjà préfixé
-  return p.startsWith(`/${locale}/`) ? p : `/${locale}${p}`;
-}
-
-function stripLocalePrefix(path: string, locale: string) {
-  const p = path || '';
-  const prefix = `/${locale}`;
-  if (p === prefix) return '/';
-  if (p.startsWith(prefix + '/')) return p.slice(prefix.length);
-  return p;
-}
+import {
+  filterNavbarPages,
+  PROFILE_LINKS,
+  stripLocalePrefix,
+  withLocalePath,
+  type NavbarRole,
+  type NavPage,
+} from '@/components/navbar/navbar-utils';
 
 export default function DesktopNavbar({
   logo,
@@ -36,9 +22,9 @@ export default function DesktopNavbar({
   meRole,
 }: {
   logo: string;
-  pages: Page[];
+  pages: NavPage[];
   activeLink?: string;
-  meRole: 'student' | 'instructor' | 'admin' | string | null;
+  meRole: NavbarRole;
 }) {
   const locale = useLocale();
   const isFR = locale.startsWith('fr');
@@ -52,78 +38,58 @@ export default function DesktopNavbar({
   const profilePanelRef = useRef<HTMLDivElement | null>(null);
 
   const filteredPages = useMemo(
-    () =>
-      pages.filter((p) => {
-        if (meRole === 'instructor') {
-          // 0 = instructeur, 2 = les deux
-          return p.visible === 0 || p.visible === 2;
-        }
-        if (meRole === 'student') {
-          // 1 = client, 2 = les deux
-          return p.visible === 1 || p.visible === 2;
-        }
-        if (meRole === 'admin') return true;
-        return p.visible === 2;
-      }),
-    [pages, meRole]
+    () => filterNavbarPages(pages, meRole),
+    [pages, meRole],
   );
-
-  // menu profil basé sur les routes "nues"
-  const PROFILE_LINKS = new Set([
-    '/services',
-    '/availability',
-    '/invoices',
-    '/plans',
-    '/profile',
-    '/sign-out',
-    '/gestion',
-  ]);
 
   const profileItems = useMemo(
-    () => filteredPages.filter((p) => PROFILE_LINKS.has(p.link)),
-    [filteredPages]
+    () => filteredPages.filter((page) => PROFILE_LINKS.has(page.link)),
+    [filteredPages],
   );
   const mainNavPages = useMemo(
-    () => filteredPages.filter((p) => !PROFILE_LINKS.has(p.link)),
-    [filteredPages]
+    () => filteredPages.filter((page) => !PROFILE_LINKS.has(page.link)),
+    [filteredPages],
   );
 
   useEffect(() => {
-    function onDocClick(e: MouseEvent) {
+    function onDocClick(event: MouseEvent) {
       if (!profileOpen) return;
-      const t = e.target as Node;
+
+      const target = event.target as Node;
       if (
         profilePanelRef.current &&
-        !profilePanelRef.current.contains(t) &&
+        !profilePanelRef.current.contains(target) &&
         profileBtnRef.current &&
-        !profileBtnRef.current.contains(t)
+        !profileBtnRef.current.contains(target)
       ) {
         setProfileOpen(false);
       }
     }
-    function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') setProfileOpen(false);
+
+    function onKey(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setProfileOpen(false);
+      }
     }
+
     document.addEventListener('mousedown', onDocClick);
     document.addEventListener('keydown', onKey);
+
     return () => {
       document.removeEventListener('mousedown', onDocClick);
       document.removeEventListener('keydown', onKey);
     };
   }, [profileOpen]);
 
-  const homeSrLabel = isFR ? 'Aller à l’accueil' : 'Go to home';
+  const homeSrLabel = isFR ? 'Aller a l accueil' : 'Go to home';
   const profileMenuLabel = isFR ? 'Menu profil' : 'Profile menu';
   const accountLabel = isFR ? 'Mon compte' : 'Account';
   const burgerSrLabel = isFR ? 'Ouvrir le menu' : 'Open menu';
-
-  // ✅ comparaison “active” robuste : compare sans le prefix /fr ou /en
   const currentNoLocale = stripLocalePrefix(currentPath, locale);
 
   return (
     <nav className="fixed inset-x-0 top-0 z-50 border-b border-neutral-200 bg-white/90 text-white backdrop-blur supports-[backdrop-filter]:bg-[#8920D1] dark:border-neutral-800 dark:bg-neutral-900/80">
       <div className="flex h-10 items-center justify-between px-0">
-        {/* ✅ LOGO : préfixé */}
         <Link
           href={withLocalePath('/myweek', locale)}
           className="h-10 w-[12rem] pl-0 dark:focus:ring-neutral-600"
@@ -145,16 +111,15 @@ export default function DesktopNavbar({
           <div className="mx-auto max-w-7xl pr-4 sm:pr-6">
             <div className="flex h-16 items-center justify-end gap-2">
               <div className="hidden md:flex items-center gap-2">
-                {mainNavPages.map((p) => {
-                  const label = isFR ? p.nameFR : p.nameEN;
+                {mainNavPages.map((page) => {
+                  const label = isFR ? page.nameFR : page.nameEN;
+                  const href = withLocalePath(page.link, locale);
+                  const isActive = currentNoLocale === page.link;
 
-                  const href = withLocalePath(p.link, locale);
-                  const isActive = currentNoLocale === p.link;
-
-                  if (p.cta) {
+                  if (page.cta) {
                     return (
                       <Link
-                        key={p.link}
+                        key={page.link}
                         href={href}
                         className="inline-flex items-center justify-center rounded-md bg-navbar px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110 active:translate-y-px focus:outline-none focus:ring-2 focus:ring-navbar/60 focus:ring-offset-2"
                       >
@@ -165,7 +130,7 @@ export default function DesktopNavbar({
 
                   return (
                     <Link
-                      key={p.link}
+                      key={page.link}
                       href={href}
                       className={`group relative rounded-md px-3 py-2 text-sm font-medium transition hover:bg-neutral-100/60 focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:ring-offset-2 dark:hover:bg-neutral-800/60 dark:focus:ring-neutral-700 ${
                         isActive
@@ -185,12 +150,11 @@ export default function DesktopNavbar({
                   );
                 })}
 
-                {/* ✅ Profil */}
                 {profileItems.length > 0 && (
                   <div className="relative">
                     <button
                       ref={profileBtnRef}
-                      onClick={() => setProfileOpen((v) => !v)}
+                      onClick={() => setProfileOpen((value) => !value)}
                       aria-expanded={profileOpen}
                       aria-haspopup="menu"
                       className="inline-flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-white transition hover:bg-neutral-100/60 focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:ring-offset-2 dark:text-neutral-300 dark:hover:bg-neutral-800/60 dark:focus:ring-neutral-700"
@@ -220,13 +184,13 @@ export default function DesktopNavbar({
                         className="absolute right-0 mt-2 w-56 overflow-hidden rounded-xl border border-neutral-200 bg-white/95 shadow-lg backdrop-blur dark:border-neutral-800 dark:bg-neutral-900/95"
                       >
                         <ul className="py-1 text-sm">
-                          {profileItems.map((p) => {
-                            const label = isFR ? p.nameFR : p.nameEN;
-                            const href = withLocalePath(p.link, locale);
-                            const isActive = currentNoLocale === p.link;
+                          {profileItems.map((page) => {
+                            const label = isFR ? page.nameFR : page.nameEN;
+                            const href = withLocalePath(page.link, locale);
+                            const isActive = currentNoLocale === page.link;
 
                             return (
-                              <li key={p.link}>
+                              <li key={page.link}>
                                 <Link
                                   role="menuitem"
                                   href={href}
@@ -238,9 +202,9 @@ export default function DesktopNavbar({
                                   }`}
                                 >
                                   <span>{label}</span>
-                                  {isActive && (
+                                  {isActive ? (
                                     <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                                  )}
+                                  ) : null}
                                 </Link>
                               </li>
                             );
@@ -254,9 +218,8 @@ export default function DesktopNavbar({
                 <LocaleSwitcher />
               </div>
 
-              {/* Burger (mobile) — inchangé */}
               <button
-                onClick={() => setOpen((v) => !v)}
+                onClick={() => setOpen((value) => !value)}
                 aria-expanded={open}
                 aria-controls="mobile-menu"
                 className="inline-flex items-center justify-center rounded-md p-2 md:hidden hover:bg-neutral-100/60 focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:ring-offset-2 dark:hover:bg-neutral-800/60 dark:focus:ring-neutral-700"

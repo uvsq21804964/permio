@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { sql } from '@/lib/db';
+import { devLogger } from '@/lib/shared/dev-logger';
 import Stripe from 'stripe';
 
 export const runtime = 'nodejs';
@@ -54,16 +55,13 @@ export async function POST(req: Request) {
   // ✅ lookup key final
   const priceLookupKey = `${planSlug}_${expectedCurrency}`;
 
-  // --- DEBUG ---
-  console.log('[checkout] raw checkoutLocale:', form.get('checkoutLocale'));
-  console.log('[checkout] normalized checkoutLocale:', checkoutLocale);
-  console.log('[checkout] expectedCurrency:', expectedCurrency);
-  console.log('[checkout] priceLookupKey:', priceLookupKey);
-  console.log(
-    '[checkout] STRIPE_SECRET_KEY prefix:',
-    process.env.STRIPE_SECRET_KEY?.slice(0, 8) // sk_test_ ou sk_live_
-  );
-  // ------------
+  devLogger.log('[checkout] request context', {
+    rawCheckoutLocale: form.get('checkoutLocale'),
+    checkoutLocale,
+    expectedCurrency,
+    priceLookupKey,
+    stripeSecretKeyPrefix: process.env.STRIPE_SECRET_KEY?.slice(0, 8),
+  });
 
   // ✅ 1) Récupère le price via lookup_key
   const prices = await stripe.prices.list({
@@ -72,8 +70,8 @@ export async function POST(req: Request) {
     limit: 10,
   });
 
-  console.log(
-    '[checkout] prices found:',
+  devLogger.log(
+    '[checkout] prices found',
     prices.data.map((p) => ({
       id: p.id,
       lookup_key: p.lookup_key,
@@ -146,15 +144,15 @@ export async function POST(req: Request) {
   });
 
   // --- DEBUG SESSION ---
-  console.log('[checkout] session.id:', session.id);
-  console.log('[checkout] session.url:', session.url);
+  devLogger.log('[checkout] session.id', session.id);
+  devLogger.log('[checkout] session.url', session.url);
 
   // ✅ Imparable: re-fetch la session avec line_items expand pour voir la vraie devise
   const sessionFull = await stripe.checkout.sessions.retrieve(session.id, {
     expand: ['line_items.data.price'],
   });
 
-  console.log(
+  devLogger.log(
     '[checkout] sessionFull line items:',
     sessionFull.line_items?.data.map((li) => ({
       lineItemId: li.id,

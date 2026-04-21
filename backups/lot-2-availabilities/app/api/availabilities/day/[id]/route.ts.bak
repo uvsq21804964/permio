@@ -1,0 +1,45 @@
+// app/api/day-availabilities/[id]/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import { sql } from '@/lib/db';
+import { requireUser } from '@/lib/api/auth-server';
+
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { auth, response } = requireUser(req, {
+      treatPendingAsSignedOut: false,
+    });
+    if (!auth) return response;
+    const { userId } = auth;
+
+    const { id } = params;
+    if (!id) {
+      return NextResponse.json({ error: 'Missing id' }, { status: 400 });
+    }
+
+    const exists = await sql`
+      SELECT id
+      FROM "DayAvailability"
+      WHERE id = ${id} AND "userId" = ${userId}
+      LIMIT 1
+    `;
+    if (exists.length === 0) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 });
+    }
+
+    await sql`
+      DELETE FROM "DayAvailability"
+      WHERE id = ${id} AND "userId" = ${userId}
+    `;
+
+    return new NextResponse(null, { status: 204 });
+  } catch (err: any) {
+    console.error('[DELETE /api/day-availabilities/:id] error:', err);
+    return NextResponse.json(
+      { error: 'Failed to delete day availability', detail: err?.message },
+      { status: 500 }
+    );
+  }
+}

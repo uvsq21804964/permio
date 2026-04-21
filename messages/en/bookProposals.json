@@ -4,62 +4,70 @@
     "button": "Back to service selection"
   },
   "noAddress": {
-    "title": "We couldn’t retrieve your address to compute suggested time slots.",
+    "title": "We could not retrieve your address to compute suggested time slots.",
     "button": "Back to the address step"
   },
   "errors": {
-    "loadServicesApi": "We couldn’t retrieve your dog trainer’s services.",
-    "loadServicesGeneric": "An error occurred while loading your dog trainer’s services.",
-    "loadAgendaApi": "We couldn’t retrieve your dog trainer’s availability.",
+    "loadServicesApi": "We could not retrieve your dog trainer's services.",
+    "loadServicesGeneric": "An error occurred while loading your dog trainer's services.",
+    "loadAgendaApi": "We could not retrieve your dog trainer's availability.",
     "generateSlots": "An error occurred while computing suggested time slots.",
     "slotAlreadyBooked": "This time slot has just been booked by someone else. Please pick another one.",
-    "createBooking": "We couldn’t create your booking. Please try again.",
-    "genericSelectedService": "We couldn’t find the selected service. Please try again.",
-    "noBookingAddress": "We couldn’t retrieve your address to compute suggested time slots."
+    "createBooking": "We could not create your booking. Please try again.",
+    "genericSelectedService": "We could not find the selected service. Please try again.",
+    "noBookingAddress": "We could not retrieve your address to compute suggested time slots."
   },
   "header": {
-    "title": "Choose a recommended time slot",
-    "subtitle": "These time slots take into account your address and your dog sitter’s schedule, and are optimised to reduce travel time and avoid breaking rest days.",
-    "seeAll": "View all availabilities"
+    "eyebrow": "Smart shortlist",
+    "title": "A few easy times to choose from",
+    "subtitle": "A few suggestions to help you choose quickly. The full schedule stays available.",
+    "seeAll": "See all times",
+    "trustNote": "Suggestion only."
   },
   "serviceSection": {
-    "label": "Selected service"
+    "label": "Selected service",
+    "duration": "{duration} min"
   },
   "addressSection": {
-    "label": "Address used for the calculation"
+    "label": "Address used"
   },
   "suggestions": {
-    "title": "Recommended time slots",
-    "loading": "Computing the best time slots…",
-    "empty": "No recommended time slot at the moment. You can still view all availabilities in the agenda."
+    "title": "Suggested times right now",
+    "subtitle": "A short list, with the full schedule still one tap away.",
+    "loading": "Computing suggestions…",
+    "empty": "No recommended time right now. You can still browse the full schedule.",
+    "badgeLead": "Current suggestion",
+    "badge": "Suggested",
+    "dateLabel": "{date}"
   },
   "booking": {
     "noticeSuccess": "Time slot booked successfully ✅",
-    "loading": "Booking in progress…",
-    "button": "Choose and book this time slot"
+    "loading": "Booking…",
+    "button": "Choose"
   },
-  "score": {
-    "label": "Score: {score}%"
+  "confirm": {
+    "title": "Confirm this time?",
+    "body": "You are about to book {date} at {time}.",
+    "fallback": "Do you want to confirm this time?",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
   },
   "footer": {
-    "seeAll": "Or view all availabilities in the agenda"
+    "seeAll": "See all times"
   },
-  "explanation": {
-    "base": "This time slot is suggested because it fits well into your dog sitter’s schedule.",
-    "prefix": "This time slot is suggested because it ",
-    "and": " and "
+  "journey": {
+    "stepOneLabel": "1. Scan quickly",
+    "stepOne": "Start with a few simple times that are easy to compare.",
+    "stepTwoLabel": "2. Choose freely",
+    "stepTwo": "The suggestion stays optional and every time remains available.",
+    "stepThreeLabel": "3. Stay in control",
+    "stepThree": "If needed, you can always open the full schedule."
   },
   "reason": {
-    "sameDay": "matches a day when your dog sitter is already working",
-    "dayOff": "is compatible with your dog sitter’s rest days",
-    "travelVeryLow": "greatly limits your dog sitter’s travel time",
-    "travelReduced": "reduces travel time compared with other options",
-    "travelStillOk": "still respects your dog sitter’s travel constraints",
-    "fillsGap": "fills a gap between two lessons already scheduled",
-    "afterLesson": "follows directly after another lesson",
-    "beforeNextLesson": "prepares the next lesson in the day",
-    "verySoon": "is offered very soon",
-    "nextDays": "is scheduled in the next few days",
-    "soon": "still lies in a relatively near future"
+    "fluidVisit": "Suggested for a smoother visit",
+    "reduceTravel": "Helps reduce travel time",
+    "dayFlow": "Keeps the day feeling smoother",
+    "fitSchedule": "Fits well into the schedule",
+    "smoothOption": "Smoothest option"
   }
 }

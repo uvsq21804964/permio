@@ -1,83 +1,112 @@
 // middleware.ts
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-const SUPPORTED_LOCALES = ['fr', 'en', 'ro'] as const;
-const DEFAULT_LOCALE = 'fr';
+const SUPPORTED_LOCALES = ['fr', 'en'] as const;
+type SupportedLocale = (typeof SUPPORTED_LOCALES)[number];
+const DEFAULT_LOCALE: SupportedLocale = 'en';
+const LOCALE_COOKIE_NAME = 'NEXT_LOCALE';
 
-function extractLocale(pathname: string) {
+function extractLocale(pathname: string): SupportedLocale | null {
   const match = pathname.match(/^\/([a-zA-Z-]{2})(\/|$)/);
-  const l = match?.[1]?.toLowerCase();
-  return (SUPPORTED_LOCALES as readonly string[]).includes(l as string)
-    ? (l as any)
+  const locale = match?.[1]?.toLowerCase();
+  return (SUPPORTED_LOCALES as readonly string[]).includes(locale as string)
+    ? (locale as SupportedLocale)
     : null;
 }
 
-// Déclare les routes publiques (avec OU sans locale)
+function getPreferredLocale(req: NextRequest): SupportedLocale {
+  const cookieLocale = req.cookies.get(LOCALE_COOKIE_NAME)?.value?.toLowerCase();
+  if ((SUPPORTED_LOCALES as readonly string[]).includes(cookieLocale ?? '')) {
+    return cookieLocale as SupportedLocale;
+  }
+
+  const acceptLanguage = req.headers.get('accept-language') ?? '';
+  for (const part of acceptLanguage.split(',')) {
+    const language = part.split(';')[0]?.trim().toLowerCase().slice(0, 2);
+    if ((SUPPORTED_LOCALES as readonly string[]).includes(language ?? '')) {
+      return language as SupportedLocale;
+    }
+  }
+
+  return DEFAULT_LOCALE;
+}
+
+function withLocaleCookie(response: NextResponse, locale: SupportedLocale) {
+  response.cookies.set(LOCALE_COOKIE_NAME, locale, {
+    path: '/',
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 365,
+  });
+
+  return response;
+}
+
 const isPublicRoute = createRouteMatcher([
-  // non localisées (fallback)
   '/sign-in(.*)',
   '/sign-up(.*)',
   '/onboarding/choose-organization',
   '/home',
   '/leastory',
-
-  // localisées
-  '/(fr|en|ro)/sign-in(.*)',
-  '/(fr|en|ro)/sign-up(.*)',
-  '/(fr|en|ro)/onboarding/choose-organization',
-  '/(fr|en|ro)/home',
-  '/(fr|en|ro)/leastory',
+  '/(fr|en)/sign-in(.*)',
+  '/(fr|en)/sign-up(.*)',
+  '/(fr|en)/onboarding/choose-organization',
+  '/(fr|en)/home',
+  '/(fr|en)/leastory',
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
   const { nextUrl } = req;
   const { pathname } = nextUrl;
 
-  // 0) Ignorer les assets/_next
   if (/\.(?:\w+)$/.test(pathname) || pathname.startsWith('/_next')) {
     return NextResponse.next();
   }
-  // 0bis) Laisser passer toutes les API (tu peux restreindre si besoin)
+
   if (pathname.startsWith('/api/')) {
     return NextResponse.next();
   }
 
-  // 1) Rediriger "/" vers "/fr"
   if (pathname === '/') {
+    const preferredLocale = getPreferredLocale(req);
+    const { userId } = await auth({ treatPendingAsSignedOut: true });
     const url = nextUrl.clone();
-    url.pathname = `/${DEFAULT_LOCALE}`;
-    return NextResponse.redirect(url);
+    url.pathname = userId
+      ? `/${preferredLocale}/myweek`
+      : `/${preferredLocale}/home`;
+    return withLocaleCookie(NextResponse.redirect(url), preferredLocale);
   }
 
-  // 2) Forcer un préfixe de langue si absent
   const locale = extractLocale(pathname);
   if (!locale) {
+    const preferredLocale = getPreferredLocale(req);
     const url = nextUrl.clone();
-    url.pathname = `/${DEFAULT_LOCALE}${pathname}`;
-    return NextResponse.redirect(url);
+    url.pathname = `/${preferredLocale}${pathname}`;
+    return withLocaleCookie(NextResponse.redirect(url), preferredLocale);
   }
 
-  // 3) Routes publiques → laisser passer
+  if (pathname === `/${locale}`) {
+    const { userId } = await auth({ treatPendingAsSignedOut: true });
+    const url = nextUrl.clone();
+    url.pathname = userId ? `/${locale}/myweek` : `/${locale}/home`;
+    return withLocaleCookie(NextResponse.redirect(url), locale);
+  }
+
   if (isPublicRoute(req)) {
-    return NextResponse.next();
+    return withLocaleCookie(NextResponse.next(), locale);
   }
 
-  // 4) Routes privées → exiger une session
   const { userId } = await auth({ treatPendingAsSignedOut: true });
   if (!userId) {
     const url = nextUrl.clone();
-    // Préserver la locale détectée et t’emmener vers la page de login localisée
     url.pathname = `/${locale}/sign-in`;
-    // Tu peux aussi ajouter un param "redirect_url" si tu veux revenir après login
     url.searchParams.set('redirect_url', nextUrl.pathname + nextUrl.search);
-    return NextResponse.redirect(url);
+    return withLocaleCookie(NextResponse.redirect(url), locale);
   }
 
-  return NextResponse.next();
+  return withLocaleCookie(NextResponse.next(), locale);
 });
 
 export const config = {
-  // Passe le middleware sur toutes les routes "pages" et API
   matcher: ['/((?!.+\\.[\\w]+$|_next).*)', '/api/(.*)'],
 };

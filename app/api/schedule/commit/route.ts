@@ -1,7 +1,8 @@
 // app/api/schedule/commit/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
-import { getAuth } from '@clerk/nextjs/server';
+import { requireOrgUser } from '@/lib/api/auth-server';
+import { getAgencyIdFromClerkOrgId } from '@/lib/server/repositories/agency-repository';
 
 type Match = {
   studentId: string;
@@ -16,15 +17,6 @@ type Match = {
 
 export const dynamic = 'force-dynamic';
 
-async function getAgencyIdFromClerkOrgId(clerkOrgId: string) {
-  const rows = await sql`
-    SELECT "id" FROM "Agency"
-    WHERE "clerk_org_id" = ${clerkOrgId}
-    LIMIT 1
-  `;
-  return rows.length ? (rows[0].id as string) : null;
-}
-
 async function computeCurrentMondayISO(): Promise<string> {
   // Lundi ISO de la semaine courante
   const rows = await sql`
@@ -35,16 +27,11 @@ async function computeCurrentMondayISO(): Promise<string> {
 
 export async function POST(req: NextRequest) {
   try {
-    const { userId, orgId } = getAuth(req, { treatPendingAsSignedOut: false });
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-    if (!orgId) {
-      return NextResponse.json(
-        { error: 'No active organization' },
-        { status: 403 }
-      );
-    }
+    const { auth, response } = requireOrgUser(req, {
+      treatPendingAsSignedOut: false,
+    });
+    if (!auth) return response;
+    const { orgId } = auth;
 
     const agencyId = await getAgencyIdFromClerkOrgId(orgId);
     if (!agencyId) {

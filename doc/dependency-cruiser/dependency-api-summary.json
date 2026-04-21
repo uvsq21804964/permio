@@ -1,0 +1,1016 @@
+{
+  "generatedAt": "2026-04-19T18:53:38.523Z",
+  "root": "C:\\Users\\tomab\\OneDrive\\Bureau\\ALL\\Entreprise\\permio\\permio",
+  "summary": {
+    "mappedOccurrences": 33,
+    "unmatchedOccurrences": 84,
+    "uniqueApiPaths": 27,
+    "uniqueRouteFiles": 27,
+    "uniqueSourceFiles": 12
+  },
+  "apiRoutes": [
+    {
+      "apiPath": "/api/agency/association",
+      "routeFile": "app/api/agency/association/route.ts",
+      "color": "#c526c5",
+      "callers": [
+        {
+          "file": "lib/client/api/profile-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/availabilities",
+      "routeFile": "app/api/availabilities/route.ts",
+      "color": "#b7ce1c",
+      "callers": [
+        {
+          "file": "lib/client/api/availabilities-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/availabilities/all",
+      "routeFile": "app/api/availabilities/all/route.ts",
+      "color": "#97b422",
+      "callers": [
+        {
+          "file": "lib/client/api/availabilities-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/availabilities/bulk",
+      "routeFile": "app/api/availabilities/bulk/route.ts",
+      "color": "#19c233",
+      "callers": [
+        {
+          "file": "lib/client/api/availabilities-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/availabilities/day",
+      "routeFile": "app/api/availabilities/day/route.ts",
+      "color": "#1eb0be",
+      "callers": [
+        {
+          "file": "lib/client/api/availabilities-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/me/account_bdd",
+      "routeFile": "app/api/me/account_bdd/route.ts",
+      "color": "#581cce",
+      "callers": [
+        {
+          "file": "lib/client/api/profile-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/me/delete-account",
+      "routeFile": "app/api/me/delete-account/route.ts",
+      "color": "#1fdb35",
+      "callers": [
+        {
+          "file": "lib/client/api/profile-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/me/hours",
+      "routeFile": "app/api/me/hours/route.ts",
+      "color": "#225cb9",
+      "callers": [
+        {
+          "file": "lib/client/api/me-client.ts",
+          "kind": "api-occurrence"
+        },
+        {
+          "file": "lib/client/hooks/useAvailabilityCurrentUser.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/me/instructor-services",
+      "routeFile": "app/api/me/instructor-services/route.ts",
+      "color": "#9722b4",
+      "callers": [
+        {
+          "file": "lib/client/api/services-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/me/instructor-weekly-agenda",
+      "routeFile": "app/api/me/instructor-weekly-agenda/route.ts",
+      "color": "#c31d70",
+      "callers": [
+        {
+          "file": "lib/client/api/booking-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/me/instructor-weekly-agenda-proposals",
+      "routeFile": "app/api/me/instructor-weekly-agenda-proposals/route.ts",
+      "color": "#c52645",
+      "callers": [
+        {
+          "file": "lib/client/api/booking-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/me/profile",
+      "routeFile": "app/api/me/profile/route.ts",
+      "color": "#db1f54",
+      "callers": [
+        {
+          "file": "lib/client/api/me-client.ts",
+          "kind": "api-occurrence"
+        },
+        {
+          "file": "lib/client/api/profile-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/me/role",
+      "routeFile": "app/api/me/role/route.ts",
+      "color": "#70c31d",
+      "callers": [
+        {
+          "file": "lib/client/api/me-client.ts",
+          "kind": "api-occurrence"
+        },
+        {
+          "file": "lib/client/hooks/useAvailabilityCurrentUser.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/me/services",
+      "routeFile": "app/api/me/services/route.ts",
+      "color": "#3220d5",
+      "callers": [
+        {
+          "file": "lib/client/api/services-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/me/subscription",
+      "routeFile": "app/api/me/subscription/route.ts",
+      "color": "#1a6ce0",
+      "callers": [
+        {
+          "file": "lib/client/api/me-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/me/weeks",
+      "routeFile": "app/api/me/weeks/route.ts",
+      "color": "#9824d6",
+      "callers": [
+        {
+          "file": "lib/client/api/schedule-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/onboarding/trainer",
+      "routeFile": "app/api/onboarding/trainer/route.ts",
+      "color": "#bc711a",
+      "callers": [
+        {
+          "file": "lib/client/api/profile-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/schedule",
+      "routeFile": "app/api/schedule/route.ts",
+      "color": "#20d532",
+      "callers": [
+        {
+          "file": "lib/client/api/schedule-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/schedule/commit",
+      "routeFile": "app/api/schedule/commit/route.ts",
+      "color": "#bf229a",
+      "callers": [
+        {
+          "file": "lib/client/api/schedule-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/slots",
+      "routeFile": "app/api/slots/route.ts",
+      "color": "#70b81e",
+      "callers": [
+        {
+          "file": "lib/client/api/booking-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/slots/week",
+      "routeFile": "app/api/slots/week/route.ts",
+      "color": "#cf2058",
+      "callers": [
+        {
+          "file": "lib/client/api/availabilities-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/stripe/checkout",
+      "routeFile": "app/api/stripe/checkout/route.ts",
+      "color": "#9fdb1f",
+      "callers": [
+        {
+          "file": "app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx",
+          "kind": "api-occurrence"
+        },
+        {
+          "file": "components/home/PlansSansSimulation.tsx",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/stripe/portal",
+      "routeFile": "app/api/stripe/portal/route.ts",
+      "color": "#b99e22",
+      "callers": [
+        {
+          "file": "app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/stripe/subscription/cancel",
+      "routeFile": "app/api/stripe/subscription/cancel/route.ts",
+      "color": "#cfbb20",
+      "callers": [
+        {
+          "file": "app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/stripe/subscription/resume",
+      "routeFile": "app/api/stripe/subscription/resume/route.ts",
+      "color": "#b21abc",
+      "callers": [
+        {
+          "file": "app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/travels/week",
+      "routeFile": "app/api/travels/week/route.ts",
+      "color": "#20cfbb",
+      "callers": [
+        {
+          "file": "lib/client/api/availabilities-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "apiPath": "/api/users",
+      "routeFile": "app/api/users/route.ts",
+      "color": "#d45c1c",
+      "callers": [
+        {
+          "file": "app/api/users/[id]/role/route.ts",
+          "kind": "api-occurrence"
+        },
+        {
+          "file": "app/api/users/[id]/route.ts",
+          "kind": "api-occurrence"
+        },
+        {
+          "file": "lib/client/api/users-client.ts",
+          "kind": "api-occurrence"
+        }
+      ]
+    }
+  ],
+  "sourceFiles": [
+    {
+      "file": "app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx",
+      "apiCalls": [
+        {
+          "apiPath": "/api/stripe/checkout",
+          "routeFile": "app/api/stripe/checkout/route.ts",
+          "color": "#9fdb1f",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/stripe/portal",
+          "routeFile": "app/api/stripe/portal/route.ts",
+          "color": "#b99e22",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/stripe/subscription/cancel",
+          "routeFile": "app/api/stripe/subscription/cancel/route.ts",
+          "color": "#cfbb20",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/stripe/subscription/resume",
+          "routeFile": "app/api/stripe/subscription/resume/route.ts",
+          "color": "#b21abc",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "file": "app/api/users/[id]/role/route.ts",
+      "apiCalls": [
+        {
+          "apiPath": "/api/users",
+          "routeFile": "app/api/users/route.ts",
+          "color": "#d45c1c",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "file": "app/api/users/[id]/route.ts",
+      "apiCalls": [
+        {
+          "apiPath": "/api/users",
+          "routeFile": "app/api/users/route.ts",
+          "color": "#d45c1c",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "file": "components/home/PlansSansSimulation.tsx",
+      "apiCalls": [
+        {
+          "apiPath": "/api/stripe/checkout",
+          "routeFile": "app/api/stripe/checkout/route.ts",
+          "color": "#9fdb1f",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "file": "lib/client/api/availabilities-client.ts",
+      "apiCalls": [
+        {
+          "apiPath": "/api/availabilities",
+          "routeFile": "app/api/availabilities/route.ts",
+          "color": "#b7ce1c",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/availabilities/all",
+          "routeFile": "app/api/availabilities/all/route.ts",
+          "color": "#97b422",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/availabilities/bulk",
+          "routeFile": "app/api/availabilities/bulk/route.ts",
+          "color": "#19c233",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/availabilities/day",
+          "routeFile": "app/api/availabilities/day/route.ts",
+          "color": "#1eb0be",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/slots/week",
+          "routeFile": "app/api/slots/week/route.ts",
+          "color": "#cf2058",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/travels/week",
+          "routeFile": "app/api/travels/week/route.ts",
+          "color": "#20cfbb",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "file": "lib/client/api/booking-client.ts",
+      "apiCalls": [
+        {
+          "apiPath": "/api/me/instructor-weekly-agenda",
+          "routeFile": "app/api/me/instructor-weekly-agenda/route.ts",
+          "color": "#c31d70",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/instructor-weekly-agenda-proposals",
+          "routeFile": "app/api/me/instructor-weekly-agenda-proposals/route.ts",
+          "color": "#c52645",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/slots",
+          "routeFile": "app/api/slots/route.ts",
+          "color": "#70b81e",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "file": "lib/client/api/me-client.ts",
+      "apiCalls": [
+        {
+          "apiPath": "/api/me/hours",
+          "routeFile": "app/api/me/hours/route.ts",
+          "color": "#225cb9",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/profile",
+          "routeFile": "app/api/me/profile/route.ts",
+          "color": "#db1f54",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/role",
+          "routeFile": "app/api/me/role/route.ts",
+          "color": "#70c31d",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/subscription",
+          "routeFile": "app/api/me/subscription/route.ts",
+          "color": "#1a6ce0",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "file": "lib/client/api/profile-client.ts",
+      "apiCalls": [
+        {
+          "apiPath": "/api/agency/association",
+          "routeFile": "app/api/agency/association/route.ts",
+          "color": "#c526c5",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/account_bdd",
+          "routeFile": "app/api/me/account_bdd/route.ts",
+          "color": "#581cce",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/delete-account",
+          "routeFile": "app/api/me/delete-account/route.ts",
+          "color": "#1fdb35",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/profile",
+          "routeFile": "app/api/me/profile/route.ts",
+          "color": "#db1f54",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/onboarding/trainer",
+          "routeFile": "app/api/onboarding/trainer/route.ts",
+          "color": "#bc711a",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "file": "lib/client/api/schedule-client.ts",
+      "apiCalls": [
+        {
+          "apiPath": "/api/me/weeks",
+          "routeFile": "app/api/me/weeks/route.ts",
+          "color": "#9824d6",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/schedule",
+          "routeFile": "app/api/schedule/route.ts",
+          "color": "#20d532",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/schedule/commit",
+          "routeFile": "app/api/schedule/commit/route.ts",
+          "color": "#bf229a",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "file": "lib/client/api/services-client.ts",
+      "apiCalls": [
+        {
+          "apiPath": "/api/me/instructor-services",
+          "routeFile": "app/api/me/instructor-services/route.ts",
+          "color": "#9722b4",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/services",
+          "routeFile": "app/api/me/services/route.ts",
+          "color": "#3220d5",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "file": "lib/client/api/users-client.ts",
+      "apiCalls": [
+        {
+          "apiPath": "/api/users",
+          "routeFile": "app/api/users/route.ts",
+          "color": "#d45c1c",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "file": "lib/client/hooks/useAvailabilityCurrentUser.ts",
+      "apiCalls": [
+        {
+          "apiPath": "/api/me/hours",
+          "routeFile": "app/api/me/hours/route.ts",
+          "color": "#225cb9",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/role",
+          "routeFile": "app/api/me/role/route.ts",
+          "color": "#70c31d",
+          "kind": "api-occurrence"
+        }
+      ]
+    }
+  ],
+  "unmatched": [
+    {
+      "from": "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx",
+      "apiPath": "/api/me-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx",
+      "apiPath": "/api/services-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx",
+      "apiPath": "/api/request",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx",
+      "apiPath": "/api/request",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx",
+      "apiPath": "/api/services-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/[locale]/(routes)/(routes)/(app)/(client)/book/services/page.tsx",
+      "apiPath": "/api/services-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/[locale]/(routes)/(routes)/(pay)/(educator)/services/page.tsx",
+      "apiPath": "/api/services-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx",
+      "apiPath": "/api/profile-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/[locale]/(routes)/onboarding/choose-organization/page.tsx",
+      "apiPath": "/api/profile-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/agency/association/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/availabilities/all/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/availabilities/all/route.ts",
+      "apiPath": "/api/availabilities]",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/availabilities/bulk/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/availabilities/day/[id]/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/availabilities/day/[id]/route.ts",
+      "apiPath": "/api/day-availabilities",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/availabilities/day/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/availabilities/day/route.ts",
+      "apiPath": "/api/availabilities/day]",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/availabilities/day/route.ts",
+      "apiPath": "/api/day-availabilities]",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/availabilities/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/availabilities/route.ts",
+      "apiPath": "/api/availabilities]",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/me/account_bdd/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/me/delete-account/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/me/hours/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/me/instructor-services/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/me/instructor-services/route.ts",
+      "apiPath": "/api/me/instructor-services]",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/me/instructor-weekly-agenda-proposals/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/me/instructor-weekly-agenda-proposals/route.ts",
+      "apiPath": "/api/me/instructor-weekly-agenda]",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/me/instructor-weekly-agenda/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/me/instructor-weekly-agenda/route.ts",
+      "apiPath": "/api/me/instructor-weekly-agenda]",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/me/profile/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/me/profile/route.ts",
+      "apiPath": "/api/me/profile]",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/me/services/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/me/services/route.ts",
+      "apiPath": "/api/me/services]",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/me/weeks/route.ts",
+      "apiPath": "/api/agenda/last-week]",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/me/weeks/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/me/weeks/route.ts",
+      "apiPath": "/api/distancematrix/json",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/onboarding/trainer/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/schedule/commit/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/schedule/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/slots/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/slots/route.ts",
+      "apiPath": "/api/slots]",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/stripe/create-checkout-session/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/travels/week/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/users/[id]/hours/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/users/[id]/role/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/users/[id]/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "app/api/users/route.ts",
+      "apiPath": "/api/auth-server",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "components/gestion/UserManagement.tsx",
+      "apiPath": "/api/users-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "components/optimal-schedule.tsx",
+      "apiPath": "/api/schedule-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "components/schedule/CalculatedAgendaSection.tsx",
+      "apiPath": "/api/users-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "components/services/EditableServicesCatalog.tsx",
+      "apiPath": "/api/services-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "components/services/SelectableServicesCatalog.tsx",
+      "apiPath": "/api/services-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "components/services/ServiceFormDialog.tsx",
+      "apiPath": "/api/services-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/api/availabilities-client.ts",
+      "apiPath": "/api/request",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/api/booking-client.ts",
+      "apiPath": "/api/request",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/api/me-client.ts",
+      "apiPath": "/api/request",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/api/profile-client.ts",
+      "apiPath": "/api/me-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/api/profile-client.ts",
+      "apiPath": "/api/request",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/api/schedule-client.ts",
+      "apiPath": "/api/request",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/api/services-client.ts",
+      "apiPath": "/api/request",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/api/users-client.ts",
+      "apiPath": "/api/request",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useAgencyUsers.ts",
+      "apiPath": "/api/users-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useAllAvailabilities.ts",
+      "apiPath": "/api/availabilities-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useAvailabilityCurrentUser.ts",
+      "apiPath": "/api/me-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useAvailabilityRoleGate.ts",
+      "apiPath": "/api/me-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useBookSlot.ts",
+      "apiPath": "/api/booking-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useCommitSchedule.ts",
+      "apiPath": "/api/schedule-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useDayOverrides.ts",
+      "apiPath": "/api/availabilities-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useEditableServices.ts",
+      "apiPath": "/api/request",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useEditableServices.ts",
+      "apiPath": "/api/services-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useEditableWeeklyAvailabilityDraft.ts",
+      "apiPath": "/api/availabilities-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useEditableWeeklyAvailabilityDraft.ts",
+      "apiPath": "/api/profile-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useInstructorProposalAgenda.ts",
+      "apiPath": "/api/booking-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useInstructorServices.ts",
+      "apiPath": "/api/services-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useInstructorWeeklyAgenda.ts",
+      "apiPath": "/api/booking-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useMySubscriptionStatus.ts",
+      "apiPath": "/api/me-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useMyWeeks.ts",
+      "apiPath": "/api/schedule-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useOwnServiceSummary.ts",
+      "apiPath": "/api/services-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useStudentHoursMutations.ts",
+      "apiPath": "/api/users-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useUserRoleMutations.ts",
+      "apiPath": "/api/users-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useWeeklyAvailabilities.ts",
+      "apiPath": "/api/availabilities-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/hooks/useWeeklyGlobalAgendaData.ts",
+      "apiPath": "/api/availabilities-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/client/utils/booking.ts",
+      "apiPath": "/api/booking-client",
+      "kind": "api-occurrence"
+    },
+    {
+      "from": "lib/server/services/instructor-agenda-service.ts",
+      "apiPath": "/api/distancematrix/json",
+      "kind": "api-occurrence"
+    }
+  ]
+}

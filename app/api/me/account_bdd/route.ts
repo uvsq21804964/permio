@@ -1,32 +1,29 @@
 // app/api/me/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuth } from '@clerk/nextjs/server';
-import { sql } from '@/lib/db';
+import { requireUser } from '@/lib/api/auth-server';
+import { getUserById } from '@/lib/server/repositories/user-repository';
 
 export async function GET(req: NextRequest) {
-  const { userId } = getAuth(req, { treatPendingAsSignedOut: false });
-  if (!userId) {
+  const { auth } = requireUser(req, {
+    treatPendingAsSignedOut: false,
+  });
+  if (!auth) {
     return NextResponse.json({ exists: false }, { status: 200 });
   }
+  const { userId } = auth;
 
   try {
-    const rows = await sql`
-      SELECT id, role, "agencyId"
-      FROM "User"
-      WHERE id = ${userId}
-      LIMIT 1
-    `;
-
-    const exists = Array.isArray(rows) && rows.length > 0;
+    const user = await getUserById(userId);
+    const exists = !!user;
 
     return NextResponse.json(
       {
         exists,
         user: exists
           ? {
-              id: rows[0].id,
-              role: rows[0].role,
-              agencyId: rows[0].agencyId,
+              id: user.id,
+              role: user.role,
+              agencyId: user.agencyId,
             }
           : null,
       },

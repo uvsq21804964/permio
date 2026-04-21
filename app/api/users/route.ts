@@ -1,50 +1,26 @@
-// app/api/users/route.ts
 import { type NextRequest, NextResponse } from 'next/server';
-import { sql } from '@/lib/db';
-import { getAuth, clerkClient } from '@clerk/nextjs/server';
+import { requireOrgUser } from '@/lib/api/auth-server';
+import {
+  buildAgencyUserCreateInput,
+  createManagedAgencyUser,
+  listAgencyUsersWithEmails,
+  resolveAgencyIdForOrg,
+} from '@/lib/server/services/org-user-management-service';
+import type { OrgManagedRole } from '@/lib/server/repositories/org-user-management-repository';
 
 export const dynamic = 'force-dynamic';
 
 type Role = 'student' | 'instructor' | 'admin';
 
-// Mappe Clerk orgId -> Agency."Id"
-async function getAgencyIdFromClerkOrgId(
-  clerkOrgId: string
-): Promise<string | null> {
-  const rows = await sql`
-    SELECT "id"
-    FROM "Agency"
-    WHERE "clerk_org_id" = ${clerkOrgId}
-    LIMIT 1
-  `;
-  return rows.length ? rows[0].id : null;
-}
-
-/**
- * GET /api/users
- * Retourne tous les users de l'agence (ou filtrés par role=student|instructor|admin)
- * Pour les élèves: expose plannedMinutes / remainingMinutes (alias depuis planned_minutes / remaining_minutes)
- */
 export async function GET(request: NextRequest) {
   try {
-    const { userId, orgId } = getAuth(request, {
+    const { auth, response } = requireOrgUser(request, {
       treatPendingAsSignedOut: false,
     });
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized (no userId)' },
-        { status: 401 }
-      );
-    }
-    if (!orgId) {
-      return NextResponse.json(
-        { error: 'No active organization (no orgId)' },
-        { status: 403 }
-      );
-    }
+    if (!auth) return response;
+    const { orgId } = auth;
 
-    // Convertit clerk_org_id -> Agency.id
-    const agencyId = await getAgencyIdFromClerkOrgId(orgId);
+    const agencyId = await resolveAgencyIdForOrg(orgId);
     if (!agencyId) {
       return NextResponse.json(
         { error: `Agency not found for clerk_org_id=${orgId}` },
@@ -53,76 +29,10 @@ export async function GET(request: NextRequest) {
     }
 
     const roleParam = request.nextUrl.searchParams.get('role') as Role | null;
-
-    // 1) On récupère les users de la BDD + leur clerk_user_id
-    const rows = roleParam
-      ? await sql`
-          SELECT
-            u.id,
-            u.name,
-            u.role,
-            u."createdAt",
-            u."updatedAt",
-            u."agencyId",
-            u.id AS "clerkUserId",  -- 👈 IMPORTANT
-            CASE WHEN u.role = 'student' THEN u.planned_minutes   ELSE NULL END AS "plannedMinutes",
-            CASE WHEN u.role = 'student' THEN u.remaining_minutes ELSE NULL END AS "remainingMinutes"
-          FROM "User" u
-          WHERE u."agencyId" = ${agencyId}
-            AND u.role = ${roleParam}
-          ORDER BY u.name ASC NULLS LAST
-        `
-      : await sql`
-          SELECT
-            u.id,
-            u.name,
-            u.role,
-            u."createdAt",
-            u."updatedAt",
-            u."agencyId",
-            u.id AS "clerkUserId",  -- 👈 IMPORTANT
-            CASE WHEN u.role = 'student' THEN u.planned_minutes   ELSE NULL END AS "plannedMinutes",
-            CASE WHEN u.role = 'student' THEN u.remaining_minutes ELSE NULL END AS "remainingMinutes"
-          FROM "User" u
-          WHERE u."agencyId" = ${agencyId}
-          ORDER BY u.name ASC NULLS LAST
-        `;
-
-    // 2) On récupère tous les clerkUserId non nuls/uniques
-    const clerkIds = Array.from(
-      new Set(
-        rows
-          .map((r: any) => r.clerkUserId as string | null)
-          .filter((id): id is string => !!id)
-      )
-    );
-
-    // 3) On va chercher les users Clerk correspondants en un seul appel
-    const emailByClerkId: Record<string, string | null> = {};
-
-    if (clerkIds.length > 0) {
-      const clerk = await clerkClient();
-      const clerkUsers = await clerk.users.getUserList({
-        userId: clerkIds,
-        limit: clerkIds.length,
-      });
-
-      for (const cu of clerkUsers.data) {
-        const primary =
-          cu.emailAddresses.find((e) => e.id === cu.primaryEmailAddressId)
-            ?.emailAddress ??
-          cu.emailAddresses[0]?.emailAddress ??
-          null;
-
-        emailByClerkId[cu.id] = primary;
-      }
-    }
-
-    // 4) On enrichit chaque ligne avec l'email venant de Clerk
-    const enriched = rows.map((r: any) => ({
-      ...r,
-      email: r.clerkUserId ? emailByClerkId[r.clerkUserId] ?? null : null,
-    }));
+    const enriched = await listAgencyUsersWithEmails({
+      agencyId,
+      role: roleParam as OrgManagedRole | null,
+    });
 
     return NextResponse.json(enriched);
   } catch (error) {
@@ -134,30 +44,15 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * POST /api/users
- * Crée un user. Si role === 'student', on accepte plannedMinutes / remainingMinutes (entiers ≥ 0).
- * Les colonnes DB sont planned_minutes / remaining_minutes (snake_case) et on mappe depuis le body camelCase.
- */
 export async function POST(request: NextRequest) {
   try {
-    const { userId, orgId } = getAuth(request, {
+    const { auth, response } = requireOrgUser(request, {
       treatPendingAsSignedOut: false,
     });
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized (no userId)' },
-        { status: 401 }
-      );
-    }
-    if (!orgId) {
-      return NextResponse.json(
-        { error: 'No active organization (no orgId)' },
-        { status: 403 }
-      );
-    }
+    if (!auth) return response;
+    const { orgId } = auth;
 
-    const agencyId = await getAgencyIdFromClerkOrgId(orgId);
+    const agencyId = await resolveAgencyIdForOrg(orgId);
     if (!agencyId) {
       return NextResponse.json(
         { error: `Agency not found for clerk_org_id=${orgId}` },
@@ -176,50 +71,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Par défaut 0; on ne les utilisera que si role === 'student'
-    let plannedMinutes = Number.isFinite(Number(body?.plannedMinutes))
-      ? Math.max(0, Math.trunc(Number(body.plannedMinutes)))
-      : 0;
-    let remainingMinutes = Number.isFinite(Number(body?.remainingMinutes))
-      ? Math.max(0, Math.trunc(Number(body.remainingMinutes)))
-      : plannedMinutes; // par défaut: restant = total prévu
+    const input = await buildAgencyUserCreateInput({
+      name,
+      role: role as OrgManagedRole,
+      plannedMinutesInput: body?.plannedMinutes,
+      remainingMinutesInput: body?.remainingMinutes,
+    });
 
-    if (role !== 'student') {
-      // On ignore toute valeur envoyée si ce n'est pas un élève
-      plannedMinutes = 0;
-      remainingMinutes = 0;
-    }
+    const created = await createManagedAgencyUser({
+      agencyId,
+      name: input.name,
+      role: input.role,
+      plannedMinutes: input.plannedMinutes,
+      remainingMinutes: input.remainingMinutes,
+    });
 
-    // Insertion
-    const rows =
-      role === 'student'
-        ? await sql`
-            INSERT INTO "User" (
-              id, name, role, "agencyId", "createdAt", "updatedAt",
-              planned_minutes, remaining_minutes
-            )
-            VALUES (
-              gen_random_uuid(), ${name}, ${role}, ${agencyId}, NOW(), NOW(),
-              ${plannedMinutes}, ${remainingMinutes}
-            )
-            RETURNING
-              id, name, role, "agencyId", "createdAt", "updatedAt",
-              planned_minutes AS "plannedMinutes",
-              remaining_minutes AS "remainingMinutes"
-          `
-        : await sql`
-            INSERT INTO "User" (
-              id, name, role, "agencyId", "createdAt", "updatedAt"
-            )
-            VALUES (
-              gen_random_uuid(), ${name}, ${role}, ${agencyId}, NOW(), NOW()
-            )
-            RETURNING id, name, role, "agencyId", "createdAt", "updatedAt",
-              NULL::int AS "plannedMinutes",
-              NULL::int AS "remainingMinutes"
-          `;
-
-    return NextResponse.json(rows[0], { status: 201 });
+    return NextResponse.json(created, { status: 201 });
   } catch (error) {
     console.error('[api/users] POST error:', error);
     return NextResponse.json(

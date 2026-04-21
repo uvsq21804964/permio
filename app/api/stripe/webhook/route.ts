@@ -6,7 +6,7 @@ import { sql } from '@/lib/db';
 export const runtime = 'nodejs';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-10-29.clover',
+  apiVersion: '2026-02-25.clover',
 });
 
 function toDateFromUnix(unixSeconds?: number | null) {

@@ -6,6 +6,9 @@ import { newClientEmail } from '@/src/lib/inngest/functions/newClient';
 import { welcomeClientEmail } from '@/src/lib/inngest/functions/welcomeClientEmail';
 import { slotBookedClientEmail } from '@/src/lib/inngest/functions/slotBookedClientEmail';
 import { slotBookedInstructorEmail } from '@/src/lib/inngest/functions/slotBookedInstructorEmail';
+import { slotReminderClientEmail } from '@/src/lib/inngest/functions/slotReminderClientEmail';
+import { slotCancelledClientEmail } from '@/src/lib/inngest/functions/slotCancelledClientEmail';
+import { slotCancelledInstructorEmail } from '@/src/lib/inngest/functions/slotCancelledInstructorEmail';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -21,6 +24,9 @@ const {
     welcomeClientEmail,
     slotBookedClientEmail,
     slotBookedInstructorEmail,
+    slotReminderClientEmail,
+    slotCancelledClientEmail,
+    slotCancelledInstructorEmail,
   ],
 });
 

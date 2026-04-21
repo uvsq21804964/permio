@@ -1,11 +1,15 @@
-// src/lib/inngest/functions/newClient.tsx
-
 import { clerkClient } from '@clerk/nextjs/server';
-import { sql } from '@/lib/db';
-import { inngest } from '@/src/lib/inngest/client';
-import { resend, EMAIL_FROM } from '@/src/lib/email/resend';
 import { render } from '@react-email/render';
+
+import { sql } from '@/lib/db';
 import NewClientEmail from '@/src/emails/newClient';
+import { inngest } from '@/src/lib/inngest/client';
+import {
+  inngestEmailLogger,
+  loadClerkUserContact,
+  sendTransactionalEmail,
+  toEmailLocale,
+} from '@/src/lib/inngest/functions/email-shared';
 
 type InstructorRow = {
   id: string;
@@ -16,24 +20,6 @@ type ClientRow = {
   name: string | null;
 };
 
-function getPrimaryEmail(user: {
-  emailAddresses?: { id: string; emailAddress: string }[];
-  primaryEmailAddressId?: string | null;
-}) {
-  if (!user?.emailAddresses?.length) return null;
-  const primary =
-    user.emailAddresses.find((e) => e.id === user.primaryEmailAddressId)
-      ?.emailAddress ?? user.emailAddresses[0]?.emailAddress;
-  return primary ?? null;
-}
-
-/**
- * Event attendu:
- * {
- *   name: "agency/member-joined",
- *   data: { agencyId, agencyName, userId, locale }
- * }
- */
 export const newClientEmail = inngest.createFunction(
   {
     id: 'agency-member-joined-email',
@@ -74,8 +60,7 @@ export const newClientEmail = inngest.createFunction(
     });
 
     const clerk = await clerkClient();
-
-    const instructorIds = instructors.map((i) => i.id);
+    const instructorIds = instructors.map((instructor) => instructor.id);
     const clerkUsers = await step.run('load-instructor-emails', async () => {
       return clerk.users.getUserList({
         userId: instructorIds,
@@ -84,19 +69,24 @@ export const newClientEmail = inngest.createFunction(
     });
 
     const emailById: Record<string, string | null> = {};
-    for (const cu of clerkUsers.data) {
-      emailById[cu.id] = getPrimaryEmail(cu);
+    for (const clerkUser of clerkUsers.data) {
+      emailById[clerkUser.id] =
+        clerkUser.emailAddresses?.find(
+          (entry) => entry.id === clerkUser.primaryEmailAddressId,
+        )?.emailAddress ??
+        clerkUser.emailAddresses?.[0]?.emailAddress ??
+        null;
     }
 
     const recipients = instructors
-      .map((i) => ({
-        id: i.id,
-        name: i.name,
-        email: emailById[i.id] ?? null,
+      .map((instructor) => ({
+        id: instructor.id,
+        name: instructor.name,
+        email: emailById[instructor.id] ?? null,
       }))
-      .filter((i) => !!i.email);
+      .filter((entry) => !!entry.email);
 
-    console.info('[newClientEmail] recipients debug', {
+    inngestEmailLogger.info('[newClientEmail] recipients debug', {
       instructors,
       clerkUsersCount: clerkUsers.data.length,
       emailById,
@@ -104,7 +94,7 @@ export const newClientEmail = inngest.createFunction(
     });
 
     if (!recipients.length) {
-      console.warn('[newClientEmail] no recipients with email', {
+      inngestEmailLogger.warn('[newClientEmail] no recipients with email', {
         agencyId,
         instructorCount: instructors.length,
       });
@@ -113,69 +103,68 @@ export const newClientEmail = inngest.createFunction(
 
     const clientClerk = await step.run('load-client-email', async () => {
       try {
-        const cu = await clerk.users.getUser(userId);
-        return {
-          email: getPrimaryEmail(cu),
-          name:
-            [cu.firstName, cu.lastName].filter(Boolean).join(' ').trim() ||
-            cu.username ||
-            null,
-        };
+        return await loadClerkUserContact(clerk, userId);
       } catch {
         return { email: null, name: null };
       }
     });
 
+    const lang = toEmailLocale(locale);
     const displayClientName =
       client?.name ||
       clientClerk?.name ||
-      (locale?.startsWith('fr') ? 'Nouveau client' : 'New client');
+      (lang === 'fr' ? 'Nouveau client' : 'New client');
 
-    const subject = locale?.startsWith('fr')
-      ? `Nouveau client associé à ${agencyName} ! Félicitations !`
-      : `New client connected to ${agencyName}`;
-
-    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || '').replace(/\/+$/, '');
-    const actionUrl = baseUrl
-      ? `${baseUrl}/${(locale || 'fr').startsWith('fr') ? 'fr' : 'en'}/myweek`
-      : 'http://localhost:3000';
+    const subject =
+      lang === 'fr'
+        ? `Nouveau client associe a ${agencyName} ! Felicitations !`
+        : `New client connected to ${agencyName}`;
 
     const res = await step.run('send-email', async () => {
-      console.info('[newClientEmail] sending email', {
+      inngestEmailLogger.info('[newClientEmail] sending email', {
         agencyId,
-        recipients: recipients.map((r) => r.email),
+        recipients: recipients.map((recipient) => recipient.email),
       });
+
       const results = [];
       for (const recipient of recipients) {
         const html = await render(
           NewClientEmail({
             firstName: recipient.name || undefined,
-            locale: (locale || 'fr').startsWith('fr') ? 'fr' : 'en',
+            locale: lang,
           }),
         );
 
-        const result = await resend.emails.send({
-          from: EMAIL_FROM,
-          to: recipient.email as string,
-          subject,
+        const result = await sendTransactionalEmail({
+          eventId: event.id,
           html,
-          ...(event.id ? { headers: { 'X-Event-Id': event.id } } : {}),
+          subject,
+          to: recipient.email as string,
         });
+
         results.push(result);
       }
+
       return results;
     });
 
-    console.info('[newClientEmail] send-email result', res);
+    inngestEmailLogger.info('[newClientEmail] send-email result', res);
+
     const firstError = Array.isArray(res)
       ? res.find((item) => (item as any)?.error)
       : (res as any)?.error
         ? res
         : null;
     if (firstError) {
-      console.error('[newClientEmail] send-email error', res);
+      inngestEmailLogger.error('[newClientEmail] send-email error', res);
       throw new Error('Resend error');
     }
-    return { ok: true, provider: res, recipients: recipients.length };
+
+    return {
+      ok: true,
+      displayClientName,
+      provider: res,
+      recipients: recipients.length,
+    };
   },
 );

@@ -1,14 +1,13 @@
 // app/api/me/delete-account/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuth, clerkClient } from '@clerk/nextjs/server';
+import { clerkClient } from '@clerk/nextjs/server';
 import { sql } from '@/lib/db';
+import { requireUser } from '@/lib/api/auth-server';
 
 export async function DELETE(req: NextRequest) {
-  const { userId } = getAuth(req);
-
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const { auth, response } = requireUser(req);
+  if (!auth) return response;
+  const { userId } = auth;
 
   try {
     // 1) Supprimer dans ta BDD (adapte nom de table & colonne)

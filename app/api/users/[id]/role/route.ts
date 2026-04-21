@@ -1,88 +1,53 @@
-// app/api/users/[id]/role/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuth } from '@clerk/nextjs/server';
-import { sql } from '@/lib/db';
+import { requireOrgUser } from '@/lib/api/auth-server';
+import {
+  authorizeScopedRoleChange,
+  changeManagedScopedUserRole,
+} from '@/lib/server/services/org-user-management-service';
+import type { OrgManagedRole } from '@/lib/server/repositories/org-user-management-repository';
 
 export async function PATCH(
   req: NextRequest,
-  context: { params: { id: string } } // ⬅️ PAS de Promise ici
+  context: { params: { id: string } }
 ) {
   try {
-    const { userId, orgId } = getAuth(req, { treatPendingAsSignedOut: false });
-    if (!userId)
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    if (!orgId)
-      return NextResponse.json(
-        { error: 'No active organization' },
-        { status: 403 }
-      );
+    const { auth, response } = requireOrgUser(req, {
+      treatPendingAsSignedOut: false,
+    });
+    if (!auth) return response;
+    const { userId, orgId } = auth;
 
-    const targetId = context.params.id; // ⬅️ on lit via context.params
-
+    const targetId = context.params.id;
     const body = await req.json().catch(() => ({}));
-    const roleReq = body?.role as
-      | 'student'
-      | 'instructor'
-      | 'admin'
-      | undefined;
-    if (!roleReq)
+    const roleReq = body?.role as OrgManagedRole | undefined;
+
+    if (!roleReq) {
       return NextResponse.json({ error: 'Missing role' }, { status: 400 });
-    if (!targetId)
+    }
+    if (!targetId) {
       return NextResponse.json({ error: 'Missing id' }, { status: 400 });
-    if (targetId === userId)
-      return NextResponse.json(
-        { error: 'Cannot change own role' },
-        { status: 400 }
-      );
-
-    // rôle du demandeur (scopé org)
-    const me = await sql`
-      SELECT u.role
-      FROM "User" u
-      CROSS JOIN LATERAL (SELECT set_config('app.agency_id', ${orgId}, true)) _
-      WHERE u.id = ${userId}
-      LIMIT 1
-    `;
-    const meRole = (me[0]?.role ?? 'student') as
-      | 'student'
-      | 'instructor'
-      | 'admin';
-
-    // rôle de la cible
-    const target = await sql`
-      SELECT u.role
-      FROM "User" u
-      CROSS JOIN LATERAL (SELECT set_config('app.agency_id', ${orgId}, true)) _
-      WHERE u.id = ${targetId}
-      LIMIT 1
-    `;
-    if (target.length === 0)
-      return NextResponse.json({ error: 'Not found' }, { status: 404 });
-    const targetRole = target[0].role as 'student' | 'instructor' | 'admin';
-
-    // 🔐 règles d'autorisation
-    // - admin : peut tout (sauf se modifier lui-même déjà bloqué)
-    // - instructor : peut promouvoir student→instructor ET dé-promouvoir instructor→student
-    //                (mais ne peut pas toucher aux admin)
-    if (meRole === 'instructor') {
-      const allowed =
-        (targetRole === 'student' && roleReq === 'instructor') ||
-        (targetRole === 'instructor' && roleReq === 'student');
-      if (!allowed)
-        return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    } else if (meRole !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-    if (targetRole === 'admin' && meRole !== 'admin') {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
-    const upd = await sql`
-      WITH _cfg AS (SELECT set_config('app.agency_id', ${orgId}, true))
-      UPDATE "User" SET role = ${roleReq} WHERE id = ${targetId}
-      RETURNING id
-    `;
-    if (upd.length === 0) {
+    const authorization = await authorizeScopedRoleChange({
+      orgId,
+      actorUserId: userId,
+      targetUserId: targetId,
+      role: roleReq,
+    });
+
+    if (!authorization.ok) {
+      return NextResponse.json(authorization.body, {
+        status: authorization.status,
+      });
+    }
+
+    const updated = await changeManagedScopedUserRole({
+      orgId,
+      userId: targetId,
+      role: roleReq,
+    });
+
+    if (!updated) {
       return NextResponse.json({ error: 'Update failed' }, { status: 500 });
     }
 

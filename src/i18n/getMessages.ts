@@ -1,13 +1,14 @@
 // src/i18n/getMessages.ts
 import fs from 'fs';
 import path from 'path';
+import { devLogger } from '@/lib/shared/dev-logger';
 import type { Locale } from '@/src/lib/i18n';
 
 // Ta langue "source" (celle où tu es sûr d'avoir toutes les clés)
-const DEFAULT_LOCALE: Locale = 'fr';
+const DEFAULT_LOCALE: Locale = 'en';
 
 // Messages = { [namespace: string]: any }
-export type Messages = Record<string, any>;
+type Messages = Record<string, any>;
 
 // Cache par locale (pour éviter de relire le disque à chaque demande)
 const cache = new Map<Locale, Messages>();
@@ -23,11 +24,7 @@ function loadLocaleFromFs(locale: Locale): Messages {
   try {
     files = fs.readdirSync(dir);
   } catch (err) {
-    if (process.env.NODE_ENV === 'development') {
-      console.warn(
-        `[i18n] No message directory for locale "${locale}" at ${dir}`
-      );
-    }
+    devLogger.warn(`[i18n] No message directory for locale "${locale}" at ${dir}`);
     return result;
   }
 
@@ -42,12 +39,10 @@ function loadLocaleFromFs(locale: Locale): Messages {
       const json = JSON.parse(raw);
       result[namespace] = json;
     } catch (err) {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn(
-          `[i18n] Failed to load messages file "${fullPath}" for locale "${locale}"`,
-          err
-        );
-      }
+      devLogger.warn(
+        `[i18n] Failed to load messages file "${fullPath}" for locale "${locale}"`,
+        err
+      );
     }
   }
 
@@ -74,14 +69,12 @@ export async function getMessages(locale: Locale): Promise<Messages> {
     }
   }
 
-  if (process.env.NODE_ENV === 'development') {
-    console.log(
-      '[i18n] Loaded messages for locale',
-      locale,
-      'namespaces:',
-      Object.keys(merged)
-    );
-  }
+  devLogger.log(
+    '[i18n] Loaded messages for locale',
+    locale,
+    'namespaces:',
+    Object.keys(merged)
+  );
 
   cache.set(locale, merged);
   return merged;

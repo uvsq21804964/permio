@@ -112,7 +112,7 @@ function renderCell(v: CellValue, extraFeeLabel: string) {
   );
 }
 
-export function CompetitorComparison({ className }: { className?: string }) {
+function CompetitorComparison({ className }: { className?: string }) {
   const t = useTranslations('valueProposition');
   const locale = useLocale();
 

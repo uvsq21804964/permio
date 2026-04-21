@@ -1,9 +1,17 @@
 import { clerkClient } from '@clerk/nextjs/server';
-import { sql } from '@/lib/db';
-import { inngest } from '@/src/lib/inngest/client';
-import { resend, EMAIL_FROM } from '@/src/lib/email/resend';
 import { render } from '@react-email/render';
+
+import { sql } from '@/lib/db';
 import WelcomeClientEmail from '@/src/emails/welcomeClient';
+import { inngest } from '@/src/lib/inngest/client';
+import {
+  buildLocalizedAppUrl,
+  getAppBaseUrl,
+  inngestEmailLogger,
+  loadClerkUserContact,
+  sendTransactionalEmail,
+  toEmailLocale,
+} from '@/src/lib/inngest/functions/email-shared';
 
 type InstructorRow = {
   id: string;
@@ -14,17 +22,6 @@ type ClientRow = {
   id: string;
   name: string | null;
 };
-
-function getPrimaryEmail(user: {
-  emailAddresses?: { id: string; emailAddress: string }[];
-  primaryEmailAddressId?: string | null;
-}) {
-  if (!user?.emailAddresses?.length) return null;
-  const primary =
-    user.emailAddresses.find((e) => e.id === user.primaryEmailAddressId)
-      ?.emailAddress ?? user.emailAddresses[0]?.emailAddress;
-  return primary ?? null;
-}
 
 export const welcomeClientEmail = inngest.createFunction(
   {
@@ -41,7 +38,7 @@ export const welcomeClientEmail = inngest.createFunction(
       locale?: string;
     };
 
-    console.info('[welcomeClientEmail] event', {
+    inngestEmailLogger.info('[welcomeClientEmail] event', {
       id: event.id,
       agencyId,
       agencyName,
@@ -60,7 +57,7 @@ export const welcomeClientEmail = inngest.createFunction(
     });
 
     if (!client) {
-      console.warn('[welcomeClientEmail] no client found', { userId });
+      inngestEmailLogger.warn('[welcomeClientEmail] no client found', { userId });
       return { skipped: true, reason: 'no_client' };
     }
 
@@ -76,55 +73,40 @@ export const welcomeClientEmail = inngest.createFunction(
     });
 
     const primaryInstructor = instructors[0] ?? null;
-
     const clerk = await clerkClient();
 
     const clientClerk = await step.run('load-client-email', async () => {
       try {
-        const cu = await clerk.users.getUser(userId);
-        return {
-          email: getPrimaryEmail(cu),
-          name:
-            [cu.firstName, cu.lastName].filter(Boolean).join(' ').trim() ||
-            cu.username ||
-            null,
-        };
+        return await loadClerkUserContact(clerk, userId);
       } catch (error) {
-        console.error('[welcomeClientEmail] load-client-email error', error);
+        inngestEmailLogger.error('[welcomeClientEmail] load-client-email error', error);
         return { email: null, name: null };
       }
     });
 
     const recipientEmail = clientClerk?.email ?? null;
-
     if (!recipientEmail) {
-      console.warn('[welcomeClientEmail] no client email', {
+      inngestEmailLogger.warn('[welcomeClientEmail] no client email', {
         userId,
         agencyId,
       });
       return { skipped: true, reason: 'no_client_email' };
     }
 
+    const lang = toEmailLocale(locale);
     const displayClientName =
       client?.name ||
       clientClerk?.name ||
-      ((locale || 'fr').startsWith('fr') ? 'Client' : 'Client');
+      'Client';
 
-    const subject = (locale || 'fr').startsWith('fr')
-      ? `Bienvenue chez ${agencyName}`
-      : `Welcome to ${agencyName}`;
+    const subject =
+      lang === 'fr'
+        ? `Bienvenue chez ${agencyName}`
+        : `Welcome to ${agencyName}`;
 
-    const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || '').replace(/\/+$/, '');
-
-    const lang = (locale || 'fr').startsWith('fr') ? 'fr' : 'en';
-
-    const actionUrl = baseUrl
-      ? `${baseUrl}/${lang}/book`
-      : 'http://localhost:3000';
-
-    const manageUrl = baseUrl
-      ? `${baseUrl}/${lang}/reservations`
-      : 'http://localhost:3000';
+    const baseUrl = getAppBaseUrl();
+    const actionUrl = buildLocalizedAppUrl(lang, '/book');
+    const manageUrl = buildLocalizedAppUrl(lang, '/reservations');
 
     const html = await step.run('render-email', async () => {
       return render(
@@ -141,33 +123,32 @@ export const welcomeClientEmail = inngest.createFunction(
     });
 
     const result = await step.run('send-email', async () => {
-      console.info('[welcomeClientEmail] sending email', {
+      inngestEmailLogger.info('[welcomeClientEmail] sending email', {
         to: recipientEmail,
         subject,
         agencyId,
         agencyName,
       });
 
-      return resend.emails.send({
-        from: EMAIL_FROM,
-        to: recipientEmail,
-        subject,
+      return sendTransactionalEmail({
+        eventId: event.id,
         html,
-        ...(event.id ? { headers: { 'X-Event-Id': event.id } } : {}),
+        subject,
+        to: recipientEmail,
       });
     });
 
-    console.info('[welcomeClientEmail] send-email result', result);
+    inngestEmailLogger.info('[welcomeClientEmail] send-email result', result);
 
     if ((result as any)?.error) {
-      console.error('[welcomeClientEmail] send-email error', result);
+      inngestEmailLogger.error('[welcomeClientEmail] send-email error', result);
       throw new Error('Resend error');
     }
 
     return {
       ok: true,
-      recipient: recipientEmail,
       provider: result,
+      recipient: recipientEmail,
     };
   },
 );

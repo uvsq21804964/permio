@@ -5,12 +5,17 @@ import { sql } from '@/lib/db';
 import { Toaster } from '@/components/ui/sonner';
 import DesktopNavbar from '@/components/navbar/navbar_desktop';
 import MobileNavbar from '@/components/navbar/navbar_mobile';
+import type { NavPage } from '@/components/navbar/navbar-utils';
 
 export default async function RootLayout({
   children,
   params,
-}: Readonly<{ children: React.ReactNode; params: { locale: string } }>) {
-  const locale = params?.locale ?? 'fr';
+}: Readonly<{
+  children: React.ReactNode;
+  params: Promise<{ locale: string }>;
+}>) {
+  const resolvedParams = await params;
+  const locale = resolvedParams?.locale ?? 'en';
 
   const { userId } = await auth();
   if (!userId) {
@@ -29,9 +34,9 @@ export default async function RootLayout({
   }
 
   const logo = '/NouveauLogoRogne2.png';
-  const logo_mobile = '/NouveauLogoRogne2.png';
+  const logoMobile = '/NouveauLogoRogne2.png';
 
-  const pages = [
+  const pages: NavPage[] = [
     { nameFR: 'Ma semaine', nameEN: 'Schedule', link: '/myweek', visible: 2 },
     { nameFR: 'Mes clients', nameEN: 'Clients', link: '/gestion', visible: 0 },
     {
@@ -92,25 +97,24 @@ export default async function RootLayout({
       </SignedOut>
 
       <SignedIn>
-        <div className="w-full h-screen flex flex-col">
-          <div className="hidden md:flex flex-none inset-y-0 w-full h-12 z-50">
+        <div className="flex h-screen w-full flex-col">
+          <div className="inset-y-0 hidden h-12 w-full flex-none md:flex z-50">
             <DesktopNavbar
               logo={logo}
-              pages={pages as any}
+              pages={pages}
               meRole={meRole}
-              // ✅ activeLink optionnel : DesktopNavbar détecte via usePathname
             />
           </div>
 
-          <div className="md:hidden h-[40px] fixed inset-y-0 w-full z-50">
+          <div className="fixed inset-y-0 h-[40px] w-full md:hidden z-50">
             <MobileNavbar
-              logo={logo_mobile}
-              pages={pages as any}
+              logo={logoMobile}
+              pages={pages}
               meRole={meRole}
             />
           </div>
 
-          <div className="flex-1 h-[92%] bg-navbar">{children}</div>
+          <div className="h-[92%] flex-1 bg-navbar">{children}</div>
         </div>
       </SignedIn>
     </>

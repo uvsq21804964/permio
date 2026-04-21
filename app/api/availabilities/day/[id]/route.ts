@@ -1,37 +1,33 @@
 // app/api/day-availabilities/[id]/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@/lib/db';
-import { getAuth } from '@clerk/nextjs/server';
+import { requireUser } from '@/lib/api/auth-server';
+import {
+  deleteDayAvailabilityForUser,
+  getDayAvailabilityForUser,
+} from '@/lib/server/repositories/availability-repository';
 
 export async function DELETE(
   req: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const { userId } = getAuth(req, { treatPendingAsSignedOut: false });
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { auth, response } = requireUser(req, {
+      treatPendingAsSignedOut: false,
+    });
+    if (!auth) return response;
+    const { userId } = auth;
 
     const { id } = params;
     if (!id) {
       return NextResponse.json({ error: 'Missing id' }, { status: 400 });
     }
 
-    const exists = await sql`
-      SELECT id
-      FROM "DayAvailability"
-      WHERE id = ${id} AND "userId" = ${userId}
-      LIMIT 1
-    `;
-    if (exists.length === 0) {
+    const exists = await getDayAvailabilityForUser(id, userId);
+    if (!exists) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 });
     }
 
-    await sql`
-      DELETE FROM "DayAvailability"
-      WHERE id = ${id} AND "userId" = ${userId}
-    `;
+    await deleteDayAvailabilityForUser(id, userId);
 
     return new NextResponse(null, { status: 204 });
   } catch (err: any) {

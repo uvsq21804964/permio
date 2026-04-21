@@ -1,0 +1,599 @@
+strict digraph "dependency-cruiser output"{
+    rankdir="LR" splines="true" overlap="false" nodesep="0.16" ranksep="0.18" fontname="Helvetica-bold" fontsize="9" style="rounded,bold,filled" fillcolor="#ffffff" compound="true"
+    node [shape="box" style="rounded, filled" height="0.2" color="black" fillcolor="#ffffcc" fontcolor="black" fontname="Helvetica" fontsize="9"]
+    edge [arrowhead="normal" arrowsize="0.6" penwidth="2.0" color="#00000033" fontname="Helvetica" fontsize="9"]
+
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)" {label="(app)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(client)" {label="(client)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(client)/book" {label="book" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(client)/book/address" {label="address" "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" fillcolor="#bbfeff"] } } } } } } } }
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" -> "components/shared/AddressMapPreview.tsx"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" -> "components/shared/GooglePlacesScript.tsx"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" -> "components/ui/alert.tsx"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" -> "components/ui/button.tsx"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" -> "components/ui/card.tsx"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" -> "lib/client/api/me-client.ts"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" -> "lib/client/api/services-client.ts"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" -> "lib/client/hooks/useGooglePlacesAutocomplete.ts"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" -> "lib/client/utils/address.ts"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx" -> "lib/client/utils/google-maps.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)" {label="(app)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(client)" {label="(client)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(client)/book" {label="book" "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" fillcolor="#bbfeff"] } } } } } } }
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "components/ui/alert.tsx"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "components/ui/button.tsx"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "components/ui/card.tsx"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "components/ui/dialog.tsx"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "lib/client/api/request.ts"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "lib/client/hooks/useBookingServices.ts"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "lib/client/hooks/useBookSlot.ts"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "lib/client/hooks/useDecodedBookingAddress.ts"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "lib/client/hooks/useInstructorWeeklyAgenda.ts"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx" -> "lib/client/utils/booking.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)" {label="(app)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(client)" {label="(client)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(client)/book" {label="book" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals" {label="proposals" "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx" fillcolor="#bbfeff"] } } } } } } } }
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx" -> "lib/client/api/request.ts"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx" -> "lib/client/hooks/useBookingServices.ts"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx" -> "lib/client/hooks/useBookSlot.ts"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx" -> "lib/client/hooks/useDecodedBookingAddress.ts"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx" -> "lib/client/hooks/useInstructorProposalAgenda.ts"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx" -> "lib/client/utils/booking.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)" {label="(app)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(client)" {label="(client)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(client)/book" {label="book" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(client)/book/services" {label="services" "app/[locale]/(routes)/(routes)/(app)/(client)/book/services/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/(routes)/(app)/(client)/book/services/page.tsx" fillcolor="#bbfeff"] } } } } } } } }
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/services/page.tsx" -> "components/services/SelectableServicesCatalog.tsx"
+    "app/[locale]/(routes)/(routes)/(app)/(client)/book/services/page.tsx" -> "lib/client/hooks/useInstructorServices.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)" {label="(app)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(client)" {label="(client)" "app/[locale]/(routes)/(routes)/(app)/(client)/layout.tsx" [label=<layout.tsx> tooltip="layout.tsx" URL="app/[locale]/(routes)/(routes)/(app)/(client)/layout.tsx" fillcolor="#bbfeff"] } } } } } }
+    "app/[locale]/(routes)/(routes)/(app)/(client)/layout.tsx" -> "src/lib/require-role.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)" {label="(app)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(educator)" {label="(educator)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(educator)/availability" {label="availability" "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" fillcolor="#bbfeff"] } } } } } } }
+    "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "components/availability-agenda.tsx"
+    "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "components/availability/DailyOverridesCard.tsx"
+    "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "components/availability/WeeklyGlobalAgenda.tsx"
+    "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx" -> "lib/client/hooks/useAvailabilityRoleGate.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)" {label="(app)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(educator)" {label="(educator)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(educator)/configuration" {label="configuration" "app/[locale]/(routes)/(routes)/(app)/(educator)/configuration/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/(routes)/(app)/(educator)/configuration/page.tsx" fillcolor="#bbfeff"] } } } } } } }
+    "app/[locale]/(routes)/(routes)/(app)/(educator)/configuration/page.tsx" -> "components/optimal-schedule.tsx"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)" {label="(app)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/(educator)" {label="(educator)" "app/[locale]/(routes)/(routes)/(app)/(educator)/layout.tsx" [label=<layout.tsx> tooltip="layout.tsx" URL="app/[locale]/(routes)/(routes)/(app)/(educator)/layout.tsx" fillcolor="#bbfeff"] } } } } } }
+    "app/[locale]/(routes)/(routes)/(app)/(educator)/layout.tsx" -> "src/lib/require-role.ts"
+    "app/[locale]/(routes)/(routes)/(app)/(educator)/layout.tsx" -> "src/lib/require-subscription-if-educator.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)" {label="(app)" "app/[locale]/(routes)/(routes)/(app)/layout.tsx" [label=<layout.tsx> tooltip="layout.tsx" URL="app/[locale]/(routes)/(routes)/(app)/layout.tsx" fillcolor="#bbfeff"] } } } } }
+    "app/[locale]/(routes)/(routes)/(app)/layout.tsx" -> "src/lib/require-subscription-if-educator.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)" {label="(app)" subgraph "cluster_app/[locale]/(routes)/(routes)/(app)/myweek" {label="myweek" "app/[locale]/(routes)/(routes)/(app)/myweek/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/(routes)/(app)/myweek/page.tsx" fillcolor="#bbfeff"] } } } } } }
+    "app/[locale]/(routes)/(routes)/(app)/myweek/page.tsx" -> "components/schedule/LastWeekAgenda.tsx"
+    "app/[locale]/(routes)/(routes)/(app)/myweek/page.tsx" -> "lib/db.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)" {label="(pay)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)" {label="(educator)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)/gestion" {label="gestion" "app/[locale]/(routes)/(routes)/(pay)/(educator)/gestion/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/(routes)/(pay)/(educator)/gestion/page.tsx" fillcolor="#bbfeff"] } } } } } } }
+    "app/[locale]/(routes)/(routes)/(pay)/(educator)/gestion/page.tsx" -> "components/gestion/UserManagement.tsx"
+    "app/[locale]/(routes)/(routes)/(pay)/(educator)/gestion/page.tsx" -> "lib/db.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)" {label="(pay)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)" {label="(educator)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices" {label="invoices" "app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx" fillcolor="#bbfeff"] } } } } } } }
+    "app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx" -> "lib/db.ts"
+    "app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx" -> "lib/stripe.ts"
+    "app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx" -> "src/i18n/getMessages.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)" {label="(pay)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)" {label="(educator)" "app/[locale]/(routes)/(routes)/(pay)/(educator)/layout.tsx" [label=<layout.tsx> tooltip="layout.tsx" URL="app/[locale]/(routes)/(routes)/(pay)/(educator)/layout.tsx" fillcolor="#bbfeff"] } } } } } }
+    "app/[locale]/(routes)/(routes)/(pay)/(educator)/layout.tsx" -> "src/lib/require-role.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)" {label="(pay)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)" {label="(educator)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)/plans" {label="plans" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/cancel" {label="cancel" "app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/cancel/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/cancel/page.tsx" fillcolor="#ccffcc"] } } } } } } } }
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)" {label="(pay)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)" {label="(educator)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)/plans" {label="plans" "app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/page.tsx" fillcolor="#bbfeff"] } } } } } } }
+    "app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/page.tsx" -> "components/home/Comparison.tsx"
+    "app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/page.tsx" -> "components/home/FAQ.tsx"
+    "app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/page.tsx" -> "components/home/PlansSansSimulation.tsx"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)" {label="(pay)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)" {label="(educator)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)/plans" {label="plans" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/success" {label="success" "app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/success/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/success/page.tsx" fillcolor="#ccffcc"] } } } } } } } }
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)" {label="(pay)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)" {label="(educator)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/(educator)/services" {label="services" "app/[locale]/(routes)/(routes)/(pay)/(educator)/services/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/(routes)/(pay)/(educator)/services/page.tsx" fillcolor="#bbfeff"] } } } } } } }
+    "app/[locale]/(routes)/(routes)/(pay)/(educator)/services/page.tsx" -> "components/services/CategoryFormDialog.tsx"
+    "app/[locale]/(routes)/(routes)/(pay)/(educator)/services/page.tsx" -> "components/services/EditableServicesCatalog.tsx"
+    "app/[locale]/(routes)/(routes)/(pay)/(educator)/services/page.tsx" -> "components/services/ServiceFormDialog.tsx"
+    "app/[locale]/(routes)/(routes)/(pay)/(educator)/services/page.tsx" -> "lib/client/hooks/useEditableServices.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)" {label="(pay)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/accueil" {label="accueil" "app/[locale]/(routes)/(routes)/(pay)/accueil/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/(routes)/(pay)/accueil/page.tsx" fillcolor="#bbfeff"] } } } } } }
+    "app/[locale]/(routes)/(routes)/(pay)/accueil/page.tsx" -> "components/ui/button.tsx"
+    "app/[locale]/(routes)/(routes)/(pay)/accueil/page.tsx" -> "components/ui/card.tsx"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)" {label="(pay)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/contact" {label="contact" "app/[locale]/(routes)/(routes)/(pay)/contact/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/(routes)/(pay)/contact/page.tsx" fillcolor="#ccffcc"] } } } } } }
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)" {label="(pay)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/legal" {label="legal" "app/[locale]/(routes)/(routes)/(pay)/legal/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/(routes)/(pay)/legal/page.tsx" fillcolor="#ccffcc"] } } } } } }
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)" {label="(pay)" subgraph "cluster_app/[locale]/(routes)/(routes)/(pay)/profile" {label="profile" "app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx" fillcolor="#bbfeff"] } } } } } }
+    "app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx" -> "components/shared/AddressMapPreview.tsx"
+    "app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx" -> "components/shared/GooglePlacesScript.tsx"
+    "app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx" -> "lib/client/api/profile-client.ts"
+    "app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx" -> "lib/client/hooks/useGooglePlacesAutocomplete.ts"
+    "app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx" -> "lib/client/utils/address.ts"
+    "app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx" -> "lib/client/utils/google-maps.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/(routes)" {label="(routes)" "app/[locale]/(routes)/(routes)/layout.tsx" [label=<layout.tsx> tooltip="layout.tsx" URL="app/[locale]/(routes)/(routes)/layout.tsx" fillcolor="#bbfeff"] } } } }
+    "app/[locale]/(routes)/(routes)/layout.tsx" -> "components/navbar/navbar_desktop.tsx"
+    "app/[locale]/(routes)/(routes)/layout.tsx" -> "components/navbar/navbar_mobile.tsx"
+    "app/[locale]/(routes)/(routes)/layout.tsx" -> "components/ui/sonner.tsx"
+    "app/[locale]/(routes)/(routes)/layout.tsx" -> "lib/db.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/home" {label="home" "app/[locale]/(routes)/home/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/home/page.tsx" fillcolor="#bbfeff"] } } } }
+    "app/[locale]/(routes)/home/page.tsx" -> "app/[locale]/_components/LocaleSwitcher.tsx"
+    "app/[locale]/(routes)/home/page.tsx" -> "components/home/CallToAction.tsx"
+    "app/[locale]/(routes)/home/page.tsx" -> "components/home/Comparison.tsx"
+    "app/[locale]/(routes)/home/page.tsx" -> "components/home/FAQ.tsx"
+    "app/[locale]/(routes)/home/page.tsx" -> "components/home/HeroSection.tsx"
+    "app/[locale]/(routes)/home/page.tsx" -> "components/home/HomeStatusCard.tsx"
+    "app/[locale]/(routes)/home/page.tsx" -> "components/home/HowItWorks.tsx"
+    "app/[locale]/(routes)/home/page.tsx" -> "components/home/PlansSansSimulation.tsx"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/onboarding" {label="onboarding" subgraph "cluster_app/[locale]/(routes)/onboarding/choose-organization" {label="choose-organization" "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/onboarding/choose-organization/page.tsx" fillcolor="#bbfeff"] } } } } }
+    "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" -> "app/[locale]/_components/LocaleSwitcher.tsx"
+    "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" -> "components/associate-agency-availability.tsx"
+    "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" -> "components/shared/GooglePlacesScript.tsx"
+    "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" -> "lib/client/api/profile-client.ts"
+    "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" -> "lib/client/hooks/useGooglePlacesAutocomplete.ts"
+    "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" -> "lib/client/utils/address.ts"
+    "app/[locale]/(routes)/onboarding/choose-organization/page.tsx" -> "lib/client/utils/google-maps.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/sign-in" {label="sign-in" subgraph "cluster_app/[locale]/(routes)/sign-in/[[...sign-in]]" {label="[[...sign-in]]" "app/[locale]/(routes)/sign-in/[[...sign-in]]/SignInClient.tsx" [label=<SignInClient.tsx> tooltip="SignInClient.tsx" URL="app/[locale]/(routes)/sign-in/[[...sign-in]]/SignInClient.tsx" fillcolor="#bbfeff"] } } } } }
+    "app/[locale]/(routes)/sign-in/[[...sign-in]]/SignInClient.tsx" -> "app/[locale]/_components/LocaleSwitcher.tsx"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/sign-in" {label="sign-in" subgraph "cluster_app/[locale]/(routes)/sign-in/[[...sign-in]]" {label="[[...sign-in]]" "app/[locale]/(routes)/sign-in/[[...sign-in]]/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/sign-in/[[...sign-in]]/page.tsx" fillcolor="#bbfeff"] } } } } }
+    "app/[locale]/(routes)/sign-in/[[...sign-in]]/page.tsx" -> "app/[locale]/(routes)/sign-in/[[...sign-in]]/SignInClient.tsx"
+    "app/[locale]/(routes)/sign-in/[[...sign-in]]/page.tsx" -> "src/lib/i18n.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/sign-out" {label="sign-out" subgraph "cluster_app/[locale]/(routes)/sign-out/[[...sign-out]]" {label="[[...sign-out]]" "app/[locale]/(routes)/sign-out/[[...sign-out]]/SignOutClient.tsx" [label=<SignOutClient.tsx> tooltip="SignOutClient.tsx" URL="app/[locale]/(routes)/sign-out/[[...sign-out]]/SignOutClient.tsx" fillcolor="#bbfeff"] } } } } }
+    "app/[locale]/(routes)/sign-out/[[...sign-out]]/SignOutClient.tsx" -> "app/[locale]/_components/LocaleSwitcher.tsx"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/sign-out" {label="sign-out" subgraph "cluster_app/[locale]/(routes)/sign-out/[[...sign-out]]" {label="[[...sign-out]]" "app/[locale]/(routes)/sign-out/[[...sign-out]]/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/sign-out/[[...sign-out]]/page.tsx" fillcolor="#bbfeff"] } } } } }
+    "app/[locale]/(routes)/sign-out/[[...sign-out]]/page.tsx" -> "app/[locale]/(routes)/sign-out/[[...sign-out]]/SignOutClient.tsx"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/(routes)" {label="(routes)" subgraph "cluster_app/[locale]/(routes)/sign-up" {label="sign-up" subgraph "cluster_app/[locale]/(routes)/sign-up/[[...sign-up]]" {label="[[...sign-up]]" "app/[locale]/(routes)/sign-up/[[...sign-up]]/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/(routes)/sign-up/[[...sign-up]]/page.tsx" fillcolor="#bbfeff"] } } } } }
+    "app/[locale]/(routes)/sign-up/[[...sign-up]]/page.tsx" -> "app/[locale]/_components/LocaleSwitcher.tsx"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/_components" {label="_components" "app/[locale]/_components/LocaleSwitcher.tsx" [label=<LocaleSwitcher.tsx> tooltip="LocaleSwitcher.tsx" URL="app/[locale]/_components/LocaleSwitcher.tsx" fillcolor="#bbfeff"] } } }
+    "app/[locale]/_components/LocaleSwitcher.tsx" -> "src/lib/i18n.ts"
+    "app/[locale]/_components/LocaleSwitcher.tsx" -> "src/lib/useLocaleNav.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" "app/[locale]/layout.tsx" [label=<layout.tsx> tooltip="layout.tsx" URL="app/[locale]/layout.tsx" fillcolor="#bbfeff"] } }
+    "app/[locale]/layout.tsx" -> "src/i18n/getMessages.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/[locale]" {label="[locale]" subgraph "cluster_app/[locale]/leastory" {label="leastory" "app/[locale]/leastory/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/[locale]/leastory/page.tsx" fillcolor="#bbfeff"] } } }
+    "app/[locale]/leastory/page.tsx" -> "components/ui/button.tsx"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/agency" {label="agency" subgraph "cluster_app/api/agency/association" {label="association" "app/api/agency/association/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/agency/association/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/agency/association/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/agency/association/route.ts" -> "lib/db.ts"
+    "app/api/agency/association/route.ts" -> "src/lib/inngest/client.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/availabilities" {label="availabilities" subgraph "cluster_app/api/availabilities/all" {label="all" "app/api/availabilities/all/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/availabilities/all/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/availabilities/all/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/availabilities/all/route.ts" -> "lib/server/repositories/agency-repository.ts"
+    "app/api/availabilities/all/route.ts" -> "lib/server/repositories/availability-repository.ts"
+    "app/api/availabilities/all/route.ts" -> "lib/server/services/availability-service.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/availabilities" {label="availabilities" subgraph "cluster_app/api/availabilities/bulk" {label="bulk" "app/api/availabilities/bulk/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/availabilities/bulk/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/availabilities/bulk/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/availabilities/bulk/route.ts" -> "lib/server/domain/time-ranges.ts"
+    "app/api/availabilities/bulk/route.ts" -> "lib/server/repositories/availability-repository.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/availabilities" {label="availabilities" subgraph "cluster_app/api/availabilities/day" {label="day" subgraph "cluster_app/api/availabilities/day/[id]" {label="[id]" "app/api/availabilities/day/[id]/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/availabilities/day/[id]/route.ts" fillcolor="#ddfeff"] } } } } }
+    "app/api/availabilities/day/[id]/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/availabilities/day/[id]/route.ts" -> "lib/server/repositories/availability-repository.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/availabilities" {label="availabilities" subgraph "cluster_app/api/availabilities/day" {label="day" "app/api/availabilities/day/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/availabilities/day/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/availabilities/day/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/availabilities/day/route.ts" -> "lib/server/repositories/availability-repository.ts"
+    "app/api/availabilities/day/route.ts" -> "lib/server/services/availability-service.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/availabilities" {label="availabilities" "app/api/availabilities/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/availabilities/route.ts" fillcolor="#ddfeff"] } } }
+    "app/api/availabilities/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/availabilities/route.ts" -> "lib/server/repositories/availability-repository.ts"
+    "app/api/availabilities/route.ts" -> "lib/server/services/availability-service.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/inngest" {label="inngest" "app/api/inngest/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/inngest/route.ts" fillcolor="#ddfeff"] } } }
+    "app/api/inngest/route.ts" -> "src/lib/inngest/client.ts"
+    "app/api/inngest/route.ts" -> "src/lib/inngest/functions/newClient.ts"
+    "app/api/inngest/route.ts" -> "src/lib/inngest/functions/slotBookedClientEmail.ts"
+    "app/api/inngest/route.ts" -> "src/lib/inngest/functions/slotBookedInstructorEmail.ts"
+    "app/api/inngest/route.ts" -> "src/lib/inngest/functions/welcomeClientEmail.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/me" {label="me" subgraph "cluster_app/api/me/account_bdd" {label="account_bdd" "app/api/me/account_bdd/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/me/account_bdd/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/me/account_bdd/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/me/account_bdd/route.ts" -> "lib/server/repositories/user-repository.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/me" {label="me" subgraph "cluster_app/api/me/delete-account" {label="delete-account" "app/api/me/delete-account/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/me/delete-account/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/me/delete-account/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/me/delete-account/route.ts" -> "lib/db.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/me" {label="me" subgraph "cluster_app/api/me/hours" {label="hours" "app/api/me/hours/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/me/hours/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/me/hours/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/me/hours/route.ts" -> "lib/server/repositories/user-repository.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/me" {label="me" subgraph "cluster_app/api/me/instructor-services" {label="instructor-services" "app/api/me/instructor-services/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/me/instructor-services/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/me/instructor-services/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/me/instructor-services/route.ts" -> "lib/server/services/service-catalog-service.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/me" {label="me" subgraph "cluster_app/api/me/instructor-weekly-agenda-proposals" {label="instructor-weekly-agenda-proposals" "app/api/me/instructor-weekly-agenda-proposals/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/me/instructor-weekly-agenda-proposals/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/me/instructor-weekly-agenda-proposals/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/me/instructor-weekly-agenda-proposals/route.ts" -> "lib/server/services/instructor-agenda-service.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/me" {label="me" subgraph "cluster_app/api/me/instructor-weekly-agenda" {label="instructor-weekly-agenda" "app/api/me/instructor-weekly-agenda/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/me/instructor-weekly-agenda/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/me/instructor-weekly-agenda/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/me/instructor-weekly-agenda/route.ts" -> "lib/server/services/instructor-agenda-service.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/me" {label="me" subgraph "cluster_app/api/me/profile" {label="profile" "app/api/me/profile/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/me/profile/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/me/profile/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/me/profile/route.ts" -> "lib/db.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/me" {label="me" subgraph "cluster_app/api/me/role" {label="role" "app/api/me/role/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/me/role/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/me/role/route.ts" -> "lib/db.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/me" {label="me" subgraph "cluster_app/api/me/services" {label="services" "app/api/me/services/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/me/services/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/me/services/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/me/services/route.ts" -> "lib/server/services/service-catalog-service.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/me" {label="me" subgraph "cluster_app/api/me/subscription" {label="subscription" "app/api/me/subscription/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/me/subscription/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/me/subscription/route.ts" -> "lib/db.ts"
+    "app/api/me/subscription/route.ts" -> "lib/stripe.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/me" {label="me" subgraph "cluster_app/api/me/weeks" {label="weeks" "app/api/me/weeks/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/me/weeks/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/me/weeks/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/me/weeks/route.ts" -> "lib/db.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/onboarding" {label="onboarding" subgraph "cluster_app/api/onboarding/trainer" {label="trainer" "app/api/onboarding/trainer/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/onboarding/trainer/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/onboarding/trainer/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/onboarding/trainer/route.ts" -> "lib/db.ts"
+    "app/api/onboarding/trainer/route.ts" -> "lib/server/domain/time-ranges.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/schedule" {label="schedule" subgraph "cluster_app/api/schedule/commit" {label="commit" "app/api/schedule/commit/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/schedule/commit/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/schedule/commit/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/schedule/commit/route.ts" -> "lib/db.ts"
+    "app/api/schedule/commit/route.ts" -> "lib/server/repositories/agency-repository.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/schedule" {label="schedule" "app/api/schedule/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/schedule/route.ts" fillcolor="#ddfeff"] } } }
+    "app/api/schedule/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/schedule/route.ts" -> "lib/scheduler.ts"
+    "app/api/schedule/route.ts" -> "lib/server/repositories/agency-repository.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/slots" {label="slots" "app/api/slots/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/slots/route.ts" fillcolor="#ddfeff"] } } }
+    "app/api/slots/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/slots/route.ts" -> "lib/db.ts"
+    "app/api/slots/route.ts" -> "lib/server/domain/time-ranges.ts"
+    "app/api/slots/route.ts" -> "lib/server/repositories/user-repository.ts"
+    "app/api/slots/route.ts" -> "src/lib/inngest/client.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/slots" {label="slots" subgraph "cluster_app/api/slots/week" {label="week" "app/api/slots/week/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/slots/week/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/slots/week/route.ts" -> "lib/db.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/stripe" {label="stripe" subgraph "cluster_app/api/stripe/checkout-session" {label="checkout-session" "app/api/stripe/checkout-session/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/stripe/checkout-session/route.ts" fillcolor="#ccffcc"] } } } }
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/stripe" {label="stripe" subgraph "cluster_app/api/stripe/checkout" {label="checkout" "app/api/stripe/checkout/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/stripe/checkout/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/stripe/checkout/route.ts" -> "lib/db.ts"
+    "app/api/stripe/checkout/route.ts" -> "lib/stripe.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/stripe" {label="stripe" subgraph "cluster_app/api/stripe/create-checkout-session" {label="create-checkout-session" "app/api/stripe/create-checkout-session/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/stripe/create-checkout-session/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/stripe/create-checkout-session/route.ts" -> "lib/api/auth-server.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/stripe" {label="stripe" subgraph "cluster_app/api/stripe/invoices" {label="invoices" "app/api/stripe/invoices/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/stripe/invoices/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/stripe/invoices/route.ts" -> "lib/stripe.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/stripe" {label="stripe" subgraph "cluster_app/api/stripe/portal" {label="portal" "app/api/stripe/portal/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/stripe/portal/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/stripe/portal/route.ts" -> "lib/stripe.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/stripe" {label="stripe" subgraph "cluster_app/api/stripe/subscription" {label="subscription" subgraph "cluster_app/api/stripe/subscription/cancel" {label="cancel" "app/api/stripe/subscription/cancel/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/stripe/subscription/cancel/route.ts" fillcolor="#ddfeff"] } } } } }
+    "app/api/stripe/subscription/cancel/route.ts" -> "lib/db.ts"
+    "app/api/stripe/subscription/cancel/route.ts" -> "lib/stripe.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/stripe" {label="stripe" subgraph "cluster_app/api/stripe/subscription" {label="subscription" subgraph "cluster_app/api/stripe/subscription/resume" {label="resume" "app/api/stripe/subscription/resume/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/stripe/subscription/resume/route.ts" fillcolor="#ddfeff"] } } } } }
+    "app/api/stripe/subscription/resume/route.ts" -> "lib/stripe.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/stripe" {label="stripe" subgraph "cluster_app/api/stripe/webhook" {label="webhook" "app/api/stripe/webhook/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/stripe/webhook/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/stripe/webhook/route.ts" -> "lib/db.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/travels" {label="travels" subgraph "cluster_app/api/travels/week" {label="week" "app/api/travels/week/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/travels/week/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/travels/week/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/travels/week/route.ts" -> "lib/db.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/users" {label="users" subgraph "cluster_app/api/users/[id]" {label="[id]" subgraph "cluster_app/api/users/[id]/hours" {label="hours" "app/api/users/[id]/hours/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/users/[id]/hours/route.ts" fillcolor="#ddfeff"] } } } } }
+    "app/api/users/[id]/hours/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/users/[id]/hours/route.ts" -> "lib/server/repositories/agency-repository.ts"
+    "app/api/users/[id]/hours/route.ts" -> "lib/server/repositories/org-user-management-repository.ts"
+    "app/api/users/[id]/hours/route.ts" -> "lib/server/repositories/user-repository.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/users" {label="users" subgraph "cluster_app/api/users/[id]" {label="[id]" subgraph "cluster_app/api/users/[id]/role" {label="role" "app/api/users/[id]/role/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/users/[id]/role/route.ts" fillcolor="#ddfeff"] } } } } }
+    "app/api/users/[id]/role/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/users/[id]/role/route.ts" -> "lib/server/services/org-user-management-service.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/users" {label="users" subgraph "cluster_app/api/users/[id]" {label="[id]" "app/api/users/[id]/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/users/[id]/route.ts" fillcolor="#ddfeff"] } } } }
+    "app/api/users/[id]/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/users/[id]/route.ts" -> "lib/server/services/org-user-management-service.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/users" {label="users" "app/api/users/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/users/route.ts" fillcolor="#ddfeff"] } } }
+    "app/api/users/route.ts" -> "lib/api/auth-server.ts"
+    "app/api/users/route.ts" -> "lib/server/services/org-user-management-service.ts"
+    subgraph "cluster_app" {label="app" subgraph "cluster_app/api" {label="api" subgraph "cluster_app/api/webhook" {label="webhook" "app/api/webhook/route.ts" [label=<route.ts> tooltip="route.ts" URL="app/api/webhook/route.ts" fillcolor="#ccffcc"] } } }
+    subgraph "cluster_app" {label="app" "app/globals.css" [label=<globals.css> tooltip="globals.css" URL="app/globals.css" ] }
+    subgraph "cluster_app" {label="app" "app/layout.tsx" [label=<layout.tsx> tooltip="layout.tsx" URL="app/layout.tsx" fillcolor="#bbfeff"] }
+    "app/layout.tsx" -> "app/globals.css"
+    subgraph "cluster_app" {label="app" "app/page.tsx" [label=<page.tsx> tooltip="page.tsx" URL="app/page.tsx" fillcolor="#ccffcc"] }
+    subgraph "cluster_components" {label="components" "components/associate-agency-availability.tsx" [label=<associate-agency-availability.tsx> tooltip="associate-agency-availability.tsx" URL="components/associate-agency-availability.tsx" fillcolor="#bbfeff"] }
+    "components/associate-agency-availability.tsx" -> "components/availability/AssociateAgencyAvailabilityHeader.tsx"
+    "components/associate-agency-availability.tsx" -> "components/availability/AssociateAgencyAvailabilitySlotBlock.tsx"
+    "components/associate-agency-availability.tsx" -> "components/availability/AvailabilityRangesDialog.tsx"
+    "components/associate-agency-availability.tsx" -> "components/availability/AvailabilityWeekGrid.tsx"
+    "components/associate-agency-availability.tsx" -> "components/ui/alert.tsx"
+    "components/associate-agency-availability.tsx" -> "lib/client/hooks/useAvailabilityRangesDialogState.ts"
+    "components/associate-agency-availability.tsx" -> "lib/client/hooks/useEditableWeeklyAvailabilityDraft.ts"
+    "components/associate-agency-availability.tsx" -> "lib/client/utils/availability-editor.ts"
+    "components/associate-agency-availability.tsx" -> "lib/client/utils/availability-time.ts"
+    subgraph "cluster_components" {label="components" "components/availability-agenda.tsx" [label=<availability-agenda.tsx> tooltip="availability-agenda.tsx" URL="components/availability-agenda.tsx" fillcolor="#bbfeff"] }
+    "components/availability-agenda.tsx" -> "components/availability/AvailabilityAgendaHeader.tsx"
+    "components/availability-agenda.tsx" -> "components/availability/AvailabilityAgendaSlotBlock.tsx"
+    "components/availability-agenda.tsx" -> "components/availability/AvailabilityRangesDialog.tsx"
+    "components/availability-agenda.tsx" -> "components/availability/AvailabilityWeekGrid.tsx"
+    "components/availability-agenda.tsx" -> "components/ui/card.tsx"
+    "components/availability-agenda.tsx" -> "lib/client/hooks/useAvailabilityCurrentUser.ts"
+    "components/availability-agenda.tsx" -> "lib/client/hooks/useAvailabilityRangesDialogState.ts"
+    "components/availability-agenda.tsx" -> "lib/client/hooks/useRelativeTimeFormatter.ts"
+    "components/availability-agenda.tsx" -> "lib/client/hooks/useTimedNotice.ts"
+    "components/availability-agenda.tsx" -> "lib/client/hooks/useWeeklyAvailabilities.ts"
+    "components/availability-agenda.tsx" -> "lib/client/utils/availability-editor.ts"
+    "components/availability-agenda.tsx" -> "lib/client/utils/availability-time.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/availability" {label="availability" "components/availability/AssociateAgencyAvailabilityHeader.tsx" [label=<AssociateAgencyAvailabilityHeader.tsx> tooltip="AssociateAgencyAvailabilityHeader.tsx" URL="components/availability/AssociateAgencyAvailabilityHeader.tsx" fillcolor="#bbfeff"] } }
+    "components/availability/AssociateAgencyAvailabilityHeader.tsx" -> "components/ui/button.tsx"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/availability" {label="availability" "components/availability/AssociateAgencyAvailabilitySlotBlock.tsx" [label=<AssociateAgencyAvailabilitySlotBlock.tsx> tooltip="AssociateAgencyAvailabilitySlotBlock.tsx" URL="components/availability/AssociateAgencyAvailabilitySlotBlock.tsx" fillcolor="#bbfeff"] } }
+    "components/availability/AssociateAgencyAvailabilitySlotBlock.tsx" -> "components/availability/associate-agency-availability-shared.ts"
+    "components/availability/AssociateAgencyAvailabilitySlotBlock.tsx" -> "lib/client/utils/availability-time.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/availability" {label="availability" "components/availability/AvailabilityAgendaHeader.tsx" [label=<AvailabilityAgendaHeader.tsx> tooltip="AvailabilityAgendaHeader.tsx" URL="components/availability/AvailabilityAgendaHeader.tsx" fillcolor="#bbfeff"] } }
+    "components/availability/AvailabilityAgendaHeader.tsx" -> "components/availability/availability-agenda-shared.ts"
+    "components/availability/AvailabilityAgendaHeader.tsx" -> "components/ui/alert.tsx"
+    "components/availability/AvailabilityAgendaHeader.tsx" -> "components/ui/button.tsx"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/availability" {label="availability" "components/availability/AvailabilityAgendaSlotBlock.tsx" [label=<AvailabilityAgendaSlotBlock.tsx> tooltip="AvailabilityAgendaSlotBlock.tsx" URL="components/availability/AvailabilityAgendaSlotBlock.tsx" fillcolor="#bbfeff"] } }
+    "components/availability/AvailabilityAgendaSlotBlock.tsx" -> "components/availability/availability-agenda-shared.ts"
+    "components/availability/AvailabilityAgendaSlotBlock.tsx" -> "lib/client/utils/availability-time.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/availability" {label="availability" "components/availability/AvailabilityRangesDialog.tsx" [label=<AvailabilityRangesDialog.tsx> tooltip="AvailabilityRangesDialog.tsx" URL="components/availability/AvailabilityRangesDialog.tsx" fillcolor="#bbfeff"] } }
+    "components/availability/AvailabilityRangesDialog.tsx" -> "components/availability/TimeSelect5mLocale.tsx"
+    "components/availability/AvailabilityRangesDialog.tsx" -> "components/ui/alert.tsx"
+    "components/availability/AvailabilityRangesDialog.tsx" -> "components/ui/button.tsx"
+    "components/availability/AvailabilityRangesDialog.tsx" -> "components/ui/dialog.tsx"
+    "components/availability/AvailabilityRangesDialog.tsx" -> "components/ui/input.tsx"
+    "components/availability/AvailabilityRangesDialog.tsx" -> "components/ui/label.tsx"
+    "components/availability/AvailabilityRangesDialog.tsx" -> "lib/client/utils/availability-time.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/availability" {label="availability" "components/availability/AvailabilityWeekGrid.tsx" [label=<AvailabilityWeekGrid.tsx> tooltip="AvailabilityWeekGrid.tsx" URL="components/availability/AvailabilityWeekGrid.tsx" fillcolor="#bbfeff"] } }
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/availability" {label="availability" "components/availability/DailyOverridesCard.tsx" [label=<DailyOverridesCard.tsx> tooltip="DailyOverridesCard.tsx" URL="components/availability/DailyOverridesCard.tsx" fillcolor="#bbfeff"] } }
+    "components/availability/DailyOverridesCard.tsx" -> "components/availability/TimeSelect5mLocale.tsx"
+    "components/availability/DailyOverridesCard.tsx" -> "components/ui/alert.tsx"
+    "components/availability/DailyOverridesCard.tsx" -> "components/ui/button.tsx"
+    "components/availability/DailyOverridesCard.tsx" -> "components/ui/card.tsx"
+    "components/availability/DailyOverridesCard.tsx" -> "components/ui/input.tsx"
+    "components/availability/DailyOverridesCard.tsx" -> "components/ui/label.tsx"
+    "components/availability/DailyOverridesCard.tsx" -> "lib/availability-utils.ts"
+    "components/availability/DailyOverridesCard.tsx" -> "lib/client/hooks/useDayOverrides.ts"
+    "components/availability/DailyOverridesCard.tsx" -> "lib/client/utils/availability-time.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/availability" {label="availability" "components/availability/TimeSelect5mLocale.tsx" [label=<TimeSelect5mLocale.tsx> tooltip="TimeSelect5mLocale.tsx" URL="components/availability/TimeSelect5mLocale.tsx" fillcolor="#bbfeff"] } }
+    "components/availability/TimeSelect5mLocale.tsx" -> "lib/client/utils/availability-time.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/availability" {label="availability" "components/availability/WeeklyGlobalAgenda.tsx" [label=<WeeklyGlobalAgenda.tsx> tooltip="WeeklyGlobalAgenda.tsx" URL="components/availability/WeeklyGlobalAgenda.tsx" fillcolor="#bbfeff"] } }
+    "components/availability/WeeklyGlobalAgenda.tsx" -> "components/availability/weekly-global-agenda-shared.ts"
+    "components/availability/WeeklyGlobalAgenda.tsx" -> "components/availability/WeeklyGlobalAgendaGrid.tsx"
+    "components/availability/WeeklyGlobalAgenda.tsx" -> "components/ui/alert.tsx"
+    "components/availability/WeeklyGlobalAgenda.tsx" -> "components/ui/button.tsx"
+    "components/availability/WeeklyGlobalAgenda.tsx" -> "components/ui/card.tsx"
+    "components/availability/WeeklyGlobalAgenda.tsx" -> "lib/client/hooks/useWeeklyAvailabilities.ts"
+    "components/availability/WeeklyGlobalAgenda.tsx" -> "lib/client/hooks/useWeeklyGlobalAgendaData.ts"
+    "components/availability/WeeklyGlobalAgenda.tsx" -> "lib/client/utils/schedule-display.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/availability" {label="availability" "components/availability/WeeklyGlobalAgendaGrid.tsx" [label=<WeeklyGlobalAgendaGrid.tsx> tooltip="WeeklyGlobalAgendaGrid.tsx" URL="components/availability/WeeklyGlobalAgendaGrid.tsx" fillcolor="#bbfeff"] } }
+    "components/availability/WeeklyGlobalAgendaGrid.tsx" -> "components/availability/weekly-global-agenda-shared.ts"
+    "components/availability/WeeklyGlobalAgendaGrid.tsx" -> "lib/availability-utils.ts"
+    "components/availability/WeeklyGlobalAgendaGrid.tsx" -> "lib/client/utils/schedule-display.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/availability" {label="availability" "components/availability/associate-agency-availability-shared.ts" [label=<associate-agency-availability-shared.ts> tooltip="associate-agency-availability-shared.ts" URL="components/availability/associate-agency-availability-shared.ts" fillcolor="#ddfeff"] } }
+    "components/availability/associate-agency-availability-shared.ts" -> "lib/client/utils/availability-time.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/availability" {label="availability" "components/availability/availability-agenda-shared.ts" [label=<availability-agenda-shared.ts> tooltip="availability-agenda-shared.ts" URL="components/availability/availability-agenda-shared.ts" fillcolor="#ddfeff"] } }
+    "components/availability/availability-agenda-shared.ts" -> "lib/client/utils/availability-time.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/availability" {label="availability" "components/availability/weekly-global-agenda-shared.ts" [label=<weekly-global-agenda-shared.ts> tooltip="weekly-global-agenda-shared.ts" URL="components/availability/weekly-global-agenda-shared.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/gestion" {label="gestion" "components/gestion/StudentsAvailabilityHeatmap.tsx" [label=<StudentsAvailabilityHeatmap.tsx> tooltip="StudentsAvailabilityHeatmap.tsx" URL="components/gestion/StudentsAvailabilityHeatmap.tsx" fillcolor="#bbfeff"] } }
+    "components/gestion/StudentsAvailabilityHeatmap.tsx" -> "lib/client/hooks/useAllAvailabilities.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/gestion" {label="gestion" "components/gestion/UserManagement.tsx" [label=<UserManagement.tsx> tooltip="UserManagement.tsx" URL="components/gestion/UserManagement.tsx" fillcolor="#bbfeff"] } }
+    "components/gestion/UserManagement.tsx" -> "lib/client/api/users-client.ts"
+    "components/gestion/UserManagement.tsx" -> "lib/client/hooks/useAgencyUsers.ts"
+    "components/gestion/UserManagement.tsx" -> "lib/client/hooks/useStudentHoursMutations.ts"
+    "components/gestion/UserManagement.tsx" -> "lib/client/hooks/useUserRoleMutations.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/home" {label="home" "components/home/AskForDemo.tsx" [label=<AskForDemo.tsx> tooltip="AskForDemo.tsx" URL="components/home/AskForDemo.tsx" fillcolor="#bbfeff"] } }
+    "components/home/AskForDemo.tsx" -> "components/ui/button.tsx"
+    "components/home/AskForDemo.tsx" -> "components/ui/card.tsx"
+    "components/home/AskForDemo.tsx" -> "components/ui/input.tsx"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/home" {label="home" "components/home/CallToAction.tsx" [label=<CallToAction.tsx> tooltip="CallToAction.tsx" URL="components/home/CallToAction.tsx" fillcolor="#bbfeff"] } }
+    "components/home/CallToAction.tsx" -> "components/ui/button.tsx"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/home" {label="home" "components/home/Comparison.tsx" [label=<Comparison.tsx> tooltip="Comparison.tsx" URL="components/home/Comparison.tsx" fillcolor="#bbfeff"] } }
+    "components/home/Comparison.tsx" -> "components/ui/tooltip.tsx"
+    "components/home/Comparison.tsx" -> "lib/utils.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/home" {label="home" "components/home/FAQ.tsx" [label=<FAQ.tsx> tooltip="FAQ.tsx" URL="components/home/FAQ.tsx" fillcolor="#bbfeff"] } }
+    "components/home/FAQ.tsx" -> "components/ui/accordion.tsx"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/home" {label="home" "components/home/HeroSection.tsx" [label=<HeroSection.tsx> tooltip="HeroSection.tsx" URL="components/home/HeroSection.tsx" fillcolor="#bbfeff"] } }
+    "components/home/HeroSection.tsx" -> "components/ui/button.tsx"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/home" {label="home" "components/home/HomeStatusCard.tsx" [label=<HomeStatusCard.tsx> tooltip="HomeStatusCard.tsx" URL="components/home/HomeStatusCard.tsx" fillcolor="#bbfeff"] } }
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/home" {label="home" "components/home/HowItWorks.tsx" [label=<HowItWorks.tsx> tooltip="HowItWorks.tsx" URL="components/home/HowItWorks.tsx" fillcolor="#bbfeff"] } }
+    "components/home/HowItWorks.tsx" -> "components/ui/button.tsx"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/home" {label="home" "components/home/PlansAvecSimulation.tsx" [label=<PlansAvecSimulation.tsx> tooltip="PlansAvecSimulation.tsx" URL="components/home/PlansAvecSimulation.tsx" fillcolor="#ccffcc"] } }
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/home" {label="home" "components/home/PlansSansSimulation.tsx" [label=<PlansSansSimulation.tsx> tooltip="PlansSansSimulation.tsx" URL="components/home/PlansSansSimulation.tsx" fillcolor="#bbfeff"] } }
+    "components/home/PlansSansSimulation.tsx" -> "components/ui/button.tsx"
+    "components/home/PlansSansSimulation.tsx" -> "lib/client/hooks/useMySubscriptionStatus.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/home" {label="home" "components/home/PropositionValeur.tsx" [label=<PropositionValeur.tsx> tooltip="PropositionValeur.tsx" URL="components/home/PropositionValeur.tsx" fillcolor="#bbfeff"] } }
+    "components/home/PropositionValeur.tsx" -> "components/ui/tooltip.tsx"
+    "components/home/PropositionValeur.tsx" -> "lib/utils.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/navbar" {label="navbar" "components/navbar/navbar-utils.ts" [label=<navbar-utils.ts> tooltip="navbar-utils.ts" URL="components/navbar/navbar-utils.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/navbar" {label="navbar" "components/navbar/navbar_desktop.tsx" [label=<navbar_desktop.tsx> tooltip="navbar_desktop.tsx" URL="components/navbar/navbar_desktop.tsx" fillcolor="#bbfeff"] } }
+    "components/navbar/navbar_desktop.tsx" -> "app/[locale]/_components/LocaleSwitcher.tsx"
+    "components/navbar/navbar_desktop.tsx" -> "components/navbar/navbar-utils.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/navbar" {label="navbar" "components/navbar/navbar_mobile.tsx" [label=<navbar_mobile.tsx> tooltip="navbar_mobile.tsx" URL="components/navbar/navbar_mobile.tsx" fillcolor="#bbfeff"] } }
+    "components/navbar/navbar_mobile.tsx" -> "app/[locale]/_components/LocaleSwitcher.tsx"
+    "components/navbar/navbar_mobile.tsx" -> "components/navbar/navbar-utils.ts"
+    subgraph "cluster_components" {label="components" "components/optimal-schedule.tsx" [label=<optimal-schedule.tsx> tooltip="optimal-schedule.tsx" URL="components/optimal-schedule.tsx" fillcolor="#bbfeff"] }
+    "components/optimal-schedule.tsx" -> "components/gestion/StudentsAvailabilityHeatmap.tsx"
+    "components/optimal-schedule.tsx" -> "components/schedule/AssignedSlotsSection.tsx"
+    "components/optimal-schedule.tsx" -> "components/schedule/CalculatedAgendaSection.tsx"
+    "components/optimal-schedule.tsx" -> "components/ui/alert.tsx"
+    "components/optimal-schedule.tsx" -> "components/ui/button.tsx"
+    "components/optimal-schedule.tsx" -> "components/ui/card.tsx"
+    "components/optimal-schedule.tsx" -> "lib/client/api/schedule-client.ts"
+    "components/optimal-schedule.tsx" -> "lib/client/hooks/useAgencyUsers.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/schedule" {label="schedule" "components/schedule/AssignedSlotsSection.tsx" [label=<AssignedSlotsSection.tsx> tooltip="AssignedSlotsSection.tsx" URL="components/schedule/AssignedSlotsSection.tsx" fillcolor="#bbfeff"] } }
+    "components/schedule/AssignedSlotsSection.tsx" -> "components/schedule/MemberScheduleList.tsx"
+    "components/schedule/AssignedSlotsSection.tsx" -> "components/ui/card.tsx"
+    "components/schedule/AssignedSlotsSection.tsx" -> "lib/schedule-utils.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/schedule" {label="schedule" "components/schedule/CalculatedAgendaGrid.tsx" [label=<CalculatedAgendaGrid.tsx> tooltip="CalculatedAgendaGrid.tsx" URL="components/schedule/CalculatedAgendaGrid.tsx" fillcolor="#bbfeff"] } }
+    "components/schedule/CalculatedAgendaGrid.tsx" -> "components/schedule/calculated-agenda-shared.ts"
+    "components/schedule/CalculatedAgendaGrid.tsx" -> "lib/client/utils/schedule-display.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/schedule" {label="schedule" "components/schedule/CalculatedAgendaPartnersLegend.tsx" [label=<CalculatedAgendaPartnersLegend.tsx> tooltip="CalculatedAgendaPartnersLegend.tsx" URL="components/schedule/CalculatedAgendaPartnersLegend.tsx" fillcolor="#bbfeff"] } }
+    "components/schedule/CalculatedAgendaPartnersLegend.tsx" -> "components/ui/alert-dialog.tsx"
+    "components/schedule/CalculatedAgendaPartnersLegend.tsx" -> "components/ui/badge.tsx"
+    "components/schedule/CalculatedAgendaPartnersLegend.tsx" -> "components/ui/button.tsx"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/schedule" {label="schedule" "components/schedule/CalculatedAgendaSection.tsx" [label=<CalculatedAgendaSection.tsx> tooltip="CalculatedAgendaSection.tsx" URL="components/schedule/CalculatedAgendaSection.tsx" fillcolor="#bbfeff"] } }
+    "components/schedule/CalculatedAgendaSection.tsx" -> "components/schedule/calculated-agenda-shared.ts"
+    "components/schedule/CalculatedAgendaSection.tsx" -> "components/schedule/CalculatedAgendaGrid.tsx"
+    "components/schedule/CalculatedAgendaSection.tsx" -> "components/schedule/CalculatedAgendaPartnersLegend.tsx"
+    "components/schedule/CalculatedAgendaSection.tsx" -> "components/ui/button.tsx"
+    "components/schedule/CalculatedAgendaSection.tsx" -> "components/ui/card.tsx"
+    "components/schedule/CalculatedAgendaSection.tsx" -> "components/ui/select.tsx"
+    "components/schedule/CalculatedAgendaSection.tsx" -> "lib/client/api/users-client.ts"
+    "components/schedule/CalculatedAgendaSection.tsx" -> "lib/client/hooks/useAgencyUsers.ts"
+    "components/schedule/CalculatedAgendaSection.tsx" -> "lib/client/hooks/useCommitSchedule.ts"
+    "components/schedule/CalculatedAgendaSection.tsx" -> "lib/client/utils/schedule-display.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/schedule" {label="schedule" "components/schedule/DayBlock.tsx" [label=<DayBlock.tsx> tooltip="DayBlock.tsx" URL="components/schedule/DayBlock.tsx" fillcolor="#bbfeff"] } }
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/schedule" {label="schedule" "components/schedule/LastWeekAgenda.tsx" [label=<LastWeekAgenda.tsx> tooltip="LastWeekAgenda.tsx" URL="components/schedule/LastWeekAgenda.tsx" fillcolor="#bbfeff"] } }
+    "components/schedule/LastWeekAgenda.tsx" -> "components/schedule/last-week-agenda-shared.ts"
+    "components/schedule/LastWeekAgenda.tsx" -> "components/schedule/LastWeekAgendaGrid.tsx"
+    "components/schedule/LastWeekAgenda.tsx" -> "components/schedule/LastWeekAgendaHeader.tsx"
+    "components/schedule/LastWeekAgenda.tsx" -> "lib/client/hooks/useMyWeeks.ts"
+    "components/schedule/LastWeekAgenda.tsx" -> "lib/client/hooks/useOwnServiceSummary.ts"
+    "components/schedule/LastWeekAgenda.tsx" -> "lib/client/utils/schedule-display.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/schedule" {label="schedule" "components/schedule/LastWeekAgendaGrid.tsx" [label=<LastWeekAgendaGrid.tsx> tooltip="LastWeekAgendaGrid.tsx" URL="components/schedule/LastWeekAgendaGrid.tsx" fillcolor="#bbfeff"] } }
+    "components/schedule/LastWeekAgendaGrid.tsx" -> "components/schedule/last-week-agenda-shared.ts"
+    "components/schedule/LastWeekAgendaGrid.tsx" -> "lib/client/utils/schedule-display.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/schedule" {label="schedule" "components/schedule/LastWeekAgendaHeader.tsx" [label=<LastWeekAgendaHeader.tsx> tooltip="LastWeekAgendaHeader.tsx" URL="components/schedule/LastWeekAgendaHeader.tsx" fillcolor="#bbfeff"] } }
+    "components/schedule/LastWeekAgendaHeader.tsx" -> "components/ui/tooltip.tsx"
+    "components/schedule/LastWeekAgendaHeader.tsx" -> "lib/client/utils/schedule-display.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/schedule" {label="schedule" "components/schedule/MemberScheduleList.tsx" [label=<MemberScheduleList.tsx> tooltip="MemberScheduleList.tsx" URL="components/schedule/MemberScheduleList.tsx" fillcolor="#bbfeff"] } }
+    "components/schedule/MemberScheduleList.tsx" -> "components/schedule/DayBlock.tsx"
+    "components/schedule/MemberScheduleList.tsx" -> "components/schedule/SlotRow.tsx"
+    "components/schedule/MemberScheduleList.tsx" -> "components/ui/badge.tsx"
+    "components/schedule/MemberScheduleList.tsx" -> "lib/schedule-utils.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/schedule" {label="schedule" "components/schedule/SlotRow.tsx" [label=<SlotRow.tsx> tooltip="SlotRow.tsx" URL="components/schedule/SlotRow.tsx" fillcolor="#bbfeff"] } }
+    "components/schedule/SlotRow.tsx" -> "components/ui/badge.tsx"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/schedule" {label="schedule" "components/schedule/calculated-agenda-shared.ts" [label=<calculated-agenda-shared.ts> tooltip="calculated-agenda-shared.ts" URL="components/schedule/calculated-agenda-shared.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/schedule" {label="schedule" "components/schedule/last-week-agenda-shared.ts" [label=<last-week-agenda-shared.ts> tooltip="last-week-agenda-shared.ts" URL="components/schedule/last-week-agenda-shared.ts" fillcolor="#ddfeff"] } }
+    "components/schedule/last-week-agenda-shared.ts" -> "lib/client/utils/schedule-display.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/services" {label="services" "components/services/CategoryFormDialog.tsx" [label=<CategoryFormDialog.tsx> tooltip="CategoryFormDialog.tsx" URL="components/services/CategoryFormDialog.tsx" fillcolor="#bbfeff"] } }
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/services" {label="services" "components/services/EditableServicesCatalog.tsx" [label=<EditableServicesCatalog.tsx> tooltip="EditableServicesCatalog.tsx" URL="components/services/EditableServicesCatalog.tsx" fillcolor="#bbfeff"] } }
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/services" {label="services" "components/services/SelectableServicesCatalog.tsx" [label=<SelectableServicesCatalog.tsx> tooltip="SelectableServicesCatalog.tsx" URL="components/services/SelectableServicesCatalog.tsx" fillcolor="#bbfeff"] } }
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/services" {label="services" "components/services/ServiceFormDialog.tsx" [label=<ServiceFormDialog.tsx> tooltip="ServiceFormDialog.tsx" URL="components/services/ServiceFormDialog.tsx" fillcolor="#bbfeff"] } }
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/shared" {label="shared" "components/shared/AddressMapPreview.tsx" [label=<AddressMapPreview.tsx> tooltip="AddressMapPreview.tsx" URL="components/shared/AddressMapPreview.tsx" fillcolor="#bbfeff"] } }
+    "components/shared/AddressMapPreview.tsx" -> "lib/client/hooks/useGoogleMapPreview.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/shared" {label="shared" "components/shared/GooglePlacesScript.tsx" [label=<GooglePlacesScript.tsx> tooltip="GooglePlacesScript.tsx" URL="components/shared/GooglePlacesScript.tsx" fillcolor="#bbfeff"] } }
+    "components/shared/GooglePlacesScript.tsx" -> "lib/client/utils/google-maps.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/ui" {label="ui" "components/ui/accordion.tsx" [label=<accordion.tsx> tooltip="accordion.tsx" URL="components/ui/accordion.tsx" fillcolor="#bbfeff"] } }
+    "components/ui/accordion.tsx" -> "lib/utils.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/ui" {label="ui" "components/ui/alert-dialog.tsx" [label=<alert-dialog.tsx> tooltip="alert-dialog.tsx" URL="components/ui/alert-dialog.tsx" fillcolor="#bbfeff"] } }
+    "components/ui/alert-dialog.tsx" -> "lib/utils.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/ui" {label="ui" "components/ui/alert.tsx" [label=<alert.tsx> tooltip="alert.tsx" URL="components/ui/alert.tsx" fillcolor="#bbfeff"] } }
+    "components/ui/alert.tsx" -> "lib/utils.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/ui" {label="ui" "components/ui/badge.tsx" [label=<badge.tsx> tooltip="badge.tsx" URL="components/ui/badge.tsx" fillcolor="#bbfeff"] } }
+    "components/ui/badge.tsx" -> "lib/utils.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/ui" {label="ui" "components/ui/button.tsx" [label=<button.tsx> tooltip="button.tsx" URL="components/ui/button.tsx" fillcolor="#bbfeff"] } }
+    "components/ui/button.tsx" -> "lib/utils.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/ui" {label="ui" "components/ui/card.tsx" [label=<card.tsx> tooltip="card.tsx" URL="components/ui/card.tsx" fillcolor="#bbfeff"] } }
+    "components/ui/card.tsx" -> "lib/utils.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/ui" {label="ui" "components/ui/dialog.tsx" [label=<dialog.tsx> tooltip="dialog.tsx" URL="components/ui/dialog.tsx" fillcolor="#bbfeff"] } }
+    "components/ui/dialog.tsx" -> "lib/utils.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/ui" {label="ui" "components/ui/input.tsx" [label=<input.tsx> tooltip="input.tsx" URL="components/ui/input.tsx" fillcolor="#bbfeff"] } }
+    "components/ui/input.tsx" -> "lib/utils.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/ui" {label="ui" "components/ui/label.tsx" [label=<label.tsx> tooltip="label.tsx" URL="components/ui/label.tsx" fillcolor="#bbfeff"] } }
+    "components/ui/label.tsx" -> "lib/utils.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/ui" {label="ui" "components/ui/select.tsx" [label=<select.tsx> tooltip="select.tsx" URL="components/ui/select.tsx" fillcolor="#bbfeff"] } }
+    "components/ui/select.tsx" -> "lib/utils.ts"
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/ui" {label="ui" "components/ui/sonner.tsx" [label=<sonner.tsx> tooltip="sonner.tsx" URL="components/ui/sonner.tsx" fillcolor="#bbfeff"] } }
+    subgraph "cluster_components" {label="components" subgraph "cluster_components/ui" {label="ui" "components/ui/tooltip.tsx" [label=<tooltip.tsx> tooltip="tooltip.tsx" URL="components/ui/tooltip.tsx" fillcolor="#bbfeff"] } }
+    "components/ui/tooltip.tsx" -> "lib/utils.ts"
+    subgraph "cluster_lib" {label="lib" "lib/agency-guards.ts" [label=<agency-guards.ts> tooltip="agency-guards.ts" URL="lib/agency-guards.ts" fillcolor="#ddfeff"] }
+    "lib/agency-guards.ts" -> "lib/db.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/api" {label="api" "lib/api/auth-server.ts" [label=<auth-server.ts> tooltip="auth-server.ts" URL="lib/api/auth-server.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/api" {label="api" "lib/api/auth.ts" [label=<auth.ts> tooltip="auth.ts" URL="lib/api/auth.ts" fillcolor="#ccffcc"] } }
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/api" {label="api" "lib/api/time.ts" [label=<time.ts> tooltip="time.ts" URL="lib/api/time.ts" fillcolor="#ccffcc"] } }
+    subgraph "cluster_lib" {label="lib" "lib/availability-utils.ts" [label=<availability-utils.ts> tooltip="availability-utils.ts" URL="lib/availability-utils.ts" fillcolor="#ddfeff"] }
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/api" {label="api" "lib/client/api/availabilities-client.ts" [label=<availabilities-client.ts> tooltip="availabilities-client.ts" URL="lib/client/api/availabilities-client.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/api/availabilities-client.ts" -> "lib/client/api/request.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/api" {label="api" "lib/client/api/booking-client.ts" [label=<booking-client.ts> tooltip="booking-client.ts" URL="lib/client/api/booking-client.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/api/booking-client.ts" -> "lib/client/api/request.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/api" {label="api" "lib/client/api/me-client.ts" [label=<me-client.ts> tooltip="me-client.ts" URL="lib/client/api/me-client.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/api/me-client.ts" -> "lib/client/api/request.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/api" {label="api" "lib/client/api/profile-client.ts" [label=<profile-client.ts> tooltip="profile-client.ts" URL="lib/client/api/profile-client.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/api/profile-client.ts" -> "lib/client/api/request.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/api" {label="api" "lib/client/api/request.ts" [label=<request.ts> tooltip="request.ts" URL="lib/client/api/request.ts" fillcolor="#ddfeff"] } } }
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/api" {label="api" "lib/client/api/schedule-client.ts" [label=<schedule-client.ts> tooltip="schedule-client.ts" URL="lib/client/api/schedule-client.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/api/schedule-client.ts" -> "lib/client/api/request.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/api" {label="api" "lib/client/api/services-client.ts" [label=<services-client.ts> tooltip="services-client.ts" URL="lib/client/api/services-client.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/api/services-client.ts" -> "lib/client/api/request.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/api" {label="api" "lib/client/api/users-client.ts" [label=<users-client.ts> tooltip="users-client.ts" URL="lib/client/api/users-client.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/api/users-client.ts" -> "lib/client/api/request.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useAgencyUsers.ts" [label=<useAgencyUsers.ts> tooltip="useAgencyUsers.ts" URL="lib/client/hooks/useAgencyUsers.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useAgencyUsers.ts" -> "lib/client/api/users-client.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useAllAvailabilities.ts" [label=<useAllAvailabilities.ts> tooltip="useAllAvailabilities.ts" URL="lib/client/hooks/useAllAvailabilities.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useAllAvailabilities.ts" -> "lib/client/api/availabilities-client.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useAvailabilityCurrentUser.ts" [label=<useAvailabilityCurrentUser.ts> tooltip="useAvailabilityCurrentUser.ts" URL="lib/client/hooks/useAvailabilityCurrentUser.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useAvailabilityCurrentUser.ts" -> "lib/client/api/me-client.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useAvailabilityRangesDialogState.ts" [label=<useAvailabilityRangesDialogState.ts> tooltip="useAvailabilityRangesDialogState.ts" URL="lib/client/hooks/useAvailabilityRangesDialogState.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useAvailabilityRangesDialogState.ts" -> "lib/client/utils/availability-editor.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useAvailabilityRoleGate.ts" [label=<useAvailabilityRoleGate.ts> tooltip="useAvailabilityRoleGate.ts" URL="lib/client/hooks/useAvailabilityRoleGate.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useAvailabilityRoleGate.ts" -> "lib/client/api/me-client.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useBookSlot.ts" [label=<useBookSlot.ts> tooltip="useBookSlot.ts" URL="lib/client/hooks/useBookSlot.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useBookSlot.ts" -> "lib/client/api/booking-client.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useBookingServices.ts" [label=<useBookingServices.ts> tooltip="useBookingServices.ts" URL="lib/client/hooks/useBookingServices.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useBookingServices.ts" -> "lib/client/hooks/useInstructorServices.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useCommitSchedule.ts" [label=<useCommitSchedule.ts> tooltip="useCommitSchedule.ts" URL="lib/client/hooks/useCommitSchedule.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useCommitSchedule.ts" -> "lib/client/api/schedule-client.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useDayOverrides.ts" [label=<useDayOverrides.ts> tooltip="useDayOverrides.ts" URL="lib/client/hooks/useDayOverrides.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useDayOverrides.ts" -> "lib/client/api/availabilities-client.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useDecodedBookingAddress.ts" [label=<useDecodedBookingAddress.ts> tooltip="useDecodedBookingAddress.ts" URL="lib/client/hooks/useDecodedBookingAddress.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useDecodedBookingAddress.ts" -> "lib/client/utils/booking.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useEditableServices.ts" [label=<useEditableServices.ts> tooltip="useEditableServices.ts" URL="lib/client/hooks/useEditableServices.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useEditableServices.ts" -> "lib/client/api/request.ts"
+    "lib/client/hooks/useEditableServices.ts" -> "lib/client/api/services-client.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useEditableWeeklyAvailabilityDraft.ts" [label=<useEditableWeeklyAvailabilityDraft.ts> tooltip="useEditableWeeklyAvailabilityDraft.ts" URL="lib/client/hooks/useEditableWeeklyAvailabilityDraft.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useEditableWeeklyAvailabilityDraft.ts" -> "lib/client/api/availabilities-client.ts"
+    "lib/client/hooks/useEditableWeeklyAvailabilityDraft.ts" -> "lib/client/api/profile-client.ts"
+    "lib/client/hooks/useEditableWeeklyAvailabilityDraft.ts" -> "lib/client/utils/availability-editor.ts"
+    "lib/client/hooks/useEditableWeeklyAvailabilityDraft.ts" -> "lib/client/utils/availability-time.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useGoogleMapPreview.ts" [label=<useGoogleMapPreview.ts> tooltip="useGoogleMapPreview.ts" URL="lib/client/hooks/useGoogleMapPreview.ts" fillcolor="#ddfeff"] } } }
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useGooglePlacesAutocomplete.ts" [label=<useGooglePlacesAutocomplete.ts> tooltip="useGooglePlacesAutocomplete.ts" URL="lib/client/hooks/useGooglePlacesAutocomplete.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useGooglePlacesAutocomplete.ts" -> "lib/client/utils/address.ts"
+    "lib/client/hooks/useGooglePlacesAutocomplete.ts" -> "lib/client/utils/google-maps.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useInstructorProposalAgenda.ts" [label=<useInstructorProposalAgenda.ts> tooltip="useInstructorProposalAgenda.ts" URL="lib/client/hooks/useInstructorProposalAgenda.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useInstructorProposalAgenda.ts" -> "lib/client/api/booking-client.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useInstructorServices.ts" [label=<useInstructorServices.ts> tooltip="useInstructorServices.ts" URL="lib/client/hooks/useInstructorServices.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useInstructorServices.ts" -> "lib/client/api/services-client.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useInstructorWeeklyAgenda.ts" [label=<useInstructorWeeklyAgenda.ts> tooltip="useInstructorWeeklyAgenda.ts" URL="lib/client/hooks/useInstructorWeeklyAgenda.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useInstructorWeeklyAgenda.ts" -> "lib/client/api/booking-client.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useMySubscriptionStatus.ts" [label=<useMySubscriptionStatus.ts> tooltip="useMySubscriptionStatus.ts" URL="lib/client/hooks/useMySubscriptionStatus.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useMySubscriptionStatus.ts" -> "lib/client/api/me-client.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useMyWeeks.ts" [label=<useMyWeeks.ts> tooltip="useMyWeeks.ts" URL="lib/client/hooks/useMyWeeks.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useMyWeeks.ts" -> "lib/client/api/schedule-client.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useOwnServiceSummary.ts" [label=<useOwnServiceSummary.ts> tooltip="useOwnServiceSummary.ts" URL="lib/client/hooks/useOwnServiceSummary.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useOwnServiceSummary.ts" -> "lib/client/api/services-client.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useRelativeTimeFormatter.ts" [label=<useRelativeTimeFormatter.ts> tooltip="useRelativeTimeFormatter.ts" URL="lib/client/hooks/useRelativeTimeFormatter.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useRelativeTimeFormatter.ts" -> "lib/client/utils/availability-time.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useStudentHoursMutations.ts" [label=<useStudentHoursMutations.ts> tooltip="useStudentHoursMutations.ts" URL="lib/client/hooks/useStudentHoursMutations.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useStudentHoursMutations.ts" -> "lib/client/api/users-client.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useTimedNotice.ts" [label=<useTimedNotice.ts> tooltip="useTimedNotice.ts" URL="lib/client/hooks/useTimedNotice.ts" fillcolor="#ddfeff"] } } }
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useUserRoleMutations.ts" [label=<useUserRoleMutations.ts> tooltip="useUserRoleMutations.ts" URL="lib/client/hooks/useUserRoleMutations.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useUserRoleMutations.ts" -> "lib/client/api/users-client.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useWeeklyAvailabilities.ts" [label=<useWeeklyAvailabilities.ts> tooltip="useWeeklyAvailabilities.ts" URL="lib/client/hooks/useWeeklyAvailabilities.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useWeeklyAvailabilities.ts" -> "lib/client/api/availabilities-client.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/hooks" {label="hooks" "lib/client/hooks/useWeeklyGlobalAgendaData.ts" [label=<useWeeklyGlobalAgendaData.ts> tooltip="useWeeklyGlobalAgendaData.ts" URL="lib/client/hooks/useWeeklyGlobalAgendaData.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/hooks/useWeeklyGlobalAgendaData.ts" -> "lib/availability-utils.ts"
+    "lib/client/hooks/useWeeklyGlobalAgendaData.ts" -> "lib/client/api/availabilities-client.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/utils" {label="utils" "lib/client/utils/address.ts" [label=<address.ts> tooltip="address.ts" URL="lib/client/utils/address.ts" fillcolor="#ddfeff"] } } }
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/utils" {label="utils" "lib/client/utils/availability-editor.ts" [label=<availability-editor.ts> tooltip="availability-editor.ts" URL="lib/client/utils/availability-editor.ts" fillcolor="#ddfeff"] } } }
+    "lib/client/utils/availability-editor.ts" -> "lib/client/utils/availability-time.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/utils" {label="utils" "lib/client/utils/availability-time.ts" [label=<availability-time.ts> tooltip="availability-time.ts" URL="lib/client/utils/availability-time.ts" fillcolor="#ddfeff"] } } }
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/utils" {label="utils" "lib/client/utils/booking.ts" [label=<booking.ts> tooltip="booking.ts" URL="lib/client/utils/booking.ts" fillcolor="#ddfeff"] } } }
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/utils" {label="utils" "lib/client/utils/google-maps.ts" [label=<google-maps.ts> tooltip="google-maps.ts" URL="lib/client/utils/google-maps.ts" fillcolor="#ddfeff"] } } }
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/client" {label="client" subgraph "cluster_lib/client/utils" {label="utils" "lib/client/utils/schedule-display.ts" [label=<schedule-display.ts> tooltip="schedule-display.ts" URL="lib/client/utils/schedule-display.ts" fillcolor="#ddfeff"] } } }
+    subgraph "cluster_lib" {label="lib" "lib/db.ts" [label=<db.ts> tooltip="db.ts" URL="lib/db.ts" fillcolor="#ddfeff"] }
+    subgraph "cluster_lib" {label="lib" "lib/get-data.ts" [label=<get-data.ts> tooltip="get-data.ts" URL="lib/get-data.ts" fillcolor="#ddfeff"] }
+    subgraph "cluster_lib" {label="lib" "lib/mock-db.ts" [label=<mock-db.ts> tooltip="mock-db.ts" URL="lib/mock-db.ts" fillcolor="#ccffcc"] }
+    subgraph "cluster_lib" {label="lib" "lib/schedule-utils.ts" [label=<schedule-utils.ts> tooltip="schedule-utils.ts" URL="lib/schedule-utils.ts" fillcolor="#ddfeff"] }
+    subgraph "cluster_lib" {label="lib" "lib/scheduler.ts" [label=<scheduler.ts> tooltip="scheduler.ts" URL="lib/scheduler.ts" fillcolor="#ddfeff"] }
+    "lib/scheduler.ts" -> "lib/get-data.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/server" {label="server" subgraph "cluster_lib/server/domain" {label="domain" "lib/server/domain/time-ranges.ts" [label=<time-ranges.ts> tooltip="time-ranges.ts" URL="lib/server/domain/time-ranges.ts" fillcolor="#ddfeff"] } } }
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/server" {label="server" subgraph "cluster_lib/server/repositories" {label="repositories" "lib/server/repositories/agency-repository.ts" [label=<agency-repository.ts> tooltip="agency-repository.ts" URL="lib/server/repositories/agency-repository.ts" fillcolor="#ddfeff"] } } }
+    "lib/server/repositories/agency-repository.ts" -> "lib/db.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/server" {label="server" subgraph "cluster_lib/server/repositories" {label="repositories" "lib/server/repositories/availability-repository.ts" [label=<availability-repository.ts> tooltip="availability-repository.ts" URL="lib/server/repositories/availability-repository.ts" fillcolor="#ddfeff"] } } }
+    "lib/server/repositories/availability-repository.ts" -> "lib/db.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/server" {label="server" subgraph "cluster_lib/server/repositories" {label="repositories" "lib/server/repositories/instructor-agenda-repository.ts" [label=<instructor-agenda-repository.ts> tooltip="instructor-agenda-repository.ts" URL="lib/server/repositories/instructor-agenda-repository.ts" fillcolor="#ddfeff"] } } }
+    "lib/server/repositories/instructor-agenda-repository.ts" -> "lib/db.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/server" {label="server" subgraph "cluster_lib/server/repositories" {label="repositories" "lib/server/repositories/org-user-management-repository.ts" [label=<org-user-management-repository.ts> tooltip="org-user-management-repository.ts" URL="lib/server/repositories/org-user-management-repository.ts" fillcolor="#ddfeff"] } } }
+    "lib/server/repositories/org-user-management-repository.ts" -> "lib/db.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/server" {label="server" subgraph "cluster_lib/server/repositories" {label="repositories" "lib/server/repositories/service-repository.ts" [label=<service-repository.ts> tooltip="service-repository.ts" URL="lib/server/repositories/service-repository.ts" fillcolor="#ddfeff"] } } }
+    "lib/server/repositories/service-repository.ts" -> "lib/db.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/server" {label="server" subgraph "cluster_lib/server/repositories" {label="repositories" "lib/server/repositories/user-repository.ts" [label=<user-repository.ts> tooltip="user-repository.ts" URL="lib/server/repositories/user-repository.ts" fillcolor="#ddfeff"] } } }
+    "lib/server/repositories/user-repository.ts" -> "lib/db.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/server" {label="server" subgraph "cluster_lib/server/services" {label="services" "lib/server/services/availability-service.ts" [label=<availability-service.ts> tooltip="availability-service.ts" URL="lib/server/services/availability-service.ts" fillcolor="#ddfeff"] } } }
+    "lib/server/services/availability-service.ts" -> "lib/server/domain/time-ranges.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/server" {label="server" subgraph "cluster_lib/server/services" {label="services" "lib/server/services/instructor-agenda-service.ts" [label=<instructor-agenda-service.ts> tooltip="instructor-agenda-service.ts" URL="lib/server/services/instructor-agenda-service.ts" fillcolor="#ddfeff"] } } }
+    "lib/server/services/instructor-agenda-service.ts" -> "lib/server/domain/time-ranges.ts"
+    "lib/server/services/instructor-agenda-service.ts" -> "lib/server/repositories/instructor-agenda-repository.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/server" {label="server" subgraph "cluster_lib/server/services" {label="services" "lib/server/services/org-user-management-service.ts" [label=<org-user-management-service.ts> tooltip="org-user-management-service.ts" URL="lib/server/services/org-user-management-service.ts" fillcolor="#ddfeff"] } } }
+    "lib/server/services/org-user-management-service.ts" -> "lib/server/repositories/agency-repository.ts"
+    "lib/server/services/org-user-management-service.ts" -> "lib/server/repositories/org-user-management-repository.ts"
+    subgraph "cluster_lib" {label="lib" subgraph "cluster_lib/server" {label="server" subgraph "cluster_lib/server/services" {label="services" "lib/server/services/service-catalog-service.ts" [label=<service-catalog-service.ts> tooltip="service-catalog-service.ts" URL="lib/server/services/service-catalog-service.ts" fillcolor="#ddfeff"] } } }
+    "lib/server/services/service-catalog-service.ts" -> "lib/server/repositories/service-repository.ts"
+    "lib/server/services/service-catalog-service.ts" -> "lib/server/repositories/user-repository.ts"
+    subgraph "cluster_lib" {label="lib" "lib/stripe.ts" [label=<stripe.ts> tooltip="stripe.ts" URL="lib/stripe.ts" fillcolor="#ddfeff"] }
+    subgraph "cluster_lib" {label="lib" "lib/utils.ts" [label=<utils.ts> tooltip="utils.ts" URL="lib/utils.ts" fillcolor="#ddfeff"] }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/components" {label="components" "src/components/LocaleLink.tsx" [label=<LocaleLink.tsx> tooltip="LocaleLink.tsx" URL="src/components/LocaleLink.tsx" fillcolor="#bbfeff"] } }
+    "src/components/LocaleLink.tsx" -> "src/lib/i18n.ts"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/emails" {label="emails" "src/emails/bookingClientConfirmation.tsx" [label=<bookingClientConfirmation.tsx> tooltip="bookingClientConfirmation.tsx" URL="src/emails/bookingClientConfirmation.tsx" fillcolor="#bbfeff"] } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/emails" {label="emails" "src/emails/bookingInstructorNotification.tsx" [label=<bookingInstructorNotification.tsx> tooltip="bookingInstructorNotification.tsx" URL="src/emails/bookingInstructorNotification.tsx" fillcolor="#bbfeff"] } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/emails" {label="emails" "src/emails/newClient.tsx" [label=<newClient.tsx> tooltip="newClient.tsx" URL="src/emails/newClient.tsx" fillcolor="#bbfeff"] } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/emails" {label="emails" "src/emails/welcomeClient.tsx" [label=<welcomeClient.tsx> tooltip="welcomeClient.tsx" URL="src/emails/welcomeClient.tsx" fillcolor="#bbfeff"] } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/i18n" {label="i18n" "src/i18n/clerk.ro.ts" [label=<clerk.ro.ts> tooltip="clerk.ro.ts" URL="src/i18n/clerk.ro.ts" fillcolor="#ccffcc"] } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/i18n" {label="i18n" "src/i18n/getMessages.ts" [label=<getMessages.ts> tooltip="getMessages.ts" URL="src/i18n/getMessages.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/i18n" {label="i18n" "src/i18n/request.ts" [label=<request.ts> tooltip="request.ts" URL="src/i18n/request.ts" fillcolor="#ccffcc"] } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" subgraph "cluster_src/lib/email" {label="email" "src/lib/email/resend.ts" [label=<resend.ts> tooltip="resend.ts" URL="src/lib/email/resend.ts" fillcolor="#ddfeff"] } } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" "src/lib/i18n.ts" [label=<i18n.ts> tooltip="i18n.ts" URL="src/lib/i18n.ts" fillcolor="#ddfeff"] } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" subgraph "cluster_src/lib/inngest" {label="inngest" "src/lib/inngest/client.ts" [label=<client.ts> tooltip="client.ts" URL="src/lib/inngest/client.ts" fillcolor="#ddfeff"] } } }
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" subgraph "cluster_src/lib/inngest" {label="inngest" subgraph "cluster_src/lib/inngest/functions" {label="functions" "src/lib/inngest/functions/newClient.ts" [label=<newClient.ts> tooltip="newClient.ts" URL="src/lib/inngest/functions/newClient.ts" fillcolor="#ddfeff"] } } } }
+    "src/lib/inngest/functions/newClient.ts" -> "lib/db.ts"
+    "src/lib/inngest/functions/newClient.ts" -> "src/emails/newClient.tsx"
+    "src/lib/inngest/functions/newClient.ts" -> "src/lib/email/resend.ts"
+    "src/lib/inngest/functions/newClient.ts" -> "src/lib/inngest/client.ts"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" subgraph "cluster_src/lib/inngest" {label="inngest" subgraph "cluster_src/lib/inngest/functions" {label="functions" "src/lib/inngest/functions/slotBookedClientEmail.ts" [label=<slotBookedClientEmail.ts> tooltip="slotBookedClientEmail.ts" URL="src/lib/inngest/functions/slotBookedClientEmail.ts" fillcolor="#ddfeff"] } } } }
+    "src/lib/inngest/functions/slotBookedClientEmail.ts" -> "lib/db.ts"
+    "src/lib/inngest/functions/slotBookedClientEmail.ts" -> "src/emails/bookingClientConfirmation.tsx"
+    "src/lib/inngest/functions/slotBookedClientEmail.ts" -> "src/lib/email/resend.ts"
+    "src/lib/inngest/functions/slotBookedClientEmail.ts" -> "src/lib/inngest/client.ts"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" subgraph "cluster_src/lib/inngest" {label="inngest" subgraph "cluster_src/lib/inngest/functions" {label="functions" "src/lib/inngest/functions/slotBookedInstructorEmail.ts" [label=<slotBookedInstructorEmail.ts> tooltip="slotBookedInstructorEmail.ts" URL="src/lib/inngest/functions/slotBookedInstructorEmail.ts" fillcolor="#ddfeff"] } } } }
+    "src/lib/inngest/functions/slotBookedInstructorEmail.ts" -> "lib/db.ts"
+    "src/lib/inngest/functions/slotBookedInstructorEmail.ts" -> "src/emails/bookingInstructorNotification.tsx"
+    "src/lib/inngest/functions/slotBookedInstructorEmail.ts" -> "src/lib/email/resend.ts"
+    "src/lib/inngest/functions/slotBookedInstructorEmail.ts" -> "src/lib/inngest/client.ts"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" subgraph "cluster_src/lib/inngest" {label="inngest" subgraph "cluster_src/lib/inngest/functions" {label="functions" "src/lib/inngest/functions/welcomeClientEmail.ts" [label=<welcomeClientEmail.ts> tooltip="welcomeClientEmail.ts" URL="src/lib/inngest/functions/welcomeClientEmail.ts" fillcolor="#ddfeff"] } } } }
+    "src/lib/inngest/functions/welcomeClientEmail.ts" -> "lib/db.ts"
+    "src/lib/inngest/functions/welcomeClientEmail.ts" -> "src/emails/welcomeClient.tsx"
+    "src/lib/inngest/functions/welcomeClientEmail.ts" -> "src/lib/email/resend.ts"
+    "src/lib/inngest/functions/welcomeClientEmail.ts" -> "src/lib/inngest/client.ts"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" "src/lib/require-role.ts" [label=<require-role.ts> tooltip="require-role.ts" URL="src/lib/require-role.ts" fillcolor="#ddfeff"] } }
+    "src/lib/require-role.ts" -> "lib/db.ts"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" "src/lib/require-subscription-if-educator.ts" [label=<require-subscription-if-educator.ts> tooltip="require-subscription-if-educator.ts" URL="src/lib/require-subscription-if-educator.ts" fillcolor="#ddfeff"] } }
+    "src/lib/require-subscription-if-educator.ts" -> "lib/db.ts"
+    subgraph "cluster_src" {label="src" subgraph "cluster_src/lib" {label="lib" "src/lib/useLocaleNav.ts" [label=<useLocaleNav.ts> tooltip="useLocaleNav.ts" URL="src/lib/useLocaleNav.ts" fillcolor="#ddfeff"] } }
+    "src/lib/useLocaleNav.ts" -> "src/lib/i18n.ts"
+}

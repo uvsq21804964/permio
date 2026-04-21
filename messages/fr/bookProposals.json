@@ -5,12 +5,12 @@
   },
   "noAddress": {
     "title": "Impossible de retrouver votre adresse pour calculer les créneaux proposés.",
-    "button": "Revenir à l’étape adresse"
+    "button": "Revenir à l'étape adresse"
   },
   "errors": {
     "loadServicesApi": "Impossible de récupérer les services de votre éducateur canin.",
     "loadServicesGeneric": "Erreur lors du chargement des services de votre éducateur canin.",
-    "loadAgendaApi": "Impossible de récupérer les disponibilités du éducateur canin.",
+    "loadAgendaApi": "Impossible de récupérer les disponibilités de votre éducateur canin.",
     "generateSlots": "Erreur lors de la génération des créneaux proposés.",
     "slotAlreadyBooked": "Ce créneau a déjà été réservé entre-temps. Veuillez en choisir un autre.",
     "createBooking": "Impossible de créer la réservation. Veuillez réessayer.",
@@ -18,48 +18,56 @@
     "noBookingAddress": "Impossible de retrouver votre adresse pour calculer les créneaux proposés."
   },
   "header": {
-    "title": "Choisir un créneau recommandé",
-    "subtitle": "Ces créneaux tiennent compte de votre adresse et de l’agenda de votre dogsitter, avec un placement optimisé pour limiter les déplacements et éviter de casser ses jours de repos.",
-    "seeAll": "Voir toutes les disponibilités"
+    "eyebrow": "Shortlist intelligente",
+    "title": "Quelques horaires simples à choisir",
+    "subtitle": "Quelques suggestions pour choisir vite. Le planning complet reste disponible.",
+    "seeAll": "Voir tous les horaires",
+    "trustNote": "Suggestion uniquement."
   },
   "serviceSection": {
-    "label": "Service sélectionné"
+    "label": "Service sélectionné",
+    "duration": "{duration} min"
   },
   "addressSection": {
-    "label": "Adresse utilisée pour le calcul"
+    "label": "Adresse utilisée"
   },
   "suggestions": {
-    "title": "Créneaux recommandés",
-    "loading": "Calcul des meilleurs créneaux…",
-    "empty": "Aucun créneau recommandé pour le moment. Vous pouvez consulter l’ensemble des disponibilités dans l’agenda."
+    "title": "Nos suggestions du moment",
+    "subtitle": "Une sélection courte, sans bloquer l'accès au planning complet.",
+    "loading": "Calcul des suggestions…",
+    "empty": "Aucun créneau recommandé pour le moment. Vous pouvez consulter l'ensemble des horaires disponibles.",
+    "badgeLead": "Suggestion du moment",
+    "badge": "Suggestion",
+    "dateLabel": "{date}"
   },
   "booking": {
     "noticeSuccess": "Créneau réservé avec succès ✅",
     "loading": "Réservation en cours…",
-    "button": "Choisir et réserver ce créneau"
+    "button": "Choisir"
   },
-  "score": {
-    "label": "Score : {score}%"
+  "confirm": {
+    "title": "Confirmer ce créneau ?",
+    "body": "Vous allez réserver le {date} à {time}.",
+    "fallback": "Voulez-vous confirmer ce créneau ?",
+    "cancel": "Annuler",
+    "confirm": "Confirmer"
   },
   "footer": {
-    "seeAll": "Ou voir toutes les disponibilités dans l’agenda"
+    "seeAll": "Voir tous les horaires"
   },
-  "explanation": {
-    "base": "Ce créneau est suggéré car il s’intègre bien dans le planning de votre dogsitter.",
-    "prefix": "Ce créneau est suggéré car il ",
-    "and": " et "
+  "journey": {
+    "stepOneLabel": "1. Repérez vite",
+    "stepOne": "Commencez par quelques horaires simples à comparer.",
+    "stepTwoLabel": "2. Choisissez librement",
+    "stepTwo": "La recommandation reste facultative et tous les créneaux restent accessibles.",
+    "stepThreeLabel": "3. Gardez la main",
+    "stepThree": "Si besoin, vous pouvez toujours ouvrir le planning complet."
   },
   "reason": {
-    "sameDay": "se cale sur une journée où votre dogsitter a déjà des cours",
-    "dayOff": "reste compatible avec les autres jours de repos de votre dogsitter",
-    "travelVeryLow": "limite fortement les déplacements de votre dogsitter",
-    "travelReduced": "réduit les temps de trajet par rapport à d’autres options",
-    "travelStillOk": "respecte tout de même les contraintes de déplacement de votre dogsitter",
-    "fillsGap": "remplit un trou entre deux cours déjà prévus",
-    "afterLesson": "s’enchaîne juste après un cours déjà prévu",
-    "beforeNextLesson": "prépare le cours suivant dans la journée",
-    "verySoon": "est proposé très rapidement",
-    "nextDays": "est situé dans les prochains jours",
-    "soon": "reste dans une période relativement proche"
+    "fluidVisit": "Recommandé pour une visite plus fluide",
+    "reduceTravel": "Réduit les déplacements",
+    "dayFlow": "Aide la journée à rester fluide",
+    "fitSchedule": "S'intègre bien au planning",
+    "smoothOption": "Option la plus fluide"
   }
 }

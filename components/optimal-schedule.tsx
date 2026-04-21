@@ -1,7 +1,9 @@
 // components/optimal-schedule.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useMemo, useState } from 'react';
+import { useAuth, useOrganization } from '@clerk/nextjs';
+import { Sparkles, Users, Calendar, AlertCircle } from 'lucide-react';
 
 import {
   Card,
@@ -11,16 +13,14 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Sparkles, Users, Calendar, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-
 import type { ScheduleResult } from '@/types/schedule';
 import { AssignedSlotsSection } from '@/components/schedule/AssignedSlotsSection';
 import { CalculatedAgendaSection } from '@/components/schedule/CalculatedAgendaSection';
-import { useAuth, useOrganization } from '@clerk/nextjs';
 import StudentsAvailabilityHeatmap from './gestion/StudentsAvailabilityHeatmap';
+import { generateSchedule } from '@/lib/client/api/schedule-client';
+import { useAgencyUsers } from '@/lib/client/hooks/useAgencyUsers';
 
-type Role = 'student' | 'instructor' | 'admin';
 type Student = { id: string; name: string | null };
 
 export function OptimalSchedule() {
@@ -30,50 +30,32 @@ export function OptimalSchedule() {
   const { orgId: authOrgId } = useAuth();
   const { organization } = useOrganization();
   const orgId = organization?.id ?? authOrgId ?? '';
-  const [students, setStudents] = useState<Student[]>([]);
-  const [studentsErr, setStudentsErr] = useState<string | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        setStudentsErr(null);
-        const res = await fetch('/api/users?role=student', {
-          credentials: 'include',
-          headers: orgId ? { 'x-org-id': orgId } : {},
-        });
-        if (!res.ok)
-          throw new Error(await res.text().catch(() => `HTTP ${res.status}`));
-        const data = await res.json();
-        const list: Array<{ id: string; name: string | null; role: string }> =
-          Array.isArray(data) ? data : data?.data ?? [];
-        const mapped = list
-          .filter((u) => u.role === 'student')
-          .map((u) => ({ id: u.id, name: u.name ?? 'Élève sans nom' }));
-        if (!cancelled) setStudents(mapped);
-      } catch (e: any) {
-        console.error('[OptimalSchedule] /api/users?role=student failed', e);
-        if (!cancelled) {
-          setStudents([]);
-          setStudentsErr(e?.message ?? 'Erreur de chargement des élèves');
-        }
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [orgId]);
+  const { users: agencyStudents, error: studentsErr } = useAgencyUsers({
+    enabled: !!orgId,
+    orgId,
+    role: 'student',
+    loadErrorMessage: 'Erreur de chargement des eleves',
+  });
+
+  const students = useMemo<Student[]>(
+    () =>
+      agencyStudents
+        .filter((user) => user.role === 'student')
+        .map((user) => ({
+          id: user.id,
+          name: user.name ?? 'Eleve sans nom',
+        })),
+    [agencyStudents]
+  );
 
   const handleGenerateSchedule = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/schedule', {
-        method: 'POST',
-        credentials: 'include',
-        headers: orgId ? { 'x-org-id': orgId } : {},
+      const data = await generateSchedule<ScheduleResult>({
+        orgId,
+        fallbackMessage: 'Erreur lors de la generation du planning',
       });
-      const data = await response.json();
-
       setResult(data);
     } catch (error) {
       console.error('[v0] Error generating schedule:', error);
@@ -81,11 +63,12 @@ export function OptimalSchedule() {
       setLoading(false);
     }
   };
+
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Générer la configuration</CardTitle>
+          <CardTitle>Generer la configuration</CardTitle>
           <CardDescription>
             Lancez l&apos;algorithme d&apos;optimisation pour attribuer
             automatiquement les créneaux aux élèves
@@ -95,20 +78,26 @@ export function OptimalSchedule() {
           <Button onClick={handleGenerateSchedule} disabled={loading} size="lg">
             <Sparkles className="mr-2 h-5 w-5" />
             {loading
-              ? 'Génération en cours...'
-              : 'Générer la configuration optimale'}
+              ? 'Generation en cours...'
+              : 'Generer la configuration optimale'}
           </Button>
         </CardContent>
       </Card>
 
+      {studentsErr && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>{studentsErr}</AlertDescription>
+        </Alert>
+      )}
+
       {result && (
         <>
-          {/* Statistiques */}
           <div className="grid gap-4 md:grid-cols-4">
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Élèves total
+                  Eleves total
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -124,7 +113,7 @@ export function OptimalSchedule() {
             <Card>
               <CardHeader className="pb-3">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
-                  Élèves assignés
+                  Eleves assignes
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -170,22 +159,19 @@ export function OptimalSchedule() {
             </Card>
           </div>
 
-          {/* Élèves non assignés */}
           {result.unmatchedStudents?.length > 0 && (
             <Alert>
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>
                 <strong>
-                  {result.unmatchedStudents?.length} élève(s) non assigné(s):
+                  {result.unmatchedStudents.length} eleve(s) non assigne(s):
                 </strong>{' '}
-                {result.unmatchedStudents?.map((s) => s.name).join(', ')}
+                {result.unmatchedStudents.map((student) => student.name).join(', ')}
               </AlertDescription>
             </Alert>
           )}
 
-          {/* Nouvelle section décomposée en composants */}
           <AssignedSlotsSection result={result} />
-          {/* <MatchesCard matches={result.matches} /> */}
           <CalculatedAgendaSection result={result} />
           <StudentsAvailabilityHeatmap students={students} />
         </>

@@ -1,8 +1,8 @@
 // app/api/travels/week/route.ts
 import { type NextRequest, NextResponse } from 'next/server';
-import { getAuth } from '@clerk/nextjs/server';
 import { sql } from '@/lib/db';
 import type { Travel } from '@/types/availability';
+import { requireUser } from '@/lib/api/auth-server';
 
 type TravelRow = {
   id: string;
@@ -47,11 +47,9 @@ type TravelRow = {
 };
 
 export async function GET(req: NextRequest) {
-  const { userId } = getAuth(req);
-
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  const { auth, response } = requireUser(req);
+  if (!auth) return response;
+  const { userId } = auth;
 
   const url = new URL(req.url);
   const from = url.searchParams.get('from');

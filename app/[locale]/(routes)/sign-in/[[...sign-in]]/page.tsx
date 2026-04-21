@@ -4,10 +4,11 @@ import { withLocale } from '@/src/lib/i18n';
 import SignInClient from './SignInClient';
 
 type Props = {
-  params: { locale: Locale };
+  params: Promise<{ locale: Locale }>;
 };
 
-export default function SignInPage({ params: { locale } }: Props) {
+export default async function SignInPage({ params }: Props) {
+  const { locale } = await params;
   const redirectUrl = withLocale('/myweek', locale);
 
   return <SignInClient locale={locale} redirectUrl={redirectUrl} />;

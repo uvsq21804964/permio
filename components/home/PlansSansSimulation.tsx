@@ -4,7 +4,8 @@ import clsx from 'clsx';
 import { Poppins } from 'next/font/google';
 import { Button } from '@/components/ui/button';
 import { useLocale, useTranslations } from 'next-intl';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
+import { useMySubscriptionStatus } from '@/lib/client/hooks/useMySubscriptionStatus';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -24,14 +25,6 @@ type Plan = {
 type Props = {
   withTrial: boolean;
 };
-
-type MeSubscription = {
-  loggedIn: boolean;
-  role: string | null;
-  subscription_status: string | null;
-};
-
-type MeStatus = 'loading' | 'done';
 
 function normalizeLang(locale: string): 'fr' | 'en' {
   const raw = (locale ?? '').toLowerCase();
@@ -62,45 +55,7 @@ export default function Plans({ withTrial }: Props) {
   const lang = normalizeLang(locale); // ✅ 'fr' ou 'en'
   const currency = getCurrencyFromLang(lang);
 
-  const [me, setMe] = useState<MeSubscription | null>(null);
-
-  const [meStatus, setMeStatus] = useState<MeStatus>(() =>
-    withTrial ? 'done' : 'loading'
-  );
-
-  useEffect(() => {
-    let cancelled = false;
-
-    if (withTrial) {
-      setMe(null);
-      setMeStatus('done');
-      return () => {
-        cancelled = true;
-      };
-    }
-
-    setMe(null);
-    setMeStatus('loading');
-
-    const load = async () => {
-      try {
-        const res = await fetch('/api/me/subscription', { cache: 'no-store' });
-        if (res.ok) {
-          const data = (await res.json()) as MeSubscription;
-          if (!cancelled) setMe(data);
-        }
-      } catch {
-        // ignore
-      } finally {
-        if (!cancelled) setMeStatus('done');
-      }
-    };
-
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [withTrial]);
+  const { subscription, status } = useMySubscriptionStatus(!withTrial);
 
   const plans: readonly Plan[] = useMemo(
     () => [
@@ -130,11 +85,11 @@ export default function Plans({ withTrial }: Props) {
 
   const hideCheckoutButton =
     !withTrial &&
-    me?.loggedIn === true &&
-    me?.role === 'instructor' &&
-    me?.subscription_status === 'active';
+    subscription?.loggedIn === true &&
+    subscription?.role === 'instructor' &&
+    subscription?.subscription_status === 'active';
 
-  const waitingForSubscriptionCheck = !withTrial && meStatus === 'loading';
+  const waitingForSubscriptionCheck = !withTrial && status === 'loading';
 
   return (
     <main className="bg-[#f9ffc6]">

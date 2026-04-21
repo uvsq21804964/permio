@@ -6,8 +6,9 @@ export default async function AppLayout({
   params,
 }: {
   children: React.ReactNode;
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 }) {
-  await requirePaidSubscriptionForAgency(params.locale);
+  const { locale } = await params;
+  await requirePaidSubscriptionForAgency(locale);
   return <>{children}</>;
 }

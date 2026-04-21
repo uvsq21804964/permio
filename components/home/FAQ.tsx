@@ -11,7 +11,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 
-export function FAQ() {
+function FAQ() {
   const t = useTranslations('faq');
 
   const items = [

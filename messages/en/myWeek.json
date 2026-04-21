@@ -24,7 +24,7 @@
     "noAgenda": "Unable to load the schedule.",
     "unexpectedApiResponse": "Unexpected response from the schedule API."
   },
-  "loading": "Loading…",
+  "loading": "Loading...",
   "table": {
     "hourColumn": "Time"
   },
@@ -42,7 +42,7 @@
     "label": "Travel",
     "from": "From:",
     "to": "To:",
-    "tooltipTime": "Travel {start}–{end}"
+    "tooltipTime": "Travel {start}-{end}"
   },
   "counterpart": {
     "instructor": "Dog trainer",
@@ -57,6 +57,27 @@
   "slot": {
     "serviceLabel": "Service:",
     "priceLabel": "Price:",
-    "addressLabel": "Address:"
+    "addressLabel": "Address:",
+    "dialog": {
+      "title": "Slot details",
+      "description": "Lesson scheduled from {start} to {end}.",
+      "fallbackDescription": "Review the details of this slot.",
+      "dateLabel": "Date",
+      "timeLabel": "Time",
+      "openHint": "Click to view details",
+      "ariaOpen": "Open slot details",
+      "noValue": "Not provided",
+      "cancelAction": "Cancel slot",
+      "confirmTitle": "Confirm cancellation",
+      "confirmDescription": "This slot will be removed and both sides will receive a notification email.",
+      "confirmFallback": "Do you want to cancel this slot?",
+      "keepAction": "Keep slot",
+      "confirmAction": "Yes, cancel",
+      "cancelling": "Cancelling...",
+      "cancelSuccess": "The slot was cancelled.",
+      "cancelError": "Unable to cancel this slot.",
+      "cancelTooLateError": "A client can only cancel at least 48 hours before the slot.",
+      "cancelWindowHint": "Clients can only cancel until 48 hours before the slot starts."
+    }
   }
 }

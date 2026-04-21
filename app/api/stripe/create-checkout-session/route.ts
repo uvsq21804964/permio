@@ -1,7 +1,8 @@
 // app/api/stripe/create-checkout-session/route.ts
-import { currentUser, getAuth } from '@clerk/nextjs/server';
+import { currentUser } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
+import { requireUser } from '@/lib/api/auth-server';
 
 export const runtime = 'nodejs'; // sécurité : forcer le runtime Node
 
@@ -20,10 +21,12 @@ export async function POST(req: NextRequest) {
     const { lookupKey, priceId, trialDays } = body;
 
     // (Optionnel) Auth Clerk si tu veux forcer l’utilisateur connecté
-    const { userId } = getAuth(req, { treatPendingAsSignedOut: false });
+    const { auth, response } = requireUser(req, {
+      treatPendingAsSignedOut: false,
+    });
     let email: string | undefined = undefined;
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!auth) {
+      return response;
     } else {
       const me = await currentUser();
       email = me?.emailAddresses?.[0]?.emailAddress;

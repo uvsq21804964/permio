@@ -1,9 +1,9 @@
 // export const SUPPORTED_LOCALES = ['fr', 'en', 'ro'] as const;
 export const SUPPORTED_LOCALES = ['fr', 'en'] as const;
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
-export const DEFAULT_LOCALE: Locale = 'en';
+const DEFAULT_LOCALE: Locale = 'en';
 
-export function extractLocaleFromPath(pathname: string): Locale | null {
+function extractLocaleFromPath(pathname: string): Locale | null {
   const m = pathname.match(/^\/([a-zA-Z-]{2})(\/|$)/);
   const l = (m?.[1] || '').toLowerCase() as Locale;
   return (SUPPORTED_LOCALES as readonly string[]).includes(l) ? l : null;

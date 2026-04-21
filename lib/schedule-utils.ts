@@ -1,7 +1,7 @@
 // lib/schedule-utils.ts
 import type { Match } from '@/types/schedule';
 
-export function sortMatches(a: Match, b: Match) {
+function sortMatches(a: Match, b: Match) {
   if (a.dayOfWeek !== b.dayOfWeek) return a.dayOfWeek - b.dayOfWeek;
   return a.startTime.localeCompare(b.startTime);
 }

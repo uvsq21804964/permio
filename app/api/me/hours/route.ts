@@ -1,43 +1,29 @@
 // app/api/me/hours/route.ts
 import { NextResponse, type NextRequest } from 'next/server';
-import { getAuth } from '@clerk/nextjs/server';
-import { sql } from '@/lib/db';
+import { requireUser } from '@/lib/api/auth-server';
+import { getStudentHours } from '@/lib/server/repositories/user-repository';
 
 type Role = 'student' | 'instructor' | 'admin';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    const { userId } = getAuth(request, { treatPendingAsSignedOut: false });
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'Unauthorized (no userId)' },
-        { status: 401 }
-      );
-    }
+    const { auth, response } = requireUser(request, {
+      treatPendingAsSignedOut: false,
+    });
+    if (!auth) return response;
+    const { userId } = auth;
 
     // Récupère l’utilisateur app lié à ce Clerk user
     // (adapte si ta table "User" mappe différemment ; ici on suppose "User".id == id applicatif déjà connu)
-    const rows = await sql`
-      SELECT id, role, planned_minutes AS "plannedMinutes", remaining_minutes AS "remainingMinutes"
-      FROM "User"
-      WHERE id = ${userId}
-      LIMIT 1
-    `;
-    if (!rows.length) {
+    const u = await getStudentHours(userId);
+    if (!u) {
       return NextResponse.json({
         plannedMinutes: null,
         remainingMinutes: null,
         role: null,
       });
     }
-
-    const u = rows[0] as {
-      id: string;
-      role: Role;
-      plannedMinutes: number | null;
-      remainingMinutes: number | null;
-    };
 
     if (u.role !== 'student') {
       return NextResponse.json({
@@ -49,9 +35,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       plannedMinutes:
-        typeof u.plannedMinutes === 'number' ? u.plannedMinutes : 0,
+        typeof u.planned_minutes === 'number' ? u.planned_minutes : 0,
       remainingMinutes:
-        typeof u.remainingMinutes === 'number' ? u.remainingMinutes : 0,
+        typeof u.remaining_minutes === 'number' ? u.remaining_minutes : 0,
       role: u.role,
     });
   } catch (e) {

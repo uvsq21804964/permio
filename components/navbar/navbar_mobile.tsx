@@ -1,39 +1,24 @@
 'use client';
 
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
-
-type Page = {
-  nameFR: string;
-  nameEN: string;
-  link: string; // routes "nues" : "/myweek", "/services", etc.
-  visible: number;
-  cta?: boolean;
-};
+import {
+  filterNavbarPages,
+  stripLocalePrefix,
+  withLocalePath,
+  type NavbarRole,
+  type NavPage,
+} from '@/components/navbar/navbar-utils';
 
 interface NavbarProps {
   logo: string;
-  pages: Page[];
+  pages: NavPage[];
   activeLink?: string;
-  meRole: 'student' | 'instructor' | 'admin' | string | null;
-}
-
-function withLocalePath(path: string, locale: string) {
-  const p = path.startsWith('/') ? path : `/${path}`;
-  return p.startsWith(`/${locale}/`) ? p : `/${locale}${p}`;
-}
-
-function stripLocalePrefix(path: string, locale: string) {
-  const p = path || '';
-  const prefix = `/${locale}`;
-  if (p === prefix) return '/';
-  if (p.startsWith(prefix + '/')) return p.slice(prefix.length);
-  return p;
+  meRole: NavbarRole;
 }
 
 const MobileNavbar: React.FC<NavbarProps> = ({
@@ -50,28 +35,26 @@ const MobileNavbar: React.FC<NavbarProps> = ({
   const currentNoLocale = stripLocalePrefix(currentPath, locale);
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const toggleMenu = () => setIsMenuOpen((v) => !v);
+  const toggleMenu = () => setIsMenuOpen((value) => !value);
 
-  // Filtre : selon le rôle
   const visiblePages = useMemo(
-    () =>
-      pages.filter((p) => {
-        if (meRole === 'instructor') return p.visible === 0 || p.visible === 2;
-        if (meRole === 'student') return p.visible === 1 || p.visible === 2;
-        if (meRole === 'admin') return true;
-        return p.visible === 2;
-      }),
-    [pages, meRole]
+    () => filterNavbarPages(pages, meRole),
+    [pages, meRole],
   );
 
-  const homeSrLabel = isFR ? 'Aller à l’accueil' : 'Go to home';
-  const burgerSrLabel = isFR ? 'Ouvrir le menu' : 'Open menu';
+  const homeSrLabel = isFR ? 'Aller a l accueil' : 'Go to home';
+  const burgerSrLabel = isMenuOpen
+    ? isFR
+      ? 'Fermer le menu'
+      : 'Close menu'
+    : isFR
+      ? 'Ouvrir le menu'
+      : 'Open menu';
 
   return (
     <nav className="fixed inset-x-0 top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/90 dark:bg-neutral-900/80 border-b border-neutral-200 dark:border-neutral-800">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="h-16 flex items-center justify-between">
-          {/* Logo */}
           <div className="flex items-center gap-4">
             <Link
               href={withLocalePath('/myweek', locale)}
@@ -90,21 +73,18 @@ const MobileNavbar: React.FC<NavbarProps> = ({
             </Link>
           </div>
 
-          {/* Liens desktop (md+) */}
           <div className="hidden md:flex items-center gap-1">
-            {visiblePages.map((p) => {
-              const label = isFR ? p.nameFR : p.nameEN;
-              const href = withLocalePath(p.link, locale);
-              const isActive = currentNoLocale === p.link;
+            {visiblePages.map((page) => {
+              const label = isFR ? page.nameFR : page.nameEN;
+              const href = withLocalePath(page.link, locale);
+              const isActive = currentNoLocale === page.link;
 
-              if (p.cta) {
+              if (page.cta) {
                 return (
                   <Link
-                    key={p.link}
+                    key={page.link}
                     href={href}
-                    className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold
-                               bg-navbar text-white shadow-sm transition hover:brightness-110 active:translate-y-px
-                               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navbar/60"
+                    className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold bg-navbar text-white shadow-sm transition hover:brightness-110 active:translate-y-px focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navbar/60"
                   >
                     {label}
                   </Link>
@@ -113,12 +93,9 @@ const MobileNavbar: React.FC<NavbarProps> = ({
 
               return (
                 <Link
-                  key={p.link}
+                  key={page.link}
                   href={href}
-                  className={`group relative px-3 py-2 text-sm font-medium rounded-md transition 
-                  hover:bg-neutral-100/60 dark:hover:bg-neutral-800/60 
-                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700
-                  ${
+                  className={`group relative px-3 py-2 text-sm font-medium rounded-md transition hover:bg-neutral-100/60 dark:hover:bg-neutral-800/60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700 ${
                     isActive
                       ? 'text-neutral-900 dark:text-white'
                       : 'text-neutral-600 dark:text-neutral-300'
@@ -126,8 +103,7 @@ const MobileNavbar: React.FC<NavbarProps> = ({
                 >
                   {label}
                   <span
-                    className={`pointer-events-none absolute inset-x-2 -bottom-0.5 h-px origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100 
-                    ${
+                    className={`pointer-events-none absolute inset-x-2 -bottom-0.5 h-px origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100 ${
                       isActive
                         ? 'scale-x-100 bg-neutral-900 dark:bg-neutral-100'
                         : 'bg-neutral-400/60 dark:bg-neutral-500/60'
@@ -142,14 +118,13 @@ const MobileNavbar: React.FC<NavbarProps> = ({
             <LocaleSwitcher />
           </div>
 
-          {/* Burger */}
           <button
+            type="button"
             onClick={toggleMenu}
+            aria-label={burgerSrLabel}
             aria-expanded={isMenuOpen}
             aria-controls="mobile-menu"
-            className="md:hidden inline-flex items-center justify-center rounded-md p-2 
-            hover:bg-neutral-100/60 dark:hover:bg-neutral-800/60 
-            focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700"
+            className="md:hidden inline-flex items-center justify-center rounded-md p-2 hover:bg-neutral-100/60 dark:hover:bg-neutral-800/60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700"
           >
             <span className="sr-only">{burgerSrLabel}</span>
             <svg
@@ -171,27 +146,25 @@ const MobileNavbar: React.FC<NavbarProps> = ({
         </div>
       </div>
 
-      {/* Menu mobile */}
       <div
         id="mobile-menu"
-        className={`md:hidden origin-top overflow-hidden transition-[max-height,opacity] duration-300 ease-out 
-        ${isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
+        className={`md:hidden origin-top overflow-hidden transition-[max-height,opacity] duration-300 ease-out ${
+          isMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+        }`}
       >
         <div className="px-4 pb-4 pt-2 shadow-sm border-t border-neutral-200 dark:border-neutral-800 bg-white/95 dark:bg-neutral-900/95">
           <div className="flex flex-col gap-1">
-            {visiblePages.map((p) => {
-              const label = isFR ? p.nameFR : p.nameEN;
-              const href = withLocalePath(p.link, locale);
-              const isActive = currentNoLocale === p.link;
+            {visiblePages.map((page) => {
+              const label = isFR ? page.nameFR : page.nameEN;
+              const href = withLocalePath(page.link, locale);
+              const isActive = currentNoLocale === page.link;
 
-              if (p.cta) {
+              if (page.cta) {
                 return (
                   <Link
-                    key={p.link}
+                    key={page.link}
                     href={href}
-                    className="w-full rounded-lg px-3 py-2 text-sm font-medium transition 
-                               bg-navbar text-white shadow-sm hover:brightness-110 active:translate-y-px
-                               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700"
+                    className="w-full rounded-lg px-3 py-2 text-sm font-medium transition bg-navbar text-white shadow-sm hover:brightness-110 active:translate-y-px focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {label}
@@ -201,12 +174,9 @@ const MobileNavbar: React.FC<NavbarProps> = ({
 
               return (
                 <Link
-                  key={p.link}
+                  key={page.link}
                   href={href}
-                  className={`w-full rounded-lg px-3 py-2 text-sm font-medium transition 
-                  hover:bg-neutral-100 dark:hover:bg-neutral-800
-                  focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700
-                  ${
+                  className={`w-full rounded-lg px-3 py-2 text-sm font-medium transition hover:bg-neutral-100 dark:hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700 ${
                     isActive
                       ? 'text-neutral-900 dark:text-white'
                       : 'text-neutral-600 dark:text-neutral-300'

@@ -1,34 +1,33 @@
 // app/api/me/services/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@/lib/db';
-import { getAuth } from '@clerk/nextjs/server';
+import { requireUser } from '@/lib/api/auth-server';
+import {
+  createCategoryForInstructor,
+  createServiceForInstructor,
+  deleteCategoryForInstructor,
+  deleteServiceForInstructor,
+  ensureCategoryBelongsToUser,
+  getOwnInstructorServiceCatalog,
+  requireInstructorUser,
+  updateServiceForInstructor,
+  validateCategoryPayload,
+  validateServicePayload,
+} from '@/lib/server/services/service-catalog-service';
 
 async function requireInstructor(req: NextRequest) {
-  const { userId } = getAuth(req, { treatPendingAsSignedOut: false });
-  if (!userId) {
-    return { error: 'Unauthorized', status: 401 } as const;
+  const { auth, response } = requireUser(req, {
+    treatPendingAsSignedOut: false,
+  });
+  if (!auth) {
+    return { error: 'Unauthorized', status: response.status } as const;
   }
 
-  const users = await sql`
-    SELECT "id", "role"
-    FROM "User"
-    WHERE "id" = ${userId}
-    LIMIT 1
-  `;
-
-  if (users.length === 0) {
-    return { error: 'USER_NOT_FOUND', status: 404 } as const;
+  const guard = await requireInstructorUser(auth.userId);
+  if (!guard.ok) {
+    return { status: guard.status, ...guard.body } as const;
   }
 
-  if (users[0].role !== 'instructor') {
-    return {
-      error: 'FORBIDDEN',
-      message: 'User is not an instructor',
-      status: 403,
-    } as const;
-  }
-
-  return { userId } as const;
+  return { userId: auth.userId } as const;
 }
 
 export async function GET(req: NextRequest) {
@@ -40,45 +39,8 @@ export async function GET(req: NextRequest) {
     }
     const { userId } = guard;
 
-    const categories = await sql`
-      SELECT
-        id,
-        user_id,
-        name,
-        description
-      FROM service_categories
-      WHERE user_id = ${userId}
-      ORDER BY id
-    `;
-
-    const services = await sql`
-      SELECT
-        s.id,
-        s.user_id,
-        s.category_id,
-        c.name AS category_name,
-        s.name,
-        s.description,
-        s.duration_minutes,
-        s.price,
-        s.includes_transport
-      FROM services_pricing s
-      JOIN service_categories c ON c.id = s.category_id
-      WHERE s.user_id = ${userId}
-      ORDER BY c.id, s.id
-    `;
-
-    // ✅ NEW: join code de l'agence (association code)
-    const agencyRes = await sql`
-      SELECT a.join_code, a.name AS agency_name
-      FROM "User" u
-      JOIN "Agency" a ON a.id = u."agencyId"
-      WHERE u.id = ${userId}
-      LIMIT 1
-    `;
-
-    const joinCode = agencyRes?.[0]?.join_code ?? null;
-    const agencyName = agencyRes?.[0]?.agency_name ?? null;
+    const { categories, services, joinCode, agencyName } =
+      await getOwnInstructorServiceCatalog(userId);
 
     return NextResponse.json(
       { categories, services, joinCode, agencyName },
@@ -110,161 +72,49 @@ export async function POST(req: NextRequest) {
     const { kind } = body as { kind?: 'category' | 'service' };
 
     if (kind === 'category') {
-      const { name, description } = body;
-
-      const nameTrimmed = typeof name === 'string' ? name.trim() : '';
-      const descTrimmed =
-        typeof description === 'string' ? description.trim() : '';
-
-      if (!nameTrimmed) {
-        return NextResponse.json(
-          { error: 'INVALID_NAME', message: 'Category name is required' },
-          { status: 400 }
-        );
+      const validation = validateCategoryPayload(body);
+      if (!validation.ok) {
+        return NextResponse.json(validation.body, { status: validation.status });
       }
 
-      if (!descTrimmed) {
-        return NextResponse.json(
-          {
-            error: 'INVALID_DESCRIPTION',
-            message: 'Category description is required',
-          },
-          { status: 400 }
-        );
-      }
-
-      const inserted = await sql`
-    INSERT INTO service_categories (user_id, name, description)
-    VALUES (${userId}, ${nameTrimmed}, ${descTrimmed})
-    RETURNING id, user_id, name, description
-  `;
+      const inserted = await createCategoryForInstructor({
+        userId,
+        name: validation.value.name,
+        description: validation.value.description,
+      });
 
       return NextResponse.json(
-        { ok: true, category: inserted[0] },
+        { ok: true, category: inserted },
         { status: 201 }
       );
     }
 
     if (kind === 'service') {
-      const {
-        category_id,
-        name,
-        description,
-        duration_minutes,
-        price,
-        includes_transport,
-        is_remote,
-      } = body;
-
-      if (!category_id) {
-        return NextResponse.json(
-          { error: 'INVALID_CATEGORY', message: 'category_id is required' },
-          { status: 400 }
-        );
+      const validation = validateServicePayload(body);
+      if (!validation.ok) {
+        return NextResponse.json(validation.body, { status: validation.status });
       }
 
-      const isRemote = Boolean(is_remote);
-
-      const nameTrimmed = typeof name === 'string' ? name.trim() : '';
-      const descTrimmed =
-        typeof description === 'string' ? description.trim() : '';
-
-      if (!nameTrimmed) {
-        return NextResponse.json(
-          { error: 'INVALID_NAME', message: 'Service name is required' },
-          { status: 400 }
-        );
+      const categoryCheck = await ensureCategoryBelongsToUser(
+        validation.value.categoryId,
+        userId
+      );
+      if (!categoryCheck.ok) {
+        return NextResponse.json(categoryCheck.body, {
+          status: categoryCheck.status,
+        });
       }
 
-      if (!descTrimmed) {
-        return NextResponse.json(
-          {
-            error: 'INVALID_DESCRIPTION',
-            message: 'Service description is required',
-          },
-          { status: 400 }
-        );
-      }
-
-      if (duration_minutes == null || duration_minutes < 0) {
-        return NextResponse.json(
-          {
-            error: 'INVALID_DURATION',
-            message: 'Duration must be provided and be >= 0',
-          },
-          { status: 400 }
-        );
-      }
-
-      if (price == null || price < 0) {
-        return NextResponse.json(
-          { error: 'INVALID_PRICE', message: 'Price must be >= 0' },
-          { status: 400 }
-        );
-      }
-
-      // Vérifier que la catégorie appartient à ce user
-      const catCheck = await sql`
-    SELECT id
-    FROM service_categories
-    WHERE id = ${category_id} AND user_id = ${userId}
-    LIMIT 1
-  `;
-      if (catCheck.length === 0) {
-        return NextResponse.json(
-          {
-            error: 'CATEGORY_NOT_FOUND_OR_FORBIDDEN',
-            message: 'Category does not exist for this user',
-          },
-          { status: 400 }
-        );
-      }
-
-      const inserted = await sql`
-    INSERT INTO services_pricing (
-  user_id,
-  category_id,
-  name,
-  description,
-  duration_minutes,
-  price,
-  includes_transport,
-  is_remote
-)
-VALUES (
-  ${userId},
-  ${category_id},
-  ${nameTrimmed},
-  ${descTrimmed},
-  ${duration_minutes},
-  ${price},
-  ${includes_transport ?? false},
-  ${isRemote}
-)
-
-    RETURNING
-  id,
-  user_id,
-  category_id,
-  name,
-  description,
-  duration_minutes,
-  price,
-  includes_transport,
-  is_remote
-  `;
-
-      const categoryRow = await sql`
-    SELECT name
-    FROM service_categories
-    WHERE id = ${inserted[0].category_id}
-    LIMIT 1
-  `;
-
-      const serviceWithCategoryName = {
-        ...inserted[0],
-        category_name: categoryRow[0]?.name ?? '',
-      };
+      const serviceWithCategoryName = await createServiceForInstructor({
+        userId,
+        categoryId: validation.value.categoryId,
+        name: validation.value.name,
+        description: validation.value.description,
+        durationMinutes: validation.value.durationMinutes,
+        price: validation.value.price,
+        includesTransport: validation.value.includesTransport ?? false,
+        isRemote: validation.value.isRemote,
+      });
 
       return NextResponse.json(
         { ok: true, service: serviceWithCategoryName },
@@ -299,16 +149,7 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'INVALID_BODY' }, { status: 400 });
     }
 
-    const {
-      id,
-      category_id,
-      name,
-      description,
-      duration_minutes,
-      price,
-      includes_transport,
-      is_remote,
-    } = body;
+    const { id } = body;
 
     if (!id) {
       return NextResponse.json(
@@ -317,116 +158,41 @@ export async function PATCH(req: NextRequest) {
       );
     }
 
-    const isRemote = Boolean(is_remote);
-
-    const nameTrimmed = typeof name === 'string' ? name.trim() : '';
-    const descTrimmed =
-      typeof description === 'string' ? description.trim() : '';
-
-    if (!nameTrimmed) {
-      return NextResponse.json(
-        { error: 'INVALID_NAME', message: 'Service name is required' },
-        { status: 400 }
-      );
+    const validation = validateServicePayload(body);
+    if (!validation.ok) {
+      return NextResponse.json(validation.body, { status: validation.status });
     }
 
-    if (!descTrimmed) {
-      return NextResponse.json(
-        {
-          error: 'INVALID_DESCRIPTION',
-          message: 'Service description is required',
-        },
-        { status: 400 }
-      );
+    const categoryCheck = await ensureCategoryBelongsToUser(
+      validation.value.categoryId,
+      userId
+    );
+    if (!categoryCheck.ok) {
+      return NextResponse.json(categoryCheck.body, {
+        status: categoryCheck.status,
+      });
     }
 
-    if (duration_minutes == null || duration_minutes < 0) {
-      return NextResponse.json(
-        {
-          error: 'INVALID_DURATION',
-          message: 'Duration must be provided and be >= 0',
-        },
-        { status: 400 }
-      );
-    }
+    const updated = await updateServiceForInstructor({
+      serviceId: Number(id),
+      userId,
+      categoryId: validation.value.categoryId,
+      name: validation.value.name,
+      description: validation.value.description,
+      durationMinutes: validation.value.durationMinutes,
+      price: validation.value.price,
+      includesTransport: validation.value.includesTransport,
+      isRemote: validation.value.isRemote,
+    });
 
-    if (price == null || price < 0) {
-      return NextResponse.json(
-        { error: 'INVALID_PRICE', message: 'Price must be >= 0' },
-        { status: 400 }
-      );
-    }
-
-    if (!category_id) {
-      return NextResponse.json(
-        { error: 'INVALID_CATEGORY', message: 'category_id is required' },
-        { status: 400 }
-      );
-    }
-
-    // Vérifier catégorie
-    const catCheck = await sql`
-  SELECT id
-  FROM service_categories
-  WHERE id = ${category_id} AND user_id = ${userId}
-  LIMIT 1
-`;
-    if (catCheck.length === 0) {
-      return NextResponse.json(
-        {
-          error: 'CATEGORY_NOT_FOUND_OR_FORBIDDEN',
-          message: 'Category does not exist for this user',
-        },
-        { status: 400 }
-      );
-    }
-
-    const updated = await sql`
-  UPDATE services_pricing
-  SET
-    category_id = ${category_id},
-    name = ${nameTrimmed},
-    description = ${descTrimmed},
-    duration_minutes = ${duration_minutes},
-    price = ${price},
-    includes_transport = ${includes_transport},
-    is_remote = ${isRemote}
-  WHERE id = ${id} AND user_id = ${userId}
-  RETURNING
-  id,
-  user_id,
-  category_id,
-  name,
-  description,
-  duration_minutes,
-  price,
-  includes_transport,
-  is_remote
-`;
-
-    if (updated.length === 0) {
+    if (!updated) {
       return NextResponse.json(
         { error: 'SERVICE_NOT_FOUND_OR_FORBIDDEN' },
         { status: 404 }
       );
     }
 
-    const categoryRow = await sql`
-      SELECT name
-      FROM service_categories
-      WHERE id = ${updated[0].category_id}
-      LIMIT 1
-    `;
-
-    const serviceWithCategoryName = {
-      ...updated[0],
-      category_name: categoryRow[0]?.name ?? '',
-    };
-
-    return NextResponse.json(
-      { ok: true, service: serviceWithCategoryName },
-      { status: 200 }
-    );
+    return NextResponse.json({ ok: true, service: updated }, { status: 200 });
   } catch (err: any) {
     console.error('[PATCH /api/me/services] error:', err);
     return NextResponse.json(
@@ -460,13 +226,9 @@ export async function DELETE(req: NextRequest) {
     }
 
     if (kind === 'service') {
-      const deleted = await sql`
-        DELETE FROM services_pricing
-        WHERE id = ${id} AND user_id = ${userId}
-        RETURNING id
-      `;
+      const deleted = await deleteServiceForInstructor(id, userId);
 
-      if (deleted.length === 0) {
+      if (!deleted) {
         return NextResponse.json(
           { error: 'SERVICE_NOT_FOUND_OR_FORBIDDEN' },
           { status: 404 }
@@ -477,35 +239,9 @@ export async function DELETE(req: NextRequest) {
     }
 
     if (kind === 'category') {
-      // Vérifier s'il reste des services dans cette catégorie
-      const countRes = await sql`
-        SELECT COUNT(*)::int AS cnt
-        FROM services_pricing
-        WHERE user_id = ${userId} AND category_id = ${id}
-      `;
-      const count = Number(countRes[0]?.cnt ?? 0);
-      if (count > 0) {
-        return NextResponse.json(
-          {
-            error: 'CATEGORY_HAS_SERVICES',
-            message:
-              'Impossible de supprimer cette catégorie car elle contient encore des services.',
-          },
-          { status: 400 }
-        );
-      }
-
-      const deleted = await sql`
-        DELETE FROM service_categories
-        WHERE id = ${id} AND user_id = ${userId}
-        RETURNING id
-      `;
-
-      if (deleted.length === 0) {
-        return NextResponse.json(
-          { error: 'CATEGORY_NOT_FOUND_OR_FORBIDDEN' },
-          { status: 404 }
-        );
+      const result = await deleteCategoryForInstructor(id, userId);
+      if (!result.ok) {
+        return NextResponse.json(result.body, { status: result.status });
       }
 
       return NextResponse.json({ ok: true }, { status: 200 });

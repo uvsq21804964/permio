@@ -1,8 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useAuth, useOrganization } from '@clerk/nextjs';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+
+import { useAgencyUsers } from '@/lib/client/hooks/useAgencyUsers';
 
 type Role = 'student' | 'instructor' | 'admin';
 
@@ -13,227 +15,127 @@ type UserRow = {
   email?: string | null;
   createdAt?: string;
   updatedAt?: string;
-  plannedMinutes?: number; // total prévu (en minutes)
-  remainingMinutes?: number; // restant (en minutes)
 };
 
-// Ordre de tri par rôle : admin > instructor > student
 const ROLE_PRIORITY: Record<Role, number> = {
   admin: 0,
   instructor: 1,
   student: 2,
 };
 
-// Tri: rôle, puis nom
 function sortUsers(list: UserRow[]): UserRow[] {
   return [...list].sort((a, b) => {
-    const pr = ROLE_PRIORITY[a.role] - ROLE_PRIORITY[b.role];
-    if (pr !== 0) return pr;
-    const an = (a.name ?? '').trim().toLocaleLowerCase();
-    const bn = (b.name ?? '').trim().toLocaleLowerCase();
-    if (an && bn)
-      return an.localeCompare(bn, undefined, { sensitivity: 'base' });
-    if (an && !bn) return -1;
-    if (!an && bn) return 1;
+    const priority = ROLE_PRIORITY[a.role] - ROLE_PRIORITY[b.role];
+    if (priority !== 0) return priority;
+
+    const left = (a.name ?? '').trim().toLocaleLowerCase();
+    const right = (b.name ?? '').trim().toLocaleLowerCase();
+
+    if (left && right) {
+      return left.localeCompare(right, undefined, { sensitivity: 'base' });
+    }
+
+    if (left && !right) return -1;
+    if (!left && right) return 1;
     return a.id.localeCompare(b.id);
   });
 }
 
-/** Affiche en heures si entier/0.5h, sinon minutes. */
-function formatQty(m?: number): string {
-  if (typeof m !== 'number' || !Number.isFinite(m)) return '—';
-  if (m < 0) return '0 min';
-  if (m % 30 === 0) {
-    const hours = m / 60;
-    return Number.isInteger(hours) ? `${hours} h` : `${hours.toFixed(1)} h`;
-  }
-  return `${m} min`;
-}
-
-/** Parse une saisie utilisateur en minutes.
- *  Ex: "90" -> 90, "90m" -> 90, "2h" -> 120, "2.5h" -> 150, "1,5h" -> 90
- */
-function parseToMinutes(input: string | null): number | null {
-  if (!input) return null;
-  const s = input.trim().toLowerCase().replace(/\s+/g, '');
-  if (!s) return null;
-
-  // remplace virgule décimale éventuelle
-  const t = s.replace(',', '.');
-
-  // heures ?
-  if (t.endsWith('h')) {
-    const num = Number(t.slice(0, -1));
-    if (!Number.isFinite(num) || num < 0) return null;
-    return Math.floor(num * 60);
-  }
-  // minutes suffixées ?
-  if (t.endsWith('m')) {
-    const num = Number(t.slice(0, -1));
-    if (!Number.isFinite(num) || num < 0) return null;
-    return Math.floor(num);
-  }
-  // valeur brute => minutes
-  const num = Number(t);
-  if (!Number.isFinite(num) || num < 0) return null;
-  return Math.floor(num);
-}
-
-export default function UserManagement({ meRole }: { meRole: Role }) {
+export default function UserManagement({ meRole: _meRole }: { meRole: Role }) {
   const t = useTranslations('userManagement');
+  const locale = useLocale();
   const { userId, isLoaded, orgId: authOrgId } = useAuth();
-  const [users, setUsers] = useState<UserRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [err, setErr] = useState<string | null>(null);
-
   const { organization } = useOrganization();
+
   const orgId = organization?.id ?? authOrgId ?? '';
+  const {
+    users: loadedUsers,
+    loading,
+    error,
+    reload,
+  } = useAgencyUsers({
+    enabled: isLoaded,
+    orgId,
+    loadErrorMessage: t('errors.load'),
+  });
 
-  const load = async () => {
-    setLoading(true);
-    setErr(null);
+  const users = sortUsers(loadedUsers as UserRow[]);
+  const [exporting, setExporting] = useState(false);
+  const [exportingUserId, setExportingUserId] = useState<string | null>(null);
+
+  const downloadStudentsExport = async () => {
     try {
-      const res = await fetch('/api/users', {
-        credentials: 'include',
-        headers: orgId ? { 'x-org-id': orgId } : {},
-      });
-      if (!res.ok)
-        throw new Error(await res.text().catch(() => `HTTP ${res.status}`));
-      const data = await res.json();
-      const list: UserRow[] = Array.isArray(data) ? data : data?.data ?? [];
-      setUsers(sortUsers(list));
-    } catch (e: any) {
-      setErr(e?.message ?? t('errors.load'));
+      setExporting(true);
+
+      const response = await fetch(
+        `/api/users/export?locale=${encodeURIComponent(locale)}`,
+        {
+          credentials: 'include',
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const contentDisposition = response.headers.get('content-disposition') ?? '';
+      const filenameMatch = contentDisposition.match(/filename="([^"]+)"/i);
+
+      link.href = url;
+      link.download =
+        filenameMatch?.[1] ||
+        (locale === 'en' ? 'clients-export.xls' : 'export-clients.xls');
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (nextError) {
+      console.error('export users error', nextError);
+      alert(t('errors.export'));
     } finally {
-      setLoading(false);
+      setExporting(false);
     }
   };
 
-  useEffect(() => {
-    if (!isLoaded) return;
-    void load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoaded]);
-
-  const setRole = async (id: string, role: Role) => {
+  const downloadStudentDetailsExport = async (user: UserRow) => {
     try {
-      const res = await fetch(`/api/users/${id}/role`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(orgId ? { 'x-org-id': orgId } : {}),
+      setExportingUserId(user.id);
+
+      const response = await fetch(
+        `/api/users/${encodeURIComponent(user.id)}/export?locale=${encodeURIComponent(locale)}`,
+        {
+          credentials: 'include',
         },
-        credentials: 'include',
-        body: JSON.stringify({ role }),
-      });
-      if (!res.ok)
-        throw new Error(await res.text().catch(() => `HTTP ${res.status}`));
-      await load();
-    } catch (e) {
-      console.error('role change error', e);
-      alert(t('errors.roleChange'));
-    }
-  };
+      );
 
-  const promote = (id: string) => setRole(id, 'instructor');
-  const demote = (id: string) => setRole(id, 'student');
+      if (!response.ok) {
+        throw new Error(await response.text());
+      }
 
-  const remove = async (id: string, name: string) => {
-    if (!confirm(t('actions.remove.confirm', { name: name || '' }))) return;
-    try {
-      const res = await fetch(`/api/users/${id}`, {
-        method: 'DELETE',
-        credentials: 'include',
-        headers: orgId ? { 'x-org-id': orgId } : {},
-      });
-      if (!res.ok)
-        throw new Error(await res.text().catch(() => `HTTP ${res.status}`));
-      await load();
-    } catch (e) {
-      console.error('delete error', e);
-      alert(t('errors.delete'));
-    }
-  };
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      const contentDisposition = response.headers.get('content-disposition') ?? '';
+      const filenameMatch = contentDisposition.match(/filename="([^"]+)"/i);
 
-  const addOneHour = async (id: string) => {
-    try {
-      const res = await fetch(`/api/users/${id}/hours`, {
-        method: 'PATCH',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(orgId ? { 'x-org-id': orgId } : {}),
-        },
-        body: JSON.stringify({ deltaMinutes: 60 }),
-      });
-      if (!res.ok)
-        throw new Error(await res.text().catch(() => `HTTP ${res.status}`));
-      await load();
-    } catch (e) {
-      console.error('add hour error', e);
-      alert(t('errors.addHour'));
-    }
-  };
+      link.href = url;
+      link.download =
+        filenameMatch?.[1] ||
+        (locale === 'en' ? 'client-details.xls' : 'client-details.xls');
 
-  const editHours = async (u: UserRow) => {
-    if (u.role !== 'student') return;
-
-    const currentRemaining =
-      typeof u.remainingMinutes === 'number' ? u.remainingMinutes : 0;
-    const currentPlanned =
-      typeof u.plannedMinutes === 'number' ? u.plannedMinutes : 0;
-
-    const rInput = prompt(
-      t('editHours.remainingPrompt', {
-        name: u.name ?? t('editHours.defaultStudentName'),
-      }),
-      formatQty(currentRemaining)
-    );
-    const remaining = parseToMinutes(rInput);
-    if (remaining === null) {
-      alert(t('errors.invalidRemaining'));
-      return;
-    }
-
-    const tInput = prompt(
-      t('editHours.totalPrompt', {
-        name: u.name ?? t('editHours.defaultStudentName'),
-      }),
-      formatQty(currentPlanned)
-    );
-    const planned = parseToMinutes(tInput);
-    if (planned === null) {
-      alert(t('errors.invalidTotal'));
-      return;
-    }
-
-    if (planned < 0 || remaining < 0) {
-      alert(t('errors.invalidNonNegative'));
-      return;
-    }
-
-    // borne côté front (le backend bornera aussi)
-    const boundedRemaining = Math.min(remaining, planned);
-
-    try {
-      const res = await fetch(`/api/users/${u.id}/hours`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(orgId ? { 'x-org-id': orgId } : {}),
-        },
-        body: JSON.stringify({
-          plannedMinutes: planned,
-          remainingMinutes: boundedRemaining,
-        }),
-      });
-      if (!res.ok)
-        throw new Error(await res.text().catch(() => `HTTP ${res.status}`));
-      await load();
-    } catch (e) {
-      console.error('edit hours error', e);
-      alert(t('errors.editHours'));
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (nextError) {
+      console.error('export user details error', nextError);
+      alert(t('errors.exportDetails'));
+    } finally {
+      setExportingUserId(null);
     }
   };
 
@@ -241,84 +143,110 @@ export default function UserManagement({ meRole }: { meRole: Role }) {
     <div className="mx-auto max-w-5xl p-6">
       <h1 className="mb-2 text-2xl font-semibold">{t('title')}</h1>
       <p className="mb-6 text-sm text-muted-foreground">{t('subtitle')}</p>
+
       <div className="rounded-lg border bg-card">
-        <div className="p-4 border-b flex items-center gap-3">
+        <div className="flex items-center gap-3 border-b p-4">
           <button
-            onClick={load}
-            className="text-sm px-3 py-1.5 rounded border hover:bg-neutral-50"
+            onClick={reload}
+            className="rounded border px-3 py-1.5 text-sm hover:bg-neutral-50"
             disabled={loading}
           >
             {loading ? t('toolbar.refresh.loading') : t('toolbar.refresh.idle')}
           </button>
-          {err && <span className="text-sm text-red-600">{err}</span>}
+
+          {error ? <span className="text-sm text-red-600">{error}</span> : null}
+
+          <button
+            onClick={downloadStudentsExport}
+            className="ml-auto rounded border px-3 py-1.5 text-sm hover:bg-neutral-50"
+            disabled={exporting}
+          >
+            {exporting ? t('toolbar.export.loading') : t('toolbar.export.idle')}
+          </button>
         </div>
 
-        <div className="p-4 overflow-x-auto">
+        <div className="overflow-x-auto p-4">
           <table className="min-w-full text-sm">
             <thead>
               <tr className="text-left text-neutral-500">
                 <th className="py-2 pr-4">{t('table.columns.name')}</th>
                 <th className="py-2 pr-4">{t('table.columns.role')}</th>
                 <th className="py-2 pr-4">{t('table.columns.email')}</th>
+                <th className="py-2 pr-4">{t('table.columns.export')}</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((u) => {
-                const isSelf = !!userId && u.id === userId;
+              {users.map((user) => {
+                const isSelf = !!userId && user.id === userId;
 
                 return (
-                  <tr key={u.id} className="border-t">
+                  <tr key={user.id} className="border-t">
                     <td className="py-2 pr-4">
-                      <span>{u.name ?? '—'}</span>
-                      {isSelf && (
-                        <span className="ml-2 inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-medium border bg-blue-50 border-blue-200 text-blue-900">
+                      <span>{user.name ?? '—'}</span>
+                      {isSelf ? (
+                        <span className="ml-2 inline-flex items-center rounded border border-blue-200 bg-blue-50 px-1.5 py-0.5 text-[10px] font-medium text-blue-900">
                           {t('labels.me')}
                         </span>
-                      )}
+                      ) : null}
                     </td>
+
                     <td className="py-2 pr-4">
                       <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded text-xs border
-                      ${
-                        u.role === 'admin'
-                          ? 'bg-purple-50 border-purple-200 text-purple-900'
-                          : u.role === 'instructor'
-                          ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
-                          : 'bg-neutral-50 border-neutral-200 text-neutral-700'
-                      }`}
+                        className={`inline-flex items-center rounded border px-2 py-0.5 text-xs ${
+                          user.role === 'admin'
+                            ? 'border-purple-200 bg-purple-50 text-purple-900'
+                            : user.role === 'instructor'
+                              ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
+                              : 'border-neutral-200 bg-neutral-50 text-neutral-700'
+                        }`}
                       >
-                        {u.role === 'student'
+                        {user.role === 'student'
                           ? t('roles.student')
-                          : u.role === 'instructor'
-                          ? t('roles.instructor')
-                          : t('roles.admin')}
+                          : user.role === 'instructor'
+                            ? t('roles.instructor')
+                            : t('roles.admin')}
                       </span>
                     </td>
 
                     <td className="py-2 pr-4">
-                      {u.role === 'student' && u.email ? (
+                      {user.role === 'student' && user.email ? (
                         <a
-                          href={`mailto:${encodeURIComponent(u.email)}`}
+                          href={`mailto:${encodeURIComponent(user.email)}`}
                           className="text-blue-600 hover:underline"
                         >
-                          {u.email}
+                          {user.email}
                         </a>
                       ) : (
-                        <span className="text-neutral-400">
-                          {t('labels.noEmail')}
-                        </span>
+                        <span className="text-neutral-400">{t('labels.noEmail')}</span>
+                      )}
+                    </td>
+
+                    <td className="py-2 pr-4">
+                      {user.role === 'student' ? (
+                        <button
+                          onClick={() => void downloadStudentDetailsExport(user)}
+                          className="rounded border px-3 py-1.5 text-xs hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-60"
+                          disabled={exportingUserId === user.id}
+                        >
+                          {exportingUserId === user.id
+                            ? t('actions.exportRow.loading')
+                            : t('actions.exportRow.idle')}
+                        </button>
+                      ) : (
+                        <span className="text-neutral-300">{t('labels.noExport')}</span>
                       )}
                     </td>
                   </tr>
                 );
               })}
-              {users.length === 0 && !loading && (
+
+              {users.length === 0 && !loading ? (
                 <tr>
-                  <td className="py-6 text-neutral-500" colSpan={3}>
+                  <td className="py-6 text-neutral-500" colSpan={4}>
                     {t('empty.noUsers')}
                   </td>
                 </tr>
-              )}
+              ) : null}
             </tbody>
           </table>
         </div>

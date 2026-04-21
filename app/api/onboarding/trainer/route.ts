@@ -1,8 +1,10 @@
 // app/api/onboarding/trainer/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { clerkClient, getAuth } from '@clerk/nextjs/server';
+import { clerkClient } from '@clerk/nextjs/server';
 import { sql } from '@/lib/db';
 import { randomBytes, randomUUID } from 'crypto';
+import { requireUser } from '@/lib/api/auth-server';
+import { mergeWeeklyAvailabilities } from '@/lib/server/domain/time-ranges';
 
 type AvailabilityPayload = {
   dayOfWeek: number; // 0..6
@@ -22,9 +24,6 @@ type AddressPayload = {
   countryCode?: string;
   googlePlaceId?: string;
 };
-
-const START_MIN = 8 * 60;
-const END_MAX = 20 * 60;
 
 function rowsOf<T = any>(res: any): T[] {
   if (!res) return [];
@@ -61,66 +60,6 @@ function formatClerkError(e: any): string {
     );
   }
   return e?.message || 'Clerk error';
-}
-
-function timeToMinutes(time: string): number {
-  if (!/^\d{2}:\d{2}$/.test(time)) return NaN;
-  const [h, m] = time.split(':').map(Number);
-  if (Number.isNaN(h) || Number.isNaN(m)) return NaN;
-  return h * 60 + m;
-}
-
-function minutesToTime(m: number) {
-  const hh = Math.floor(m / 60)
-    .toString()
-    .padStart(2, '0');
-  const mm = (m % 60).toString().padStart(2, '0');
-  return `${hh}:${mm}`;
-}
-
-function mergeAvailabilities(
-  list: AvailabilityPayload[]
-): AvailabilityPayload[] {
-  const byDay = new Map<number, { s: number; e: number }[]>();
-
-  for (const a of list) {
-    const day = Number(a?.dayOfWeek);
-    const s = timeToMinutes(String(a?.startTime || ''));
-    const e = timeToMinutes(String(a?.endTime || ''));
-    if (!Number.isInteger(day) || day < 0 || day > 6) continue;
-    if (Number.isNaN(s) || Number.isNaN(e)) continue;
-    if (e <= s) continue;
-    byDay.set(day, [...(byDay.get(day) ?? []), { s, e }]);
-  }
-
-  const out: AvailabilityPayload[] = [];
-  for (const [day, ranges] of byDay.entries()) {
-    const sorted = [...ranges].sort((a, b) => a.s - b.s || a.e - b.e);
-    const merged: { s: number; e: number }[] = [];
-
-    for (const r of sorted) {
-      if (merged.length === 0) merged.push({ ...r });
-      else {
-        const last = merged[merged.length - 1];
-        if (r.s <= last.e) last.e = Math.max(last.e, r.e);
-        else merged.push({ ...r });
-      }
-    }
-
-    for (const r of merged) {
-      out.push({
-        dayOfWeek: day,
-        startTime: minutesToTime(r.s),
-        endTime: minutesToTime(r.e),
-      });
-    }
-  }
-
-  return out.sort(
-    (a, b) =>
-      a.dayOfWeek - b.dayOfWeek ||
-      timeToMinutes(a.startTime) - timeToMinutes(b.startTime)
-  );
 }
 
 function normalizeWebsiteUrl(input: string): string | null {
@@ -168,9 +107,11 @@ async function createClerkOrganizationStrict(
 }
 
 export async function POST(req: NextRequest) {
-  const { userId } = getAuth(req, { treatPendingAsSignedOut: false });
-  if (!userId)
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { auth, response } = requireUser(req, {
+    treatPendingAsSignedOut: false,
+  });
+  if (!auth) return response;
+  const { userId } = auth;
 
   let body: any = {};
   try {
@@ -230,25 +171,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const cleaned: AvailabilityPayload[] = [];
-  for (const a of availabilities) {
-    const day = Number(a?.dayOfWeek);
-    const s = timeToMinutes(String(a?.startTime || ''));
-    const e = timeToMinutes(String(a?.endTime || ''));
-
-    if (!Number.isInteger(day) || day < 0 || day > 6) continue;
-    if (Number.isNaN(s) || Number.isNaN(e)) continue;
-    if (e <= s) continue;
-    if (s < START_MIN || e > END_MAX) continue;
-
-    cleaned.push({
-      dayOfWeek: day,
-      startTime: minutesToTime(s),
-      endTime: minutesToTime(e),
-    });
-  }
-
-  const merged = mergeAvailabilities(cleaned);
+  const merged = mergeWeeklyAvailabilities(availabilities);
   if (merged.length === 0) {
     return NextResponse.json(
       {

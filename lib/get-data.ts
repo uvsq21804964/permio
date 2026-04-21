@@ -1,5 +1,6 @@
 // lib/get-data.neon.ts
 import { neon } from '@neondatabase/serverless';
+import { devLogger } from '@/lib/shared/dev-logger';
 
 const sql = neon(process.env.DATABASE_URL!); // URL Neon avec ?sslmode=require
 
@@ -144,12 +145,14 @@ export async function loadPlanningInput(agencyId: string) {
   };
 
   // Logs debug (à couper en prod)
-  console.log('[planning][neon] agencyId', agencyId);
-  console.log('[planning][neon] weekStart', weekStart);
-  console.log('[planning][neon] moniteurs', moniteurs.length);
-  console.log('[planning][neon] eleves', eleves.length);
-  console.log('[planning][neon] dispo_moniteurs', dispo_moniteurs.length);
-  console.log('[planning][neon] slots_eleves', slots_eleves.length);
+  devLogger.log('[planning][neon] summary', {
+    agencyId,
+    weekStart,
+    instructors: moniteurs.length,
+    students: eleves.length,
+    instructorAvailabilities: dispo_moniteurs.length,
+    studentSlots: slots_eleves.length,
+  });
 
   return {
     weekStart, // ← utilisé par le solveur pour InstructorWeekDay

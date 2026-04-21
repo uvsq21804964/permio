@@ -1,8 +1,8 @@
 // lib/availability-utils.ts
 import type { Kind } from '@/types/availability';
 
-export const START_HOUR = 8;
-export const END_HOUR = 20;
+const START_HOUR = 8;
+const END_HOUR = 20;
 export const PIXELS_PER_HOUR = 60;
 
 export const HOURS = Array.from(
@@ -22,7 +22,7 @@ export const DAY_LABELS_SHORT = [
 
 // ---------- Helpers temps ----------
 
-export function timeToMinutes(time: string): number {
+function timeToMinutes(time: string): number {
   const [h, m] = time.split(':').map(Number);
   return h * 60 + m;
 }
@@ -57,7 +57,7 @@ export function getSlotBlockColor() {
 
 // ---------- Helpers dates ----------
 
-export function startOfWeekMonday(date: Date): Date {
+function startOfWeekMonday(date: Date): Date {
   const d = new Date(date);
   const dow = d.getDay(); // 0..6 (0=dimanche)
   const isoDow = dow === 0 ? 7 : dow;
@@ -67,14 +67,14 @@ export function startOfWeekMonday(date: Date): Date {
   return d;
 }
 
-export function dateToISO(d: Date): string {
+function dateToISO(d: Date): string {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, '0');
   const day = String(d.getDate()).padStart(2, '0');
   return `${y}-${m}-${day}`;
 }
 
-export function isoToDate(iso: string): Date {
+function isoToDate(iso: string): Date {
   if (!iso) return new Date(NaN);
 
   const base = iso.slice(0, 10); // 'YYYY-MM-DD'

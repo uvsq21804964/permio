@@ -1,10 +1,17 @@
-// src/lib/inngest/functions/slotBookedClientEmail.ts
 import { clerkClient } from '@clerk/nextjs/server';
-import { sql } from '@/lib/db';
-import { inngest } from '@/src/lib/inngest/client';
-import { resend, EMAIL_FROM } from '@/src/lib/email/resend';
 import { render } from '@react-email/render';
+
+import { sql } from '@/lib/db';
 import BookingClientConfirmationEmail from '@/src/emails/bookingClientConfirmation';
+import { inngest } from '@/src/lib/inngest/client';
+import {
+  buildLocalizedAppUrl,
+  getAppBaseUrl,
+  inngestEmailLogger,
+  loadClerkUserContact,
+  sendTransactionalEmail,
+  toEmailLocale,
+} from '@/src/lib/inngest/functions/email-shared';
 
 type InstructorRow = {
   id: string;
@@ -15,19 +22,6 @@ type ServiceRow = {
   id: number;
   name: string | null;
 };
-
-function getPrimaryEmail(user: {
-  emailAddresses?: { id: string; emailAddress: string }[];
-  primaryEmailAddressId?: string | null;
-}) {
-  if (!user?.emailAddresses?.length) return null;
-
-  const primary =
-    user.emailAddresses.find((e) => e.id === user.primaryEmailAddressId)
-      ?.emailAddress ?? user.emailAddresses[0]?.emailAddress;
-
-  return primary ?? null;
-}
 
 export const slotBookedClientEmail = inngest.createFunction(
   {
@@ -63,7 +57,7 @@ export const slotBookedClientEmail = inngest.createFunction(
         locale?: string;
       };
 
-      console.info('[slotBookedClientEmail] event', {
+      inngestEmailLogger.info('[slotBookedClientEmail] event', {
         id: event.id,
         slotId,
         agencyId,
@@ -77,45 +71,36 @@ export const slotBookedClientEmail = inngest.createFunction(
         locale,
       });
 
-      const lang = (locale || 'fr').toLowerCase().startsWith('en')
-        ? 'en'
-        : 'fr';
+      const lang = toEmailLocale(locale);
 
       const instructor = await step.run('load-instructor', async () => {
         const rows = await sql`
-        SELECT id, name
-        FROM "User"
-        WHERE id = ${instructorUserId}
-        LIMIT 1
-      `;
+          SELECT id, name
+          FROM "User"
+          WHERE id = ${instructorUserId}
+          LIMIT 1
+        `;
         return (rows?.[0] ?? null) as InstructorRow | null;
       });
 
       const service = await step.run('load-service', async () => {
         const rows = await sql`
-    SELECT id, name
-    FROM services_pricing
-    WHERE id = ${serviceId}
-    LIMIT 1
-  `;
+          SELECT id, name
+          FROM services_pricing
+          WHERE id = ${serviceId}
+          LIMIT 1
+        `;
         return (rows?.[0] ?? null) as ServiceRow | null;
       });
-      console.info('[slotBookedClientEmail] service', service);
-      const clerk = await clerkClient();
 
+      inngestEmailLogger.info('[slotBookedClientEmail] service', service);
+
+      const clerk = await clerkClient();
       const clientClerk = await step.run('load-client-email', async () => {
         try {
-          const cu = await clerk.users.getUser(clientUserId);
-
-          return {
-            email: getPrimaryEmail(cu),
-            name:
-              [cu.firstName, cu.lastName].filter(Boolean).join(' ').trim() ||
-              cu.username ||
-              null,
-          };
+          return await loadClerkUserContact(clerk, clientUserId);
         } catch (error) {
-          console.error(
+          inngestEmailLogger.error(
             '[slotBookedClientEmail] load-client-email error',
             error,
           );
@@ -124,9 +109,8 @@ export const slotBookedClientEmail = inngest.createFunction(
       });
 
       const recipientEmail = clientClerk?.email ?? null;
-
       if (!recipientEmail) {
-        console.warn('[slotBookedClientEmail] no client email', {
+        inngestEmailLogger.warn('[slotBookedClientEmail] no client email', {
           clientUserId,
           agencyId,
           slotId,
@@ -134,25 +118,16 @@ export const slotBookedClientEmail = inngest.createFunction(
         return { skipped: true, reason: 'no_client_email' };
       }
 
-      const displayClientName =
-        clientClerk?.name || (lang === 'fr' ? 'Client' : 'Client');
-
+      const displayClientName = clientClerk?.name || 'Client';
       const displayServiceName =
-        service?.name || (lang === 'fr' ? 'votre réservation' : 'your booking');
-
+        service?.name || (lang === 'fr' ? 'votre reservation' : 'your booking');
       const subject =
         lang === 'fr'
-          ? `Réservation confirmée chez ${agencyName}`
+          ? `Reservation confirmee chez ${agencyName}`
           : `Booking confirmed with ${agencyName}`;
 
-      const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || '').replace(
-        /\/+$/,
-        '',
-      );
-
-      const reservationsUrl = baseUrl
-        ? `${baseUrl}/${lang}/reservations`
-        : 'http://localhost:3000';
+      const baseUrl = getAppBaseUrl();
+      const reservationsUrl = buildLocalizedAppUrl(lang, '/reservations');
 
       const html = await step.run('render-email', async () => {
         return render(
@@ -172,37 +147,36 @@ export const slotBookedClientEmail = inngest.createFunction(
       });
 
       const result = await step.run('send-email', async () => {
-        console.info('[slotBookedClientEmail] sending email', {
-          to: recipientEmail,
-          subject,
-          slotId,
+        inngestEmailLogger.info('[slotBookedClientEmail] sending email', {
           agencyId,
+          slotId,
+          subject,
+          to: recipientEmail,
         });
 
-        return resend.emails.send({
-          from: EMAIL_FROM,
-          to: recipientEmail,
-          subject,
+        return sendTransactionalEmail({
+          eventId: event.id,
           html,
-          ...(event.id ? { headers: { 'X-Event-Id': event.id } } : {}),
+          subject,
+          to: recipientEmail,
         });
       });
 
-      console.info('[slotBookedClientEmail] send-email result', result);
+      inngestEmailLogger.info('[slotBookedClientEmail] send-email result', result);
 
       if ((result as any)?.error) {
-        console.error('[slotBookedClientEmail] send-email error', result);
+        inngestEmailLogger.error('[slotBookedClientEmail] send-email error', result);
         throw new Error('Resend error');
       }
 
       return {
         ok: true,
-        slotId,
-        recipient: recipientEmail,
         provider: result,
+        recipient: recipientEmail,
+        slotId,
       };
     } catch (error) {
-      console.error('[slotBookedClientEmail] fatal error', error);
+      inngestEmailLogger.error('[slotBookedClientEmail] fatal error', error);
       throw error;
     }
   },

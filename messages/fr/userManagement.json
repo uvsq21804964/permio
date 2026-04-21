@@ -4,19 +4,25 @@
   "toolbar": {
     "refresh": {
       "idle": "Rafraîchir",
-      "loading": "Chargement…"
+      "loading": "Chargement..."
+    },
+    "export": {
+      "idle": "Exporter les clients",
+      "loading": "Export..."
     }
   },
   "table": {
     "columns": {
       "name": "Nom",
       "role": "Rôle",
-      "email": "Email"
+      "email": "Email",
+      "export": "Export"
     }
   },
   "labels": {
     "me": "Moi",
-    "noEmail": "—"
+    "noEmail": "-",
+    "noExport": "-"
   },
   "roles": {
     "student": "Client",
@@ -27,16 +33,22 @@
     "noUsers": "Aucun utilisateur."
   },
   "errors": {
-    "load": "Erreur de chargement",
+    "load": "Erreur de chargement.",
     "roleChange": "Impossible de changer le rôle (droits insuffisants ou erreur serveur).",
     "delete": "Suppression impossible (droits insuffisants ou erreur serveur).",
-    "addHour": "Impossible d’ajouter 1h (droits insuffisants ou erreur serveur).",
+    "addHour": "Impossible d'ajouter 1h (droits insuffisants ou erreur serveur).",
+    "export": "Impossible d'exporter les clients.",
+    "exportDetails": "Impossible d'exporter ce client.",
     "invalidRemaining": "Saisie invalide pour heures restantes.",
     "invalidTotal": "Saisie invalide pour heures totales.",
-    "invalidNonNegative": "Les valeurs doivent être \u2265 0.",
+    "invalidNonNegative": "Les valeurs doivent être >= 0.",
     "editHours": "Impossible de mettre à jour les heures."
   },
   "actions": {
+    "exportRow": {
+      "idle": "Export client",
+      "loading": "Export..."
+    },
     "remove": {
       "confirm": "Supprimer l'utilisateur {name} ?"
     }

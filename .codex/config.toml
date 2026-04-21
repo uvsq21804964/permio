@@ -1,0 +1,85 @@
+################################################################################
+# Codex user config
+# Location: C:\Users\tomab\.codex\config.toml
+################################################################################
+
+################################################################################
+# Core model
+################################################################################
+
+# Modèle principal utilisé par Codex
+model = "gpt-5.4"
+
+# Style de communication du modèle si supporté
+personality = "pragmatic"
+
+################################################################################
+# Automation / approvals
+################################################################################
+
+# Ne pas interrompre avec des demandes d'approbation
+# Utilise seulement si tu assumes que Codex puisse agir seul dans le sandbox.
+approval_policy = "never"
+
+# Mode sandbox recommandé pour travail local autonome dans le workspace
+# - read-only
+# - workspace-write
+# - danger-full-access
+sandbox_mode = "workspace-write"
+
+# Durcissement optionnel : évite les shells de login
+allow_login_shell = false
+
+################################################################################
+# Workspace-write sandbox tuning
+################################################################################
+
+[sandbox_workspace_write]
+
+# Garde le réseau coupé pour les commandes lancées dans le sandbox.
+# Plus sûr pour les longues sessions.
+network_access = false
+
+# Laisse l'accès aux répertoires temporaires standards.
+exclude_tmpdir_env_var = false
+exclude_slash_tmp = false
+
+# Ajoute ici des chemins supplémentaires si Codex doit écrire hors du dossier ouvert.
+# Exemple:
+# writable_roots = ["C:/Users/tomab/.cache", "C:/Users/tomab/AppData/Local/Temp"]
+writable_roots = []
+
+################################################################################
+# Windows sandbox
+################################################################################
+
+[windows]
+
+# Modes documentés:
+# - elevated   : mode préféré sur Windows natif
+# - unelevated : mode de secours
+sandbox = "elevated"
+
+################################################################################
+# Optional profiles
+################################################################################
+
+[profiles.safe]
+approval_policy = "untrusted"
+sandbox_mode = "workspace-write"
+
+[profiles.autonomous]
+approval_policy = "never"
+sandbox_mode = "workspace-write"
+
+[profiles.full_access]
+approval_policy = "never"
+sandbox_mode = "danger-full-access"
+
+################################################################################
+# Optional project guidance
+################################################################################
+
+# Tu peux laisser vide si tu n'en as pas besoin.
+# Si tu préfères, garde les instructions de projet dans un PLANS.md ou AGENTS.md.
+# project_doc = "PLANS.md"

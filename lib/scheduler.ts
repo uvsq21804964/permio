@@ -1,6 +1,6 @@
 import { loadPlanningInput } from './get-data';
 
-export type Match = {
+type Match = {
   studentId: string;
   studentName: string;
   instructorId: string;
@@ -11,7 +11,7 @@ export type Match = {
   duration: number;
 };
 
-export type ScheduleResult = {
+type ScheduleResult = {
   matches: Match[];
   unmatchedStudents: Array<{ id: string; name: string }>;
   stats: {

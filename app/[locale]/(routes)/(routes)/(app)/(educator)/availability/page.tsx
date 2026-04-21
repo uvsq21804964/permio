@@ -7,63 +7,23 @@ import { useTranslations } from 'next-intl';
 import { AvailabilityAgenda } from '@/components/availability-agenda';
 import { DailyOverridesCard } from '@/components/availability/DailyOverridesCard';
 import { WeeklyGlobalAgenda } from '@/components/availability/WeeklyGlobalAgenda';
-
+import { useAvailabilityRoleGate } from '@/lib/client/hooks/useAvailabilityRoleGate';
 type Role = 'student' | 'instructor' | 'admin';
-
-type MeRoleResponse = {
-  id: string;
-  name: string;
-  role: string;
-  error?: string;
-};
 
 export default function MyAvailabilitiesPage() {
   const t = useTranslations('myAvailabilities');
   const { isLoaded, isSignedIn } = useAuth();
-
-  const [me, setMe] = useState<MeRoleResponse | null>(null);
-  const [roleLoading, setRoleLoading] = useState(true);
-  const [roleError, setRoleError] = useState<string | null>(null);
+  const { me, loading: roleLoading, error: roleError, isClient } =
+    useAvailabilityRoleGate({
+      enabled: isLoaded && isSignedIn,
+      loadErrorMessage: t('errors.loadRole'),
+    });
 
   const [activeView, setActiveView] = useState<'configure' | 'global'>(
     'configure'
   );
 
-  useEffect(() => {
-    if (!isLoaded || !isSignedIn) return;
-
-    const loadMe = async () => {
-      setRoleLoading(true);
-      setRoleError(null);
-
-      try {
-        const res = await fetch('/api/me/role', {
-          credentials: 'include',
-        });
-
-        const data = (await res
-          .json()
-          .catch(() => ({}))) as Partial<MeRoleResponse>;
-
-        if (!res.ok) {
-          throw new Error(data?.error || `HTTP ${res.status}`);
-        }
-
-        setMe(data as MeRoleResponse);
-      } catch (e: any) {
-        console.error('[MyAvailabilitiesPage] /api/me/role error:', e);
-        setMe(null);
-        setRoleError(e?.message ?? t('errors.loadRole'));
-      } finally {
-        setRoleLoading(false);
-      }
-    };
-
-    void loadMe();
-  }, [isLoaded, isSignedIn, t]);
-
   const meRole = me?.role ?? null;
-  const isClient = meRole === 'student';
 
   // ✅ Vue effective : le client est forcé en "global"
   const effectiveView = useMemo<'configure' | 'global'>(() => {

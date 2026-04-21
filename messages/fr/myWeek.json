@@ -21,14 +21,14 @@
   "errors": {
     "genericLoad": "Erreur de chargement",
     "load": "Erreur de chargement",
-    "noAgenda": "Impossible de charger l’agenda.",
-    "unexpectedApiResponse": "Réponse inattendue de l’API agenda."
+    "noAgenda": "Impossible de charger l'agenda.",
+    "unexpectedApiResponse": "Réponse inattendue de l'API agenda."
   },
-  "loading": "Chargement…",
+  "loading": "Chargement...",
   "table": {
     "hourColumn": "Heure"
   },
-  "todayBadge": "Aujourd’hui",
+  "todayBadge": "Aujourd'hui",
   "days": {
     "0": "Lundi",
     "1": "Mardi",
@@ -42,7 +42,7 @@
     "label": "Trajet",
     "from": "De :",
     "to": "Vers :",
-    "tooltipTime": "Trajet {start}–{end}"
+    "tooltipTime": "Trajet {start}-{end}"
   },
   "counterpart": {
     "instructor": "Éducateur canin",
@@ -57,6 +57,27 @@
   "slot": {
     "serviceLabel": "Service :",
     "priceLabel": "Prix :",
-    "addressLabel": "Adresse :"
+    "addressLabel": "Adresse :",
+    "dialog": {
+      "title": "Détails du créneau",
+      "description": "Cours prévu de {start} à {end}.",
+      "fallbackDescription": "Consultez les informations de ce créneau.",
+      "dateLabel": "Date",
+      "timeLabel": "Horaire",
+      "openHint": "Cliquer pour voir le détail",
+      "ariaOpen": "Ouvrir le détail du créneau",
+      "noValue": "Non renseigné",
+      "cancelAction": "Annuler le créneau",
+      "confirmTitle": "Confirmer l'annulation",
+      "confirmDescription": "Ce créneau sera supprimé et tout le monde recevra un email de notification.",
+      "confirmFallback": "Confirmez-vous l'annulation de ce créneau ?",
+      "keepAction": "Garder le créneau",
+      "confirmAction": "Oui, annuler",
+      "cancelling": "Annulation...",
+      "cancelSuccess": "Le créneau a bien été annulé.",
+      "cancelError": "Impossible d'annuler ce créneau.",
+      "cancelTooLateError": "Un client ne peut annuler qu'au moins 48h avant le créneau.",
+      "cancelWindowHint": "Les clients peuvent annuler uniquement jusqu'à 48h avant le début du créneau."
+    }
   }
 }

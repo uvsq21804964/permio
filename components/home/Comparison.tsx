@@ -12,7 +12,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 
-export type Plan = {
+type Plan = {
   id: 'free' | 'magic';
   title: string;
   prices: { EUR: number; USD: number };
@@ -128,7 +128,7 @@ function renderCell(rowId: string, v: CellValue, t: (key: string) => string) {
   );
 }
 
-export function PlanComparison({ className }: { className?: string }) {
+function PlanComparison({ className }: { className?: string }) {
   const t = useTranslations('comparison');
 
   // Plans (titres/features traduits si tu veux les réutiliser ailleurs)

@@ -1,0 +1,1025 @@
+{
+  "generatedAt": "2026-04-19T18:53:38.531Z",
+  "root": "C:\\Users\\tomab\\OneDrive\\Bureau\\ALL\\Entreprise\\permio\\permio",
+  "summary": {
+    "pages": 21,
+    "uniqueLibFiles": 45,
+    "totalFrontToLibLinks": 107,
+    "uniqueApiRoutes": 27,
+    "totalApiEdges": 30
+  },
+  "pages": [
+    {
+      "page": "app/[locale]/(routes)/(routes)/(app)/(client)/book/address/page.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/client/api/me-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/request.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/services-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useGoogleMapPreview.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useGooglePlacesAutocomplete.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/utils/address.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/utils/google-maps.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/utils.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": [
+        {
+          "apiPath": "/api/me/hours",
+          "routeFile": "app/api/me/hours/route.ts",
+          "color": "#225cb9",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/instructor-services",
+          "routeFile": "app/api/me/instructor-services/route.ts",
+          "color": "#9722b4",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/profile",
+          "routeFile": "app/api/me/profile/route.ts",
+          "color": "#db1f54",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/role",
+          "routeFile": "app/api/me/role/route.ts",
+          "color": "#70c31d",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/services",
+          "routeFile": "app/api/me/services/route.ts",
+          "color": "#3220d5",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/subscription",
+          "routeFile": "app/api/me/subscription/route.ts",
+          "color": "#1a6ce0",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "page": "app/[locale]/(routes)/(routes)/(app)/(client)/book/page.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/client/api/booking-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/request.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/services-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useBookingServices.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useBookSlot.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useDecodedBookingAddress.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useInstructorServices.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useInstructorWeeklyAgenda.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/utils/booking.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/utils.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": [
+        {
+          "apiPath": "/api/me/instructor-services",
+          "routeFile": "app/api/me/instructor-services/route.ts",
+          "color": "#9722b4",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/instructor-weekly-agenda",
+          "routeFile": "app/api/me/instructor-weekly-agenda/route.ts",
+          "color": "#c31d70",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/instructor-weekly-agenda-proposals",
+          "routeFile": "app/api/me/instructor-weekly-agenda-proposals/route.ts",
+          "color": "#c52645",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/services",
+          "routeFile": "app/api/me/services/route.ts",
+          "color": "#3220d5",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/slots",
+          "routeFile": "app/api/slots/route.ts",
+          "color": "#70b81e",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "page": "app/[locale]/(routes)/(routes)/(app)/(client)/book/proposals/page.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/client/api/booking-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/request.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/services-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useBookingServices.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useBookSlot.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useDecodedBookingAddress.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useInstructorProposalAgenda.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useInstructorServices.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/utils/booking.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": [
+        {
+          "apiPath": "/api/me/instructor-services",
+          "routeFile": "app/api/me/instructor-services/route.ts",
+          "color": "#9722b4",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/instructor-weekly-agenda",
+          "routeFile": "app/api/me/instructor-weekly-agenda/route.ts",
+          "color": "#c31d70",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/instructor-weekly-agenda-proposals",
+          "routeFile": "app/api/me/instructor-weekly-agenda-proposals/route.ts",
+          "color": "#c52645",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/services",
+          "routeFile": "app/api/me/services/route.ts",
+          "color": "#3220d5",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/slots",
+          "routeFile": "app/api/slots/route.ts",
+          "color": "#70b81e",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "page": "app/[locale]/(routes)/(routes)/(app)/(client)/book/services/page.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/client/api/request.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/services-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useInstructorServices.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": [
+        {
+          "apiPath": "/api/me/instructor-services",
+          "routeFile": "app/api/me/instructor-services/route.ts",
+          "color": "#9722b4",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/services",
+          "routeFile": "app/api/me/services/route.ts",
+          "color": "#3220d5",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "page": "app/[locale]/(routes)/(routes)/(app)/(client)/layout.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/db.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": []
+    },
+    {
+      "page": "app/[locale]/(routes)/(routes)/(app)/(educator)/availability/page.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/availability-utils.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/availabilities-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/me-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/request.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useAvailabilityCurrentUser.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useAvailabilityRangesDialogState.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useAvailabilityRoleGate.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useDayOverrides.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useRelativeTimeFormatter.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useTimedNotice.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useWeeklyAvailabilities.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useWeeklyGlobalAgendaData.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/utils/availability-editor.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/utils/availability-time.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/utils/schedule-display.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/utils.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": [
+        {
+          "apiPath": "/api/availabilities",
+          "routeFile": "app/api/availabilities/route.ts",
+          "color": "#b7ce1c",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/availabilities/all",
+          "routeFile": "app/api/availabilities/all/route.ts",
+          "color": "#97b422",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/availabilities/bulk",
+          "routeFile": "app/api/availabilities/bulk/route.ts",
+          "color": "#19c233",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/availabilities/day",
+          "routeFile": "app/api/availabilities/day/route.ts",
+          "color": "#1eb0be",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/hours",
+          "routeFile": "app/api/me/hours/route.ts",
+          "color": "#225cb9",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/profile",
+          "routeFile": "app/api/me/profile/route.ts",
+          "color": "#db1f54",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/role",
+          "routeFile": "app/api/me/role/route.ts",
+          "color": "#70c31d",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/subscription",
+          "routeFile": "app/api/me/subscription/route.ts",
+          "color": "#1a6ce0",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/slots/week",
+          "routeFile": "app/api/slots/week/route.ts",
+          "color": "#cf2058",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/travels/week",
+          "routeFile": "app/api/travels/week/route.ts",
+          "color": "#20cfbb",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "page": "app/[locale]/(routes)/(routes)/(app)/(educator)/configuration/page.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/client/api/availabilities-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/request.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/schedule-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/users-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useAgencyUsers.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useAllAvailabilities.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useCommitSchedule.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/utils/schedule-display.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/schedule-utils.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/utils.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": [
+        {
+          "apiPath": "/api/availabilities",
+          "routeFile": "app/api/availabilities/route.ts",
+          "color": "#b7ce1c",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/availabilities/all",
+          "routeFile": "app/api/availabilities/all/route.ts",
+          "color": "#97b422",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/availabilities/bulk",
+          "routeFile": "app/api/availabilities/bulk/route.ts",
+          "color": "#19c233",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/availabilities/day",
+          "routeFile": "app/api/availabilities/day/route.ts",
+          "color": "#1eb0be",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/weeks",
+          "routeFile": "app/api/me/weeks/route.ts",
+          "color": "#9824d6",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/schedule",
+          "routeFile": "app/api/schedule/route.ts",
+          "color": "#20d532",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/schedule/commit",
+          "routeFile": "app/api/schedule/commit/route.ts",
+          "color": "#bf229a",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/slots/week",
+          "routeFile": "app/api/slots/week/route.ts",
+          "color": "#cf2058",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/travels/week",
+          "routeFile": "app/api/travels/week/route.ts",
+          "color": "#20cfbb",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/users",
+          "routeFile": "app/api/users/route.ts",
+          "color": "#d45c1c",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "page": "app/[locale]/(routes)/(routes)/(app)/(educator)/layout.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/db.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": []
+    },
+    {
+      "page": "app/[locale]/(routes)/(routes)/(app)/layout.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/db.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": []
+    },
+    {
+      "page": "app/[locale]/(routes)/(routes)/(app)/myweek/page.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/client/api/request.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/schedule-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/services-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useMyWeeks.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useOwnServiceSummary.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/utils/schedule-display.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/db.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/utils.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": [
+        {
+          "apiPath": "/api/me/instructor-services",
+          "routeFile": "app/api/me/instructor-services/route.ts",
+          "color": "#9722b4",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/services",
+          "routeFile": "app/api/me/services/route.ts",
+          "color": "#3220d5",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/weeks",
+          "routeFile": "app/api/me/weeks/route.ts",
+          "color": "#9824d6",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/schedule",
+          "routeFile": "app/api/schedule/route.ts",
+          "color": "#20d532",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/schedule/commit",
+          "routeFile": "app/api/schedule/commit/route.ts",
+          "color": "#bf229a",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "page": "app/[locale]/(routes)/(routes)/(pay)/(educator)/gestion/page.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/client/api/request.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/users-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useAgencyUsers.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useStudentHoursMutations.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useUserRoleMutations.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/db.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": [
+        {
+          "apiPath": "/api/users",
+          "routeFile": "app/api/users/route.ts",
+          "color": "#d45c1c",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "page": "app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/db.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/stripe.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": [
+        {
+          "apiPath": "/api/stripe/checkout",
+          "routeFile": "app/api/stripe/checkout/route.ts",
+          "color": "#9fdb1f",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/stripe/portal",
+          "routeFile": "app/api/stripe/portal/route.ts",
+          "color": "#b99e22",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/stripe/subscription/cancel",
+          "routeFile": "app/api/stripe/subscription/cancel/route.ts",
+          "color": "#cfbb20",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/stripe/subscription/resume",
+          "routeFile": "app/api/stripe/subscription/resume/route.ts",
+          "color": "#b21abc",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "page": "app/[locale]/(routes)/(routes)/(pay)/(educator)/layout.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/db.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": []
+    },
+    {
+      "page": "app/[locale]/(routes)/(routes)/(pay)/(educator)/plans/page.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/client/api/me-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/request.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useMySubscriptionStatus.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/utils.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": [
+        {
+          "apiPath": "/api/me/hours",
+          "routeFile": "app/api/me/hours/route.ts",
+          "color": "#225cb9",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/profile",
+          "routeFile": "app/api/me/profile/route.ts",
+          "color": "#db1f54",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/role",
+          "routeFile": "app/api/me/role/route.ts",
+          "color": "#70c31d",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/subscription",
+          "routeFile": "app/api/me/subscription/route.ts",
+          "color": "#1a6ce0",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "page": "app/[locale]/(routes)/(routes)/(pay)/(educator)/services/page.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/client/api/request.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/services-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useEditableServices.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": [
+        {
+          "apiPath": "/api/me/instructor-services",
+          "routeFile": "app/api/me/instructor-services/route.ts",
+          "color": "#9722b4",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/services",
+          "routeFile": "app/api/me/services/route.ts",
+          "color": "#3220d5",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "page": "app/[locale]/(routes)/(routes)/(pay)/accueil/page.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/utils.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": []
+    },
+    {
+      "page": "app/[locale]/(routes)/(routes)/(pay)/profile/page.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/client/api/profile-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/request.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useGoogleMapPreview.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useGooglePlacesAutocomplete.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/utils/address.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/utils/google-maps.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": [
+        {
+          "apiPath": "/api/agency/association",
+          "routeFile": "app/api/agency/association/route.ts",
+          "color": "#c526c5",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/account_bdd",
+          "routeFile": "app/api/me/account_bdd/route.ts",
+          "color": "#581cce",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/delete-account",
+          "routeFile": "app/api/me/delete-account/route.ts",
+          "color": "#1fdb35",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/profile",
+          "routeFile": "app/api/me/profile/route.ts",
+          "color": "#db1f54",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/onboarding/trainer",
+          "routeFile": "app/api/onboarding/trainer/route.ts",
+          "color": "#bc711a",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "page": "app/[locale]/(routes)/(routes)/layout.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/db.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": []
+    },
+    {
+      "page": "app/[locale]/(routes)/home/page.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/client/api/me-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/request.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useMySubscriptionStatus.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/utils.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": [
+        {
+          "apiPath": "/api/me/hours",
+          "routeFile": "app/api/me/hours/route.ts",
+          "color": "#225cb9",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/profile",
+          "routeFile": "app/api/me/profile/route.ts",
+          "color": "#db1f54",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/role",
+          "routeFile": "app/api/me/role/route.ts",
+          "color": "#70c31d",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/subscription",
+          "routeFile": "app/api/me/subscription/route.ts",
+          "color": "#1a6ce0",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "page": "app/[locale]/(routes)/onboarding/choose-organization/page.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/client/api/availabilities-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/profile-client.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/api/request.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useAvailabilityRangesDialogState.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useEditableWeeklyAvailabilityDraft.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/hooks/useGooglePlacesAutocomplete.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/utils/address.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/utils/availability-editor.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/utils/availability-time.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/client/utils/google-maps.ts",
+          "kind": "front-to-lib-transitive"
+        },
+        {
+          "file": "lib/utils.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": [
+        {
+          "apiPath": "/api/agency/association",
+          "routeFile": "app/api/agency/association/route.ts",
+          "color": "#c526c5",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/availabilities",
+          "routeFile": "app/api/availabilities/route.ts",
+          "color": "#b7ce1c",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/availabilities/all",
+          "routeFile": "app/api/availabilities/all/route.ts",
+          "color": "#97b422",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/availabilities/bulk",
+          "routeFile": "app/api/availabilities/bulk/route.ts",
+          "color": "#19c233",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/availabilities/day",
+          "routeFile": "app/api/availabilities/day/route.ts",
+          "color": "#1eb0be",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/account_bdd",
+          "routeFile": "app/api/me/account_bdd/route.ts",
+          "color": "#581cce",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/delete-account",
+          "routeFile": "app/api/me/delete-account/route.ts",
+          "color": "#1fdb35",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/me/profile",
+          "routeFile": "app/api/me/profile/route.ts",
+          "color": "#db1f54",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/onboarding/trainer",
+          "routeFile": "app/api/onboarding/trainer/route.ts",
+          "color": "#bc711a",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/slots/week",
+          "routeFile": "app/api/slots/week/route.ts",
+          "color": "#cf2058",
+          "kind": "api-occurrence"
+        },
+        {
+          "apiPath": "/api/travels/week",
+          "routeFile": "app/api/travels/week/route.ts",
+          "color": "#20cfbb",
+          "kind": "api-occurrence"
+        }
+      ]
+    },
+    {
+      "page": "app/[locale]/leastory/page.tsx",
+      "libDependencies": [
+        {
+          "file": "lib/utils.ts",
+          "kind": "front-to-lib-transitive"
+        }
+      ],
+      "apiCalls": []
+    }
+  ]
+}

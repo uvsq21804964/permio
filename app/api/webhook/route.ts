@@ -4,7 +4,7 @@ export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
   const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2025-10-29.clover',
+    apiVersion: '2026-02-25.clover',
   });
   const sig = req.headers.get('stripe-signature')!;
   const payload = await req.text();

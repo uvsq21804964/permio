@@ -1,10 +1,17 @@
-// src/lib/inngest/functions/slotBookedInstructorEmail.ts
 import { clerkClient } from '@clerk/nextjs/server';
-import { sql } from '@/lib/db';
-import { inngest } from '@/src/lib/inngest/client';
-import { resend, EMAIL_FROM } from '@/src/lib/email/resend';
 import { render } from '@react-email/render';
+
+import { sql } from '@/lib/db';
 import BookingInstructorNotificationEmail from '@/src/emails/bookingInstructorNotification';
+import { inngest } from '@/src/lib/inngest/client';
+import {
+  buildLocalizedAppUrl,
+  getAppBaseUrl,
+  inngestEmailLogger,
+  loadClerkUserContact,
+  sendTransactionalEmail,
+  toEmailLocale,
+} from '@/src/lib/inngest/functions/email-shared';
 
 type ClientRow = {
   id: string;
@@ -15,19 +22,6 @@ type ServiceRow = {
   id: number;
   name: string | null;
 };
-
-function getPrimaryEmail(user: {
-  emailAddresses?: { id: string; emailAddress: string }[];
-  primaryEmailAddressId?: string | null;
-}) {
-  if (!user?.emailAddresses?.length) return null;
-
-  const primary =
-    user.emailAddresses.find((e) => e.id === user.primaryEmailAddressId)
-      ?.emailAddress ?? user.emailAddresses[0]?.emailAddress;
-
-  return primary ?? null;
-}
 
 export const slotBookedInstructorEmail = inngest.createFunction(
   {
@@ -63,7 +57,7 @@ export const slotBookedInstructorEmail = inngest.createFunction(
         locale?: string;
       };
 
-      console.info('[slotBookedInstructorEmail] event', {
+      inngestEmailLogger.info('[slotBookedInstructorEmail] event', {
         id: event.id,
         slotId,
         agencyId,
@@ -77,9 +71,7 @@ export const slotBookedInstructorEmail = inngest.createFunction(
         locale,
       });
 
-      const lang = (locale || 'fr').toLowerCase().startsWith('en')
-        ? 'en'
-        : 'fr';
+      const lang = toEmailLocale(locale);
 
       const client = await step.run('load-client', async () => {
         const rows = await sql`
@@ -91,8 +83,6 @@ export const slotBookedInstructorEmail = inngest.createFunction(
         return (rows?.[0] ?? null) as ClientRow | null;
       });
 
-      console.info('[slotBookedInstructorEmail] client', client);
-
       const service = await step.run('load-service', async () => {
         const rows = await sql`
           SELECT id, name
@@ -103,25 +93,17 @@ export const slotBookedInstructorEmail = inngest.createFunction(
         return (rows?.[0] ?? null) as ServiceRow | null;
       });
 
-      console.info('[slotBookedInstructorEmail] service', service);
+      inngestEmailLogger.info('[slotBookedInstructorEmail] client', client);
+      inngestEmailLogger.info('[slotBookedInstructorEmail] service', service);
 
       const clerk = await clerkClient();
-
       const instructorClerk = await step.run(
         'load-instructor-email',
         async () => {
           try {
-            const iu = await clerk.users.getUser(instructorUserId);
-
-            return {
-              email: getPrimaryEmail(iu),
-              name:
-                [iu.firstName, iu.lastName].filter(Boolean).join(' ').trim() ||
-                iu.username ||
-                null,
-            };
+            return await loadClerkUserContact(clerk, instructorUserId);
           } catch (error) {
-            console.error(
+            inngestEmailLogger.error(
               '[slotBookedInstructorEmail] load-instructor-email error',
               error,
             );
@@ -130,15 +112,14 @@ export const slotBookedInstructorEmail = inngest.createFunction(
         },
       );
 
-      console.info(
+      inngestEmailLogger.info(
         '[slotBookedInstructorEmail] instructorClerk',
         instructorClerk,
       );
 
       const recipientEmail = instructorClerk?.email ?? null;
-
       if (!recipientEmail) {
-        console.warn('[slotBookedInstructorEmail] no instructor email', {
+        inngestEmailLogger.warn('[slotBookedInstructorEmail] no instructor email', {
           instructorUserId,
           agencyId,
           slotId,
@@ -148,26 +129,18 @@ export const slotBookedInstructorEmail = inngest.createFunction(
 
       const displayInstructorName =
         instructorClerk?.name || (lang === 'fr' ? 'Éducateur' : 'Trainer');
-
       const displayClientName =
         client?.name?.trim() || (lang === 'fr' ? 'Un client' : 'A client');
-
       const displayServiceName =
-        service?.name || (lang === 'fr' ? 'une réservation' : 'a booking');
+        service?.name || (lang === 'fr' ? 'une reservation' : 'a booking');
 
       const subject =
         lang === 'fr'
-          ? `Nouvelle réservation par ${displayClientName} !`
-          : `New booking par ${displayClientName} !`;
+          ? `Nouvelle reservation par ${displayClientName} !`
+          : `New booking by ${displayClientName} !`;
 
-      const baseUrl = (process.env.NEXT_PUBLIC_APP_URL || '').replace(
-        /\/+$/,
-        '',
-      );
-
-      const agendaUrl = baseUrl
-        ? `${baseUrl}/${lang}/myweek`
-        : 'http://localhost:3000';
+      const baseUrl = getAppBaseUrl();
+      const agendaUrl = buildLocalizedAppUrl(lang, '/myweek');
 
       const html = await step.run('render-email', async () => {
         return render(
@@ -186,36 +159,35 @@ export const slotBookedInstructorEmail = inngest.createFunction(
         );
       });
 
-      console.info('[slotBookedInstructorEmail] about to send email', {
+      inngestEmailLogger.info('[slotBookedInstructorEmail] about to send email', {
         recipientEmail,
         subject,
       });
 
       const result = await step.run('send-email', async () => {
-        return resend.emails.send({
-          from: EMAIL_FROM,
-          to: recipientEmail,
-          subject,
+        return sendTransactionalEmail({
+          eventId: event.id,
           html,
-          ...(event.id ? { headers: { 'X-Event-Id': event.id } } : {}),
+          subject,
+          to: recipientEmail,
         });
       });
 
-      console.info('[slotBookedInstructorEmail] send-email result', result);
+      inngestEmailLogger.info('[slotBookedInstructorEmail] send-email result', result);
 
       if ((result as any)?.error) {
-        console.error('[slotBookedInstructorEmail] send-email error', result);
+        inngestEmailLogger.error('[slotBookedInstructorEmail] send-email error', result);
         throw new Error('Resend error');
       }
 
       return {
         ok: true,
-        slotId,
-        recipient: recipientEmail,
         provider: result,
+        recipient: recipientEmail,
+        slotId,
       };
     } catch (error) {
-      console.error('[slotBookedInstructorEmail] fatal error', error);
+      inngestEmailLogger.error('[slotBookedInstructorEmail] fatal error', error);
       throw error;
     }
   },

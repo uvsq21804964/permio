@@ -6,11 +6,11 @@ import { sql } from '@/lib/db';
 import UserManagement from '@/components/gestion/UserManagement';
 
 type Props = {
-  params: { locale: string };
+  params: Promise<{ locale: string }>;
 };
 
 export default async function GestionPage({ params }: Props) {
-  const { locale } = params;
+  const { locale } = await params;
 
   const { userId, orgId } = await auth();
   if (!userId) redirect(`/${locale}/sign-in`);

@@ -1,0 +1,40 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { sql } from '@/lib/db';
+import { requireUser } from '@/lib/api/auth-server';
+import {
+  mergeWeeklyAvailabilities,
+  WeeklyAvailabilityInput,
+} from '@/lib/server/domain/time-ranges';
+
+export async function POST(req: NextRequest) {
+  const { auth, response } = requireUser(req, {
+    treatPendingAsSignedOut: false,
+  });
+  if (!auth) return response;
+  const { userId } = auth;
+
+  let body: any = {};
+  try {
+    body = await req.json();
+  } catch {}
+
+  const availabilities: WeeklyAvailabilityInput[] = Array.isArray(
+    body?.availabilities
+  )
+    ? body.availabilities
+    : [];
+  const merged = mergeWeeklyAvailabilities(availabilities);
+
+  await sql`DELETE FROM "Availability" WHERE "userId" = ${userId}`;
+  for (const a of merged) {
+    await sql`
+      INSERT INTO "Availability" (
+        "userId", "dayOfWeek", "startTime", "endTime", "createdAt", "updatedAt"
+      ) VALUES (
+        ${userId}, ${a.dayOfWeek}, ${a.startTime}, ${a.endTime}, NOW(), NOW()
+      )
+    `;
+  }
+
+  return NextResponse.json({ ok: true, count: merged.length });
+}

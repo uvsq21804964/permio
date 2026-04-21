@@ -1,31 +1,27 @@
 // app/api/availabilities/route.ts
 import { type NextRequest, NextResponse } from 'next/server';
-import { sql } from '@/lib/db';
-import { getAuth } from '@clerk/nextjs/server';
-import { timeToMinutes, doRangesOverlapOrAdjacent } from '@/lib/api/time';
+import { requireUser } from '@/lib/api/auth-server';
+import {
+  deleteAvailabilitiesByIdsForUser,
+  getAvailabilityUserSummary,
+  insertAvailability,
+  listAvailabilityRangesForDay,
+  listUserAvailabilities,
+} from '@/lib/server/repositories/availability-repository';
+import {
+  mergeWithExistingRanges,
+  validateWeeklyAvailabilityInput,
+} from '@/lib/server/services/availability-service';
 
 export async function GET(req: NextRequest) {
   try {
-    const { userId } = getAuth(req, { treatPendingAsSignedOut: false });
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { auth, response } = requireUser(req, {
+      treatPendingAsSignedOut: false,
+    });
+    if (!auth) return response;
+    const { userId } = auth;
 
-    const rows = await sql`
-      SELECT
-        a.id,
-        a."userId",
-        a."dayOfWeek",
-        a."startTime",
-        a."endTime",
-        a."createdAt",
-        a."updatedAt",
-        json_build_object('name', u.name, 'role', u.role) AS user
-      FROM "Availability" a
-      LEFT JOIN "User" u ON u.id = a."userId"
-      WHERE a."userId" = ${userId}
-      ORDER BY a."dayOfWeek", a."startTime"
-    `;
+    const rows = await listUserAvailabilities(userId);
 
     return NextResponse.json(rows, { status: 200 });
   } catch (err: any) {
@@ -39,10 +35,11 @@ export async function GET(req: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { userId } = getAuth(request, { treatPendingAsSignedOut: false });
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    const { auth, response } = requireUser(request, {
+      treatPendingAsSignedOut: false,
+    });
+    if (!auth) return response;
+    const { userId } = auth;
 
     const body = await request.json();
     const { dayOfWeek, startTime, endTime } = body as {
@@ -51,95 +48,30 @@ export async function POST(request: NextRequest) {
       endTime: string;
     };
 
-    if (
-      typeof dayOfWeek !== 'number' ||
-      dayOfWeek < 0 ||
-      dayOfWeek > 6 ||
-      !startTime ||
-      !endTime
-    ) {
-      return NextResponse.json(
-        { error: 'Missing or invalid dayOfWeek, startTime or endTime' },
-        { status: 400 }
-      );
+    const validation = validateWeeklyAvailabilityInput({
+      dayOfWeek,
+      startTime,
+      endTime,
+    });
+    if (!validation.ok) {
+      return NextResponse.json({ error: validation.error }, { status: 400 });
     }
 
-    const startMinutes = timeToMinutes(startTime);
-    const endMinutes = timeToMinutes(endTime);
+    const existing = await listAvailabilityRangesForDay(userId, dayOfWeek);
+    const merged = mergeWithExistingRanges({ startTime, endTime }, existing);
 
-    if (endMinutes <= startMinutes) {
-      return NextResponse.json(
-        { error: "L'heure de fin doit être après l'heure de début" },
-        { status: 400 }
-      );
+    if (merged.mergedIds.length > 0) {
+      await deleteAvailabilitiesByIdsForUser(userId, merged.mergedIds);
     }
 
-    if (startMinutes < 8 * 60 || endMinutes > 20 * 60) {
-      return NextResponse.json(
-        { error: 'Les horaires doivent être entre 8h00 et 20h00' },
-        { status: 400 }
-      );
-    }
+    const availability = await insertAvailability({
+      userId,
+      dayOfWeek,
+      startTime: merged.startTime,
+      endTime: merged.endTime,
+    });
 
-    // On récupère les créneaux existants pour ce jour
-    const existing = await sql`
-      SELECT id, "startTime", "endTime"
-      FROM "Availability"
-      WHERE "userId" = ${userId}
-        AND "dayOfWeek" = ${dayOfWeek}
-    `;
-
-    // On cherche les chevauchements
-    const overlapping = existing.filter((a) =>
-      doRangesOverlapOrAdjacent(startTime, endTime, a.startTime, a.endTime)
-    );
-
-    let finalStartTime = startTime;
-    let finalEndTime = endTime;
-
-    if (overlapping.length > 0) {
-      const allTimes = [
-        { start: startTime, end: endTime },
-        ...overlapping.map((a) => ({ start: a.startTime, end: a.endTime })),
-      ];
-
-      const startMin = Math.min(...allTimes.map((t) => timeToMinutes(t.start)));
-      const endMin = Math.max(...allTimes.map((t) => timeToMinutes(t.end)));
-
-      const sh = Math.floor(startMin / 60);
-      const sm = startMin % 60;
-      const eh = Math.floor(endMin / 60);
-      const em = endMin % 60;
-
-      finalStartTime = `${String(sh).padStart(2, '0')}:${String(sm).padStart(
-        2,
-        '0'
-      )}`;
-      finalEndTime = `${String(eh).padStart(2, '0')}:${String(em).padStart(
-        2,
-        '0'
-      )}`;
-
-      // on supprime les anciens créneaux fusionnés
-      for (const a of overlapping) {
-        await sql`
-          DELETE FROM "Availability"
-          WHERE id = ${a.id} AND "userId" = ${userId}
-        `;
-      }
-    }
-
-    const [availability] = await sql`
-      INSERT INTO "Availability"
-        (id, "userId", "dayOfWeek", "startTime", "endTime", "createdAt", "updatedAt")
-      VALUES
-        (gen_random_uuid(), ${userId}, ${dayOfWeek}, ${finalStartTime}, ${finalEndTime}, NOW(), NOW())
-      RETURNING *
-    `;
-
-    const [user] = await sql`
-      SELECT name, role FROM "User" WHERE id = ${userId}
-    `;
+    const user = await getAvailabilityUserSummary(userId);
 
     return NextResponse.json({ ...availability, user }, { status: 201 });
   } catch (err: any) {

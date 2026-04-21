@@ -1,11 +1,11 @@
 // app/api/me/profile/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
-import { requireAuth } from '@/lib/api/auth';
+import { requireUser } from '@/lib/api/auth-server';
 
 export async function GET(req: NextRequest) {
   try {
-    const { auth, response } = requireAuth(req, {
+    const { auth, response } = requireUser(req, {
       treatPendingAsSignedOut: false,
     });
     if (!auth) return response;
@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
-    const { auth, response } = requireAuth(req, {
+    const { auth, response } = requireUser(req, {
       treatPendingAsSignedOut: false,
     });
     if (!auth) return response;

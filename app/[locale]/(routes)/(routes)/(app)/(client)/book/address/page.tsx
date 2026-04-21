@@ -1,54 +1,31 @@
 'use client';
 
-import { useEffect, useRef, useState, FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import Script from 'next/script';
 import { useTranslations } from 'next-intl';
 
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-
-type BookingAddress = {
-  formattedAddress: string;
-  lat: number;
-  lng: number;
-  street: string;
-  streetNumber: string;
-  postalCode: string;
-  city: string;
-  country: string;
-  countryCode: string;
-  googlePlaceId?: string;
-};
-
-type ServicePricingLite = {
-  id: number;
-  is_remote: boolean;
-};
+import AddressMapPreview from '@/components/shared/AddressMapPreview';
+import GooglePlacesScript from '@/components/shared/GooglePlacesScript';
+import { getMyProfile } from '@/lib/client/api/me-client';
+import {
+  getInstructorServiceCatalog,
+  type ServicePricing,
+} from '@/lib/client/api/services-client';
+import { useGooglePlacesAutocomplete } from '@/lib/client/hooks/useGooglePlacesAutocomplete';
+import {
+  mapProfileAddressToDetails,
+  matchesFormattedAddress,
+  type AddressDetails,
+} from '@/lib/client/utils/address';
+import { isGoogleMapsPlacesReady } from '@/lib/client/utils/google-maps';
 
 type AddressMode = 'saved' | 'custom';
 
-declare global {
-  interface Window {
-    google: any;
-  }
-}
-
-function extractComponent(
-  components: any[] | undefined,
-  type: string,
-  useShort?: boolean
-): string {
-  if (!components) return '';
-  const found = components.find((c) => c.types?.includes(type));
-  if (!found) return '';
-  return useShort ? found.short_name ?? '' : found.long_name ?? '';
-}
-
-function encodeAddress(addr: BookingAddress): string {
-  const json = JSON.stringify(addr);
-  return encodeURIComponent(json);
+function encodeAddress(address: AddressDetails): string {
+  return encodeURIComponent(JSON.stringify(address));
 }
 
 export default function BookAddressPage() {
@@ -62,227 +39,107 @@ export default function BookAddressPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [addressMode, setAddressMode] = useState<AddressMode>('saved');
-  const [savedAddress, setSavedAddress] = useState<BookingAddress | null>(null);
+  const [savedAddress, setSavedAddress] = useState<AddressDetails | null>(null);
   const [savedAddressLoading, setSavedAddressLoading] = useState(true);
 
-  // Autocomplete Google
   const [isMapsReady, setIsMapsReady] = useState(false);
   const addressInputRef = useRef<HTMLInputElement | null>(null);
   const [addressInput, setAddressInput] = useState('');
-  const [selectedAddress, setSelectedAddress] = useState<BookingAddress | null>(
-    null
+  const [selectedAddress, setSelectedAddress] = useState<AddressDetails | null>(
+    null,
   );
 
-  // Carte Google (uniquement pour l'adresse ponctuelle)
-  const mapRef = useRef<HTMLDivElement | null>(null);
-  const mapInstanceRef = useRef<any | null>(null);
-  const markerRef = useRef<any | null>(null);
-
-  // Si le script Google Maps est déjà chargé (retour arrière, navigation client...),
-  // on marque directement isMapsReady à true.
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (window.google && window.google.maps && !isMapsReady) {
+    if (isGoogleMapsPlacesReady() && !isMapsReady) {
       setIsMapsReady(true);
     }
   }, [isMapsReady]);
 
-  // 1) Protéger si pas de serviceId
   useEffect(() => {
     if (!serviceId) {
       setError(t('errorNoService'));
     }
   }, [serviceId, t]);
 
-  // ✅ Si service remote, on skip l'adresse et on va direct aux propositions
   useEffect(() => {
     if (!serviceId) return;
 
     const run = async () => {
       try {
-        const res = await fetch('/api/me/instructor-services', {
-          credentials: 'include',
+        const data = await getInstructorServiceCatalog({
+          fallbackMessage: t('errorNoService'),
         });
-        if (!res.ok) return;
-
-        const data = await res.json().catch(() => null);
         const numericId = Number(serviceId);
-        const service: ServicePricingLite | undefined = (
-          data?.services || []
-        ).find((s: any) => Number(s.id) === numericId);
+        const service: ServicePricing | undefined = (data.services || []).find(
+          (item) => Number(item.id) === numericId,
+        );
 
         if (service?.is_remote) {
           router.replace(`/book/proposals?serviceId=${serviceId}`);
         }
-      } catch (e) {
-        console.error('Remote service check failed', e);
+      } catch (fetchError) {
+        console.error('Remote service check failed', fetchError);
       }
     };
 
-    run();
-  }, [serviceId, router]);
+    void run();
+  }, [router, serviceId, t]);
 
-  // 2) Charger l’adresse enregistrée du user (via ton API profil / me)
   useEffect(() => {
     const fetchProfile = async () => {
       setSavedAddressLoading(true);
       try {
-        const res = await fetch('/api/me/profile', { credentials: 'include' });
-        if (!res.ok) return;
-
-        const data = await res.json();
-        const u = data?.user;
-        if (!u) return;
-
-        if (u.formatted_address && u.lat != null && u.lng != null) {
-          setSavedAddress({
-            formattedAddress: u.formatted_address,
-            lat: u.lat,
-            lng: u.lng,
-            street: u.street ?? '',
-            streetNumber: u.street_number ?? '',
-            postalCode: u.postal_code ?? '',
-            city: u.city ?? '',
-            country: u.country ?? '',
-            countryCode: u.country_code ?? '',
-            googlePlaceId: u.google_place_id ?? undefined,
-          });
-        }
-      } catch (e) {
-        console.error('Erreur chargement profil pour adresse', e);
+        const data = await getMyProfile();
+        setSavedAddress(mapProfileAddressToDetails(data.user));
+      } catch (fetchError) {
+        console.error('Erreur chargement profil pour adresse', fetchError);
       } finally {
         setSavedAddressLoading(false);
       }
     };
 
-    fetchProfile();
+    void fetchProfile();
   }, []);
 
-  // 3) Initialiser l'autocomplete Google (seulement en mode "custom")
-  useEffect(() => {
-    if (!isMapsReady) return;
-    if (addressMode !== 'custom') return;
-
-    if (!window.google || !window.google.maps) return;
-    if (!addressInputRef.current) return;
-
-    const maps = window.google.maps;
-    const places = maps.places;
-    if (!places) {
-      console.error('La librairie Places ne semble pas chargée.');
-      return;
-    }
-
-    const options: any = {
-      types: ['address'],
-      fields: [
-        'formatted_address',
-        'geometry',
-        'address_components',
-        'place_id',
-      ],
-    };
-
-    const autocomplete = new places.Autocomplete(
-      addressInputRef.current,
-      options
-    );
-
-    autocomplete.addListener('place_changed', () => {
-      const place = autocomplete.getPlace();
-
-      if (!place.geometry || !place.geometry.location) {
-        setError(t('errorGeocoding'));
-        setSelectedAddress(null);
-        return;
-      }
-
-      const comps = place.address_components;
-      const currentInputValue = addressInputRef.current?.value || '';
-
-      const addr: BookingAddress = {
-        formattedAddress: place.formatted_address ?? currentInputValue,
-        lat: place.geometry.location.lat(),
-        lng: place.geometry.location.lng(),
-        street: extractComponent(comps, 'route'),
-        streetNumber: extractComponent(comps, 'street_number'),
-        postalCode: extractComponent(comps, 'postal_code'),
-        city:
-          extractComponent(comps, 'locality') ||
-          extractComponent(comps, 'postal_town'),
-        country: extractComponent(comps, 'country'),
-        countryCode: extractComponent(comps, 'country', true),
-        googlePlaceId: place.place_id,
-      };
-
-      setAddressInput(addr.formattedAddress);
-      setSelectedAddress(addr);
+  useGooglePlacesAutocomplete({
+    enabled: isMapsReady && addressMode === 'custom',
+    inputRef: addressInputRef,
+    fallbackFormattedAddress: addressInput,
+    onSelect: (address) => {
+      setAddressInput(address.formattedAddress);
+      setSelectedAddress(address);
       setError(null);
-    });
+    },
+    onInvalidSelection: () => {
+      setError(t('errorGeocoding'));
+      setSelectedAddress(null);
+    },
+  });
 
-    return () => {
-      window.google.maps.event.clearInstanceListeners(autocomplete);
-    };
-  }, [isMapsReady, addressMode, t]);
-
-  // 4) Initialisation / mise à jour de la carte (uniquement pour adresse ponctuelle)
-  useEffect(() => {
-    if (!isMapsReady) return;
-    if (addressMode !== 'custom') return;
-    if (!window.google || !window.google.maps) return;
-    if (!mapRef.current) return;
-    if (!selectedAddress) return;
-
-    const coords = { lat: selectedAddress.lat, lng: selectedAddress.lng };
-
-    if (!mapInstanceRef.current) {
-      mapInstanceRef.current = new window.google.maps.Map(mapRef.current, {
-        center: coords,
-        zoom: 14,
-        disableDefaultUI: true,
-      });
-
-      markerRef.current = new window.google.maps.Marker({
-        position: coords,
-        map: mapInstanceRef.current,
-      });
-    } else {
-      mapInstanceRef.current.setCenter(coords);
-      if (markerRef.current) {
-        markerRef.current.setPosition(coords);
-      } else {
-        markerRef.current = new window.google.maps.Marker({
-          position: coords,
-          map: mapInstanceRef.current,
-        });
-      }
-    }
-  }, [isMapsReady, addressMode, selectedAddress]);
-
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
     if (!serviceId) return;
 
     setError(null);
 
-    let addr: BookingAddress | null = null;
+    const address =
+      addressMode === 'saved'
+        ? savedAddress
+        : selectedAddress;
 
-    if (addressMode === 'saved') {
-      if (!savedAddress) {
-        setError(t('errorNoSavedAddress'));
-        return;
-      }
-      addr = savedAddress;
-    } else {
-      if (!selectedAddress) {
-        setError(t('errorNoCustomAddress'));
-        return;
-      }
-      addr = selectedAddress;
+    if (addressMode === 'saved' && !address) {
+      setError(t('errorNoSavedAddress'));
+      return;
     }
 
-    const encoded = encodeAddress(addr);
-    router.push(`/book/proposals?serviceId=${serviceId}&addr=${encoded}`);
+    if (addressMode === 'custom' && !address) {
+      setError(t('errorNoCustomAddress'));
+      return;
+    }
+
+    router.push(
+      `/book/proposals?serviceId=${serviceId}&addr=${encodeAddress(address!)}`,
+    );
   };
 
   const canSubmit =
@@ -291,17 +148,12 @@ export default function BookAddressPage() {
     ((addressMode === 'saved' && !!savedAddress) ||
       (addressMode === 'custom' && !!selectedAddress));
 
-  const hasCoords = addressMode === 'custom' && !!selectedAddress;
-
   return (
     <div className="min-h-screen bg-background p-6">
-      {/* Script Google pour l’autocomplete + carte */}
-      <Script
-        src={`https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}&libraries=places`}
-        strategy="afterInteractive"
-        onLoad={() => setIsMapsReady(true)}
-        onError={(e) => {
-          console.error('Erreur chargement Google Maps', e);
+      <GooglePlacesScript
+        onReady={() => setIsMapsReady(true)}
+        onLoadError={(loadError) => {
+          console.error('Erreur chargement Google Maps', loadError);
           setError(t('errorMapsScript'));
         }}
       />
@@ -310,14 +162,11 @@ export default function BookAddressPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-base md:text-lg">{t('title')}</CardTitle>
-            <p className="text-xs text-muted-foreground mt-1">
-              {t('subtitle')}
-            </p>
+            <p className="mt-1 text-xs text-muted-foreground">{t('subtitle')}</p>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2 text-xs md:text-sm">
-                {/* Adresse enregistrée */}
                 <div className="space-y-1">
                   <label className="inline-flex items-center gap-2">
                     <input
@@ -330,34 +179,31 @@ export default function BookAddressPage() {
                     />
                     <span>
                       {t('modeSavedLabel')}
-                      {savedAddressLoading && (
+                      {savedAddressLoading ? (
                         <span className="ml-1 text-[11px] text-muted-foreground">
                           {t('modeSavedLoading')}
                         </span>
-                      )}
-                      {!savedAddressLoading && !savedAddress && (
+                      ) : null}
+                      {!savedAddressLoading && !savedAddress ? (
                         <span className="ml-1 text-[11px] text-red-500">
                           {t('modeSavedNone')}
                         </span>
-                      )}
+                      ) : null}
                     </span>
                   </label>
 
-                  {savedAddress && addressMode === 'saved' && (
-                    <div className="ml-5 rounded border bg-muted/50 p-2 text-[11px] space-y-1">
-                      <div className="font-semibold">
-                        {t('savedAddressTitle')}
-                      </div>
+                  {savedAddress && addressMode === 'saved' ? (
+                    <div className="ml-5 space-y-1 rounded border bg-muted/50 p-2 text-[11px]">
+                      <div className="font-semibold">{t('savedAddressTitle')}</div>
                       <div>{savedAddress.formattedAddress}</div>
                       <div>
                         {savedAddress.postalCode} {savedAddress.city} (
                         {savedAddress.country})
                       </div>
                     </div>
-                  )}
+                  ) : null}
                 </div>
 
-                {/* Adresse ponctuelle */}
                 <div className="space-y-1">
                   <label className="inline-flex items-center gap-2">
                     <input
@@ -370,20 +216,21 @@ export default function BookAddressPage() {
                     <span>{t('modeCustomLabel')}</span>
                   </label>
 
-                  {addressMode === 'custom' && (
+                  {addressMode === 'custom' ? (
                     <div className="ml-5 space-y-1">
                       <input
                         ref={addressInputRef}
-                        className="border rounded px-3 py-2 text-xs md:text-sm w-full"
+                        className="w-full rounded border px-3 py-2 text-xs md:text-sm"
                         placeholder={t('addressPlaceholder')}
                         value={addressInput}
-                        onChange={(e) => {
-                          const v = e.target.value;
-                          setAddressInput(v);
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          setAddressInput(value);
                           setSelectedAddress((current) => {
                             if (!current) return null;
-                            if (current.formattedAddress === v) return current;
-                            return null;
+                            return matchesFormattedAddress(current, value)
+                              ? current
+                              : null;
                           });
                         }}
                       />
@@ -391,39 +238,31 @@ export default function BookAddressPage() {
                         {t('addressHelp')}
                       </p>
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </div>
 
-              {/* Carte uniquement pour l'adresse ponctuelle */}
-              {addressMode === 'custom' && (
+              {addressMode === 'custom' ? (
                 <div className="space-y-1.5">
                   <span className="text-xs font-medium text-foreground">
                     {t('mapLabel')}
                   </span>
-                  <div className="border rounded-md bg-muted/40 h-52 overflow-hidden relative">
-                    {(!isMapsReady || !hasCoords) && (
-                      <div className="flex h-full w-full items-center justify-center px-2 text-center text-[11px] text-muted-foreground">
-                        {!isMapsReady ? t('mapLoading') : t('mapNoCoords')}
-                      </div>
-                    )}
-                    <div
-                      ref={mapRef}
-                      className={`h-full w-full ${
-                        !isMapsReady || !hasCoords ? 'hidden' : 'block'
-                      }`}
-                    />
-                  </div>
+                  <AddressMapPreview
+                    address={selectedAddress}
+                    isMapsReady={isMapsReady}
+                    loadingText={t('mapLoading')}
+                    emptyText={t('mapNoCoords')}
+                  />
                 </div>
-              )}
+              ) : null}
 
-              {error && (
+              {error ? (
                 <Alert variant="destructive">
                   <AlertDescription className="text-xs md:text-sm">
                     {error}
                   </AlertDescription>
                 </Alert>
-              )}
+              ) : null}
 
               <div className="flex justify-end">
                 <Button type="submit" size="sm" disabled={!canSubmit}>
