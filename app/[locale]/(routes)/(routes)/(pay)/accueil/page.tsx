@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 
 // --------- Textes éditables ---------
-const HERO_TITLE = 'DingDog';
+const HERO_TITLE = 'MagicHango';
 const HERO_SUBTITLE = 'Create time through collaboration, magically';
 const HERO_TAGLINE =
   "Rejoignez la tribu des profs efficaces : votre réussite n'est qu'à un créneau d'ici.";
@@ -177,7 +177,7 @@ export default async function Home() {
 }
 
 {
-  /* <h1 className="text-4xl font-bold text-foreground">DingDog</h1>
+  /* <h1 className="text-4xl font-bold text-foreground">MagicHango</h1>
           <h2 className="text-xl font-bold text-foreground">
             Create time through collaboration, magically
           </h2>

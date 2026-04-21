@@ -20,7 +20,7 @@ export default function SignInPage() {
 
   const copy = {
     alreadyAccount: isFR ? "J'ai déjà un compte" : 'I already have an account',
-    brand: 'DingDog',
+    brand: 'MagicHango',
   };
 
   const next = withLocalePath('/onboarding/choose-organization', locale);

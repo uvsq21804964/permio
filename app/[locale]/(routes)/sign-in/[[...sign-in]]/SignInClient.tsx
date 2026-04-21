@@ -25,7 +25,7 @@ export default function SignInClient({ locale, redirectUrl }: Props) {
     noAccount: isFR
       ? "Je n'ai pas encore de compte"
       : "I don't have an account yet",
-    brand: 'DingDog',
+    brand: 'MagicHango',
   };
 
   return (

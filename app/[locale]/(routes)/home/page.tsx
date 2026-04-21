@@ -81,7 +81,7 @@ export default function HomePage() {
             <span className="relative h-full w-14 md:w-16 shrink-0">
               <Image
                 src={logo}
-                alt="DingDog"
+                alt="MagicHango"
                 fill
                 sizes="64px"
                 className="object-contain object-bottom"
@@ -90,7 +90,7 @@ export default function HomePage() {
             </span>
 
             <span className="truncate text-sm md:text-base font-semibold tracking-tight leading-none pb-1">
-              DingDog
+              MagicHango
             </span>
           </Link>
 

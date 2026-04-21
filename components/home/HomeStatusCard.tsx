@@ -28,14 +28,14 @@ export default function HomeStatusCard({
           <span className="relative h-9 w-9">
             <Image
               src={logo}
-              alt="DingDog"
+              alt="MagicHango"
               fill
               sizes="36px"
               className="object-contain"
               priority
             />
           </span>
-          <span className="text-base font-semibold text-black">DingDog</span>
+          <span className="text-base font-semibold text-black">MagicHango</span>
         </div>
 
         <div className="text-lg font-bold text-black">{title}</div>

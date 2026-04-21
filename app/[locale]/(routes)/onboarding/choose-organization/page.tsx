@@ -75,11 +75,14 @@ function AssociateAgencyContent({ onSuccess, className }: Props) {
     <div className="bg-[#f9ffc6]/80 min-h-screen">
       <header className="fixed top-0 left-0 right-0 z-40 border-b border-black/10 bg-gradient-to-r from-primary to-[#d400ff] text-white">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-2.5 md:px-8 md:py-3">
-          <Link href={`/${locale}/home`} className="flex items-center gap-2 min-w-0">
+          <Link
+            href={`/${locale}/home`}
+            className="flex items-center gap-2 min-w-0"
+          >
             <span className="relative h-7 w-7 shrink-0 md:h-8 md:w-8">
               <Image
                 src={logo}
-                alt="DingDog"
+                alt="MagicHango"
                 fill
                 sizes="32px"
                 className="object-contain"
@@ -87,7 +90,7 @@ function AssociateAgencyContent({ onSuccess, className }: Props) {
               />
             </span>
             <span className="truncate text-sm md:text-base font-semibold tracking-tight">
-              DingDog
+              MagicHango
             </span>
           </Link>
 
@@ -152,7 +155,7 @@ function AssociateAgencyContent({ onSuccess, className }: Props) {
                 t={
                   t as unknown as (
                     path: string,
-                    vars?: Record<string, string | number | null | undefined>
+                    vars?: Record<string, string | number | null | undefined>,
                   ) => string
                 }
               />
@@ -183,7 +186,9 @@ function AssociateAgencyContent({ onSuccess, className }: Props) {
                         onClick={handleBackToTrainerAddress}
                         className="text-sm text-black/60 hover:text-black underline underline-offset-4"
                       >
-                        {locale.startsWith('fr') ? '<- Modifier les infos' : '<- Edit info'}
+                        {locale.startsWith('fr')
+                          ? '<- Modifier les infos'
+                          : '<- Edit info'}
                       </button>
                     </div>
 
