@@ -25,6 +25,9 @@ type AddressPayload = {
   googlePlaceId?: string;
 };
 
+const DEFAULT_ORG_ROLE =
+  process.env.CLERK_DEFAULT_ORG_ROLE?.trim() || 'org:member';
+
 function rowsOf<T = any>(res: any): T[] {
   if (!res) return [];
   if (Array.isArray(res)) return res as T[];
@@ -104,6 +107,64 @@ async function createClerkOrganizationStrict(
   });
 
   return { clerkOrgId: org.id };
+}
+
+async function ensureClerkOrganizationMembership(
+  clerk: any,
+  organizationId: string,
+  userId: string
+) {
+  try {
+    await clerk.organizations.createOrganizationMembership({
+      organizationId,
+      userId,
+      role: DEFAULT_ORG_ROLE,
+    });
+  } catch (e: any) {
+    const status = extractHttpStatus(e);
+    const message =
+      e?.errors?.[0]?.message ||
+      e?.errors?.[0]?.longMessage ||
+      e?.message ||
+      '';
+
+    const alreadyMember =
+      status === 409 ||
+      /already.*member/i.test(message) ||
+      /membership.*exists/i.test(message);
+
+    const invalidRole =
+      status === 400 &&
+      (/role/i.test(message) ||
+        /invalid.*role/i.test(message) ||
+        /does not exist/i.test(message));
+
+    if (invalidRole) {
+      const error: any = new Error(
+        'Invalid Clerk organization role. Configure CLERK_DEFAULT_ORG_ROLE with a valid role such as "org:member".'
+      );
+      error.status = 400;
+      throw error;
+    }
+
+    if (!alreadyMember) {
+      throw e;
+    }
+  }
+}
+
+async function updateClerkUserMetadata(
+  clerk: any,
+  userId: string,
+  metadata: { agencyId: string; agencyName: string; clerkOrgId: string }
+) {
+  try {
+    await clerk.users.updateUser(userId, {
+      publicMetadata: metadata,
+    });
+  } catch {
+    // Non-blocking: onboarding should still succeed if metadata sync fails.
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -277,6 +338,8 @@ export async function POST(req: NextRequest) {
       throw err;
     }
 
+    await ensureClerkOrganizationMembership(clerk, clerkOrgId, userId);
+
     // RLS context
     await execSql`SELECT set_config('app.agency_id', ${agencyId}, true)`;
 
@@ -368,6 +431,12 @@ export async function POST(req: NextRequest) {
         )
       `;
     }
+
+    await updateClerkUserMetadata(clerk, userId, {
+      agencyId,
+      agencyName,
+      clerkOrgId,
+    });
 
     return { agencyId, joinCode, clerkOrgId };
   };
