@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { useOrganizationList, useUser } from '@clerk/nextjs';
+import { useAuth, useOrganizationList, useUser } from '@clerk/nextjs';
 import { useLocale, useTranslations } from 'next-intl';
 
 import {
@@ -41,6 +41,7 @@ export function useAssociateAgencyPageState(params?: {
   const locale = useLocale();
   const t = useTranslations('associateAgency');
   const { setActive } = useOrganizationList();
+  const { orgId } = useAuth();
   const { user, isLoaded: isUserLoaded, isSignedIn } = useUser();
 
   const [checkingDb, setCheckingDb] = useState(true);
@@ -93,7 +94,10 @@ export function useAssociateAgencyPageState(params?: {
           fallbackMessage: 'Failed to load account status',
         });
 
-        if (data?.exists) {
+        const hasConfiguredAccount =
+          !!data?.exists && !!data?.user?.agencyId && !!data?.user?.role;
+
+        if (hasConfiguredAccount && orgId) {
           setBlockingMessage(
             locale.startsWith('fr')
               ? 'Votre compte est deja configure. Redirection vers votre semaine...'
@@ -111,7 +115,7 @@ export function useAssociateAgencyPageState(params?: {
     };
 
     void run();
-  }, [isSignedIn, isUserLoaded, locale, router]);
+  }, [isSignedIn, isUserLoaded, locale, orgId, router]);
 
   const greetingNode = useMemo<ReactNode>(() => {
     if (mode === 'client') {
