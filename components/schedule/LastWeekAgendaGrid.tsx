@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -29,6 +29,7 @@ import {
   formatTimeForLocale,
   getTimelineBlockStyle,
 } from '@/lib/client/utils/schedule-display';
+import { isOutsideDefaultWorkingHours } from '@/lib/client/utils/working-hours';
 
 type TranslationFn = (key: string, values?: Record<string, unknown>) => string;
 
@@ -54,6 +55,12 @@ type SelectedSlotDetails = {
   dateIso: string;
   dateLabel: string;
   slot: Slot;
+};
+
+type SlotReview = {
+  id: string;
+  rating: number;
+  comment: string | null;
 };
 
 function normalizeSlotId(value: unknown): string | null {
@@ -96,8 +103,37 @@ function isStudentCancellationLocked(
     selectedSlotDetails.dateIso,
     selectedSlotDetails.slot.startTime,
   );
+  const diff = slotDate.getTime() - Date.now();
 
-  return slotDate.getTime() - Date.now() < 48 * 60 * 60 * 1000;
+  return diff > 0 && diff < 48 * 60 * 60 * 1000;
+}
+
+function isPastSlot(selectedSlotDetails: SelectedSlotDetails | null) {
+  if (!selectedSlotDetails?.slot?.endTime) {
+    return false;
+  }
+
+  return (
+    parseLocalSlotDateTime(
+      selectedSlotDetails.dateIso,
+      selectedSlotDetails.slot.endTime,
+    ).getTime() <= Date.now()
+  );
+}
+
+function isPastDayIso(isoDate: string | undefined) {
+  if (!isoDate) {
+    return false;
+  }
+
+  const today = new Date();
+  const todayIso = [
+    today.getFullYear(),
+    String(today.getMonth() + 1).padStart(2, '0'),
+    String(today.getDate()).padStart(2, '0'),
+  ].join('-');
+
+  return isoDate < todayIso;
 }
 
 export function LastWeekAgendaGrid({
@@ -118,27 +154,43 @@ export function LastWeekAgendaGrid({
     viewerRole,
     selectedSlotDetails,
   );
+  const pastSlotSelected = isPastSlot(selectedSlotDetails);
+  const reviewablePastSlot =
+    viewerRole === 'student' && pastSlotSelected;
 
   return (
     <>
-      <div className="min-w-[800px]">
-        <div className="grid grid-cols-8 gap-0">
-          <div className="border-b p-2 text-sm font-medium text-muted-foreground">
+      <div className="max-h-[70vh] overflow-auto">
+        <div className="min-w-[800px]">
+        <div className="sticky top-0 z-20 grid grid-cols-[3.5rem_repeat(7,minmax(0,1fr))] gap-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 md:grid-cols-8">
+          <div className="sticky left-0 z-30 border-b bg-background/95 px-1 py-2 text-[11px] font-medium text-muted-foreground backdrop-blur supports-[backdrop-filter]:bg-background/80 md:p-2 md:text-sm">
             {t('table.hourColumn')}
           </div>
           {dayHeaders.map((day) => (
             <div
               key={day.label}
-              className={`border-b border-r p-2 text-center text-sm font-medium ${
+              className={`relative overflow-hidden border-b border-r p-2 text-center text-sm font-medium ${
                 day.isToday ? 'bg-green-50 text-green-900' : ''
               }`}
             >
-              {day.label}
-              <span className="ml-1 text-xs text-neutral-500">
-                {day.dateLabel ? `• ${day.dateLabel}` : ''}
-              </span>
+              {isPastDayIso(day.iso) ? (
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 opacity-60"
+                  style={{
+                    backgroundImage:
+                      'repeating-linear-gradient(135deg, rgba(148,163,184,0.16) 0px, rgba(148,163,184,0.16) 7px, transparent 7px, transparent 14px)',
+                  }}
+                />
+              ) : null}
+              <div className="relative z-10">{day.label}</div>
+              {day.dateLabel ? (
+                <div className="relative z-10 mt-0.5 text-[11px] text-neutral-500">
+                  {day.dateLabel}
+                </div>
+              ) : null}
               {day.isToday ? (
-                <span className="ml-2 inline-flex items-center rounded border border-green-500 bg-green-200 px-1 py-0.5 text-[10px] font-medium text-green-900">
+                <span className="relative z-10 mt-1 inline-flex items-center rounded border border-green-500 bg-green-200 px-1 py-0.5 text-[10px] font-medium text-green-900">
                   {t('todayBadge')}
                 </span>
               ) : null}
@@ -146,12 +198,16 @@ export function LastWeekAgendaGrid({
           ))}
         </div>
 
-        <div className="grid grid-cols-8 gap-0">
-          <div>
+        <div className="grid grid-cols-[3.5rem_repeat(7,minmax(0,1fr))] gap-0 md:grid-cols-8">
+          <div className="sticky left-0 z-10 bg-background">
             {HOURS.map((hour) => (
               <div
                 key={`hour-${hour}`}
-                className="border-b border-r p-2 text-sm text-muted-foreground"
+                className={`border-b border-r px-1 py-2 text-[11px] text-muted-foreground md:p-2 md:text-sm ${
+                  isOutsideDefaultWorkingHours(hour)
+                    ? 'bg-slate-100/70'
+                    : 'bg-background'
+                }`}
                 style={{ height: `${PIXELS_PER_HOUR}px` }}
               >
                 {formatHourLabel(hour, locale)}
@@ -173,10 +229,21 @@ export function LastWeekAgendaGrid({
                   dayHeader?.isToday ? 'bg-green-100/40 ring-1 ring-green-500' : ''
                 }`}
               >
+                {isPastDayIso(isoDate) ? (
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 z-0"
+                    style={{
+                      backgroundImage:
+                        'repeating-linear-gradient(135deg, rgba(148,163,184,0.16) 0px, rgba(148,163,184,0.16) 7px, transparent 7px, transparent 14px)',
+                    }}
+                  />
+                ) : null}
+
                 {HOURS.map((hour) => (
                   <div
                     key={`${dayIndex}-${hour}`}
-                    className="border-b"
+                    className={isOutsideDefaultWorkingHours(hour) ? 'border-b bg-slate-100/70' : 'border-b'}
                     style={{ height: `${PIXELS_PER_HOUR}px` }}
                   />
                 ))}
@@ -214,6 +281,7 @@ export function LastWeekAgendaGrid({
             );
           })}
         </div>
+        </div>
       </div>
 
       <SlotDetailsDialog
@@ -231,6 +299,8 @@ export function LastWeekAgendaGrid({
         studentCancellationLocked={studentCancellationLocked}
         t={t}
         viewerRole={viewerRole}
+        pastSlotSelected={pastSlotSelected}
+        reviewablePastSlot={reviewablePastSlot}
       />
 
       <ConfirmCancelDialog
@@ -244,6 +314,11 @@ export function LastWeekAgendaGrid({
 
           if (studentCancellationLocked) {
             toast.error(t('slot.dialog.cancelTooLateError'));
+            return;
+          }
+
+          if (pastSlotSelected) {
+            toast.error(t('slot.dialog.cancelPastError'));
             return;
           }
 
@@ -341,6 +416,8 @@ function SlotDetailsDialog({
   onOpenChange,
   onRequestCancel,
   open,
+  pastSlotSelected,
+  reviewablePastSlot,
   selectedSlotDetails,
   studentCancellationLocked,
   t,
@@ -351,6 +428,8 @@ function SlotDetailsDialog({
   onOpenChange: (open: boolean) => void;
   onRequestCancel: () => void;
   open: boolean;
+  pastSlotSelected: boolean;
+  reviewablePastSlot: boolean;
   selectedSlotDetails: SelectedSlotDetails | null;
   studentCancellationLocked: boolean;
   t: TranslationFn;
@@ -365,6 +444,14 @@ function SlotDetailsDialog({
     slot?.servicePrice != null
       ? formatServicePrice(slot.servicePrice)
       : null;
+  const normalizedSlotId = normalizeSlotId(slot?.id);
+  const [reviewLoading, setReviewLoading] = useState(false);
+  const [reviewSaving, setReviewSaving] = useState(false);
+  const [reviewError, setReviewError] = useState<string | null>(null);
+  const [reviewAvailable, setReviewAvailable] = useState(true);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState('');
+  const [existingReviewId, setExistingReviewId] = useState<string | null>(null);
 
   const detailRows = slot
     ? [
@@ -395,6 +482,138 @@ function SlotDetailsDialog({
       ]
     : [];
 
+  useEffect(() => {
+    if (!open || !reviewablePastSlot || !normalizedSlotId) {
+      setReviewLoading(false);
+      setReviewError(null);
+      setReviewAvailable(true);
+      setReviewRating(0);
+      setReviewComment('');
+      setExistingReviewId(null);
+      return;
+    }
+
+    const controller = new AbortController();
+
+    const loadReview = async () => {
+      try {
+        setReviewLoading(true);
+        setReviewError(null);
+
+        const response = await fetch(`/api/slots/${normalizedSlotId}/review`, {
+          credentials: 'include',
+          signal: controller.signal,
+        });
+
+        const body = await response.json().catch(() => null);
+
+        if (!response.ok) {
+          setReviewAvailable(true);
+          setExistingReviewId(null);
+          setReviewRating(0);
+          setReviewComment('');
+          return;
+        }
+
+        const review = body?.review as SlotReview | null | undefined;
+        const canReview = body?.canReview !== false;
+
+        setReviewAvailable(canReview);
+        setExistingReviewId(review?.id ?? null);
+        setReviewRating(typeof review?.rating === 'number' ? review.rating : 0);
+        setReviewComment(typeof review?.comment === 'string' ? review.comment : '');
+      } catch (error) {
+        if ((error as Error).name === 'AbortError') {
+          return;
+        }
+
+        setReviewAvailable(true);
+        setReviewError(null);
+        setExistingReviewId(null);
+        setReviewRating(0);
+        setReviewComment('');
+      } finally {
+        if (!controller.signal.aborted) {
+          setReviewLoading(false);
+        }
+      }
+    };
+
+    void loadReview();
+
+    return () => {
+      controller.abort();
+    };
+  }, [normalizedSlotId, open, reviewablePastSlot, t]);
+
+  const handleSaveReview = async () => {
+    if (!normalizedSlotId || reviewRating < 1 || reviewRating > 5) {
+      setReviewError(t('slot.review.ratingRequired'));
+      return;
+    }
+
+    try {
+      setReviewSaving(true);
+      setReviewError(null);
+
+      const response = await fetch(`/api/slots/${normalizedSlotId}/review`, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          rating: reviewRating,
+          comment: reviewComment,
+        }),
+      });
+
+      const body = await response.json().catch(() => null);
+
+      if (!response.ok) {
+        const errorCode =
+          typeof body?.error === 'string' ? body.error : 'UNKNOWN_REVIEW_ERROR';
+        const errorDetail =
+          typeof body?.detail === 'string' && body.detail.trim().length > 0
+            ? body.detail.trim()
+            : '';
+
+        if (errorCode === 'REVIEW_NOT_AVAILABLE_YET') {
+          setReviewError(t('slot.review.notAvailableYet'));
+          return;
+        }
+
+        if (errorCode === 'INVALID_REVIEW_RATING') {
+          setReviewError(t('slot.review.ratingRequired'));
+          return;
+        }
+
+        if (errorCode === 'REVIEWS_STORAGE_UNAVAILABLE') {
+          setReviewError(
+            errorDetail || t('slot.review.storageUnavailable'),
+          );
+          return;
+        }
+
+        setReviewError(t('slot.review.saveError'));
+        return;
+      }
+
+      const review = body?.review as SlotReview | null | undefined;
+      setExistingReviewId(review?.id ?? existingReviewId);
+      setReviewComment(typeof review?.comment === 'string' ? review.comment : '');
+      toast.success(
+        existingReviewId
+          ? t('slot.review.updateSuccess')
+          : t('slot.review.submitSuccess'),
+      );
+    } catch (error) {
+      setReviewError(t('slot.review.saveError'));
+    } finally {
+      setReviewSaving(false);
+    }
+  };
+
   return (
     <Dialog onOpenChange={onOpenChange} open={open}>
       <DialogContent className="sm:max-w-xl">
@@ -424,22 +643,102 @@ function SlotDetailsDialog({
           ))}
         </div>
 
+        {reviewablePastSlot ? (
+          <div className="rounded-xl border bg-muted/20 p-4">
+            <div className="space-y-1">
+              <h3 className="text-sm font-semibold">{t('slot.review.title')}</h3>
+              <p className="text-xs text-muted-foreground">
+                {existingReviewId
+                  ? t('slot.review.editHint')
+                  : t('slot.review.description')}
+              </p>
+            </div>
+
+            {reviewLoading ? (
+              <div className="mt-4 space-y-3">
+                <div className="h-5 w-40 animate-pulse rounded bg-muted" />
+                <div className="h-24 animate-pulse rounded-lg bg-muted" />
+              </div>
+            ) : reviewAvailable ? (
+              <div className="mt-4 space-y-4">
+                <div className="flex flex-wrap gap-2">
+                  {[1, 2, 3, 4, 5].map((value) => {
+                    const active = value <= reviewRating;
+
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        aria-label={t('slot.review.starAria', { count: value })}
+                        className={`inline-flex h-10 w-10 items-center justify-center rounded-full border text-lg transition ${
+                          active
+                            ? 'border-amber-300 bg-amber-50 text-amber-600'
+                            : 'border-border bg-background text-muted-foreground hover:border-amber-200 hover:text-amber-500'
+                        }`}
+                        onClick={() => setReviewRating(value)}
+                      >
+                        ★
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <textarea
+                  className="min-h-24 w-full rounded-lg border bg-background px-3 py-2 text-sm outline-none transition placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+                  maxLength={2000}
+                  onChange={(event) => setReviewComment(event.target.value)}
+                  placeholder={t('slot.review.commentPlaceholder')}
+                  value={reviewComment}
+                />
+
+                {reviewError ? (
+                  <p className="text-xs text-red-600">{reviewError}</p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    {t('slot.review.commentOptional')}
+                  </p>
+                )}
+
+                <div className="flex justify-end">
+                  <Button
+                    disabled={reviewSaving}
+                    onClick={() => void handleSaveReview()}
+                    type="button"
+                  >
+                    {reviewSaving
+                      ? t('slot.review.saving')
+                      : existingReviewId
+                        ? t('slot.review.updateAction')
+                        : t('slot.review.submitAction')}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <p className="mt-4 text-sm text-muted-foreground">
+                {reviewError ?? t('slot.review.unavailable')}
+              </p>
+            )}
+          </div>
+        ) : null}
+
         {studentCancellationLocked ? (
           <p className="text-sm text-muted-foreground">
             {t('slot.dialog.cancelWindowHint')}
           </p>
         ) : null}
 
-        <div className="flex justify-end pt-2">
-          <Button
-            disabled={!normalizeSlotId(slot?.id) || cancelling || studentCancellationLocked}
-            onClick={onRequestCancel}
-            type="button"
-            variant="destructive"
-          >
-            {cancelling ? t('slot.dialog.cancelling') : t('slot.dialog.cancelAction')}
-          </Button>
-        </div>
+        {!pastSlotSelected ? (
+          <div className="flex justify-end pt-2">
+            <Button
+              disabled={!normalizeSlotId(slot?.id) || cancelling || studentCancellationLocked}
+              onClick={onRequestCancel}
+              type="button"
+              variant="destructive"
+            >
+              {cancelling ? t('slot.dialog.cancelling') : t('slot.dialog.cancelAction')}
+            </Button>
+          </div>
+        ) : null}
       </DialogContent>
     </Dialog>
   );

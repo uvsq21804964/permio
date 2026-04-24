@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
+import { BrandWordmark } from '@/components/brand/BrandWordmark';
 import AssociateAgencyAvailability from '@/components/associate-agency-availability';
 import { AssociateAgencyBlockingScreen } from '@/components/onboarding/AssociateAgencyBlockingScreen';
 import { AssociateAgencyClientForm } from '@/components/onboarding/AssociateAgencyClientForm';
@@ -26,11 +27,15 @@ function AssociateAgencyContent({ onSuccess, className }: Props) {
   const logo = '/NouveauLogoRogne2.png';
   const {
     addressInput,
+    agencyPreview,
+    agencyPreviewLoading,
     addressInputRef,
     blockingMessage,
     canContinueTrainerAddress,
     canSubmitClient,
     code,
+    clientInviteAgencyName,
+    clientInviteLocked,
     displayName,
     email,
     error,
@@ -73,32 +78,30 @@ function AssociateAgencyContent({ onSuccess, className }: Props) {
 
   return (
     <div className="bg-[#f9ffc6]/80 min-h-screen">
-      <header className="fixed top-0 left-0 right-0 z-40 border-b border-black/10 bg-gradient-to-r from-primary to-[#d400ff] text-white">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-2.5 md:px-8 md:py-3">
+      <header className="fixed top-0 left-0 right-0 z-40 border-b border-[#f9ffc6]/80 bg-gradient-to-r from-primary to-[#d400ff] text-white">
+        <div className="mx-auto flex h-10 max-w-6xl items-stretch justify-between px-4 md:h-12 md:px-8">
           <Link
             href={`/${locale}/home`}
-            className="flex items-center gap-2 min-w-0"
+            className="flex min-w-0 items-end gap-2"
           >
-            <span className="relative h-7 w-7 shrink-0 md:h-8 md:w-8">
+            <span className="relative h-full w-14 shrink-0 md:w-16">
               <Image
                 src={logo}
                 alt="MagicHango"
                 fill
-                sizes="32px"
-                className="object-contain"
+                sizes="64px"
+                className="object-contain object-bottom"
                 priority
               />
             </span>
-            <span className="truncate text-sm md:text-base font-semibold tracking-tight">
-              MagicHango
-            </span>
+            <BrandWordmark />
           </Link>
 
           <nav className="flex items-center gap-2 md:gap-3">
             <SignOutButton signOutOptions={{ redirectUrl }}>
               <button
                 type="button"
-                className="text-[11px] md:text-sm font-medium text-white/80 hover:text-white transition"
+                className="inline-flex items-center rounded-full px-3 py-1.5 text-[11px] font-semibold text-white transition hover:bg-white hover:text-primary whitespace-nowrap md:text-sm"
               >
                 {locale.startsWith('fr') ? 'Déconnexion' : 'Sign out'}
               </button>
@@ -108,7 +111,7 @@ function AssociateAgencyContent({ onSuccess, className }: Props) {
         </div>
       </header>
 
-      <main className="pt-14 md:pt-16">
+      <main className="pt-[calc(4rem+env(safe-area-inset-top))] md:pt-16">
         <GooglePlacesScript
           onReady={handleMapsReady}
           onLoadError={handleMapsLoadError}
@@ -142,12 +145,16 @@ function AssociateAgencyContent({ onSuccess, className }: Props) {
 
             {mode === 'client' ? (
               <AssociateAgencyClientForm
+                agencyName={clientInviteAgencyName}
+                agencyPreview={agencyPreview}
+                agencyPreviewLoading={agencyPreviewLoading}
                 addressInput={addressInput}
                 canSubmit={canSubmitClient}
                 className={className}
                 code={code}
                 error={error}
                 inputRef={addressInputRef}
+                isAgencyCodeLocked={clientInviteLocked}
                 loading={loading}
                 onAddressChange={handleAddressInputChange}
                 onCodeChange={setCode}

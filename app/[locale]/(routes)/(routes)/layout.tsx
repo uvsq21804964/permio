@@ -97,7 +97,7 @@ export default async function RootLayout({
       </SignedOut>
 
       <SignedIn>
-        <div className="flex h-screen w-full flex-col">
+        <div className="flex min-h-screen w-full flex-col">
           <div className="inset-y-0 hidden h-12 w-full flex-none md:flex z-50">
             <DesktopNavbar
               logo={logo}
@@ -106,7 +106,7 @@ export default async function RootLayout({
             />
           </div>
 
-          <div className="fixed inset-y-0 h-[40px] w-full md:hidden z-50">
+          <div className="fixed inset-x-0 top-0 w-full md:hidden z-50">
             <MobileNavbar
               logo={logoMobile}
               pages={pages}
@@ -114,7 +114,7 @@ export default async function RootLayout({
             />
           </div>
 
-          <div className="h-[92%] flex-1 bg-navbar">{children}</div>
+          <div className="flex-1 bg-navbar pt-16 md:pt-0">{children}</div>
         </div>
       </SignedIn>
     </>

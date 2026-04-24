@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import { BrandWordmark } from '@/components/brand/BrandWordmark';
 
 type AssociateAgencyBlockingScreenProps = {
   blockingMessage: string | null;
@@ -25,7 +26,7 @@ export function AssociateAgencyBlockingScreen({
               priority
             />
           </span>
-          <span className="text-base font-semibold text-black">MagicHango</span>
+          <BrandWordmark tone="dark" />
         </div>
 
         <div className="text-lg font-bold text-black">

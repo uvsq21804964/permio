@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import {
   addDaysISO,
@@ -74,7 +75,6 @@ export function useBookPageState() {
   const [maxWeekStart] = useState(() => addDaysISO(startOfWeekMondayISO(), 40 * 7));
   const [weekStart, setWeekStart] = useState<string>(() => startOfWeekMondayISO());
 
-  const [notice, setNotice] = useState<string | null>(null);
   const [serviceError, setServiceError] = useState<string | null>(null);
   const [selectedService, setSelectedService] =
     useState<SelectedBookingService | null>(null);
@@ -83,7 +83,6 @@ export function useBookPageState() {
   const [selectedSlot, setSelectedSlot] = useState<SelectedBookingSlot | null>(
     null,
   );
-  const [bookingError, setBookingError] = useState<string | null>(null);
   const [nudgeOpen, setNudgeOpen] = useState(false);
   const [nudgeAlternative, setNudgeAlternative] =
     useState<SuggestedBookingSlot | null>(null);
@@ -315,6 +314,12 @@ export function useBookPageState() {
     setSelectedSlot(null);
   };
 
+  const handleCurrentWeek = () => {
+    setWeekStart(todayWeekStart);
+    setSelectedWindow(null);
+    setSelectedSlot(null);
+  };
+
   const handleSelectSlot = (dateIso: string, slot: ClientBookingSlot) => {
     setSelectedWindow({
       date: dateIso,
@@ -349,22 +354,19 @@ export function useBookPageState() {
   };
 
   const handleConfirmBooking = async (overrideSlot?: SelectedBookingSlot) => {
-    setBookingError(null);
-    setNotice(null);
-
     if (!selectedService) {
-      setBookingError(t('errors.noServiceSelected'));
+      toast.error(t('errors.noServiceSelected'));
       return;
     }
 
     const slot = overrideSlot ?? selectedSlot;
     if (!slot) {
-      setBookingError(t('errors.noSlotSelected'));
+      toast.error(t('errors.noSlotSelected'));
       return;
     }
 
     if (!slot.serviceStartTime || !slot.serviceEndTime) {
-      setBookingError(t('errors.invalidSlot'));
+      toast.error(t('errors.invalidSlot'));
       return;
     }
 
@@ -377,7 +379,7 @@ export function useBookPageState() {
         bookingAddress: toBookingAddressPayload(bookingAddress),
       });
 
-      setNotice(t('alerts.bookingSuccess'));
+      toast.success(t('alerts.bookingSuccess'));
       setSelectedSlot(null);
       setSelectedWindow(null);
       setNudgeOpen(false);
@@ -390,11 +392,11 @@ export function useBookPageState() {
         nextError.status === 409 &&
         nextError.data?.error === 'SLOT_ALREADY_EXISTS'
       ) {
-        setBookingError(t('errors.slotAlreadyBooked'));
+        toast.error(t('errors.slotAlreadyBooked'));
         return;
       }
 
-      setBookingError(
+      toast.error(
         nextError instanceof Error
           ? nextError.message
           : t('errors.createBookingGeneric'),
@@ -403,9 +405,6 @@ export function useBookPageState() {
   };
 
   const handleRequestBooking = () => {
-    setBookingError(null);
-    setNotice(null);
-
     if (!currentSuggestedSlot || recommendedSlotIds.has(currentSuggestedSlot.id)) {
       void handleConfirmBooking();
       return;
@@ -457,7 +456,6 @@ export function useBookPageState() {
   return {
     agendaData: data,
     bookingAddress,
-    bookingError,
     bookingLoading,
     canGoNextWeek,
     canGoPrevWeek,
@@ -466,6 +464,7 @@ export function useBookPageState() {
     earliestAllowed,
     error,
     handleKeepCurrentChoice,
+    handleCurrentWeek,
     handleNextWeek,
     handlePrevWeek,
     handleRequestBooking,
@@ -477,7 +476,6 @@ export function useBookPageState() {
     isSignedIn,
     loading,
     locale,
-    notice,
     nowTop,
     nudgeAlternative,
     nudgeOpen,

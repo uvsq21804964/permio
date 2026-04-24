@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
+import { BrandWordmark } from '@/components/brand/BrandWordmark';
 import {
   filterNavbarPages,
   PROFILE_LINKS,
@@ -92,19 +93,20 @@ export default function DesktopNavbar({
       <div className="flex h-10 items-center justify-between px-0">
         <Link
           href={withLocalePath('/myweek', locale)}
-          className="h-10 w-[12rem] pl-0 dark:focus:ring-neutral-600"
+          className="flex h-10 items-end gap-2 pl-2 pr-4 dark:focus:ring-neutral-600"
         >
           <span className="sr-only">{homeSrLabel}</span>
-          <div className="relative h-full w-full">
+          <div className="relative h-full w-12 shrink-0">
             <Image
               src={logo}
-              alt="Logo"
+              alt="MagicHango"
               fill
-              sizes="(max-width: 640px) 160px, 192px"
-              className="object-contain"
+              sizes="48px"
+              className="object-contain object-bottom"
               priority
             />
           </div>
+          <BrandWordmark className="pb-0.5" tone="light" />
         </Link>
 
         <div className="flex-1">

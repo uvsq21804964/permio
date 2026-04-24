@@ -19,6 +19,7 @@ import {
 export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
   const t = useTranslations('weeklyAgenda');
   const locale = useLocale();
+  const currentWeekLabel = locale.startsWith('fr') ? 'Cette semaine' : 'This week';
   const { user, isLoaded: isUserLoaded } = useUser();
   const currentUserId = user?.id ?? null;
   const [notice, setNotice] = useState<string | null>(null);
@@ -33,6 +34,7 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
   const {
     entriesByDate,
     error,
+    goToCurrentWeek,
     goToNextWeek,
     goToPreviousWeek,
     loadingWeek,
@@ -122,6 +124,9 @@ export function WeeklyGlobalAgenda({ meRole }: { meRole: string | null }) {
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" onClick={goToPreviousWeek}>
             {t('nav_prev_week')}
+          </Button>
+          <Button variant="outline" size="sm" onClick={goToCurrentWeek}>
+            {currentWeekLabel}
           </Button>
           <Button variant="outline" size="sm" onClick={goToNextWeek}>
             {t('nav_next_week')}

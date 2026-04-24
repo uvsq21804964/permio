@@ -22,6 +22,7 @@ type LastWeekAgendaHeaderProps = {
   joinCode: string | null;
   locale: string;
   onCopyJoinCode: () => void;
+  onCurrentWeek: () => void;
   onNextWeek: () => void;
   onOpenBooking: () => void;
   onOpenServices: () => void;
@@ -43,6 +44,7 @@ export function LastWeekAgendaHeader({
   joinCode,
   locale,
   onCopyJoinCode,
+  onCurrentWeek,
   onNextWeek,
   onOpenBooking,
   onOpenServices,
@@ -58,6 +60,7 @@ export function LastWeekAgendaHeader({
 }: LastWeekAgendaHeaderProps) {
   const isFrench = isFrenchLocale(locale);
   const weekdayLocale = isFrench ? 'fr-FR' : 'en-US';
+  const currentWeekLabel = isFrench ? 'Cette semaine' : 'This week';
 
   return (
     <>
@@ -230,6 +233,13 @@ export function LastWeekAgendaHeader({
               </button>
               <button
                 type="button"
+                onClick={onCurrentWeek}
+                className="rounded-md border px-2 py-1 text-xs hover:bg-muted"
+              >
+                {currentWeekLabel}
+              </button>
+              <button
+                type="button"
                 onClick={onNextWeek}
                 className="rounded-md border px-2 py-1 text-xs hover:bg-muted"
               >
@@ -266,8 +276,9 @@ export function LastWeekAgendaHeader({
                       key={`${slot.date}-${slot.startTime}-${index}`}
                       className="inline-flex flex-col rounded-md border bg-muted px-2 py-1"
                     >
-                      <span className="text-[11px] font-medium">
-                        {weekday} {formatShortDate(date, locale)}
+                      <span className="text-[11px] font-medium">{weekday}</span>
+                      <span className="text-[11px] text-neutral-600">
+                        {formatShortDate(date, locale)}
                       </span>
                       <span className="text-[11px]">
                         {formatTimeForLocale(slot.startTime, locale)} -{' '}

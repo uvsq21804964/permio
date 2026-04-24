@@ -14,6 +14,7 @@ import Plans from '@/components/home/PlansSansSimulation';
 import HeroSection from '@/components/home/HeroSection';
 import Comparison from '@/components/home/Comparison';
 import FAQ from '@/components/home/FAQ';
+import { BrandWordmark } from '@/components/brand/BrandWordmark';
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
 
 export default function HomePage() {
@@ -89,9 +90,7 @@ export default function HomePage() {
               />
             </span>
 
-            <span className="truncate text-sm md:text-base font-semibold tracking-tight leading-none pb-1">
-              MagicHango
-            </span>
+            <BrandWordmark className="hidden md:inline-flex" />
           </Link>
 
           <nav className="flex items-center gap-2 md:gap-3">
@@ -114,7 +113,7 @@ export default function HomePage() {
         </div>
       </header>
 
-      <main className="pt-16 md:pt-20">
+      <main className="pt-[calc(4rem+env(safe-area-inset-top))] md:pt-20">
         <HeroSection />
         <HowItWorks />
         <Plans withTrial />

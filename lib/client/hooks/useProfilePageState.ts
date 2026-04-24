@@ -8,6 +8,7 @@ import {
   type ChangeEvent,
   type FormEvent,
 } from 'react';
+import { useClerk, useUser } from '@clerk/nextjs';
 import { useLocale, useTranslations } from 'next-intl';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
@@ -59,6 +60,8 @@ export function useProfilePageState() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const clerk = useClerk();
+  const { user, isLoaded: isUserLoaded } = useUser();
 
   const accessToastShownRef = useRef(false);
   const formattedAddressRef = useRef<HTMLInputElement | null>(null);
@@ -364,6 +367,14 @@ export function useProfilePageState() {
     ? selectedAddress ?? mapProfileAddressToDetails(profile)
     : selectedAddress;
 
+  const openProfilePhotoSettings = useCallback(() => {
+    if (!isUserLoaded) {
+      return;
+    }
+
+    clerk.openUserProfile();
+  }, [clerk, isUserLoaded]);
+
   return {
     addressError,
     addressModalOpen,
@@ -394,7 +405,9 @@ export function useProfilePageState() {
     onMapsReady: () => setIsMapsReady(true),
     openAddressModal,
     openNameModal,
+    openProfilePhotoSettings,
     profile,
+    profileImageUrl: user?.imageUrl ?? null,
     savingAddress,
     savingName,
     selectedAddress,

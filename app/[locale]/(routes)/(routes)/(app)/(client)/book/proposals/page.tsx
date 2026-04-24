@@ -4,6 +4,7 @@
 import { useMemo, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
+import { toast } from 'sonner';
 import { BookingSuggestionConfirmDialog } from '@/components/booking/BookingSuggestionConfirmDialog';
 import { BookingSuggestionsGrid } from '@/components/booking/BookingSuggestionsGrid';
 import {
@@ -38,8 +39,6 @@ export default function ProposalsPage() {
     },
   });
 
-  const [bookingError, setBookingError] = useState<string | null>(null);
-  const [bookingNotice, setBookingNotice] = useState(false);
   const [pendingSuggestion, setPendingSuggestion] = useState<SuggestedBookingSlot | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const { bookSlot, loading: bookingLoading } = useBookSlot({
@@ -102,9 +101,6 @@ export default function ProposalsPage() {
   const handleBookSlot = async (slot: (typeof suggestions)[number]) => {
     if (!selectedService) return;
 
-    setBookingError(null);
-    setBookingNotice(false);
-
     try {
       await bookSlot({
         serviceId: selectedService.id,
@@ -114,7 +110,7 @@ export default function ProposalsPage() {
         bookingAddress: toBookingAddressPayload(bookingAddress),
       });
 
-      setBookingNotice(true);
+      toast.success(t('booking.noticeSuccess'));
       setConfirmOpen(false);
       setPendingSuggestion(null);
       router.push(toLocalizedPath('/myweek'));
@@ -125,11 +121,11 @@ export default function ProposalsPage() {
         e.status === 409 &&
         e.data?.error === 'SLOT_ALREADY_EXISTS'
       ) {
-        setBookingError(t('errors.slotAlreadyBooked'));
+        toast.error(t('errors.slotAlreadyBooked'));
         return;
       }
 
-      setBookingError(
+      toast.error(
         e instanceof Error ? e.message : t('errors.createBooking')
       );
     }
@@ -240,15 +236,6 @@ export default function ProposalsPage() {
   return (
     <main className="min-h-screen bg-background flex items-center justify-center p-4 md:p-8">
       <div className="w-full max-w-5xl space-y-6">
-        {(bookingNotice || bookingError) && (
-          <section className="text-xs md:text-sm space-y-1">
-            {bookingNotice && (
-              <p className="text-emerald-600">{t('booking.noticeSuccess')}</p>
-            )}
-            {bookingError && <p className="text-red-600">{bookingError}</p>}
-          </section>
-        )}
-
         <BookingSuggestionsGrid
           bookingAddress={bookingAddress}
           bookingLoading={bookingLoading}

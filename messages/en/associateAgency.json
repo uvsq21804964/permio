@@ -1,7 +1,8 @@
 {
   "label": {
     "code": "Agency code",
-    "address": "Your starting address"
+    "address": "Your starting address",
+    "linkedAgency": "Agency already detected"
   },
   "placeholder": {
     "code": "Agency code",
@@ -9,7 +10,23 @@
   },
   "help": {
     "code": "This code is provided by your organization.",
-    "address": "Select an address suggested by Google to ensure it can be used for routing and distance calculations."
+    "address": "Select an address suggested by Google to ensure it can be used for routing and distance calculations.",
+    "lockedCode": "This link already connects you to the right agency. You only need to confirm your address.",
+    "lockedCodeWithAgency": "This link already connects you to {agencyName}. You only need to confirm your address."
+  },
+  "preview": {
+    "label": "Trainer detected",
+    "loading": "Looking up the trainer linked to this code...",
+    "help": "This code seems to match the right trainer.",
+    "helpWithAgency": "This code seems to match {agencyName}.",
+    "reviewsTitle": "{count, plural, one {# client review} other {# client reviews}}",
+    "anonymousClient": "Client",
+    "stats": {
+      "clients": "Clients",
+      "courses": "Sessions",
+      "rating": "Average rating",
+      "noRating": "No reviews yet"
+    }
   },
   "selectedAddress": {
     "title": "Selected address:",
@@ -18,13 +35,13 @@
   },
   "button": {
     "submit": "Link and continue",
-    "loading": "Linking…"
+    "loading": "Linking..."
   },
   "error": {
     "codeRequired": "Please enter an agency code.",
     "addressRequired": "Please choose an address from the Google suggestions before continuing.",
-    "geoFailed": "We couldn’t retrieve the geolocation for this address.",
-    "mapsScript": "We couldn’t load Google address autocomplete. Please check your API key.",
+    "geoFailed": "We couldn't retrieve the geolocation for this address.",
+    "mapsScript": "We couldn't load Google address autocomplete. Please check your API key.",
     "unknown": "Unknown error"
   }
 }

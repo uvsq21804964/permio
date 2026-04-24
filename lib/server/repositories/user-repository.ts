@@ -94,6 +94,7 @@ export async function getFirstAgencyInstructor(
     FROM "User"
     WHERE "agencyId" = ${agencyId}
       AND role = 'instructor'
+    ORDER BY "createdAt" ASC NULLS LAST, name ASC NULLS LAST
     LIMIT 1
   `;
 

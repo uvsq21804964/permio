@@ -48,7 +48,9 @@ export default function ProfilePage() {
     onMapsReady,
     openAddressModal,
     openNameModal,
+    openProfilePhotoSettings,
     profile,
+    profileImageUrl,
     savingAddress,
     savingName,
     selectedAddress,
@@ -131,7 +133,9 @@ export default function ProfilePage() {
                 createdOnLabel={formatDate(profile.createdAt, locale)}
                 initials={initials}
                 onCopyJoinCode={copyJoinCode}
+                onEditPhoto={openProfilePhotoSettings}
                 onEditName={openNameModal}
+                profileImageUrl={profileImageUrl}
                 profile={profile}
                 t={translator}
               />

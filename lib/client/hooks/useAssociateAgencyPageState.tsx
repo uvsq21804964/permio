@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth, useOrganizationList, useUser } from '@clerk/nextjs';
 import { useLocale, useTranslations } from 'next-intl';
 
+import { isHttpError } from '@/lib/client/api/request';
 import {
   associateToAgency,
   getAccountRecordStatus,
@@ -16,6 +17,11 @@ import {
 } from '@/lib/client/utils/address';
 import { isGoogleMapsPlacesReady } from '@/lib/client/utils/google-maps';
 import { devLogger } from '@/lib/shared/dev-logger';
+import { parseClientOnboardingInviteFromSearchParams } from '@/src/lib/client-onboarding-invite';
+import {
+  clearStoredClientOnboardingInvite,
+  readStoredClientOnboardingInvite,
+} from '@/src/lib/client-onboarding-invite-storage';
 
 export type AssociateAgencySuccessData = {
   organizationId: string;
@@ -25,6 +31,23 @@ export type AssociateAgencySuccessData = {
 
 type AssociateAgencyMode = 'trainer' | 'client' | null;
 type TrainerStep = 'address' | 'availability';
+type AgencyTrainerPreview = {
+  agencyName?: string | null;
+  trainerImageUrl?: string | null;
+  trainerName?: string | null;
+  trainerStats?: {
+    averageRating?: number | null;
+    clientsCount: number;
+    coursesCount: number;
+    reviewsCount: number;
+  } | null;
+  trainerReviews?: Array<{
+    clientName?: string | null;
+    comment?: string | null;
+    id: string;
+    rating: number;
+  }>;
+};
 
 function withLocaleClient(path: string, locale: string) {
   const normalized = path.startsWith('/') ? path : `/${path}`;
@@ -38,22 +61,38 @@ export function useAssociateAgencyPageState(params?: {
 }) {
   const { onSuccess } = params ?? {};
   const router = useRouter();
+  const searchParams = useSearchParams();
   const locale = useLocale();
   const t = useTranslations('associateAgency');
   const { setActive } = useOrganizationList();
   const { orgId } = useAuth();
   const { user, isLoaded: isUserLoaded, isSignedIn } = useUser();
+  const clientInvite = useMemo(() => {
+    const fromSearchParams =
+      parseClientOnboardingInviteFromSearchParams(searchParams);
+    if (fromSearchParams.isClientInvite) {
+      return fromSearchParams;
+    }
+
+    return readStoredClientOnboardingInvite() ?? fromSearchParams;
+  }, [searchParams]);
 
   const [checkingDb, setCheckingDb] = useState(true);
   const [redirecting, setRedirecting] = useState(false);
   const [blockingMessage, setBlockingMessage] = useState<string | null>(null);
 
-  const [mode, setMode] = useState<AssociateAgencyMode>(null);
+  const [mode, setMode] = useState<AssociateAgencyMode>(
+    clientInvite.isClientInvite ? 'client' : null,
+  );
   const [trainerStep, setTrainerStep] = useState<TrainerStep>('address');
 
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState(clientInvite.agencyCode);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [agencyPreview, setAgencyPreview] = useState<AgencyTrainerPreview | null>(
+    null,
+  );
+  const [agencyPreviewLoading, setAgencyPreviewLoading] = useState(false);
 
   const [trainerAgencyName, setTrainerAgencyName] = useState('');
   const [trainerWebsiteUrl, setTrainerWebsiteUrl] = useState('');
@@ -71,12 +110,115 @@ export function useAssociateAgencyPageState(params?: {
   const email = user?.primaryEmailAddress?.emailAddress || '';
   const displayName = fullName || firstName || '';
   const redirectUrl = withLocaleClient('/home', locale);
+  const postClientAssociationPath = withLocaleClient(
+    clientInvite.isClientInvite ? '/book/services' : '/myweek',
+    locale,
+  );
 
   useEffect(() => {
     if (isGoogleMapsPlacesReady()) {
       setIsMapsReady(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (!clientInvite.isClientInvite) {
+      return;
+    }
+
+    setMode('client');
+    setCode(clientInvite.agencyCode);
+  }, [clientInvite.agencyCode, clientInvite.isClientInvite]);
+
+  useEffect(() => {
+    if (mode !== 'client') {
+      setAgencyPreview(null);
+      setAgencyPreviewLoading(false);
+      return;
+    }
+
+    if (!isUserLoaded || !isSignedIn) {
+      setAgencyPreviewLoading(false);
+      return;
+    }
+
+    const normalizedCode = code.trim().toUpperCase();
+    if (!normalizedCode) {
+      setAgencyPreview(null);
+      setAgencyPreviewLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(async () => {
+      setAgencyPreviewLoading(true);
+
+      try {
+        const response = await fetch(
+          `/api/agency/preview?code=${encodeURIComponent(normalizedCode)}`,
+          {
+            credentials: 'include',
+            signal: controller.signal,
+          },
+        );
+
+        if (!response.ok) {
+          setAgencyPreview(null);
+          return;
+        }
+
+        const data = (await response.json()) as {
+          agency?: { name?: string | null };
+          trainer?:
+            | {
+                imageUrl?: string | null;
+                name?: string | null;
+                reviews?: Array<{
+                  clientName?: string | null;
+                  comment?: string | null;
+                  id: string;
+                  rating: number;
+                }>;
+                stats?: {
+                  averageRating?: number | null;
+                  clientsCount?: number;
+                  coursesCount?: number;
+                  reviewsCount?: number;
+                };
+              }
+            | null;
+        };
+
+        setAgencyPreview({
+          agencyName: data.agency?.name ?? null,
+          trainerImageUrl: data.trainer?.imageUrl ?? null,
+          trainerName: data.trainer?.name ?? null,
+          trainerReviews: data.trainer?.reviews ?? [],
+          trainerStats: {
+            averageRating: data.trainer?.stats?.averageRating ?? null,
+            clientsCount: data.trainer?.stats?.clientsCount ?? 0,
+            coursesCount: data.trainer?.stats?.coursesCount ?? 0,
+            reviewsCount: data.trainer?.stats?.reviewsCount ?? 0,
+          },
+        });
+      } catch (previewError) {
+        if ((previewError as Error).name === 'AbortError') {
+          return;
+        }
+
+        setAgencyPreview(null);
+      } finally {
+        if (!controller.signal.aborted) {
+          setAgencyPreviewLoading(false);
+        }
+      }
+    }, 250);
+
+    return () => {
+      controller.abort();
+      window.clearTimeout(timeoutId);
+    };
+  }, [code, isSignedIn, isUserLoaded, locale, mode]);
 
   useEffect(() => {
     if (!isUserLoaded) {
@@ -104,7 +246,7 @@ export function useAssociateAgencyPageState(params?: {
               : 'Your account is already set up. Redirecting to your week...',
           );
           setRedirecting(true);
-          router.replace(`/${locale}/myweek`);
+          router.replace(postClientAssociationPath);
           return;
         }
       } catch {
@@ -115,7 +257,14 @@ export function useAssociateAgencyPageState(params?: {
     };
 
     void run();
-  }, [isSignedIn, isUserLoaded, locale, orgId, router]);
+  }, [
+    isSignedIn,
+    isUserLoaded,
+    locale,
+    orgId,
+    postClientAssociationPath,
+    router,
+  ]);
 
   const greetingNode = useMemo<ReactNode>(() => {
     if (mode === 'client') {
@@ -170,9 +319,9 @@ export function useAssociateAgencyPageState(params?: {
   }, [locale, mode, trainerStep]);
 
   const resetAll = () => {
-    setMode(null);
+    setMode(clientInvite.isClientInvite ? 'client' : null);
     setTrainerStep('address');
-    setCode('');
+    setCode(clientInvite.agencyCode);
     setLoading(false);
     setError(null);
     setTrainerAgencyName('');
@@ -242,10 +391,17 @@ export function useAssociateAgencyPageState(params?: {
         await setActive({ organization: data.organizationId });
       }
 
+      clearStoredClientOnboardingInvite();
       onSuccess?.(data);
-      router.push(`/${locale}/myweek`);
+      router.push(postClientAssociationPath);
     } catch (nextError: any) {
-      setError(nextError?.details || nextError?.message || t('error.unknown'));
+      if (isHttpError<{ details?: string }>(nextError)) {
+        setError(
+          nextError.data?.details || nextError.message || t('error.unknown'),
+        );
+      } else {
+        setError(nextError?.details || nextError?.message || t('error.unknown'));
+      }
     } finally {
       setLoading(false);
     }
@@ -286,7 +442,7 @@ export function useAssociateAgencyPageState(params?: {
     setTrainerWebsiteUrl('');
     setAddressInput('');
     setSelectedAddress(null);
-    setCode('');
+    setCode(clientInvite.agencyCode);
   };
 
   const handleSelectTrainerMode = () => {
@@ -317,6 +473,7 @@ export function useAssociateAgencyPageState(params?: {
       await setActive({ organization: data.organizationId });
     }
 
+    clearStoredClientOnboardingInvite();
     router.push(`/${locale}/myweek`);
   };
 
@@ -340,12 +497,16 @@ export function useAssociateAgencyPageState(params?: {
 
   return {
     addressInput,
+    agencyPreview,
+    agencyPreviewLoading,
     addressInputRef,
     blockingMessage,
     canContinueTrainerAddress,
     canSubmitClient,
     checkingDb,
     code,
+    clientInviteAgencyName: clientInvite.agencyName,
+    clientInviteLocked: clientInvite.isClientInvite,
     displayName,
     email,
     error,

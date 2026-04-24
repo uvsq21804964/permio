@@ -1,6 +1,7 @@
 'use client';
 
 import type React from 'react';
+import { isOutsideDefaultWorkingHours } from '@/lib/client/utils/working-hours';
 
 type AvailabilityWeekGridProps = {
   dayColumnClassName?: string;
@@ -25,11 +26,11 @@ export function AvailabilityWeekGrid({
   dayHeaderClassName = 'p-2 text-center text-sm font-medium border-b border-r',
   dayLabels,
   getCellClassName,
-  gridClassName = 'grid grid-cols-8 gap-0',
-  hourCellClassName = 'p-2 text-sm text-muted-foreground border-r border-b',
+  gridClassName = 'grid grid-cols-[3.5rem_repeat(7,minmax(0,1fr))] gap-0 md:grid-cols-8',
+  hourCellClassName = 'border-r border-b px-1 py-2 text-[11px] text-muted-foreground md:p-2 md:text-sm',
   hourColumnClassName = '',
   hourColumnTitle,
-  hourHeaderClassName = 'p-2 text-sm font-medium text-muted-foreground border-b',
+  hourHeaderClassName = 'border-b px-1 py-2 text-[11px] font-medium text-muted-foreground md:p-2 md:text-sm',
   hours,
   minWidthClassName = 'min-w-[800px]',
   onCellClick,
@@ -38,45 +39,59 @@ export function AvailabilityWeekGrid({
   renderHourLabel,
 }: AvailabilityWeekGridProps) {
   return (
-    <div className={minWidthClassName}>
-      <div className={gridClassName}>
-        <div className={hourHeaderClassName}>{hourColumnTitle}</div>
-        {dayLabels.map((label, index) => (
-          <div key={index} className={dayHeaderClassName}>
-            {label}
+    <div className="max-h-[70vh] overflow-auto">
+      <div className={minWidthClassName}>
+        <div
+          className={`sticky top-0 z-20 ${gridClassName} bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80`}
+        >
+          <div
+            className={`sticky left-0 z-30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 ${hourHeaderClassName}`}
+          >
+            {hourColumnTitle}
           </div>
-        ))}
-      </div>
-
-      <div className={gridClassName}>
-        <div className={hourColumnClassName}>
-          {hours.map((hour) => (
-            <div
-              key={`hour-${hour}`}
-              className={hourCellClassName}
-              style={{ height: `${pixelsPerHour}px` }}
-            >
-              {renderHourLabel(hour)}
+          {dayLabels.map((label, index) => (
+            <div key={index} className={dayHeaderClassName}>
+              {label}
             </div>
           ))}
         </div>
 
-        {dayLabels.map((_, dayIndex) => (
-          <div key={`day-${dayIndex}`} className={dayColumnClassName}>
+        <div className={gridClassName}>
+          <div className={`sticky left-0 z-10 bg-background ${hourColumnClassName}`.trim()}>
             {hours.map((hour) => (
               <div
-                key={`${dayIndex}-${hour}`}
-                className={getCellClassName?.(dayIndex, hour) ?? 'border-b'}
+                key={`hour-${hour}`}
+                className={`${hourCellClassName} ${
+                  isOutsideDefaultWorkingHours(hour)
+                    ? 'bg-slate-100/70'
+                    : 'bg-background'
+                }`.trim()}
                 style={{ height: `${pixelsPerHour}px` }}
-                onClick={
-                  onCellClick ? () => onCellClick(dayIndex, hour) : undefined
-                }
-              />
+              >
+                {renderHourLabel(hour)}
+              </div>
             ))}
-
-            {renderBlocks(dayIndex)}
           </div>
-        ))}
+
+          {dayLabels.map((_, dayIndex) => (
+            <div key={`day-${dayIndex}`} className={dayColumnClassName}>
+              {hours.map((hour) => (
+                <div
+                  key={`${dayIndex}-${hour}`}
+                  className={`${
+                    getCellClassName?.(dayIndex, hour) ?? 'border-b'
+                  } ${isOutsideDefaultWorkingHours(hour) ? 'bg-slate-100/70' : ''}`.trim()}
+                  style={{ height: `${pixelsPerHour}px` }}
+                  onClick={
+                    onCellClick ? () => onCellClick(dayIndex, hour) : undefined
+                  }
+                />
+              ))}
+
+              {renderBlocks(dayIndex)}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

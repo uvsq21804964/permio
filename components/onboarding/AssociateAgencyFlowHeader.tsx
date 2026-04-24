@@ -17,29 +17,38 @@ export function AssociateAgencyFlowHeader({
   locale,
   onReset,
 }: AssociateAgencyFlowHeaderProps) {
+  const isFrench = locale.startsWith('fr');
+  const identity = [displayName, email].filter(Boolean).join(' · ');
+
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div className="min-w-0">
-        <div className="text-lg md:text-xl font-bold text-black">{greetingNode}</div>
+    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="min-w-0 space-y-3">
+        <div className="max-w-xl text-2xl font-black leading-[1.02] tracking-[-0.05em] text-black md:text-[2rem]">
+          {greetingNode}
+        </div>
 
-        {isUserLoaded && (displayName || email) ? (
-          <div className="text-sm text-black/55 truncate">
-            {[displayName, email].filter(Boolean).join(' · ')}
-          </div>
-        ) : null}
+        <div className="flex flex-wrap items-center gap-2 text-sm text-black/58">
+          {isUserLoaded && identity ? (
+            <span className="max-w-full truncate rounded-full bg-black/[0.045] px-3 py-1.5 text-black/62">
+              {identity}
+            </span>
+          ) : null}
+
+          <span className="text-black/50">
+            {isFrench
+              ? 'Quelques infos suffisent pour lancer la suite.'
+              : 'A few details and we take care of the rest.'}
+          </span>
+        </div>
       </div>
 
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          onClick={onReset}
-          className="ml-1 text-sm text-black/60 hover:text-black underline underline-offset-4 whitespace-nowrap"
-        >
-          {locale.startsWith('fr')
-            ? 'Retour au choix des rôles'
-            : 'Back to role selection'}
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={onReset}
+        className="inline-flex items-center justify-center rounded-full border border-black/10 bg-white/80 px-4 py-2 text-sm font-medium text-black/65 shadow-sm transition hover:border-black/15 hover:bg-white hover:text-black whitespace-nowrap"
+      >
+        {isFrench ? 'Retour au choix des roles' : 'Back to role selection'}
+      </button>
     </div>
   );
 }

@@ -22,6 +22,7 @@ export function useGooglePlacesAutocomplete({
 }: Options) {
   const onSelectRef = useRef(onSelect);
   const onInvalidSelectionRef = useRef(onInvalidSelection);
+  const fallbackFormattedAddressRef = useRef(fallbackFormattedAddress);
 
   useEffect(() => {
     onSelectRef.current = onSelect;
@@ -30,6 +31,10 @@ export function useGooglePlacesAutocomplete({
   useEffect(() => {
     onInvalidSelectionRef.current = onInvalidSelection;
   }, [onInvalidSelection]);
+
+  useEffect(() => {
+    fallbackFormattedAddressRef.current = fallbackFormattedAddress;
+  }, [fallbackFormattedAddress]);
 
   useEffect(() => {
     if (!enabled) return;
@@ -50,12 +55,17 @@ export function useGooglePlacesAutocomplete({
 
     const listener = autocomplete.addListener('place_changed', () => {
       const place = autocomplete.getPlace();
-      const fallback = inputRef.current?.value ?? fallbackFormattedAddress ?? '';
+      const fallback =
+        inputRef.current?.value ?? fallbackFormattedAddressRef.current ?? '';
       const address = mapGooglePlaceToAddress(place, fallback);
 
       if (!address) {
         onInvalidSelectionRef.current();
         return;
+      }
+
+      if (inputRef.current && inputRef.current.value !== address.formattedAddress) {
+        inputRef.current.value = address.formattedAddress;
       }
 
       onSelectRef.current(address);
@@ -65,5 +75,5 @@ export function useGooglePlacesAutocomplete({
       window.google?.maps?.event?.removeListener?.(listener);
       clearGoogleMapsInstanceListeners(autocomplete);
     };
-  }, [enabled, fallbackFormattedAddress, inputRef]);
+  }, [enabled, inputRef]);
 }

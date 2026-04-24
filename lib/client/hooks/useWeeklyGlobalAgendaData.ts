@@ -162,6 +162,7 @@ export function useWeeklyGlobalAgendaData({
     travelsByDate,
     loadingWeek,
     error,
+    goToCurrentWeek: () => setWeekStart(todayWeekStartISO()),
     goToPreviousWeek: () => setWeekStart((prev) => addDaysISO(prev, -7)),
     goToNextWeek: () => setWeekStart((prev) => addDaysISO(prev, 7)),
   };

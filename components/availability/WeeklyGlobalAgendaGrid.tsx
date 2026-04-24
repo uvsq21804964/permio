@@ -26,6 +26,7 @@ import {
   buildGoogleMapsUrl,
   formatServicePrice,
 } from '@/components/availability/weekly-global-agenda-shared';
+import { isOutsideDefaultWorkingHours } from '@/lib/client/utils/working-hours';
 
 type TranslationFn = (key: string, values?: Record<string, unknown>) => string;
 
@@ -53,9 +54,10 @@ export function WeeklyGlobalAgendaGrid({
   weekDates,
 }: WeeklyGlobalAgendaGridProps) {
   return (
-    <div className="min-w-[900px]">
-      <div className="grid grid-cols-8">
-        <div className="border-b p-2 text-sm font-medium text-muted-foreground">
+    <div className="max-h-[70vh] overflow-auto">
+      <div className="min-w-[900px]">
+      <div className="sticky top-0 z-20 grid grid-cols-[3.5rem_repeat(7,minmax(0,1fr))] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 md:grid-cols-8">
+        <div className="sticky left-0 z-30 border-b bg-background/95 px-1 py-2 text-[11px] font-medium text-muted-foreground backdrop-blur supports-[backdrop-filter]:bg-background/80 md:p-2 md:text-sm">
           {t('column_hour')}
         </div>
         {weekDates.map((dateIso) => (
@@ -71,12 +73,16 @@ export function WeeklyGlobalAgendaGrid({
         ))}
       </div>
 
-      <div className="grid grid-cols-8">
-        <div className="border-r">
+      <div className="grid grid-cols-[3.5rem_repeat(7,minmax(0,1fr))] md:grid-cols-8">
+        <div className="sticky left-0 z-10 border-r bg-background">
           {HOURS.map((hour) => (
             <div
               key={hour}
-              className="flex items-start border-b px-2 text-xs text-muted-foreground md:text-sm"
+              className={`flex items-start border-b px-1 py-2 text-[11px] text-muted-foreground md:px-2 md:text-sm ${
+                isOutsideDefaultWorkingHours(hour)
+                  ? 'bg-slate-100/70'
+                  : 'bg-background'
+              }`}
               style={{ height: `${PIXELS_PER_HOUR}px` }}
             >
               {formatHourLabel(hour, locale)}
@@ -99,6 +105,7 @@ export function WeeklyGlobalAgendaGrid({
             travels={travelsByDate[dateIso] || []}
           />
         ))}
+      </div>
       </div>
     </div>
   );
@@ -136,7 +143,11 @@ function AgendaDayColumn({
       {HOURS.map((hour) => (
         <div
           key={`${dateIso}-${hour}`}
-          className="border-b bg-background/50"
+          className={`border-b ${
+            isOutsideDefaultWorkingHours(hour)
+              ? 'bg-slate-100/70'
+              : 'bg-background/50'
+          }`}
           style={{ height: `${PIXELS_PER_HOUR}px` }}
         />
       ))}

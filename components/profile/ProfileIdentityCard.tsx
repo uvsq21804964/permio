@@ -1,3 +1,5 @@
+import Image from 'next/image';
+
 import type { ProfileTranslator } from '@/components/profile/profile-shared';
 
 type IdentityProfile = {
@@ -14,7 +16,9 @@ type ProfileIdentityCardProps = {
   createdOnLabel: string;
   initials: string;
   onCopyJoinCode: () => void;
+  onEditPhoto: () => void;
   onEditName: () => void;
+  profileImageUrl: string | null;
   profile: IdentityProfile;
   t: ProfileTranslator;
 };
@@ -24,7 +28,9 @@ export function ProfileIdentityCard({
   createdOnLabel,
   initials,
   onCopyJoinCode,
+  onEditPhoto,
   onEditName,
+  profileImageUrl,
   profile,
   t,
 }: ProfileIdentityCardProps) {
@@ -32,9 +38,32 @@ export function ProfileIdentityCard({
     <>
       <section className="rounded-2xl border bg-card p-5 md:p-6 shadow-sm flex flex-col gap-4 md:gap-0 md:flex-row md:items-center md:justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold text-lg">
-            {initials}
-          </div>
+          <button
+            type="button"
+            onClick={onEditPhoto}
+            className="group relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border/70 bg-primary/10 text-primary transition hover:border-primary/40 hover:shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+            aria-label={t('identity.avatar.edit')}
+            title={t('identity.avatar.edit')}
+          >
+            {profileImageUrl ? (
+              <Image
+                src={profileImageUrl}
+                alt={t('identity.avatar.alt', {
+                  name: profile.name || t('common.user'),
+                })}
+                fill
+                sizes="64px"
+                className="object-cover"
+              />
+            ) : (
+              <span className="text-lg font-semibold">{initials}</span>
+            )}
+
+            <span className="absolute inset-x-0 bottom-0 bg-black/60 px-2 py-1 text-[10px] font-medium text-white opacity-100 transition md:opacity-0 md:group-hover:opacity-100">
+              {t('identity.avatar.edit')}
+            </span>
+          </button>
+
           <div className="space-y-1">
             <h1 className="text-lg md:text-xl font-semibold">{t('header.title')}</h1>
             <p className="text-sm text-muted-foreground">
@@ -44,6 +73,13 @@ export function ProfileIdentityCard({
             <p className="text-xs text-muted-foreground">
               {t('header.createdOn', { date: createdOnLabel })}
             </p>
+            <button
+              type="button"
+              onClick={onEditPhoto}
+              className="text-xs font-medium text-primary hover:underline"
+            >
+              {t('identity.avatar.help')}
+            </button>
           </div>
         </div>
       </section>

@@ -5,6 +5,7 @@ import {
   getStablePaletteClass,
   getTimelineBlockStyle,
 } from '@/lib/client/utils/schedule-display';
+import { isOutsideDefaultWorkingHours } from '@/lib/client/utils/working-hours';
 
 type CalculatedAgendaGridProps = {
   items: Match[];
@@ -36,10 +37,10 @@ export function CalculatedAgendaGrid({
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="max-h-[70vh] overflow-auto">
       <div className="min-w-[800px]">
-        <div className="grid grid-cols-8 gap-0">
-          <div className="border-b p-2 text-sm font-medium text-muted-foreground">
+        <div className="sticky top-0 z-20 grid grid-cols-[3.5rem_repeat(7,minmax(0,1fr))] gap-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 md:grid-cols-8">
+          <div className="sticky left-0 z-30 border-b bg-background/95 px-1 py-2 text-[11px] font-medium text-muted-foreground backdrop-blur supports-[backdrop-filter]:bg-background/80 md:p-2 md:text-sm">
             Heure
           </div>
           {DAYS.map((day) => (
@@ -52,12 +53,16 @@ export function CalculatedAgendaGrid({
           ))}
         </div>
 
-        <div className="grid grid-cols-8 gap-0">
-          <div>
+        <div className="grid grid-cols-[3.5rem_repeat(7,minmax(0,1fr))] gap-0 md:grid-cols-8">
+          <div className="sticky left-0 z-10 bg-background">
             {HOURS.map((hour) => (
               <div
                 key={`hour-${hour}`}
-                className="border-b border-r p-2 text-sm text-muted-foreground"
+                className={`border-b border-r px-1 py-2 text-[11px] text-muted-foreground md:p-2 md:text-sm ${
+                  isOutsideDefaultWorkingHours(hour)
+                    ? 'bg-slate-100/70'
+                    : 'bg-background'
+                }`}
                 style={{ height: `${PIXELS_PER_HOUR}px` }}
               >
                 {hour}:00
@@ -70,7 +75,7 @@ export function CalculatedAgendaGrid({
               {HOURS.map((hour) => (
                 <div
                   key={`${dayIndex}-${hour}`}
-                  className="border-b"
+                  className={isOutsideDefaultWorkingHours(hour) ? 'border-b bg-slate-100/70' : 'border-b'}
                   style={{ height: `${PIXELS_PER_HOUR}px` }}
                 />
               ))}

@@ -61,7 +61,7 @@
     "dialog": {
       "title": "Détails du créneau",
       "description": "Cours prévu de {start} à {end}.",
-      "fallbackDescription": "Consultez les informations de ce créneau.",
+      "fallbackDescription": "Consulte les informations de ce créneau.",
       "dateLabel": "Date",
       "timeLabel": "Horaire",
       "openHint": "Cliquer pour voir le détail",
@@ -76,8 +76,28 @@
       "cancelling": "Annulation...",
       "cancelSuccess": "Le créneau a bien été annulé.",
       "cancelError": "Impossible d'annuler ce créneau.",
+      "cancelPastError": "Un créneau passé ne peut plus être annulé.",
       "cancelTooLateError": "Un client ne peut annuler qu'au moins 48h avant le créneau.",
       "cancelWindowHint": "Les clients peuvent annuler uniquement jusqu'à 48h avant le début du créneau."
+    },
+    "review": {
+      "title": "Ton avis sur la séance",
+      "description": "Tu peux noter cette séance et laisser un commentaire sur l'éducateur canin.",
+      "editHint": "Ton avis est déjà enregistré. Tu peux encore le modifier.",
+      "commentPlaceholder": "Ajoute un commentaire si tu le souhaites...",
+      "commentOptional": "Le commentaire est facultatif. La note aide surtout les prochains clients à se rassurer.",
+      "submitAction": "Publier mon avis",
+      "updateAction": "Mettre à jour mon avis",
+      "saving": "Enregistrement...",
+      "submitSuccess": "Merci, ton avis a bien été enregistré.",
+      "updateSuccess": "Ton avis a bien été mis à jour.",
+      "loadError": "Impossible de charger ton avis pour ce créneau.",
+      "storageUnavailable": "Les avis sont temporairement indisponibles sur cet environnement.",
+      "saveError": "Impossible d'enregistrer ton avis pour le moment.",
+      "ratingRequired": "Choisis une note avant d'enregistrer ton avis.",
+      "unavailable": "L'avis n'est pas disponible pour ce créneau.",
+      "notAvailableYet": "Tu pourras laisser un avis une fois la séance terminée.",
+      "starAria": "Donner {count} étoile(s)"
     }
   }
 }

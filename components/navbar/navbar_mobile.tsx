@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
+import { BrandWordmark } from '@/components/brand/BrandWordmark';
 import {
   filterNavbarPages,
   stripLocalePrefix,
@@ -58,18 +59,21 @@ const MobileNavbar: React.FC<NavbarProps> = ({
           <div className="flex items-center gap-4">
             <Link
               href={withLocalePath('/myweek', locale)}
-              className="relative h-10 w-24 block focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 dark:focus:ring-neutral-600 rounded"
+              className="flex items-end gap-2 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 dark:focus:ring-neutral-600"
               onClick={() => setIsMenuOpen(false)}
             >
               <span className="sr-only">{homeSrLabel}</span>
-              <Image
-                src={logo}
-                alt="Logo"
-                fill
-                sizes="96px"
-                className="object-contain"
-                priority
-              />
+              <span className="relative h-10 w-12 shrink-0">
+                <Image
+                  src={logo}
+                  alt="MagicHango"
+                  fill
+                  sizes="48px"
+                  className="object-contain object-bottom"
+                  priority
+                />
+              </span>
+              <BrandWordmark className="pb-0.5" tone="dark" />
             </Link>
           </div>
 

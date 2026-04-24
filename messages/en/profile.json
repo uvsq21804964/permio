@@ -4,7 +4,7 @@
     "close": "Close",
     "cancel": "Cancel",
     "save": "Save",
-    "saving": "Saving…",
+    "saving": "Saving...",
     "retry": "Try again"
   },
   "header": {
@@ -14,6 +14,11 @@
   },
   "identity": {
     "title": "Identity",
+    "avatar": {
+      "edit": "Change photo",
+      "help": "Click the photo to update it",
+      "alt": "{name}'s profile photo"
+    },
     "displayName": {
       "label": "Display name",
       "edit": "Edit name",
@@ -33,7 +38,7 @@
     "title": "Delete my account",
     "body": "This action is permanent: your profile will be deleted from the database and our authentication system. You will need to create a new account if you want to come back later.",
     "button": "Delete my account permanently",
-    "inProgress": "Deleting…",
+    "inProgress": "Deleting...",
     "confirmPrompt": "Are you sure you want to permanently delete your account? This action cannot be undone."
   },
   "address": {
@@ -57,7 +62,7 @@
     },
     "map": {
       "label": "Map",
-      "loading": "Loading map…",
+      "loading": "Loading map...",
       "noCoords": "No geocoded address yet."
     }
   },
@@ -70,7 +75,7 @@
     "address": {
       "title": "Edit primary address",
       "helper": "This address is used to compute travel time and group appointments. Select a Google suggestion to ensure the address can be geocoded.",
-      "labelPlaceholder": "Home, Office, Park…",
+      "labelPlaceholder": "Home, Office, Park...",
       "formattedPlaceholder": "Start typing and pick a Google suggestion",
       "selectedTitle": "Selected address:",
       "selectedStreet": "Street:",
@@ -85,8 +90,11 @@
     "loadProfile": "Could not load profile",
     "mapsLoad": "Could not load Google address autocomplete. Please check your API key.",
     "geocodeFail": "Could not retrieve geolocation for this address.",
+    "nameEmpty": "Name cannot be empty.",
+    "updateNameFailed": "Error while updating the name.",
     "addressEmpty": "Formatted address cannot be empty.",
     "addressNeedSuggestion": "Please select an address from Google suggestions before saving.",
+    "updateAddressFailed": "Error while updating the address.",
     "deleteFailed": "Error while deleting the account."
   },
   "toasts": {

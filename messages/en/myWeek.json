@@ -76,8 +76,28 @@
       "cancelling": "Cancelling...",
       "cancelSuccess": "The slot was cancelled.",
       "cancelError": "Unable to cancel this slot.",
+      "cancelPastError": "A past slot can no longer be cancelled.",
       "cancelTooLateError": "A client can only cancel at least 48 hours before the slot.",
       "cancelWindowHint": "Clients can only cancel until 48 hours before the slot starts."
+    },
+    "review": {
+      "title": "Your feedback on this lesson",
+      "description": "You can rate this lesson and leave a comment about the dog trainer.",
+      "editHint": "Your feedback is already saved. You can still update it.",
+      "commentPlaceholder": "Add a comment if you'd like...",
+      "commentOptional": "The comment is optional. The rating mainly helps reassure future clients.",
+      "submitAction": "Publish my review",
+      "updateAction": "Update my review",
+      "saving": "Saving...",
+      "submitSuccess": "Thanks, your review has been saved.",
+      "updateSuccess": "Your review has been updated.",
+      "loadError": "Unable to load your review for this slot.",
+      "storageUnavailable": "Reviews are temporarily unavailable on this environment.",
+      "saveError": "Unable to save your review right now.",
+      "ratingRequired": "Choose a rating before saving your review.",
+      "unavailable": "Reviews are not available for this slot.",
+      "notAvailableYet": "You'll be able to leave a review once the lesson has ended.",
+      "starAria": "Give {count} star(s)"
     }
   }
 }

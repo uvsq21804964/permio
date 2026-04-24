@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
+import { BrandWordmark } from '@/components/brand/BrandWordmark';
 
 type Props = {
   locale: string;
@@ -35,7 +36,7 @@ export default function HomeStatusCard({
               priority
             />
           </span>
-          <span className="text-base font-semibold text-black">MagicHango</span>
+          <BrandWordmark tone="dark" />
         </div>
 
         <div className="text-lg font-bold text-black">{title}</div>

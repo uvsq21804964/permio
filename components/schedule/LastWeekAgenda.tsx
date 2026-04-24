@@ -187,6 +187,9 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
         joinCode={joinCode}
         locale={locale}
         onCopyJoinCode={handleCopyJoinCode}
+        onCurrentWeek={() => {
+          setCurrentWeekStartISO(toISODateLocal(getMondayOfWeek(new Date())));
+        }}
         onNextWeek={() =>
           setCurrentWeekStartISO((previous) =>
             addDaysToISO(previous ?? toISODateLocal(getMondayOfWeek(new Date())), 7)

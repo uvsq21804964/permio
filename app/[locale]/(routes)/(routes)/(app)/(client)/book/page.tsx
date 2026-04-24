@@ -25,7 +25,6 @@ export default function BookPage() {
   const {
     agendaData,
     bookingAddress,
-    bookingError,
     bookingLoading,
     canGoNextWeek,
     canGoPrevWeek,
@@ -34,6 +33,7 @@ export default function BookPage() {
     earliestAllowed,
     error,
     handleKeepCurrentChoice,
+    handleCurrentWeek,
     handleNextWeek,
     handlePrevWeek,
     handleRequestBooking,
@@ -45,7 +45,6 @@ export default function BookPage() {
     isSignedIn,
     loading,
     locale,
-    notice,
     nowTop,
     nudgeAlternative,
     nudgeOpen,
@@ -64,6 +63,7 @@ export default function BookPage() {
     weekEnd,
     weekStart,
   } = useBookPageState();
+  const currentWeekLabel = locale.startsWith('fr') ? 'Cette semaine' : 'This week';
 
   const bookingTranslator = useMemo(
     () =>
@@ -153,6 +153,14 @@ export default function BookPage() {
               <Button
                 variant="outline"
                 size="sm"
+                onClick={handleCurrentWeek}
+                disabled={isCurrentWeek}
+              >
+                {currentWeekLabel}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleNextWeek}
                 disabled={!canGoNextWeek}
               >
@@ -187,21 +195,9 @@ export default function BookPage() {
 
         </section>
 
-        {notice ? (
-          <Alert>
-            <AlertDescription className="text-sm">{notice}</AlertDescription>
-          </Alert>
-        ) : null}
-
         {error ? (
           <Alert variant="destructive">
             <AlertDescription className="text-sm">{error}</AlertDescription>
-          </Alert>
-        ) : null}
-
-        {bookingError ? (
-          <Alert variant="destructive">
-            <AlertDescription className="text-sm">{bookingError}</AlertDescription>
           </Alert>
         ) : null}
 

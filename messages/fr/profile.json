@@ -4,7 +4,7 @@
     "close": "Fermer",
     "cancel": "Annuler",
     "save": "Enregistrer",
-    "saving": "Enregistrement…",
+    "saving": "Enregistrement...",
     "retry": "Réessayer"
   },
   "header": {
@@ -14,6 +14,11 @@
   },
   "identity": {
     "title": "Identité",
+    "avatar": {
+      "edit": "Changer la photo",
+      "help": "Clique sur la photo pour la modifier",
+      "alt": "Photo de profil de {name}"
+    },
     "displayName": {
       "label": "Nom affiché",
       "edit": "Modifier le nom",
@@ -33,13 +38,13 @@
     "title": "Supprimer mon compte",
     "body": "Cette action est définitive : ton profil sera supprimé de la base de données et de notre système d'authentification. Tu devras créer un nouveau compte si tu souhaites revenir plus tard.",
     "button": "Supprimer mon compte définitivement",
-    "inProgress": "Suppression en cours…",
+    "inProgress": "Suppression en cours...",
     "confirmPrompt": "Es-tu sûr de vouloir supprimer définitivement ton compte ? Cette action est irréversible."
   },
   "address": {
     "title": "Adresse principale",
     "subtitle": "Utilisée pour estimer les trajets et regrouper les interventions par zones.",
-    "edit": "Modifier l’adresse",
+    "edit": "Modifier l'adresse",
     "label": "Label",
     "formatted": "Adresse formatée",
     "street": "Rue",
@@ -57,8 +62,8 @@
     },
     "map": {
       "label": "Carte",
-      "loading": "Chargement de la carte…",
-      "noCoords": "Aucune adresse géolocalisée pour l’instant."
+      "loading": "Chargement de la carte...",
+      "noCoords": "Aucune adresse géolocalisée pour l'instant."
     }
   },
   "modals": {
@@ -68,9 +73,9 @@
       "newName": "Nouveau nom"
     },
     "address": {
-      "title": "Modifier l’adresse principale",
+      "title": "Modifier l'adresse principale",
       "helper": "L'adresse est utilisée pour calculer les trajets et regrouper les interventions. Choisis une suggestion Google pour garantir une adresse géolocalisable.",
-      "labelPlaceholder": "Domicile, Bureau, Parc…",
+      "labelPlaceholder": "Domicile, Bureau, Parc...",
       "formattedPlaceholder": "Commence à taper et choisis une suggestion Google",
       "selectedTitle": "Adresse sélectionnée :",
       "selectedStreet": "Rue :",
@@ -85,15 +90,18 @@
     "loadProfile": "Impossible de charger le profil",
     "mapsLoad": "Impossible de charger l'autocomplétion d'adresse Google. Vérifiez la clé API.",
     "geocodeFail": "Impossible de récupérer la géolocalisation de cette adresse.",
+    "nameEmpty": "Le nom ne peut pas être vide.",
+    "updateNameFailed": "Erreur lors de la mise à jour du nom.",
     "addressEmpty": "L'adresse formatée ne peut pas être vide.",
     "addressNeedSuggestion": "Veuillez choisir une adresse dans les suggestions Google avant d'enregistrer.",
+    "updateAddressFailed": "Erreur lors de la mise à jour de l'adresse.",
     "deleteFailed": "Erreur lors de la suppression du compte."
   },
   "toasts": {
     "subscriptionRequired": {
       "title": "Accès restreint",
       "descriptionInstructor": "Un abonnement actif est requis pour accéder à cette page.",
-      "descriptionStudent": "L’accès est temporairement désactivé car l’abonnement de votre éducateur n’est pas actif."
+      "descriptionStudent": "L'accès est temporairement désactivé car l'abonnement de votre éducateur n'est pas actif."
     }
   }
 }
