@@ -28,8 +28,8 @@ export const slotBookedInstructorEmail = inngest.createFunction(
     id: 'slot-booked-instructor-email',
     idempotency: 'event.id',
     retries: 5,
+    triggers: [{ event: 'slot/booked-instructor' }],
   },
-  { event: 'slot/booked-instructor' },
   async ({ event, step }) => {
     try {
       const {

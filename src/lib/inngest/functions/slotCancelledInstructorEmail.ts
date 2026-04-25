@@ -16,8 +16,8 @@ export const slotCancelledInstructorEmail = inngest.createFunction(
     id: 'slot-cancelled-instructor-email',
     idempotency: 'event.id',
     retries: 5,
+    triggers: [{ event: 'slot/cancelled-instructor' }],
   },
-  { event: 'slot/cancelled-instructor' },
   async ({ event, step }) => {
     const data = event.data as {
       slotId: number | string;

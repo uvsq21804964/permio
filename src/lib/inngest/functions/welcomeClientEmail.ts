@@ -28,8 +28,8 @@ export const welcomeClientEmail = inngest.createFunction(
     id: 'agency-client-welcome-email',
     idempotency: 'event.id',
     retries: 5,
+    triggers: [{ event: 'agency/client-welcome' }],
   },
-  { event: 'agency/client-welcome' },
   async ({ event, step }) => {
     const { agencyId, agencyName, userId, locale } = event.data as {
       agencyId: string;

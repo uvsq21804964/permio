@@ -20,13 +20,19 @@ type ClientRow = {
   name: string | null;
 };
 
+type Recipient = {
+  email: string | null;
+  id: string;
+  name: string | null;
+};
+
 export const newClientEmail = inngest.createFunction(
   {
     id: 'agency-member-joined-email',
     idempotency: 'event.id',
     retries: 5,
+    triggers: [{ event: 'agency/member-joined' }],
   },
-  { event: 'agency/member-joined' },
   async ({ event, step }) => {
     const { agencyId, agencyName, userId, locale } = event.data as {
       agencyId: string;
@@ -60,7 +66,9 @@ export const newClientEmail = inngest.createFunction(
     });
 
     const clerk = await clerkClient();
-    const instructorIds = instructors.map((instructor) => instructor.id);
+    const instructorIds = instructors.map(
+      (instructor: InstructorRow) => instructor.id,
+    );
     const clerkUsers = await step.run('load-instructor-emails', async () => {
       return clerk.users.getUserList({
         userId: instructorIds,
@@ -72,19 +80,22 @@ export const newClientEmail = inngest.createFunction(
     for (const clerkUser of clerkUsers.data) {
       emailById[clerkUser.id] =
         clerkUser.emailAddresses?.find(
-          (entry) => entry.id === clerkUser.primaryEmailAddressId,
+          (entry: { emailAddress: string; id: string }) =>
+            entry.id === clerkUser.primaryEmailAddressId,
         )?.emailAddress ??
         clerkUser.emailAddresses?.[0]?.emailAddress ??
         null;
     }
 
-    const recipients = instructors
-      .map((instructor) => ({
+    const recipients: Recipient[] = instructors
+      .map((instructor: InstructorRow) => ({
         id: instructor.id,
         name: instructor.name,
         email: emailById[instructor.id] ?? null,
       }))
-      .filter((entry) => !!entry.email);
+      .filter(
+        (entry: Recipient): entry is Recipient & { email: string } => !!entry.email,
+      );
 
     inngestEmailLogger.info('[newClientEmail] recipients debug', {
       instructors,
@@ -123,7 +134,7 @@ export const newClientEmail = inngest.createFunction(
     const res = await step.run('send-email', async () => {
       inngestEmailLogger.info('[newClientEmail] sending email', {
         agencyId,
-        recipients: recipients.map((recipient) => recipient.email),
+        recipients: recipients.map((recipient: Recipient) => recipient.email),
       });
 
       const results = [];
