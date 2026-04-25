@@ -1,5 +1,6 @@
 'use client';
 
+import { Suspense } from 'react';
 import { SignOutButton } from '@clerk/nextjs';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -23,8 +24,20 @@ type Props = {
   className?: string;
 };
 
+const LOGO_PATH = '/NouveauLogoRogne2.png';
+
+function AssociateAgencyPageFallback() {
+  return (
+    <AssociateAgencyBlockingScreen
+      blockingMessage={null}
+      locale="en"
+      logo={LOGO_PATH}
+    />
+  );
+}
+
 function AssociateAgencyContent({ onSuccess, className }: Props) {
-  const logo = '/NouveauLogoRogne2.png';
+  const logo = LOGO_PATH;
   const {
     addressInput,
     agencyPreview,
@@ -240,5 +253,9 @@ function AssociateAgencyContent({ onSuccess, className }: Props) {
 }
 
 export default function AssociateAgencyPage() {
-  return <AssociateAgencyContent />;
+  return (
+    <Suspense fallback={<AssociateAgencyPageFallback />}>
+      <AssociateAgencyContent />
+    </Suspense>
+  );
 }
