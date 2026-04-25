@@ -71,11 +71,16 @@ export function useProfilePageState() {
   const [error, setError] = useState<string | null>(null);
 
   const [nameModalOpen, setNameModalOpen] = useState(false);
+  const [phoneModalOpen, setPhoneModalOpen] = useState(false);
   const [addressModalOpen, setAddressModalOpen] = useState(false);
 
   const [draftName, setDraftName] = useState('');
   const [savingName, setSavingName] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
+  const [draftPhoneCountryCode, setDraftPhoneCountryCode] = useState('+33');
+  const [draftPhoneNumber, setDraftPhoneNumber] = useState('');
+  const [savingPhone, setSavingPhone] = useState(false);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
 
   const [draftAddress, setDraftAddress] = useState<AddressDraft>({
     address_label: '',
@@ -90,7 +95,6 @@ export function useProfilePageState() {
   const [savingAddress, setSavingAddress] = useState(false);
   const [addressError, setAddressError] = useState<string | null>(null);
 
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
@@ -201,7 +205,6 @@ export function useProfilePageState() {
     try {
       setDeleting(true);
       setDeleteError(null);
-      setSuccessMessage(null);
 
       await deleteMyAccount({
         fallbackMessage: t('errors.deleteFailed'),
@@ -221,7 +224,6 @@ export function useProfilePageState() {
 
     setDraftName(profile.name || '');
     setNameError(null);
-    setSuccessMessage(null);
     setNameModalOpen(true);
   }, [profile]);
 
@@ -229,6 +231,20 @@ export function useProfilePageState() {
     if (savingName) return;
     setNameModalOpen(false);
   }, [savingName]);
+
+  const openPhoneModal = useCallback(() => {
+    if (!profile) return;
+
+    setDraftPhoneCountryCode(profile.phone_country_code || '+33');
+    setDraftPhoneNumber(profile.phone_number || '');
+    setPhoneError(null);
+    setPhoneModalOpen(true);
+  }, [profile]);
+
+  const closePhoneModal = useCallback(() => {
+    if (savingPhone) return;
+    setPhoneModalOpen(false);
+  }, [savingPhone]);
 
   const handleSaveName = useCallback(
     async (event: FormEvent) => {
@@ -256,6 +272,8 @@ export function useProfilePageState() {
             city: profile.city,
             country: profile.country,
             country_code: profile.country_code,
+            phone_country_code: profile.phone_country_code || null,
+            phone_number: profile.phone_number || null,
           },
           {
             fallbackMessage: t('errors.updateNameFailed'),
@@ -263,7 +281,7 @@ export function useProfilePageState() {
         );
 
         setProfile(data.user);
-        setSuccessMessage(t('success.nameUpdated'));
+        toast.success(t('success.nameUpdated'));
         setNameModalOpen(false);
       } catch (nextError: any) {
         console.error(nextError);
@@ -280,7 +298,6 @@ export function useProfilePageState() {
 
     setDraftAddress(buildAddressDraft(profile));
     setAddressError(null);
-    setSuccessMessage(null);
     setSelectedAddress(mapProfileAddressToDetails(profile));
     setAddressModalOpen(true);
   }, [profile]);
@@ -339,6 +356,8 @@ export function useProfilePageState() {
             city: draftAddress.city || null,
             country: draftAddress.country || null,
             country_code: draftAddress.country_code || null,
+            phone_country_code: profile.phone_country_code || null,
+            phone_number: profile.phone_number || null,
             lat: selectedAddress.lat,
             lng: selectedAddress.lng,
             google_place_id: selectedAddress.googlePlaceId ?? null,
@@ -350,7 +369,7 @@ export function useProfilePageState() {
         );
 
         setProfile(data.user);
-        setSuccessMessage(t('success.addressUpdated'));
+        toast.success(t('success.addressUpdated'));
         setAddressModalOpen(false);
         setSelectedAddress(null);
       } catch (nextError: any) {
@@ -361,6 +380,58 @@ export function useProfilePageState() {
       }
     },
     [draftAddress, profile, selectedAddress, t],
+  );
+
+  const handleSavePhone = useCallback(
+    async (event: FormEvent) => {
+      event.preventDefault();
+      if (!profile) return;
+
+      if (!draftPhoneCountryCode.trim()) {
+        setPhoneError(t('errors.phoneCountryRequired'));
+        return;
+      }
+
+      if (draftPhoneNumber.replace(/\D/g, '').length < 6) {
+        setPhoneError(t('errors.phoneInvalid'));
+        return;
+      }
+
+      try {
+        setSavingPhone(true);
+        setPhoneError(null);
+
+        const data = await updateProfile(
+          {
+            name: profile.name ?? '',
+            planned_minutes: profile.planned_minutes,
+            address_label: profile.address_label,
+            formatted_address: profile.formatted_address,
+            street: profile.street,
+            street_number: profile.street_number,
+            postal_code: profile.postal_code,
+            city: profile.city,
+            country: profile.country,
+            country_code: profile.country_code,
+            phone_country_code: draftPhoneCountryCode.trim(),
+            phone_number: draftPhoneNumber.trim(),
+          },
+          {
+            fallbackMessage: t('errors.updatePhoneFailed'),
+          },
+        );
+
+        setProfile(data.user);
+        toast.success(t('success.phoneUpdated'));
+        setPhoneModalOpen(false);
+      } catch (nextError: any) {
+        console.error(nextError);
+        setPhoneError(nextError?.message || t('errors.updatePhoneFailed'));
+      } finally {
+        setSavingPhone(false);
+      }
+    },
+    [draftPhoneCountryCode, draftPhoneNumber, profile, t],
   );
 
   const displayedMapAddress = profile
@@ -380,6 +451,7 @@ export function useProfilePageState() {
     addressModalOpen,
     closeAddressModal,
     closeNameModal,
+    closePhoneModal,
     copied,
     copyJoinCode,
     deleteError,
@@ -387,6 +459,8 @@ export function useProfilePageState() {
     displayedMapAddress,
     draftAddress,
     draftName,
+    draftPhoneCountryCode,
+    draftPhoneNumber,
     error,
     formattedAddressRef,
     handleAddressDraftChange,
@@ -398,6 +472,8 @@ export function useProfilePageState() {
     loading,
     nameError,
     nameModalOpen,
+    phoneError,
+    phoneModalOpen,
     onMapsLoadError: (nextError: unknown) => {
       console.error('Google Maps script load error', nextError);
       setAddressError(t('errors.mapsLoad'));
@@ -405,15 +481,19 @@ export function useProfilePageState() {
     onMapsReady: () => setIsMapsReady(true),
     openAddressModal,
     openNameModal,
+    openPhoneModal,
     openProfilePhotoSettings,
     profile,
     profileImageUrl: user?.imageUrl ?? null,
     savingAddress,
     savingName,
+    savingPhone,
     selectedAddress,
     setDraftName,
+    setDraftPhoneCountryCode,
+    setDraftPhoneNumber,
     t,
     translator,
-    successMessage,
+    handleSavePhone,
   };
 }

@@ -17,6 +17,8 @@ type OnboardingPayload = {
   address: AddressDetails;
   rawInput: string;
   agencyName: string;
+  phoneCountryCode: string;
+  phoneNumber: string;
   websiteUrl: string;
 };
 
@@ -101,6 +103,8 @@ export function useEditableWeeklyAvailabilityDraft<
         const data = await completeTrainerOnboarding(
           {
             agencyName: onboarding.agencyName,
+            phoneCountryCode: onboarding.phoneCountryCode,
+            phoneNumber: onboarding.phoneNumber,
             websiteUrl: onboarding.websiteUrl,
             address: onboarding.address,
             rawInput: onboarding.rawInput,

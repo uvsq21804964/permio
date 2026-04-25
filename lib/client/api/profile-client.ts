@@ -24,6 +24,8 @@ export type ProfileUpdatePayload = {
   city: string | null;
   country: string | null;
   country_code: string | null;
+  phone_country_code?: string | null;
+  phone_number?: string | null;
   lat?: number | null;
   lng?: number | null;
   google_place_id?: string | null;
@@ -56,6 +58,8 @@ export type AgencyAssociationResponse = {
 
 export type TrainerOnboardingPayload = {
   agencyName: string;
+  phoneCountryCode: string;
+  phoneNumber: string;
   websiteUrl: string;
   address: AddressDetails;
   rawInput: string;

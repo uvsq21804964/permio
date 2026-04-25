@@ -9,6 +9,7 @@ import {
   buildLocalizedAppUrl,
   inngestEmailLogger,
   loadClerkUserContact,
+  loadTrainerContactDetails,
   sendTransactionalEmail,
   toEmailLocale,
 } from '@/src/lib/inngest/functions/email-shared';
@@ -93,6 +94,9 @@ export const slotReminderClientEmail = inngest.createFunction(
     }
 
     const clerk = await clerkClient();
+    const instructorContact = await step.run('load-instructor-contact', async () =>
+      loadTrainerContactDetails(clerk, details.instructorUserId),
+    );
     const clientClerk = await step.run('load-client-email', async () => {
       try {
         return await loadClerkUserContact(clerk, clientUserId);
@@ -132,7 +136,10 @@ export const slotReminderClientEmail = inngest.createFunction(
           agendaUrl,
           agencyName: details.agencyName,
           firstName: clientClerk?.name,
-          instructorName: details.instructorName,
+          instructorName: instructorContact?.name || details.instructorName,
+          instructorEmail: instructorContact?.email || undefined,
+          instructorPhone: instructorContact?.phoneDisplay || undefined,
+          instructorPhoneHref: instructorContact?.phoneHref || undefined,
           locale: lang,
           meetingAddress: meetingAddress || null,
           serviceName: details.serviceName,

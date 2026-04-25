@@ -23,6 +23,9 @@ type BookingClientReminderEmailProps = {
   date?: string;
   startTime?: string;
   endTime?: string;
+  instructorEmail?: string | null;
+  instructorPhone?: string | null;
+  instructorPhoneHref?: string | null;
 };
 
 function isFr(locale?: string) {
@@ -56,6 +59,9 @@ export default function BookingClientReminderEmail({
   date,
   startTime,
   endTime,
+  instructorEmail,
+  instructorPhone,
+  instructorPhoneHref,
 }: BookingClientReminderEmailProps) {
   const fr = isFr(locale);
   const formattedDate = formatDate(date, fr ? 'fr' : 'en');
@@ -103,6 +109,26 @@ export default function BookingClientReminderEmail({
               {instructorName ? (
                 <Text style={styles.detailLine}>
                   <strong>{fr ? 'Éducateur :' : 'Trainer:'}</strong> {instructorName}
+                </Text>
+              ) : null}
+              {instructorEmail ? (
+                <Text style={styles.detailLine}>
+                  <strong>{fr ? 'Email éducateur :' : 'Trainer email:'}</strong>{' '}
+                  <Link href={`mailto:${instructorEmail}`} style={styles.inlineLink}>
+                    {instructorEmail}
+                  </Link>
+                </Text>
+              ) : null}
+              {instructorPhone ? (
+                <Text style={styles.detailLine}>
+                  <strong>{fr ? 'Téléphone éducateur :' : 'Trainer phone:'}</strong>{' '}
+                  {instructorPhoneHref ? (
+                    <Link href={`tel:${instructorPhoneHref}`} style={styles.inlineLink}>
+                      {instructorPhone}
+                    </Link>
+                  ) : (
+                    instructorPhone
+                  )}
                 </Text>
               ) : null}
               {formattedDate ? (
@@ -219,6 +245,10 @@ const styles: Record<string, React.CSSProperties> = {
     textAlign: 'center',
   },
   link: {
+    color: '#1f1a14',
+    textDecoration: 'underline',
+  },
+  inlineLink: {
     color: '#1f1a14',
     textDecoration: 'underline',
   },

@@ -153,6 +153,32 @@ async function ensureClerkOrganizationMembership(
   }
 }
 
+function normalizePhoneCountryCode(input: unknown): string | null {
+  const normalized = String(input || '')
+    .trim()
+    .replace(/\s+/g, '');
+
+  if (!/^\+\d{1,4}$/.test(normalized)) {
+    return null;
+  }
+
+  return normalized;
+}
+
+function normalizePhoneNumber(input: unknown): string | null {
+  const normalized = String(input || '')
+    .trim()
+    .replace(/[^\d().\-\s]/g, '')
+    .replace(/\s+/g, ' ');
+
+  const digits = normalized.replace(/\D/g, '');
+  if (digits.length < 6 || digits.length > 15) {
+    return null;
+  }
+
+  return normalized;
+}
+
 async function updateClerkUserMetadata(
   clerk: any,
   userId: string,
@@ -180,6 +206,8 @@ export async function POST(req: NextRequest) {
   } catch {}
 
   const agencyName = String(body?.agencyName || '').trim();
+  const phoneCountryCode = normalizePhoneCountryCode(body?.phoneCountryCode);
+  const phoneNumber = normalizePhoneNumber(body?.phoneNumber);
   const websiteUrl = normalizeWebsiteUrl(body?.websiteUrl);
 
   const address: AddressPayload | null = body?.address ?? null;
@@ -203,6 +231,16 @@ export async function POST(req: NextRequest) {
       {
         error: 'Invalid website',
         details: 'Please enter a valid website URL (e.g. https://example.com).',
+      },
+      { status: 400 }
+    );
+  }
+
+  if (!phoneCountryCode || !phoneNumber) {
+    return NextResponse.json(
+      {
+        error: 'Invalid phone',
+        details: 'Please provide a valid country calling code and phone number.',
       },
       { status: 400 }
     );
@@ -364,7 +402,9 @@ export async function POST(req: NextRequest) {
         google_place_id,
         raw_input,
         is_primary,
-        website_url
+        website_url,
+        phone_country_code,
+        phone_number
       ) VALUES (
         ${userId},
         ${displayName},
@@ -384,7 +424,9 @@ export async function POST(req: NextRequest) {
         ${address.googlePlaceId ?? null},
         ${rawInput || null},
         ${true},
-        ${websiteUrl}
+        ${websiteUrl},
+        ${phoneCountryCode},
+        ${phoneNumber}
       )
       ON CONFLICT (id) DO UPDATE SET
         name = EXCLUDED.name,
@@ -403,7 +445,9 @@ export async function POST(req: NextRequest) {
         google_place_id = EXCLUDED.google_place_id,
         raw_input = EXCLUDED.raw_input,
         is_primary = EXCLUDED.is_primary,
-        website_url = EXCLUDED.website_url
+        website_url = EXCLUDED.website_url,
+        phone_country_code = EXCLUDED.phone_country_code,
+        phone_number = EXCLUDED.phone_number
     `;
 
     // 2) Replace Availability (id required)

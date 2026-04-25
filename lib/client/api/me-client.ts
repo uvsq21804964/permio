@@ -20,6 +20,8 @@ export type MyProfileUser = {
   city: string | null;
   country: string | null;
   country_code: string | null;
+  phone_country_code?: string | null;
+  phone_number?: string | null;
   google_place_id: string | null;
   raw_input: string | null;
   address_label: string | null;

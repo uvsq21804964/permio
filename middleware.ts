@@ -43,6 +43,8 @@ function withLocaleCookie(response: NextResponse, locale: SupportedLocale) {
 }
 
 const isPublicRoute = createRouteMatcher([
+  '/blog',
+  '/blog/(.*)',
   '/sign-in(.*)',
   '/sign-up(.*)',
   '/sign-out(.*)',
@@ -50,6 +52,8 @@ const isPublicRoute = createRouteMatcher([
   '/onboarding/choose-organization',
   '/home',
   '/leastory',
+  '/(fr|en)/blog',
+  '/(fr|en)/blog/(.*)',
   '/(fr|en)/sign-in(.*)',
   '/(fr|en)/sign-up(.*)',
   '/(fr|en)/sign-out(.*)',

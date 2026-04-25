@@ -43,6 +43,7 @@ function AssociateAgencyContent({ onSuccess, className }: Props) {
     handleAddressInputChange,
     handleBackToTrainerAddress,
     handleContinueTrainerAddress,
+    handleExitClientInviteFlow,
     handleMapsLoadError,
     handleMapsReady,
     handleSelectClientMode,
@@ -58,9 +59,13 @@ function AssociateAgencyContent({ onSuccess, className }: Props) {
     selectedAddress,
     setCode,
     setTrainerAgencyName,
+    setTrainerPhoneCountryCode,
+    setTrainerPhoneNumber,
     setTrainerWebsiteUrl,
     showBlockingScreen,
     trainerAgencyName,
+    trainerPhoneCountryCode,
+    trainerPhoneNumber,
     trainerStep,
     trainerWebsiteUrl,
     t,
@@ -135,12 +140,17 @@ function AssociateAgencyContent({ onSuccess, className }: Props) {
             ].join(' ')}
           >
             <AssociateAgencyFlowHeader
+              clientInviteLocked={clientInviteLocked && mode === 'client'}
               displayName={displayName}
               email={email}
               greetingNode={greetingNode}
               isUserLoaded={isUserLoaded}
               locale={locale}
-              onReset={resetAll}
+              onReset={
+                clientInviteLocked && mode === 'client'
+                  ? handleExitClientInviteFlow
+                  : resetAll
+              }
             />
 
             {mode === 'client' ? (
@@ -181,8 +191,12 @@ function AssociateAgencyContent({ onSuccess, className }: Props) {
                     onAddressChange={handleAddressInputChange}
                     onAgencyNameChange={setTrainerAgencyName}
                     onContinue={handleContinueTrainerAddress}
+                    onPhoneCountryCodeChange={setTrainerPhoneCountryCode}
+                    onPhoneNumberChange={setTrainerPhoneNumber}
                     onWebsiteChange={setTrainerWebsiteUrl}
                     trainerAgencyName={trainerAgencyName}
+                    trainerPhoneCountryCode={trainerPhoneCountryCode}
+                    trainerPhoneNumber={trainerPhoneNumber}
                     trainerWebsiteUrl={trainerWebsiteUrl}
                   />
                 ) : (
@@ -206,6 +220,8 @@ function AssociateAgencyContent({ onSuccess, className }: Props) {
                               address: selectedAddress,
                               rawInput: addressInput,
                               agencyName: trainerAgencyName.trim(),
+                              phoneCountryCode: trainerPhoneCountryCode.trim(),
+                              phoneNumber: trainerPhoneNumber.trim(),
                               websiteUrl: trainerWebsiteUrl.trim(),
                             }
                           : null

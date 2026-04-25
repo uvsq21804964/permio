@@ -67,7 +67,17 @@ export function useAssociateAgencyPageState(params?: {
   const { setActive } = useOrganizationList();
   const { orgId } = useAuth();
   const { user, isLoaded: isUserLoaded, isSignedIn } = useUser();
+  const [ignoreClientInvite, setIgnoreClientInvite] = useState(false);
+
   const clientInvite = useMemo(() => {
+    if (ignoreClientInvite) {
+      return {
+        agencyCode: '',
+        agencyName: null,
+        isClientInvite: false,
+      };
+    }
+
     const fromSearchParams =
       parseClientOnboardingInviteFromSearchParams(searchParams);
     if (fromSearchParams.isClientInvite) {
@@ -75,7 +85,7 @@ export function useAssociateAgencyPageState(params?: {
     }
 
     return readStoredClientOnboardingInvite() ?? fromSearchParams;
-  }, [searchParams]);
+  }, [ignoreClientInvite, searchParams]);
 
   const [checkingDb, setCheckingDb] = useState(true);
   const [redirecting, setRedirecting] = useState(false);
@@ -95,6 +105,10 @@ export function useAssociateAgencyPageState(params?: {
   const [agencyPreviewLoading, setAgencyPreviewLoading] = useState(false);
 
   const [trainerAgencyName, setTrainerAgencyName] = useState('');
+  const [trainerPhoneCountryCode, setTrainerPhoneCountryCode] = useState(
+    locale.startsWith('fr') ? '+33' : '+1',
+  );
+  const [trainerPhoneNumber, setTrainerPhoneNumber] = useState('');
   const [trainerWebsiteUrl, setTrainerWebsiteUrl] = useState('');
 
   const [isMapsReady, setIsMapsReady] = useState(false);
@@ -325,6 +339,26 @@ export function useAssociateAgencyPageState(params?: {
     setLoading(false);
     setError(null);
     setTrainerAgencyName('');
+    setTrainerPhoneCountryCode(locale.startsWith('fr') ? '+33' : '+1');
+    setTrainerPhoneNumber('');
+    setTrainerWebsiteUrl('');
+    setAddressInput('');
+    setSelectedAddress(null);
+  };
+
+  const handleExitClientInviteFlow = () => {
+    clearStoredClientOnboardingInvite();
+    setIgnoreClientInvite(true);
+    setMode(null);
+    setTrainerStep('address');
+    setCode('');
+    setLoading(false);
+    setError(null);
+    setAgencyPreview(null);
+    setAgencyPreviewLoading(false);
+    setTrainerAgencyName('');
+    setTrainerPhoneCountryCode(locale.startsWith('fr') ? '+33' : '+1');
+    setTrainerPhoneNumber('');
     setTrainerWebsiteUrl('');
     setAddressInput('');
     setSelectedAddress(null);
@@ -426,6 +460,24 @@ export function useAssociateAgencyPageState(params?: {
       return false;
     }
 
+    if (!trainerPhoneCountryCode.trim()) {
+      setError(
+        locale.startsWith('fr')
+          ? "Veuillez choisir l'indicatif du pays."
+          : 'Please choose a country calling code.',
+      );
+      return false;
+    }
+
+    if (trainerPhoneNumber.replace(/\D/g, '').length < 6) {
+      setError(
+        locale.startsWith('fr')
+          ? 'Veuillez renseigner un numero de telephone valide.'
+          : 'Please provide a valid phone number.',
+      );
+      return false;
+    }
+
     if (!selectedAddress || !addressInput.trim()) {
       setError(t('error.addressRequired'));
       return false;
@@ -439,6 +491,8 @@ export function useAssociateAgencyPageState(params?: {
     setMode('client');
     setTrainerStep('address');
     setTrainerAgencyName('');
+    setTrainerPhoneCountryCode(locale.startsWith('fr') ? '+33' : '+1');
+    setTrainerPhoneNumber('');
     setTrainerWebsiteUrl('');
     setAddressInput('');
     setSelectedAddress(null);
@@ -451,6 +505,8 @@ export function useAssociateAgencyPageState(params?: {
     setTrainerStep('address');
     setCode('');
     setLoading(false);
+    setTrainerPhoneCountryCode(locale.startsWith('fr') ? '+33' : '+1');
+    setTrainerPhoneNumber('');
     setAddressInput('');
     setSelectedAddress(null);
   };
@@ -514,6 +570,7 @@ export function useAssociateAgencyPageState(params?: {
     handleAddressInputChange,
     handleBackToTrainerAddress,
     handleContinueTrainerAddress,
+    handleExitClientInviteFlow,
     handleMapsLoadError,
     handleMapsReady,
     handleSelectClientMode,
@@ -530,9 +587,13 @@ export function useAssociateAgencyPageState(params?: {
     selectedAddress,
     setCode,
     setTrainerAgencyName,
+    setTrainerPhoneCountryCode,
+    setTrainerPhoneNumber,
     setTrainerWebsiteUrl,
     showBlockingScreen,
     trainerAgencyName,
+    trainerPhoneCountryCode,
+    trainerPhoneNumber,
     trainerStep,
     trainerWebsiteUrl,
     t,

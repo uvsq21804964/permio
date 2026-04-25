@@ -6,6 +6,7 @@ import { ProfileAddressCard } from '@/components/profile/ProfileAddressCard';
 import { ProfileAddressModal } from '@/components/profile/ProfileAddressModal';
 import { ProfileIdentityCard } from '@/components/profile/ProfileIdentityCard';
 import { ProfileNameModal } from '@/components/profile/ProfileNameModal';
+import { ProfilePhoneModal } from '@/components/profile/ProfilePhoneModal';
 import GooglePlacesScript from '@/components/shared/GooglePlacesScript';
 import { useProfilePageState } from '@/lib/client/hooks/useProfilePageState';
 
@@ -26,6 +27,7 @@ export default function ProfilePage() {
     addressModalOpen,
     closeAddressModal,
     closeNameModal,
+    closePhoneModal,
     copied,
     copyJoinCode,
     deleteError,
@@ -33,6 +35,8 @@ export default function ProfilePage() {
     displayedMapAddress,
     draftAddress,
     draftName,
+    draftPhoneCountryCode,
+    draftPhoneNumber,
     error,
     formattedAddressRef,
     handleAddressDraftChange,
@@ -44,20 +48,26 @@ export default function ProfilePage() {
     loading,
     nameError,
     nameModalOpen,
+    phoneError,
+    phoneModalOpen,
     onMapsLoadError,
     onMapsReady,
     openAddressModal,
     openNameModal,
+    openPhoneModal,
     openProfilePhotoSettings,
     profile,
     profileImageUrl,
     savingAddress,
     savingName,
+    savingPhone,
     selectedAddress,
     setDraftName,
+    setDraftPhoneCountryCode,
+    setDraftPhoneNumber,
     t,
     translator,
-    successMessage,
+    handleSavePhone,
   } = useProfilePageState();
 
   const googleScript = (
@@ -135,6 +145,7 @@ export default function ProfilePage() {
                 onCopyJoinCode={copyJoinCode}
                 onEditPhoto={openProfilePhotoSettings}
                 onEditName={openNameModal}
+                onEditPhone={openPhoneModal}
                 profileImageUrl={profileImageUrl}
                 profile={profile}
                 t={translator}
@@ -143,11 +154,6 @@ export default function ProfilePage() {
               {error ? (
                 <div className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-xs md:text-sm text-red-700">
                   {error}
-                </div>
-              ) : null}
-              {successMessage ? (
-                <div className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs md:text-sm text-emerald-700">
-                  {successMessage}
                 </div>
               ) : null}
               {deleteError ? (
@@ -190,6 +196,19 @@ export default function ProfilePage() {
           onSubmit={handleSaveName}
           open={nameModalOpen}
           saving={savingName}
+          t={translator}
+        />
+
+        <ProfilePhoneModal
+          draftPhoneCountryCode={draftPhoneCountryCode}
+          draftPhoneNumber={draftPhoneNumber}
+          error={phoneError}
+          onChangeCountryCode={setDraftPhoneCountryCode}
+          onChangePhoneNumber={setDraftPhoneNumber}
+          onClose={closePhoneModal}
+          onSubmit={handleSavePhone}
+          open={phoneModalOpen}
+          saving={savingPhone}
           t={translator}
         />
 

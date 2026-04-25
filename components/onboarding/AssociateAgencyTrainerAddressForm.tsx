@@ -1,5 +1,7 @@
 import type { RefObject } from 'react';
 
+import { PHONE_COUNTRY_OPTIONS } from '@/lib/shared/phone-country-options';
+
 type AssociateAgencyTrainerAddressFormProps = {
   addressInput: string;
   canContinue: boolean;
@@ -10,8 +12,12 @@ type AssociateAgencyTrainerAddressFormProps = {
   onAddressChange: (value: string) => void;
   onAgencyNameChange: (value: string) => void;
   onContinue: () => void;
+  onPhoneCountryCodeChange: (value: string) => void;
+  onPhoneNumberChange: (value: string) => void;
   onWebsiteChange: (value: string) => void;
   trainerAgencyName: string;
+  trainerPhoneCountryCode: string;
+  trainerPhoneNumber: string;
   trainerWebsiteUrl: string;
 };
 
@@ -25,8 +31,12 @@ export function AssociateAgencyTrainerAddressForm({
   onAddressChange,
   onAgencyNameChange,
   onContinue,
+  onPhoneCountryCodeChange,
+  onPhoneNumberChange,
   onWebsiteChange,
   trainerAgencyName,
+  trainerPhoneCountryCode,
+  trainerPhoneNumber,
   trainerWebsiteUrl,
 }: AssociateAgencyTrainerAddressFormProps) {
   return (
@@ -64,6 +74,40 @@ export function AssociateAgencyTrainerAddressForm({
             onChange={(event) => onWebsiteChange(event.target.value)}
             inputMode="url"
           />
+        </div>
+
+        <div>
+          <label className="text-sm font-medium text-black/80">
+            {locale.startsWith('fr') ? 'Telephone professionnel' : 'Business phone'}
+          </label>
+          <div className="mt-2 grid gap-2 sm:grid-cols-[132px_minmax(0,1fr)]">
+            <select
+              value={trainerPhoneCountryCode}
+              onChange={(event) => onPhoneCountryCodeChange(event.target.value)}
+              className="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm font-mono outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition"
+              aria-label={
+                locale.startsWith('fr') ? 'Indicatif du pays' : 'Country calling code'
+              }
+            >
+              {PHONE_COUNTRY_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+
+            <input
+              id="trainer_phone"
+              className="w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm outline-none focus:border-primary/50 focus:ring-4 focus:ring-primary/10 transition"
+              placeholder={
+                locale.startsWith('fr') ? 'Ex: 6 12 34 56 78' : 'e.g. 555 123 4567'
+              }
+              value={trainerPhoneNumber}
+              onChange={(event) => onPhoneNumberChange(event.target.value)}
+              inputMode="tel"
+              autoComplete="tel-national"
+            />
+          </div>
         </div>
 
         <div>

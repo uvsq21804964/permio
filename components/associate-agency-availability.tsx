@@ -45,6 +45,8 @@ type Props = {
     address: AddressDetails;
     rawInput: string;
     agencyName: string;
+    phoneCountryCode: string;
+    phoneNumber: string;
     websiteUrl: string;
   } | null;
   onOnboarded?: (data: { organizationId?: string }) => void;

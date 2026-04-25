@@ -127,7 +127,7 @@ async function loadTrainerReviews(instructorUserId: string) {
         ON client.id = r.client_user_id
       WHERE r.instructor_user_id = ${instructorUserId}
         AND r.is_published = TRUE
-      ORDER BY r.created_at DESC, r.id DESC
+      ORDER BY r.rating DESC, r.created_at DESC, r.id DESC
       LIMIT 3
     `;
 

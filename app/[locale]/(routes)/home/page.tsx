@@ -40,7 +40,6 @@ export default function HomePage() {
   if (!isLoaded) {
     return (
       <HomeStatusCard
-        locale={locale}
         logo={logo}
         title={locale.startsWith('fr') ? 'Chargement...' : 'Loading...'}
         description={
@@ -55,7 +54,6 @@ export default function HomePage() {
   if (redirecting) {
     return (
       <HomeStatusCard
-        locale={locale}
         logo={logo}
         title={locale.startsWith('fr') ? 'Redirection...' : 'Redirecting...'}
         description={
@@ -94,6 +92,13 @@ export default function HomePage() {
           </Link>
 
           <nav className="flex items-center gap-2 md:gap-3">
+            <Link
+              href={`/${locale}/blog`}
+              className="inline-flex items-center rounded-full px-3 py-1.5 text-[11px] md:text-sm font-semibold text-white hover:bg-white hover:text-primary transition whitespace-nowrap"
+            >
+              {t('nav.blog')}
+            </Link>
+
             <Link
               href={`/${locale}/sign-in`}
               className="inline-flex items-center rounded-full px-3 py-1.5 text-[11px] md:text-sm font-semibold text-white hover:bg-white hover:text-primary transition whitespace-nowrap"

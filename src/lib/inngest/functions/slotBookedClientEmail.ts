@@ -1,7 +1,6 @@
 import { clerkClient } from '@clerk/nextjs/server';
 import { render } from '@react-email/render';
 
-import { sql } from '@/lib/db';
 import BookingClientConfirmationEmail from '@/src/emails/bookingClientConfirmation';
 import { inngest } from '@/src/lib/inngest/client';
 import {
@@ -9,14 +8,11 @@ import {
   getAppBaseUrl,
   inngestEmailLogger,
   loadClerkUserContact,
+  loadTrainerContactDetails,
   sendTransactionalEmail,
   toEmailLocale,
 } from '@/src/lib/inngest/functions/email-shared';
-
-type InstructorRow = {
-  id: string;
-  name: string | null;
-};
+import { sql } from '@/lib/db';
 
 type ServiceRow = {
   id: number;
@@ -72,16 +68,11 @@ export const slotBookedClientEmail = inngest.createFunction(
       });
 
       const lang = toEmailLocale(locale);
+      const clerk = await clerkClient();
 
-      const instructor = await step.run('load-instructor', async () => {
-        const rows = await sql`
-          SELECT id, name
-          FROM "User"
-          WHERE id = ${instructorUserId}
-          LIMIT 1
-        `;
-        return (rows?.[0] ?? null) as InstructorRow | null;
-      });
+      const instructorContact = await step.run('load-instructor-contact', async () =>
+        loadTrainerContactDetails(clerk, instructorUserId),
+      );
 
       const service = await step.run('load-service', async () => {
         const rows = await sql`
@@ -95,7 +86,6 @@ export const slotBookedClientEmail = inngest.createFunction(
 
       inngestEmailLogger.info('[slotBookedClientEmail] service', service);
 
-      const clerk = await clerkClient();
       const clientClerk = await step.run('load-client-email', async () => {
         try {
           return await loadClerkUserContact(clerk, clientUserId);
@@ -136,7 +126,10 @@ export const slotBookedClientEmail = inngest.createFunction(
             agencyName,
             locale: lang,
             reservationsUrl,
-            instructorName: instructor?.name || undefined,
+            instructorName: instructorContact?.name || undefined,
+            instructorEmail: instructorContact?.email || undefined,
+            instructorPhone: instructorContact?.phoneDisplay || undefined,
+            instructorPhoneHref: instructorContact?.phoneHref || undefined,
             serviceName: displayServiceName,
             date,
             startTime,

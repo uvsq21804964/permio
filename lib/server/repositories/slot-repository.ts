@@ -48,6 +48,7 @@ export type SlotReminderDetails = {
   clientUserId: string;
   agencyName: string | null;
   serviceName: string | null;
+  instructorUserId: string;
   instructorName: string | null;
   date: string;
   startTime: string;
@@ -180,6 +181,7 @@ export async function getSlotReminderDetails(
     SELECT
       s.id AS "slotId",
       s."clientUserId" AS "clientUserId",
+      s."dogsitterUserId" AS "instructorUserId",
       s."date"::date::text AS "date",
       s."startTime" AS "startTime",
       s."endTime" AS "endTime",

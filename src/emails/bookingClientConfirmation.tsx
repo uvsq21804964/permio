@@ -25,6 +25,9 @@ type BookingClientConfirmationEmailProps = {
   startTime?: string;
   endTime?: string;
   appUrl?: string;
+  instructorEmail?: string | null;
+  instructorPhone?: string | null;
+  instructorPhoneHref?: string | null;
 };
 
 function isFr(locale?: string) {
@@ -63,6 +66,9 @@ export default function BookingClientConfirmationEmail({
   startTime,
   endTime,
   appUrl = 'https://magichango.com',
+  instructorEmail,
+  instructorPhone,
+  instructorPhoneHref,
 }: BookingClientConfirmationEmailProps) {
   const fr = isFr(locale);
   const name = (firstName || '').trim();
@@ -109,6 +115,8 @@ export default function BookingClientConfirmationEmail({
 
   const serviceLabel = fr ? 'Service' : 'Service';
   const instructorLabel = fr ? 'Éducateur' : 'Trainer';
+  const instructorEmailLabel = fr ? 'Email éducateur' : 'Trainer email';
+  const instructorPhoneLabel = fr ? 'Téléphone éducateur' : 'Trainer phone';
   const dateLabel = fr ? 'Date' : 'Date';
   const timeLabel = fr ? 'Horaire' : 'Time';
 
@@ -269,6 +277,28 @@ export default function BookingClientConfirmationEmail({
                       {instructorName ? (
                         <Text style={styles.detailLine}>
                           <strong>{instructorLabel} :</strong> {instructorName}
+                        </Text>
+                      ) : null}
+
+                      {instructorEmail ? (
+                        <Text style={styles.detailLine}>
+                          <strong>{instructorEmailLabel} :</strong>{' '}
+                          <Link href={`mailto:${instructorEmail}`} style={styles.inlineLink}>
+                            {instructorEmail}
+                          </Link>
+                        </Text>
+                      ) : null}
+
+                      {instructorPhone ? (
+                        <Text style={styles.detailLine}>
+                          <strong>{instructorPhoneLabel} :</strong>{' '}
+                          {instructorPhoneHref ? (
+                            <Link href={`tel:${instructorPhoneHref}`} style={styles.inlineLink}>
+                              {instructorPhone}
+                            </Link>
+                          ) : (
+                            instructorPhone
+                          )}
                         </Text>
                       ) : null}
 
@@ -538,5 +568,9 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '11px',
     lineHeight: '16px',
     textAlign: 'center',
+  },
+  inlineLink: {
+    color: '#fff6ec',
+    textDecoration: 'underline',
   },
 };

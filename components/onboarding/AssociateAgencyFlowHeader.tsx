@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 
 type AssociateAgencyFlowHeaderProps = {
+  clientInviteLocked?: boolean;
   displayName: string;
   email: string;
   greetingNode: ReactNode;
@@ -10,6 +11,7 @@ type AssociateAgencyFlowHeaderProps = {
 };
 
 export function AssociateAgencyFlowHeader({
+  clientInviteLocked = false,
   displayName,
   email,
   greetingNode,
@@ -47,7 +49,13 @@ export function AssociateAgencyFlowHeader({
         onClick={onReset}
         className="inline-flex items-center justify-center rounded-full border border-black/10 bg-white/80 px-4 py-2 text-sm font-medium text-black/65 shadow-sm transition hover:border-black/15 hover:bg-white hover:text-black whitespace-nowrap"
       >
-        {isFrench ? 'Retour au choix des roles' : 'Back to role selection'}
+        {clientInviteLocked
+          ? isFrench
+            ? "Je suis educateur canin, pas client"
+            : "I'm a dog trainer, not a client"
+          : isFrench
+            ? 'Retour au choix des roles'
+            : 'Back to role selection'}
       </button>
     </div>
   );

@@ -1,4 +1,5 @@
 import { EMAIL_FROM, resend } from '@/src/lib/email/resend';
+import { sql } from '@/lib/db';
 import { devLogger } from '@/lib/shared/dev-logger';
 
 type ClerkEmailUser = {
@@ -56,6 +57,57 @@ export async function loadClerkUserContact(clerk: any, userId: string) {
   return {
     email: getPrimaryEmail(user),
     name: getDisplayNameFromClerkUser(user),
+  };
+}
+
+function normalizePhoneHref(
+  countryCode: string | null | undefined,
+  phoneNumber: string | null | undefined,
+) {
+  const digits = `${countryCode || ''}${phoneNumber || ''}`.replace(/[^\d+]/g, '');
+  if (!digits.startsWith('+') || digits.length < 7) {
+    return null;
+  }
+
+  return digits;
+}
+
+function formatPhoneDisplay(
+  countryCode: string | null | undefined,
+  phoneNumber: string | null | undefined,
+) {
+  const parts = [countryCode?.trim(), phoneNumber?.trim()].filter(Boolean);
+  return parts.length ? parts.join(' ') : null;
+}
+
+export async function loadTrainerContactDetails(clerk: any, userId: string) {
+  const [clerkContact, rows] = await Promise.all([
+    loadClerkUserContact(clerk, userId).catch(() => ({ email: null, name: null })),
+    sql`
+      SELECT
+        "name",
+        phone_country_code,
+        phone_number
+      FROM "User"
+      WHERE id = ${userId}
+      LIMIT 1
+    `.catch(() => []),
+  ]);
+
+  const userRow = Array.isArray(rows) ? rows[0] : null;
+  const phoneDisplay = formatPhoneDisplay(
+    userRow?.phone_country_code,
+    userRow?.phone_number,
+  );
+
+  return {
+    email: clerkContact.email ?? null,
+    name: clerkContact.name ?? userRow?.name ?? null,
+    phoneDisplay,
+    phoneHref: normalizePhoneHref(
+      userRow?.phone_country_code,
+      userRow?.phone_number,
+    ),
   };
 }
 

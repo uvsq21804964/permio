@@ -8,6 +8,8 @@ type IdentityProfile = {
   id: string;
   joinCode?: string | null;
   name: string | null;
+  phone_country_code?: string | null;
+  phone_number?: string | null;
   role: string;
 };
 
@@ -18,6 +20,7 @@ type ProfileIdentityCardProps = {
   onCopyJoinCode: () => void;
   onEditPhoto: () => void;
   onEditName: () => void;
+  onEditPhone: () => void;
   profileImageUrl: string | null;
   profile: IdentityProfile;
   t: ProfileTranslator;
@@ -30,10 +33,16 @@ export function ProfileIdentityCard({
   onCopyJoinCode,
   onEditPhoto,
   onEditName,
+  onEditPhone,
   profileImageUrl,
   profile,
   t,
 }: ProfileIdentityCardProps) {
+  const phoneValue = [profile.phone_country_code, profile.phone_number]
+    .filter(Boolean)
+    .join(' ')
+    .trim();
+
   return (
     <>
       <section className="rounded-2xl border bg-card p-5 md:p-6 shadow-sm flex flex-col gap-4 md:gap-0 md:flex-row md:items-center md:justify-between">
@@ -157,6 +166,31 @@ export function ProfileIdentityCard({
               </p>
             </div>
           </div>
+
+          {profile.role === 'instructor' ? (
+            <div className="space-y-1.5">
+              <span className="text-xs font-medium text-foreground">
+                {t('identity.phone.label')}
+              </span>
+
+              <div className="flex items-center gap-2">
+                <p className="flex-1 border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground">
+                  {phoneValue || t('identity.phone.empty')}
+                </p>
+                <button
+                  type="button"
+                  onClick={onEditPhone}
+                  className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-[11px] font-medium text-primary hover:bg-primary/5 disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {t('identity.phone.edit')}
+                </button>
+              </div>
+
+              <p className="text-[11px] text-muted-foreground">
+                {t('identity.phone.help')}
+              </p>
+            </div>
+          ) : null}
         </div>
       </section>
     </>

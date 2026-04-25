@@ -24,6 +24,12 @@
       "edit": "Edit name",
       "empty": "Not provided"
     },
+    "phone": {
+      "label": "Phone number",
+      "edit": "Edit phone",
+      "empty": "Not provided",
+      "help": "Shared with clients in booking emails so they can reach you if needed."
+    },
     "role": "Role",
     "agency": "Agency",
     "educatorCode": {
@@ -72,6 +78,13 @@
       "helper": "Your display name is used across the interface and for some notifications. Change it only if needed.",
       "newName": "New name"
     },
+    "phone": {
+      "title": "Edit phone number",
+      "helper": "This phone number appears in client emails so they can contact you if they need to reach you before a session.",
+      "countryCode": "Country calling code",
+      "number": "Phone number",
+      "placeholder": "e.g. 555 123 4567"
+    },
     "address": {
       "title": "Edit primary address",
       "helper": "This address is used to compute travel time and group appointments. Select a Google suggestion to ensure the address can be geocoded.",
@@ -84,6 +97,7 @@
   },
   "success": {
     "nameUpdated": "Name updated successfully.",
+    "phoneUpdated": "Phone number updated successfully.",
     "addressUpdated": "Address updated successfully."
   },
   "errors": {
@@ -92,6 +106,9 @@
     "geocodeFail": "Could not retrieve geolocation for this address.",
     "nameEmpty": "Name cannot be empty.",
     "updateNameFailed": "Error while updating the name.",
+    "phoneCountryRequired": "Please choose a country calling code.",
+    "phoneInvalid": "Please provide a valid phone number.",
+    "updatePhoneFailed": "Error while updating the phone number.",
     "addressEmpty": "Formatted address cannot be empty.",
     "addressNeedSuggestion": "Please select an address from Google suggestions before saving.",
     "updateAddressFailed": "Error while updating the address.",

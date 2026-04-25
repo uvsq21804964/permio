@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useLocale } from 'next-intl';
+import { resolveLocalizedBlogPathname } from '@/lib/content/blog-routing';
 import type { Locale } from './i18n';
 import { withLocale, switchLocale } from './i18n';
 
@@ -19,7 +20,9 @@ export function useLocaleNav() {
     switchTo: (to: Locale) => {
       const params = searchParams.toString();
 
-      const nextPath = switchLocale(pathname, to);
+      const nextPath =
+        resolveLocalizedBlogPathname(pathname, locale, to) ??
+        switchLocale(pathname, to);
       const url = params ? `${nextPath}?${params}` : nextPath;
 
       router.replace(url);
