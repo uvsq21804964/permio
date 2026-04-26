@@ -87,7 +87,8 @@ export default function Plans({ withTrial }: Props) {
     !withTrial &&
     subscription?.loggedIn === true &&
     subscription?.role === 'instructor' &&
-    subscription?.subscription_status === 'active';
+    (subscription?.subscription_status === 'active' ||
+      subscription?.subscription_status === 'trialing');
 
   const waitingForSubscriptionCheck = !withTrial && status === 'loading';
 

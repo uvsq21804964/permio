@@ -7,7 +7,7 @@ import {
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { auth, response } = requireOrgUser(req, {
@@ -16,7 +16,7 @@ export async function DELETE(
     if (!auth) return response;
     const { userId, orgId } = auth;
 
-    const targetId = params.id;
+    const { id: targetId } = await params;
     if (!targetId) {
       return NextResponse.json({ error: 'Missing id' }, { status: 400 });
     }

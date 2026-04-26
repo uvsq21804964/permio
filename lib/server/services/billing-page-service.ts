@@ -1,11 +1,11 @@
 import { auth, clerkClient as getClerkClient } from '@clerk/nextjs/server';
 
 import type { BillingTranslator } from '@/components/billing/billing-shared';
+import { resolveStripeCustomerId } from '@/lib/server/stripe-customer';
 import { loadBillingUserContext } from '@/lib/server/services/billing-page-repository';
 import {
   buildCustomerState,
   buildNoCustomerState,
-  resolveStripeCustomerId,
 } from '@/lib/server/services/billing-page-stripe';
 import {
   addOneMonth,

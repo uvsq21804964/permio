@@ -1,17 +1,31 @@
 {
   "header": {
-    "title": "Billing",
-    "subtitle": "Manage your subscription, invoices and payment methods."
+    "title": "Billing and access",
+    "subtitle": "Track your subscription, understand what happens next, and manage invoices without digging through Stripe."
+  },
+  "overview": {
+    "eyebrow": "Billing overview",
+    "planLabel": "Current plan",
+    "statusLabel": "Access status",
+    "nextStepLabel": "What happens next",
+    "latestInvoiceLabel": "Latest invoice",
+    "latestInvoiceEmpty": "No invoice yet",
+    "documentsLabel": "Available documents:",
+    "helpTitle": "What this page is for",
+    "helpBody": "Use this page to see whether your access is secure, when billing changes, and where to download your accounting documents.",
+    "trialLabel": "Trial status"
   },
   "noCustomer": {
-    "description": "You don’t have an active plan yet. Choose a plan to get started.",
+    "description": "You do not have an active plan yet. Choose a plan when you are ready to continue after the trial.",
     "choosePlanAria": "Choose a plan",
     "chooseStarter": "Choose Starter",
     "choosePro": "Choose Pro",
     "trialActiveUntil": "Your trial is active until {date}.",
     "trialEndsSoon": "Your trial ends on {date} (in {days} day(s)).",
     "trialEnded": "Your trial ended on {date}. A subscription is required to continue.",
-    "ctaHiddenHint": "You’ll be able to subscribe as the trial gets close to ending, or from the Subscription page."
+    "ctaHiddenHint": "You will be able to subscribe as the trial gets close to ending, or from the Subscription page.",
+    "actionsTitle": "Next step",
+    "actionsHint": "When your trial gets close to ending, keep your access active by switching to a paid plan."
   },
   "subscription": {
     "sectionLabel": "Subscription",
@@ -26,7 +40,19 @@
     },
     "endsOnLabel": "Access ends on",
     "trialDaysLeft": "{days} days remaining",
-    "trialUntilHint": "Until {date}"
+    "trialUntilHint": "Until {date}",
+    "whatsIncludedTitle": "What this means right now",
+    "actionsTitle": "Useful actions",
+    "actionsHint": "The actions below are the only ones you usually need.",
+    "noPlanHint": "No active plan is protecting access right now.",
+    "activeHint": "Your plan is active and your billing details are available below.",
+    "cancelAtPeriodEndHint": "Your plan is still active, but it will stop automatically at the end of the current period.",
+    "closedHint": "Your subscription has ended. You can still review what happened and re-subscribe if needed.",
+    "subscribeAfterTrialHint": "If you subscribe during the trial, the first payment will only be charged after the remaining trial period ends.",
+    "noPlanBody": "You can compare plans first, then subscribe when you are ready. Your invoices section will appear here as soon as billing starts.",
+    "activeBody": "You have active access. If you need to update card details, invoices, VAT details or renewal preferences, use the actions panel on the right.",
+    "cancelAtPeriodEndBody": "Your access remains active until the end of the current billing period. If you changed your mind, you can undo the scheduled cancellation.",
+    "closedBody": "Your subscription is no longer active. If you want to restore access, choose a plan again and billing will resume from the new checkout."
   },
   "status": {
     "closed": "Canceled",
@@ -35,7 +61,7 @@
     "trialing": "Active trial period",
     "paymentPending": "Payment pending",
     "trialingClosurePlanned": "Trial (cancellation scheduled)",
-    "accessUntil": "Active trial period"
+    "accessUntil": "Access active"
   },
   "actions": {
     "manageSubscription": "Manage subscription",
@@ -44,11 +70,13 @@
     "upgradeStarter": "Switch to Starter",
     "upgradePro": "Switch to Pro",
     "upgradeMagic": "Switch to Full Magic",
-    "comparePlans": "Discover the benefits"
+    "comparePlans": "Compare plans"
   },
   "invoices": {
+    "eyebrow": "Documents",
     "title": "Invoices",
-    "subtitle": "Last 10 invoices",
+    "subtitle": "Everything already issued to this Stripe customer.",
+    "count": "{count} document(s)",
     "empty": "No invoices yet.",
     "columns": {
       "date": "Date",
@@ -65,5 +93,17 @@
   "help": {
     "text": "Need help? Visit",
     "contactLink": "/contact"
+  },
+  "feedback": {
+    "success": "Your checkout completed successfully.",
+    "canceled": "Your cancellation is scheduled at the end of the current period.",
+    "missingSubscription": "We couldn't find the subscription to update.",
+    "missingCustomer": "Your Stripe customer account is not linked yet. Please try again in a moment.",
+    "forbiddenSubscription": "This subscription does not belong to your account.",
+    "cancelFailed": "We couldn't schedule the cancellation right now.",
+    "resumeFailed": "We couldn't undo the cancellation right now.",
+    "portalUnavailable": "The billing portal is temporarily unavailable.",
+    "invalidCustomer": "Your billing account could not be found. Please contact support if this continues.",
+    "portalFailed": "We couldn't open the billing portal right now."
   }
 }

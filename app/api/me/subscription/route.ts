@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
+import { auth, clerkClient as getClerkClient } from '@clerk/nextjs/server';
+
 import { sql } from '@/lib/db';
-import { stripe } from '@/lib/stripe';
+import { resolveStripeCustomerId } from '@/lib/server/stripe-customer';
+import { syncStripeSubscriptionStateForUser } from '@/lib/server/stripe-subscription-state';
 
 export const runtime = 'nodejs';
 
@@ -14,14 +16,9 @@ type DbRow = {
   subscription_cancel_at_period_end: boolean | null;
 };
 
-function toDateFromUnix(unixSeconds?: number | null) {
-  return unixSeconds ? new Date(unixSeconds * 1000) : null;
-}
-
 export async function GET() {
   const { userId } = await auth();
 
-  // Page publique => doit répondre sans auth
   if (!userId) {
     return NextResponse.json(
       { loggedIn: false, role: null, subscription_status: null },
@@ -41,7 +38,7 @@ export async function GET() {
     where id = ${userId}
     limit 1
   `;
-  const me = rows[0];
+  const me = rows[0] as DbRow | undefined;
 
   if (!me) {
     return NextResponse.json(
@@ -50,47 +47,25 @@ export async function GET() {
     );
   }
 
-  // Si instructor pas "active" mais on a un customer Stripe => on tente un refresh depuis Stripe
-  if (
-    me.role === 'instructor' &&
-    me.stripe_customer_id &&
-    me.subscription_status !== 'active'
-  ) {
+  if (me.role === 'instructor') {
     try {
-      const active = await stripe.subscriptions.list({
-        customer: me.stripe_customer_id,
-        status: 'active',
-        limit: 1,
-      });
-
-      const sub = active.data[0];
-
-      if (sub) {
-        await sql`
-          update "User"
-          set
-            stripe_subscription_id = ${sub.id},
-            subscription_status = ${sub.status},
-            subscription_current_period_end = ${toDateFromUnix(
-              (sub as any).current_period_end
-            )},
-            subscription_cancel_at_period_end = ${Boolean(
-              (sub as any).cancel_at_period_end
-            )}
-          where id = ${userId}
-        `;
-
-        return NextResponse.json(
-          {
-            loggedIn: true,
-            role: me.role,
-            subscription_status: 'active',
-          },
-          { status: 200 }
-        );
+      if (!me.stripe_customer_id) {
+        const clerk = await getClerkClient();
+        const user = await clerk.users.getUser(userId);
+        await resolveStripeCustomerId({ user, userId });
       }
+
+      const synced = await syncStripeSubscriptionStateForUser(userId);
+      return NextResponse.json(
+        {
+          loggedIn: true,
+          role: me.role,
+          subscription_status: synced?.subscription_status ?? null,
+        },
+        { status: 200 }
+      );
     } catch {
-      // si Stripe échoue, on retombe sur la BDD (comportement safe)
+      // Fallback to DB state if Stripe or Clerk is temporarily unavailable.
     }
   }
 

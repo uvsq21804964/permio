@@ -1,19 +1,29 @@
 import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
+
 import { sql } from '@/lib/db';
+import { hasSubscriptionFeatureAccess } from '@/lib/server/subscription-access';
+import {
+  syncStripeSubscriptionStateForUser,
+  syncStripeSubscriptionStatesForUsers,
+} from '@/lib/server/stripe-subscription-state';
 
 type MeRow = {
+  agencyId: string | null;
   id: string;
+  in_grace: boolean;
   role: string;
-  agencyId: string;
+  stripe_customer_id: string | null;
+  subscription_current_period_end: Date | null;
   subscription_status: string | null;
-  in_grace: boolean; // <— calculé en SQL
 };
 
 type InstructorRow = {
   id: string;
+  in_grace: boolean;
+  stripe_customer_id: string | null;
+  subscription_current_period_end: Date | null;
   subscription_status: string | null;
-  in_grace: boolean; // <— calculé en SQL
 };
 
 function withLocale(locale: string, path: string) {
@@ -22,73 +32,106 @@ function withLocale(locale: string, path: string) {
   return `/${safeLocale}${cleanPath}`;
 }
 
-function isAllowed(subscription_status: string | null, inGrace: boolean) {
-  return subscription_status === 'active' || inGrace === true;
-}
-
 function redirectForRole(role: string, locale: string) {
-  // tu peux garder reason=subscription, ou mettre reason=trial_ended
-  if (role === 'instructor')
+  if (role === 'instructor') {
     redirect(withLocale(locale, '/plans?reason=subscription'));
+  }
+
   redirect(withLocale(locale, '/profile?reason=subscription'));
 }
 
-/**
- * Autorise l'accès si :
- * - instructor : abonnement actif OU compte < 1 mois
- * - student : instructor de l'agence a abonnement actif OU compte < 1 mois
- */
 export async function requirePaidSubscriptionForAgency(locale: string) {
   const { userId } = await auth();
-  if (!userId) redirect(withLocale(locale, '/sign-in'));
+  if (!userId) {
+    redirect(withLocale(locale, '/sign-in'));
+  }
 
   const meRes = await sql`
     select
       id,
       role,
       "agencyId" as "agencyId",
+      stripe_customer_id,
       subscription_status,
+      subscription_current_period_end,
       ("createdAt" >= (now()::timestamp - interval '1 month')) as in_grace
     from "User"
     where id = ${userId}
     limit 1
   `;
-  const me = meRes[0];
-  if (!me) redirect(withLocale(locale, '/sign-in'));
+  const me = meRes[0] as MeRow | undefined;
+  if (!me) {
+    redirect(withLocale(locale, '/sign-in'));
+  }
 
-  // 1) Si instructor : check direct (abo actif OU 1 mois de grâce)
   if (me.role === 'instructor') {
-    if (!isAllowed(me.subscription_status, me.in_grace)) {
+    const liveState = me.stripe_customer_id
+      ? await syncStripeSubscriptionStateForUser(userId).catch(() => null)
+      : null;
+
+    if (
+      !hasSubscriptionFeatureAccess({
+        currentPeriodEnd:
+          liveState?.subscription_current_period_end ??
+          me.subscription_current_period_end,
+        inGrace: me.in_grace,
+        subscriptionStatus:
+          liveState?.subscription_status ?? me.subscription_status,
+      })
+    ) {
       redirectForRole(me.role, locale);
     }
     return;
   }
 
-  // 2) Si student/client : check l'instructor de l'agence
   if (!me.agencyId) {
     redirectForRole(me.role, locale);
   }
 
-  const instructors = await sql`
+  const instructors = (await sql`
     select
       id,
+      stripe_customer_id,
       subscription_status,
+      subscription_current_period_end,
       ("createdAt" >= (now()::timestamp - interval '1 month')) as in_grace
     from "User"
     where "agencyId" = ${me.agencyId}
       and role = 'instructor'
     limit 10
-  `;
+  `) as InstructorRow[];
 
   if (instructors.length === 0) {
     redirectForRole(me.role, locale);
   }
 
-  const hasAllowedInstructor = instructors.some((i) =>
-    isAllowed(i.subscription_status, i.in_grace)
+  const hasAllowedInstructor = instructors.some((instructor) =>
+    hasSubscriptionFeatureAccess({
+      currentPeriodEnd: instructor.subscription_current_period_end,
+      inGrace: instructor.in_grace,
+      subscriptionStatus: instructor.subscription_status,
+    }),
   );
 
-  if (!hasAllowedInstructor) {
+  const syncedInstructorStates = await syncStripeSubscriptionStatesForUsers(
+    instructors
+      .filter((instructor) => instructor.stripe_customer_id)
+      .map((instructor) => instructor.id)
+  );
+
+  const hasAllowedInstructorAfterSync = instructors.some((instructor) => {
+    const liveState = syncedInstructorStates.get(instructor.id);
+    return hasSubscriptionFeatureAccess({
+      currentPeriodEnd:
+        liveState?.subscription_current_period_end ??
+        instructor.subscription_current_period_end,
+      inGrace: instructor.in_grace,
+      subscriptionStatus:
+        liveState?.subscription_status ?? instructor.subscription_status,
+    });
+  });
+
+  if (!hasAllowedInstructor && !hasAllowedInstructorAfterSync) {
     redirectForRole(me.role, locale);
   }
 }

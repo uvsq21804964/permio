@@ -8,7 +8,7 @@ import type { OrgManagedRole } from '@/lib/server/repositories/org-user-manageme
 
 export async function PATCH(
   req: NextRequest,
-  context: { params: { id: string } }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const { auth, response } = requireOrgUser(req, {
@@ -17,7 +17,7 @@ export async function PATCH(
     if (!auth) return response;
     const { userId, orgId } = auth;
 
-    const targetId = context.params.id;
+    const { id: targetId } = await context.params;
     const body = await req.json().catch(() => ({}));
     const roleReq = body?.role as OrgManagedRole | undefined;
 

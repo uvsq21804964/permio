@@ -8,7 +8,7 @@ import {
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { auth, response } = requireUser(req, {
@@ -17,7 +17,7 @@ export async function DELETE(
     if (!auth) return response;
     const { userId } = auth;
 
-    const { id } = params;
+    const { id } = await params;
     if (!id) {
       return NextResponse.json({ error: 'Missing id' }, { status: 400 });
     }

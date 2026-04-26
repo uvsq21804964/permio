@@ -11,6 +11,12 @@ function getString(form: FormData, key: string) {
   return typeof v === 'string' ? v : '';
 }
 
+function redirectWithError(returnUrl: string, errorCode: string) {
+  return NextResponse.redirect(`${returnUrl}?error=${errorCode}`, {
+    status: 303,
+  });
+}
+
 export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId) return new NextResponse('Unauthorized', { status: 401 });
@@ -20,9 +26,7 @@ export async function POST(req: Request) {
   const returnUrl = getString(form, 'returnUrl') || '/';
 
   if (!subscriptionId) {
-    return NextResponse.redirect(`${returnUrl}?error=missing_subscription`, {
-      status: 303,
-    });
+    return redirectWithError(returnUrl, 'missing_subscription');
   }
 
   // (Optionnel mais recommandé) : vérifier que l’abonnement appartient bien à l’utilisateur
@@ -34,6 +38,9 @@ export async function POST(req: Request) {
     limit 1
   `;
   const myCustomerId = me[0]?.stripe_customer_id ?? null;
+  if (!myCustomerId) {
+    return redirectWithError(returnUrl, 'missing_customer');
+  }
 
   try {
     const sub = await stripe.subscriptions.retrieve(subscriptionId);
@@ -41,8 +48,8 @@ export async function POST(req: Request) {
     const subCustomerId =
       typeof sub.customer === 'string' ? sub.customer : sub.customer?.id;
 
-    if (myCustomerId && subCustomerId && myCustomerId !== subCustomerId) {
-      return new NextResponse('Forbidden', { status: 403 });
+    if (!subCustomerId || myCustomerId !== subCustomerId) {
+      return redirectWithError(returnUrl, 'forbidden_subscription');
     }
 
     // ✅ "Schedule closure" = annule à la fin de période
@@ -54,8 +61,6 @@ export async function POST(req: Request) {
     return NextResponse.redirect(`${returnUrl}?canceled=1`, { status: 303 });
   } catch (e) {
     console.error('[stripe/cancel] error', e);
-    return NextResponse.redirect(`${returnUrl}?error=cancel_failed`, {
-      status: 303,
-    });
+    return redirectWithError(returnUrl, 'cancel_failed');
   }
 }

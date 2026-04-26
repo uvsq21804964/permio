@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, type ChangeEvent, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import { CategoryFormDialog, type CategoryDraft } from '@/components/services/CategoryFormDialog';
 import { EditableServicesCatalog } from '@/components/services/EditableServicesCatalog';
@@ -65,8 +66,6 @@ export default function ServicesPage() {
     deleteCategoryHasServicesMessage: t('errors.deleteCategoryHasServices'),
   });
 
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-
   const [serviceModalOpen, setServiceModalOpen] = useState(false);
   const [serviceModalMode, setServiceModalMode] =
     useState<ServiceModalMode>('edit');
@@ -81,12 +80,21 @@ export default function ServicesPage() {
   const [categoryFormError, setCategoryFormError] = useState<string | null>(
     null,
   );
+  const lastErrorToastRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!error || lastErrorToastRef.current === error) {
+      return;
+    }
+
+    lastErrorToastRef.current = error;
+    toast.error(error);
+  }, [error]);
 
   const openCreateServiceModal = (categoryId?: number) => {
     setServiceModalMode('create');
     setServiceDraft(buildEmptyServiceDraft(categoryId || (categories[0]?.id ?? 0)));
     setServiceFormError(null);
-    setSuccessMessage(null);
     clearError();
     setServiceModalOpen(true);
   };
@@ -95,7 +103,6 @@ export default function ServicesPage() {
     setServiceModalMode('edit');
     setServiceDraft(buildServiceDraft(service));
     setServiceFormError(null);
-    setSuccessMessage(null);
     clearError();
     setServiceModalOpen(true);
   };
@@ -199,14 +206,13 @@ export default function ServicesPage() {
 
     try {
       setServiceFormError(null);
-      setSuccessMessage(null);
 
       if (serviceModalMode === 'create') {
         await createService(payload);
-        setSuccessMessage(t('alerts.successServiceCreated'));
+        toast.success(t('alerts.successServiceCreated'));
       } else if (serviceDraft.id != null) {
         await updateService(serviceDraft.id, payload);
-        setSuccessMessage(t('alerts.successServiceUpdated'));
+        toast.success(t('alerts.successServiceUpdated'));
       }
 
       setServiceModalOpen(false);
@@ -231,9 +237,8 @@ export default function ServicesPage() {
     }
 
     try {
-      setSuccessMessage(null);
       await deleteService(service.id);
-      setSuccessMessage(t('alerts.successServiceDeleted'));
+      toast.success(t('alerts.successServiceDeleted'));
     } catch {
       return;
     }
@@ -245,7 +250,6 @@ export default function ServicesPage() {
       description: '',
     });
     setCategoryFormError(null);
-    setSuccessMessage(null);
     clearError();
     setCategoryModalOpen(true);
   };
@@ -286,12 +290,11 @@ export default function ServicesPage() {
 
     try {
       setCategoryFormError(null);
-      setSuccessMessage(null);
       await createCategory({
         name,
         description,
       });
-      setSuccessMessage(t('alerts.successCategoryCreated'));
+      toast.success(t('alerts.successCategoryCreated'));
       setCategoryModalOpen(false);
     } catch (nextError) {
       if (nextError instanceof Error) {
@@ -309,9 +312,8 @@ export default function ServicesPage() {
     }
 
     try {
-      setSuccessMessage(null);
       await deleteCategory(category.id);
-      setSuccessMessage(t('alerts.successCategoryDeleted'));
+      toast.success(t('alerts.successCategoryDeleted'));
     } catch {
       return;
     }
@@ -348,18 +350,6 @@ export default function ServicesPage() {
             + {t('buttons.addCategory')}
           </button>
         </header>
-
-        {error && (
-          <div className="rounded-md border border-red-300 bg-red-50 px-3 py-2 text-xs md:text-sm text-red-700">
-            {error}
-          </div>
-        )}
-
-        {successMessage && (
-          <div className="rounded-md border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs md:text-sm text-emerald-700">
-            {successMessage}
-          </div>
-        )}
 
         <EditableServicesCatalog
           categories={categories}

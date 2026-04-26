@@ -35,7 +35,7 @@ function statusFromStudentCheck(error: string) {
 /** PATCH: ajoute deltaMinutes (ex: +60 pour “Ajouter 1h”) */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { auth, response } = requireOrgUser(request, {
@@ -51,7 +51,7 @@ export async function PATCH(
         { status: 404 }
       );
 
-    const targetId = params.id;
+    const { id: targetId } = await params;
     if (!targetId)
       return NextResponse.json({ error: 'Missing user id' }, { status: 400 });
 
@@ -93,7 +93,7 @@ export async function PATCH(
 /** PUT: fixe plannedMinutes & remainingMinutes (borné: remaining ≤ planned) */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { auth, response } = requireOrgUser(request, {
@@ -109,7 +109,7 @@ export async function PUT(
         { status: 404 }
       );
 
-    const targetId = params.id;
+    const { id: targetId } = await params;
     if (!targetId)
       return NextResponse.json({ error: 'Missing user id' }, { status: 400 });
 

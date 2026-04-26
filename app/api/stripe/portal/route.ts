@@ -1,53 +1,46 @@
 // app/api/stripe/portal/route.ts
 import { NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe';
 import { auth, clerkClient as getClerkClient } from '@clerk/nextjs/server';
 
-export const runtime = 'nodejs'; // Stripe SDK = Node obligatoire
-export const dynamic = 'force-dynamic'; // pas de cache
+import { stripe } from '@/lib/stripe';
+import { resolveStripeCustomerId } from '@/lib/server/stripe-customer';
 
-function getPrimaryEmail(user: any): string | undefined {
-  const id = user?.primaryEmailAddressId;
-  return user?.emailAddresses?.find((e: any) => e.id === id)?.emailAddress;
-}
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
-// Construit un return_url fiable si NEXT_PUBLIC_APP_URL n'est pas défini
 function makeReturnUrl(req: Request, fallbackPath = '/invoices') {
   const envBase = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/+$/, '');
   if (envBase) return `${envBase}${fallbackPath}`;
   try {
-    const u = new URL(req.url);
-    return `${u.origin}${fallbackPath}`;
+    const url = new URL(req.url);
+    return `${url.origin}${fallbackPath}`;
   } catch {
     return fallbackPath;
   }
 }
 
-function normalizePortalLocale(v: unknown): 'fr' | 'en' | 'auto' {
-  if (typeof v !== 'string') return 'auto';
-  const s = v.trim().toLowerCase();
-  if (s === 'fr' || s.startsWith('fr-')) return 'fr';
-  if (s === 'en' || s.startsWith('en-')) return 'en';
-  if (s === 'auto') return 'auto';
+function normalizePortalLocale(value: unknown): 'fr' | 'en' | 'auto' {
+  if (typeof value !== 'string') return 'auto';
+  const normalized = value.trim().toLowerCase();
+  if (normalized === 'fr' || normalized.startsWith('fr-')) return 'fr';
+  if (normalized === 'en' || normalized.startsWith('en-')) return 'en';
+  if (normalized === 'auto') return 'auto';
   return 'auto';
 }
 
+function redirectWithPortalError(returnUrl: string, errorCode: string) {
+  return NextResponse.redirect(`${returnUrl}?error=${errorCode}`, {
+    status: 303,
+  });
+}
+
 export async function POST(req: Request) {
-  const isDev = process.env.NODE_ENV !== 'production';
+  let returnUrl = '/invoices';
 
   try {
     const { userId } = await auth();
     if (!userId) return new NextResponse('Unauthorized', { status: 401 });
 
-    if (!process.env.STRIPE_SECRET_KEY) {
-      console.error('[portal] Missing STRIPE_SECRET_KEY');
-      return new NextResponse(
-        isDev ? 'Missing STRIPE_SECRET_KEY' : 'Internal Server Error',
-        { status: 500 }
-      );
-    }
-
-    // ✅ Lire le form UNE seule fois
     let form: FormData | null = null;
     try {
       form = await req.formData();
@@ -60,69 +53,39 @@ export async function POST(req: Request) {
       portalLocale === 'fr'
         ? '/fr/invoices'
         : portalLocale === 'en'
-        ? '/en/invoices'
-        : '/invoices';
+          ? '/en/invoices'
+          : '/invoices';
 
-    // 3) return_url (priorité au formulaire)
-    let returnUrl = makeReturnUrl(req, fallbackPath);
+    returnUrl = makeReturnUrl(req, fallbackPath);
     const fromForm = form?.get('returnUrl');
     if (typeof fromForm === 'string' && fromForm.trim()) {
       returnUrl = fromForm.trim();
     }
 
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error('[portal] Missing STRIPE_SECRET_KEY');
+      return redirectWithPortalError(returnUrl, 'portal_unavailable');
+    }
+
     const clerk = await getClerkClient();
     const user = await clerk.users.getUser(userId);
-
-    // 1) Récupérer/persister le customerId
-    let customerId = (user.privateMetadata as any)?.stripeCustomerId as
-      | string
-      | undefined;
-
-    if (!customerId) {
-      const email = getPrimaryEmail(user);
-      if (email) {
-        const found = await stripe.customers.search({
-          query: `email:'${email.replace(/'/g, "\\'")}'`,
-          limit: 1,
-        });
-        const hit = found.data[0];
-        if (hit?.id) {
-          customerId = hit.id;
-          await clerk.users.updateUser(userId, {
-            privateMetadata: {
-              ...(user.privateMetadata || {}),
-              stripeCustomerId: customerId,
-            },
-          });
-        }
-      }
-    }
+    const customerId = await resolveStripeCustomerId({ user, userId });
 
     if (!customerId) {
       console.error('[portal] No Stripe customer for user', { userId });
-      return new NextResponse(
-        isDev ? 'No Stripe customer (check session_id/webhook)' : 'Bad Request',
-        { status: 400 }
-      );
+      return redirectWithPortalError(returnUrl, 'missing_customer');
     }
 
-    // 2) Vérifier le customer côté Stripe (détecte mismatch test/live)
     try {
       await stripe.customers.retrieve(customerId);
-    } catch (e: any) {
+    } catch (error: any) {
       console.error('[portal] customers.retrieve failed', {
         customerId,
-        msg: e?.message,
+        msg: error?.message,
       });
-      return new NextResponse(
-        isDev
-          ? `Stripe customer not found: ${customerId} (check test/live key)`
-          : 'Bad Request',
-        { status: 400 }
-      );
+      return redirectWithPortalError(returnUrl, 'invalid_customer');
     }
 
-    // 4) Créer la session Billing Portal
     const portal = await stripe.billingPortal.sessions.create({
       customer: customerId,
       return_url: returnUrl,
@@ -130,16 +93,11 @@ export async function POST(req: Request) {
     } as any);
 
     return NextResponse.redirect(portal.url, { status: 303 });
-  } catch (err: any) {
+  } catch (error: any) {
     console.error('[portal] Unhandled error', {
-      msg: err?.message,
-      stack: err?.stack,
+      msg: error?.message,
+      stack: error?.stack,
     });
-    return new NextResponse(
-      process.env.NODE_ENV !== 'production'
-        ? `Portal error: ${err?.message || 'unknown'}`
-        : 'Internal Server Error',
-      { status: 500 }
-    );
+    return redirectWithPortalError(returnUrl, 'portal_failed');
   }
 }

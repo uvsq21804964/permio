@@ -1,11 +1,9 @@
-import { clerkClient as getClerkClient } from '@clerk/nextjs/server';
 import Stripe from 'stripe';
 
 import { stripe } from '@/lib/stripe';
 import { devLogger } from '@/lib/shared/dev-logger';
 import {
   computeProgressPct,
-  getPrimaryEmail,
   makeDaysLeftText,
   makeUntilText,
   mapPlanName,
@@ -35,68 +33,6 @@ type BuildCustomerStateParams = {
   trialEndDb: Date;
   trialEndDbLabel: string;
 };
-
-export async function resolveStripeCustomerId(params: {
-  userId: string;
-  user: any;
-  sessionId?: string;
-}) {
-  const { userId, user, sessionId } = params;
-  const clerk = await getClerkClient();
-
-  let customerId = (user?.privateMetadata as any)?.stripeCustomerId as
-    | string
-    | undefined;
-
-  if (!customerId && sessionId) {
-    try {
-      const session = await stripe.checkout.sessions.retrieve(sessionId, {
-        expand: ['customer'],
-      });
-      const customer = session.customer;
-      const resolvedCustomerId =
-        typeof customer === 'string' ? customer : (customer as Stripe.Customer).id;
-
-      if (resolvedCustomerId) {
-        await clerk.users.updateUser(userId, {
-          privateMetadata: {
-            ...(user?.privateMetadata || {}),
-            stripeCustomerId: resolvedCustomerId,
-          },
-        });
-        customerId = resolvedCustomerId;
-      }
-    } catch {
-      // silent
-    }
-  }
-
-  if (!customerId) {
-    const email = getPrimaryEmail(user);
-    if (email) {
-      try {
-        const found = await stripe.customers.search({
-          query: `email:'${email.replace(/'/g, "\\'")}'`,
-          limit: 1,
-        });
-        const foundCustomer = found.data[0];
-        if (foundCustomer?.id) {
-          await clerk.users.updateUser(userId, {
-            privateMetadata: {
-              ...(user?.privateMetadata || {}),
-              stripeCustomerId: foundCustomer.id,
-            },
-          });
-          customerId = foundCustomer.id;
-        }
-      } catch {
-        // ignore
-      }
-    }
-  }
-
-  return customerId;
-}
 
 async function loadCurrentSubscription(customerId: string) {
   let sub: Stripe.Subscription | undefined;
@@ -191,13 +127,14 @@ export async function buildCustomerState(
   const hasSub = Boolean(sub?.id);
   const subId = sub?.id;
   const status = sub?.status ?? 'none';
+  const showTrialWindow = isInDbTrialWindow && (status === 'trialing' || !hasSub);
   const invoices = await stripe.invoices.list({
     customer: customerId,
     limit: 10,
   });
 
   const rawCancelScheduled = Boolean((sub as any)?.cancel_at_period_end);
-  const isCancelScheduled = rawCancelScheduled && !isInDbTrialWindow;
+  const isCancelScheduled = rawCancelScheduled && !showTrialWindow;
   const isCanceled =
     !hasSub || status === 'canceled' || Boolean((sub as any)?.ended_at);
 
@@ -326,6 +263,7 @@ export async function buildCustomerState(
   devLogger.log('[BILLING DEBUG]', {
     locale,
     isInDbTrialWindow,
+    showTrialWindow,
     hasSub,
     subId,
     status,
@@ -350,7 +288,7 @@ export async function buildCustomerState(
   let countdownUntilLabel = '';
   let countdownProgressPct = 0;
 
-  if (isInDbTrialWindow) {
+  if (showTrialWindow) {
     showCountdown = true;
     countdownLabel = t('subscription.trialEndLabel');
     const daysLeft = Math.max(
@@ -426,12 +364,12 @@ export async function buildCustomerState(
     isCancelScheduled,
     isCanceled,
     isCurrentMagic,
-    isInDbTrialWindow,
+    isInDbTrialWindow: showTrialWindow,
     manageReturnUrl,
     nextPaymentLabel,
     nextPaymentValue,
     planLabel,
-    showCancelResumeButtons: hasSub && !isInDbTrialWindow && !isCanceled,
+    showCancelResumeButtons: hasSub && !showTrialWindow && !isCanceled,
     showCountdown,
     showManageSubscription: hasSub,
     startedOn,

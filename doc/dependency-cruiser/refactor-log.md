@@ -1084,7 +1084,178 @@
 ### VÃƒÂ©rification TypeScript
 
 - Commande exÃƒÂ©cutÃƒÂ©e : `cmd /c npx tsc --noEmit`
+
+## Lot abonnement 6
+
+### Fichiers modifiÃƒÂ©s
+
+- `app/api/stripe/checkout/route.ts`
+- `components/billing/BillingSubscriptionSection.tsx`
+
+### Changements rÃƒÂ©alisÃƒÂ©s
+
+- RÃƒÂ©alignement de la route `/api/stripe/checkout` avec les formulaires existants :
+  - prise en charge explicite de `priceLookupKey`
+  - conservation du support `planSlug`
+- Correction du CTA d'upgrade Magic dans la facturation pour envoyer la bonne lookup key selon la langue (`EUR` / `USD`).
+- Suppression d'un risque de mauvais plan/de mauvaise devise lors de certains parcours d'abonnement aprÃƒÂ¨s l'unification Stripe.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifiÃƒÂ©.
+
+### VÃƒÂ©rification TypeScript
+
+- Commande exÃƒÂ©cutÃƒÂ©e : `cmd /c npx tsc --noEmit`
 - RÃƒÂ©sultat final : OK
+
+## Lot abonnement 7
+
+### Fichiers modifiÃƒÂ©s
+
+- `app/api/stripe/subscription/cancel/route.ts`
+- `app/api/stripe/subscription/resume/route.ts`
+- `app/api/stripe/portal/route.ts`
+- `app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx`
+- `messages/en/billing.json`
+- `messages/fr/billing.json`
+
+### Changements rÃƒÂ©alisÃƒÂ©s
+
+- Uniformisation des retours d'erreur Stripe facturation en redirections avec `?error=...` pour les actions portail / reprise / cloture.
+- Ajout d'un feedback visible sur la page facturation pour :
+  - succes checkout
+  - cloture programmee
+  - customer Stripe manquant
+  - abonnement interdit / introuvable
+  - echec portail ou reprise/cloture
+- Amelioration de l'observabilite utilisateur sans modifier les contrats HTTP existants.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifie.
+
+### Verification TypeScript
+
+- Commande executee : `cmd /c npx tsc --noEmit`
+
+## Lot abonnement 8
+
+### Fichiers modifiés
+
+- `app/api/stripe/portal/route.ts`
+- `app/api/me/subscription/route.ts`
+- `messages/fr/billing.json`
+
+### Changements réalisés
+
+- Suppression de la branche d'erreur dupliquée dans le portail Stripe pour garder un seul chemin de retour cohérent vers la page facturation.
+- La route `/api/me/subscription` tente désormais aussi de résoudre un `stripe_customer_id` manquant via la résolution centralisée avant la réconciliation Stripe live.
+- Restauration des accents dans la traduction française de la facturation.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+
+## Lot billing UX
+
+### Fichiers modifiés
+
+- `app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx`
+- `components/billing/BillingSubscriptionSection.tsx`
+- `components/billing/BillingInvoicesSection.tsx`
+- `components/billing/billing-shared.tsx`
+- `messages/en/billing.json`
+- `messages/fr/billing.json`
+
+### Changements réalisés
+
+- Refonte de la hiérarchie de la page billing avec :
+  - une vraie vue d'ensemble en tête
+  - des cartes de synthèse rapides
+  - une carte abonnement plus lisible et plus actionnable
+  - une zone factures plus claire sur mobile et desktop
+- Clarification du wording pour rendre la page plus utile et moins "technique Stripe".
+- Harmonisation visuelle des cartes, panneaux secondaires et CTA.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+
+## Lot billing toast
+
+### Fichiers modifiés
+
+- `app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx`
+- `components/billing/BillingFeedbackToast.tsx`
+
+### Changements réalisés
+
+- Suppression des bannières de feedback sur la page billing.
+- Remplacement par un vrai toast client cohérent avec le reste de l'application.
+- Conservation des mêmes messages de succès, d'avertissement et d'erreur via les query params existants.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+
+## Lot billing trial alignment
+
+### Fichiers modifiés
+
+- `lib/server/billing-trial.ts`
+- `app/api/stripe/checkout/route.ts`
+- `app/api/stripe/create-checkout-session/route.ts`
+- `lib/server/services/billing-page-stripe.ts`
+
+### Changements réalisés
+
+- Si un éducateur s'abonne pendant sa période d'essai, le checkout Stripe reprend désormais le nombre de jours d'essai restants pour faire démarrer le prélèvement à la fin de l'essai.
+- La page billing n'affiche plus "période d'essai" si Stripe considère déjà l'abonnement comme actif.
+- Alignement entre la logique d'essai interne et le vrai statut Stripe.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+
+## Lot abonnement 5
+
+### Fichiers modifiÃƒÂ©s
+
+- `lib/server/stripe-subscription-state.ts`
+- `src/lib/require-subscription-if-educator.ts`
+
+### Changements rÃƒÂ©alisÃƒÂ©s
+
+- Ajout d'une synchronisation groupÃƒÂ©e des ÃƒÂ©tats d'abonnement Stripe pour plusieurs utilisateurs.
+- Durcissement du contrÃƒÂ´le d'accÃƒÂ¨s cÃƒÂ´tÃƒÂ© clients/agence :
+  - lecture locale rapide des abonnements instructeurs
+  - puis rÃƒÂ©conciliation Stripe live des ÃƒÂ©ducateurs de l'agence avant d'autoriser ou refuser l'accÃƒÂ¨s
+- RÃƒÂ©duction des faux positifs et faux nÃƒÂ©gatifs quand la BDD est en retard par rapport ÃƒÂ  Stripe.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifiÃƒÂ©.
+
+### VÃƒÂ©rification TypeScript
+
+- Commande exÃƒÂ©cutÃƒÂ©e : `cmd /c npx tsc --noEmit`
 - Correction additionnelle faite pour garder la compilation verte :
   - adaptation de `app/[locale]/(routes)/(routes)/(pay)/(educator)/gestion/page.tsx` au typage `params: Promise<...>` gÃƒÂ©nÃƒÂ©rÃƒÂ© par Next.
 
@@ -3194,3 +3365,57 @@
 
 - Commande exÃ©cutÃ©e : `cmd /c npx tsc --noEmit`
 - RÃ©sultat final : OK
+## 2026-04-26 - Lot SERVICES-TOASTS
+
+### Périmètre
+
+- Retrait des bannières de feedback sur la page `services` éducateur.
+- Remplacement par des toasts pour les succès et erreurs de niveau page.
+
+### Fichiers modifiés
+
+- `app/[locale]/(routes)/(routes)/(pay)/(educator)/services/page.tsx`
+
+### Changements réalisés
+
+- Suppression des bannières de succès et d'erreur affichées dans la page.
+- Ajout de `sonner` pour afficher les succès de création, modification et suppression en toast.
+- Ajout d'un effet pour afficher les erreurs remontées par le hook `useEditableServices` en toast sans les dupliquer à chaque rendu.
+- Conservation des erreurs de validation directement dans les modales de formulaire.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+- Résultat final : OK
+
+## 2026-04-26 - Lot BILLING-TRIAL-COPY
+
+### Périmètre
+
+- Ajout d'une explication explicite sur le déclenchement du premier paiement après la fin de l'essai.
+
+### Fichiers modifiés
+
+- `app/[locale]/(routes)/(routes)/(pay)/(educator)/invoices/page.tsx`
+- `components/billing/BillingSubscriptionSection.tsx`
+- `messages/fr/billing.json`
+- `messages/en/billing.json`
+
+### Changements réalisés
+
+- Ajout d'un microcopy visible avant abonnement dans la page billing.
+- Ajout du même rappel à côté des actions d'abonnement quand aucun abonnement n'est encore actif.
+- Précision explicite que le premier prélèvement n'a lieu qu'après la fin de l'essai restant.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+- Résultat final : OK

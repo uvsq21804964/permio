@@ -1,54 +1,82 @@
 {
   "header": {
-    "title": "Facturation",
-    "subtitle": "Gérez votre abonnement, vos factures et vos moyens de paiement."
+    "title": "Facturation et accès",
+    "subtitle": "Suivez votre abonnement, comprenez ce qui arrive ensuite et retrouvez vos factures sans devoir passer par Stripe."
+  },
+  "overview": {
+    "eyebrow": "Vue d'ensemble",
+    "planLabel": "Formule actuelle",
+    "statusLabel": "Statut d'accès",
+    "nextStepLabel": "Prochaine étape",
+    "latestInvoiceLabel": "Dernière facture",
+    "latestInvoiceEmpty": "Aucune facture pour le moment",
+    "documentsLabel": "Documents disponibles :",
+    "helpTitle": "À quoi sert cette page",
+    "helpBody": "Utilisez cette page pour vérifier que votre accès est sécurisé, voir quand la facturation évolue et télécharger vos documents comptables.",
+    "trialLabel": "Statut de l'essai"
   },
   "noCustomer": {
-    "description": "Aucune formule n’est active pour le moment. Abonnez-vous à Full Magic pour démarrer.",
+    "description": "Aucune formule n'est active pour le moment. Choisissez une formule quand vous êtes prêt à poursuivre après l'essai.",
     "choosePlanAria": "Choisir une formule",
     "chooseStarter": "Choisir Starter",
     "choosePro": "Choisir Pro",
-    "trialActiveUntil": "Votre période d’essai est active jusqu’au {date}.",
-    "trialEndsSoon": "Votre période d’essai se termine le {date} (dans {days} jour(s)).",
-    "trialEnded": "Votre période d’essai s’est terminée le {date}. Un abonnement est nécessaire pour continuer.",
-    "ctaHiddenHint": "Vous pourrez vous abonner à l’approche de la fin de l’essai, ou depuis la page Abonnement."
+    "trialActiveUntil": "Votre période d'essai est active jusqu'au {date}.",
+    "trialEndsSoon": "Votre période d'essai se termine le {date} (dans {days} jour(s)).",
+    "trialEnded": "Votre période d'essai s'est terminée le {date}. Un abonnement est nécessaire pour continuer.",
+    "ctaHiddenHint": "Vous pourrez vous abonner à l'approche de la fin de l'essai, ou depuis la page Abonnement.",
+    "actionsTitle": "Prochaine étape",
+    "actionsHint": "Quand votre essai approche de la fin, passez sur une formule payante pour garder l'accès actif."
   },
   "subscription": {
     "sectionLabel": "Abonnement",
-    "subscriptionLabel": "Souscription",
+    "subscriptionLabel": "Début de l'abonnement",
     "renewalLabel": "Renouvellement",
-    "trialEndLabel": "Fin d’essai",
-    "closurePlanned": "Clôture planifiée. L’abonnement ne sera pas reconduit.",
+    "trialEndLabel": "Fin d'essai",
+    "closurePlanned": "Clôture planifiée. L'abonnement ne sera pas reconduit.",
     "closed": "Abonnement clôturé.",
     "interval": {
       "year": "an",
       "month": "mois"
     },
-    "endsOnLabel": "Fin d’accès le",
+    "endsOnLabel": "Fin d'accès le",
     "trialDaysLeft": "{days} jours restants",
-    "trialUntilHint": "Jusqu’au {date}"
+    "trialUntilHint": "Jusqu'au {date}",
+    "whatsIncludedTitle": "Ce que cela implique maintenant",
+    "actionsTitle": "Actions utiles",
+    "actionsHint": "Les actions ci-dessous couvrent les besoins les plus fréquents.",
+    "noPlanHint": "Aucune formule active ne protège l'accès pour le moment.",
+    "activeHint": "Votre formule est active et tous les détails de facturation sont accessibles ci-dessous.",
+    "cancelAtPeriodEndHint": "Votre formule reste active, mais elle s'arrêtera automatiquement à la fin de la période en cours.",
+    "closedHint": "Votre abonnement est terminé. Vous pouvez revoir la situation ici et vous réabonner si besoin.",
+    "subscribeAfterTrialHint": "Si vous vous abonnez pendant l'essai, le premier paiement ne sera prélevé qu'à la fin de la période d'essai restante.",
+    "noPlanBody": "Vous pouvez d'abord comparer les formules, puis vous abonner quand vous êtes prêt. La section factures apparaîtra ici dès le démarrage de la facturation.",
+    "activeBody": "Votre accès est actif. Si vous devez mettre à jour la carte, récupérer des factures, gérer la TVA ou les préférences de renouvellement, utilisez le panneau d'actions à droite.",
+    "cancelAtPeriodEndBody": "Votre accès reste actif jusqu'à la fin de la période de facturation en cours. Si vous changez d'avis, vous pouvez annuler la clôture programmée.",
+    "closedBody": "Votre abonnement n'est plus actif. Si vous voulez rétablir l'accès, choisissez à nouveau une formule et la facturation repartira depuis le nouveau checkout."
   },
   "status": {
     "closed": "Clôturé",
     "closurePlanned": "Clôture planifiée",
     "active": "Actif",
-    "trialing": "Période d’essai active",
+    "trialing": "Période d'essai active",
     "paymentPending": "Paiement en attente",
     "trialingClosurePlanned": "Essai (clôture planifiée)",
-    "accessUntil": "Période d'essai active"
+    "accessUntil": "Accès actif"
   },
   "actions": {
     "manageSubscription": "Gérer mon abonnement",
     "cancelClosure": "Annuler la clôture",
-    "scheduleClosure": "Clore l’abonnement (fin de période)",
+    "scheduleClosure": "Clore l'abonnement (fin de période)",
     "upgradeStarter": "Passer à Starter",
     "upgradePro": "Passer à Pro",
     "upgradeMagic": "Passer à Full Magic",
-    "comparePlans": "Découvrir les avantages"
+    "comparePlans": "Comparer les formules"
   },
   "invoices": {
+    "eyebrow": "Documents",
     "title": "Factures",
-    "subtitle": "Dernières 10 factures",
+    "subtitle": "Tout ce qui a déjà été émis pour ce compte Stripe.",
+    "count": "{count} document(s)",
     "empty": "Aucune facture pour le moment.",
     "columns": {
       "date": "Date",
@@ -63,7 +91,19 @@
     }
   },
   "help": {
-    "text": "Besoin d’aide ? Rendez-vous sur",
+    "text": "Besoin d'aide ? Rendez-vous sur",
     "contactLink": "/contact"
+  },
+  "feedback": {
+    "success": "Votre passage en caisse a bien été finalisé.",
+    "canceled": "La clôture de votre abonnement est planifiée à la fin de la période en cours.",
+    "missingSubscription": "Impossible de retrouver l'abonnement à mettre à jour.",
+    "missingCustomer": "Votre compte Stripe n'est pas encore rattaché. Merci de réessayer dans un instant.",
+    "forbiddenSubscription": "Cet abonnement n'est pas associé à votre compte.",
+    "cancelFailed": "Impossible de planifier la clôture pour le moment.",
+    "resumeFailed": "Impossible d'annuler la clôture pour le moment.",
+    "portalUnavailable": "Le portail de facturation est temporairement indisponible.",
+    "invalidCustomer": "Votre compte de facturation est introuvable. Contactez le support si le problème persiste.",
+    "portalFailed": "Impossible d'ouvrir le portail de facturation pour le moment."
   }
 }

@@ -2,15 +2,19 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { use } from 'react';
 import { useTranslations } from 'next-intl';
 
 export default function SuccessPage({
   searchParams,
 }: {
-  searchParams: { session_id?: string };
+  searchParams: Promise<{ session_id?: string | string[] }>;
 }) {
   const t = useTranslations('success');
-  const sessionId = searchParams.session_id;
+  const resolvedSearchParams = use(searchParams);
+  const sessionId = Array.isArray(resolvedSearchParams.session_id)
+    ? resolvedSearchParams.session_id[0]
+    : resolvedSearchParams.session_id;
 
   return (
     <main className="min-h-screen bg-[#f9ffc6] px-4 py-16 md:py-24">
