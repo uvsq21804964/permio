@@ -6,7 +6,6 @@ import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
-import { BrandWordmark } from '@/components/brand/BrandWordmark';
 import {
   filterNavbarPages,
   stripLocalePrefix,
@@ -73,7 +72,6 @@ const MobileNavbar: React.FC<NavbarProps> = ({
                   priority
                 />
               </span>
-              <BrandWordmark className="pb-0.5" tone="dark" />
             </Link>
           </div>
 

@@ -1,0 +1,250 @@
+{
+  "nav": {
+    "blog": "Blog",
+    "openApp": "Ouvrir l'app",
+    "signIn": "Connexion",
+    "tryFree": "Essayer 1 mois, sans carte"
+  },
+  "hero": {
+    "title": "Ton agenda peut sembler rempli et pourtant te faire perdre ta journée",
+    "timeline": {
+      "before": "Avant",
+      "after": "Après"
+    },
+    "proof": {
+      "travel": "Trajet réduit",
+      "finish": "Retour plus tôt",
+      "choice": "Séance en plus",
+      "distance": "Distance parcourue"
+    },
+    "proofDetails": {
+      "perDay": "par jour",
+      "sessions": "journée type"
+    },
+    "proofValues": {
+      "travel": "-1h25",
+      "finish": "16:30 -> 15:35",
+      "choice": "100%"
+    }
+  },
+  "simple": {
+    "eyebrow": "Démo MagicHango",
+    "subtitle": "Même métier, même type de clients, mais une journée très différente. MagicHango aide les clients à réserver les créneaux qui s'intègrent vraiment dans la tournée de l'éducateur, au lieu d'éparpiller les visites dans toute la ville.",
+    "labels": {
+      "service": "séance",
+      "travel": "trajet",
+      "gap": "trou",
+      "recommended": "recommandé"
+    },
+    "before": {
+      "title": "Agenda 1 - Sans MagicHango",
+      "subtitle": "3 séances, mais une journée cassée par les longs trajets.",
+      "footer": "La journée n'est pas vide, mais elle est mal assemblée. L'éducateur ne facture que 3 heures alors qu'une trop grande partie de la journée est mangée par les trajets et le temps perdu.",
+      "slots": {
+        "rideFromHome": {
+          "title": "Trajet depuis chez vous",
+          "meta": ""
+        },
+        "sessionOne": {
+          "title": "Séance 1",
+          "meta": "Marcus & Blue"
+        },
+        "longDriveOne": {
+          "title": "Trajet",
+          "meta": ""
+        },
+        "sessionTwo": {
+          "title": "Séance 2",
+          "meta": "Olivia & Pepper"
+        },
+        "idleGap": {
+          "title": "Trou perdu",
+          "meta": "Trop court ou mal placé pour ajouter une séance"
+        },
+        "longDriveTwo": {
+          "title": "Trajet",
+          "meta": ""
+        },
+        "sessionThree": {
+          "title": "Séance 3",
+          "meta": "Chloe & Archie"
+        },
+        "longTripHome": {
+          "title": "Retour",
+          "meta": ""
+        }
+      }
+    },
+    "after": {
+      "title": "Agenda 2 - Avec MagicHango",
+      "subtitle": "4 séances, moins de perte, et le dernier client est plus proche du domicile.",
+      "footer": "MagicHango ne remplit pas juste l'agenda. Il aide à placer les bons clients aux bons créneaux, dans un ordre qui a vraiment du sens pour la tournée.",
+      "slots": {
+        "rideFromHome": {
+          "title": "Trajet depuis chez vous",
+          "meta": ""
+        },
+        "sessionOne": {
+          "title": "Séance 1",
+          "meta": "Ava & Bear"
+        },
+        "optimizedDriveOne": {
+          "title": "Trajet optimisé",
+          "meta": ""
+        },
+        "sessionTwo": {
+          "title": "Séance 2",
+          "meta": "Marcus & Blue"
+        },
+        "optimizedDriveTwo": {
+          "title": "Trajet optimisé",
+          "meta": ""
+        },
+        "sessionThree": {
+          "title": "Séance 3",
+          "meta": "Ethan & Maple"
+        },
+        "realBreak": {
+          "title": "Pause réelle",
+          "meta": "Déjeuner / repos / admin"
+        },
+        "shortDrive": {
+          "title": "Trajet court",
+          "meta": ""
+        },
+        "sessionFour": {
+          "title": "Séance 4",
+          "meta": "Olivia & Pepper"
+        },
+        "shortTripHome": {
+          "title": "Retour",
+          "meta": ""
+        }
+      }
+    }
+  },
+  "animation": {
+    "eyebrow": "Voir la journée se transformer",
+    "helper": "Bascule entre les deux états pour voir les créneaux bouger, rétrécir, apparaître et se réorganiser dans une tournée plus logique.",
+    "beforeState": "Sans MagicHango",
+    "afterState": "Avec MagicHango",
+    "toBefore": "Revenir à la journée cassée",
+    "toAfter": "Voir la tournée optimisée",
+    "whyLabel": "Ce qui change",
+    "impactLabel": "Impact concret",
+    "mapsOpenInDesktop": "Cliquer pour ouvrir dans",
+    "mapsOpenInMobile": "Ouvrir dans",
+    "mapsHint": "Cliquer pour ouvrir dans Google Maps",
+    "mapsFeatureTitle": "Ouverture directe dans Google Maps",
+    "mapsFeatureBody": "Les créneaux de trajet peuvent aussi devenir des points d'action. Ici, cliquer sur un trajet ouvre un itinéraire Google Maps, pour passer immédiatement du planning à la navigation.",
+    "beforeReasonOne": "Au départ, Marcus & Blue sont trop tôt dans la journée, donc la fin de matinée ne peut pas être utilisée pour un client qui colle mieux à la tournée.",
+    "beforeReasonTwo": "Olivia & Pepper sont proches du domicile. En plaçant leur séance l'après-midi, on peut repousser Marcus & Blue plus tard et libérer le créneau de 9h à 10h.",
+    "beforeReasonThree": "Après ces changements, la tournée devient assez compacte pour garder une vraie pause et ajouter une séance en plus.",
+    "afterReasonOne": "Marcus & Blue sont recommandés plus tard, ce qui libère de la place avant eux pour une séance plus proche.",
+    "afterReasonTwo": "Olivia & Pepper sont recommandés l'après-midi, plus près du domicile. Cela aide à libérer la matinée pour la séance de 9h à 10h.",
+    "afterReasonThree": "Le résultat est simple : une séance en plus, moins de trajet, et un retour plus facile à la maison."
+  },
+  "summary": {
+    "rows": {
+      "sessions": "Séances réalisées",
+      "billable": "Temps facturable",
+      "travel": "Temps de trajet",
+      "deadTime": "Trou / pause",
+      "finish": "Fin de journée utile",
+      "lastClient": "Dernier client"
+    },
+    "before": {
+      "title": "Bilan sans MagicHango",
+      "sessions": "3",
+      "billable": "3h",
+      "travel": "2h45",
+      "deadTime": "1h35",
+      "finish": "16:30",
+      "lastClient": "Loin du domicile"
+    },
+    "after": {
+      "title": "Bilan avec MagicHango",
+      "sessions": "4",
+      "billable": "4h",
+      "travel": "1h20",
+      "deadTime": "Quasi nul",
+      "finish": "15:35",
+      "lastClient": "Proche du domicile"
+    }
+  },
+  "comparison": {
+    "title": "Comparaison directe",
+    "note": "Toutes les statistiques ci-dessous correspondent à une journée travaillée.",
+    "assumption": "L'estimation du coût carburant est calculée sur la base de 247,8 km contre 110,6 km, d'un prix moyen français du SP95-E10 à 2,002 €/L et d'un véhicule consommant 9,4 L/100 km.",
+    "headers": {
+      "before": "Sans MagicHango",
+      "after": "Avec MagicHango",
+      "gain": "Gain"
+    },
+    "rows": {
+      "sessions": "Nombre de séances",
+      "billable": "Temps facturable",
+      "travel": "Temps de trajet",
+      "distance": "Distance parcourue",
+      "fuel": "Coût carburant",
+      "deadTime": "Trou / pause",
+      "returnTime": "Heure de retour",
+      "endQuality": "Dernier client"
+    },
+    "before": {
+      "sessions": "3",
+      "billable": "3h",
+      "travel": "2h45",
+      "deadTime": "1h35",
+      "returnTime": "16:30",
+      "endQuality": "Dernier client loin"
+    },
+    "after": {
+      "sessions": "4",
+      "billable": "4h",
+      "travel": "1h20",
+      "deadTime": "Presque 0",
+      "returnTime": "15:35",
+      "endQuality": "Dernier client proche"
+    },
+    "gain": {
+      "sessions": "+1 séance",
+      "billable": "+33%",
+      "travel": "-1h25",
+      "deadTime": "Journée plus fluide",
+      "returnTime": "Retour plus tôt",
+      "endQuality": "Moins de fatigue"
+    }
+  },
+  "routeCards": {
+    "totalLabel": "Trajet total",
+    "before": {
+      "title": "Tournée sud-ouest de l'Ohio sans MagicHango",
+      "total": "2h45",
+      "caption": "Une tournée dispersée dans le sud-ouest de l'Ohio oblige l'éducateur à enchaîner de longs trajets avant de rentrer."
+    },
+    "after": {
+      "title": "Tournée sud-ouest de l'Ohio avec MagicHango",
+      "total": "1h20",
+      "caption": "La tournée dans le sud-ouest de l'Ohio devient plus compacte, avec des liaisons plus courtes et un retour bien plus simple."
+    }
+  },
+  "marketing": {
+    "title": "Message marketing",
+    "beforeLabel": "Sans MagicHango",
+    "beforeText": "Ton agenda semble rempli, mais ta journée fuit entre les rendez-vous.",
+    "afterLabel": "Avec MagicHango",
+    "afterText": "MagicHango aide tes clients à réserver les créneaux qui s'intègrent vraiment dans ta tournée - pour faire plus de séances, rouler moins, et finir plus près de chez toi."
+  },
+  "cta": {
+    "eyebrow": "Prêt à en faire votre parcours de réservation par défaut",
+    "title": "Utilisez MagicHango pour placer les bons clients dans la bonne tournée.",
+    "subtitle": "Faites plus de séances, perdez moins de temps sur la route et centralisez tout votre parcours de réservation dans une seule application.",
+    "requestDemo": "Demander une dÃ©mo personnalisÃ©e en face Ã  face",
+    "demoMailSubject": "Demande de dÃ©mo personnalisÃ©e MagicHango",
+    "noCardRequired": "Essai gratuit, sans carte bancaire.",
+    "openApp": "Ouvrir l'app",
+    "startTrial": "Commencer l'essai gratuit",
+    "viewPlans": "Voir les offres"
+  }
+}

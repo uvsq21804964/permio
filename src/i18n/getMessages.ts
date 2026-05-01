@@ -50,7 +50,8 @@ function loadLocaleFromFs(locale: Locale): Messages {
 }
 
 export async function getMessages(locale: Locale): Promise<Messages> {
-  const cached = cache.get(locale);
+  const useCache = process.env.NODE_ENV === 'production';
+  const cached = useCache ? cache.get(locale) : undefined;
   if (cached) return cached;
 
   // 1) messages pour la locale demandée (peut être vide si pas de dossier/en)
@@ -76,6 +77,8 @@ export async function getMessages(locale: Locale): Promise<Messages> {
     Object.keys(merged)
   );
 
-  cache.set(locale, merged);
+  if (useCache) {
+    cache.set(locale, merged);
+  }
   return merged;
 }

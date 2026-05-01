@@ -51,6 +51,8 @@ const isPublicRoute = createRouteMatcher([
   '/join/(.*)',
   '/onboarding/choose-organization',
   '/home',
+  '/demo',
+  '/magic-hango',
   '/leastory',
   '/(fr|en)/blog',
   '/(fr|en)/blog/(.*)',
@@ -60,6 +62,8 @@ const isPublicRoute = createRouteMatcher([
   '/(fr|en)/join/(.*)',
   '/(fr|en)/onboarding/choose-organization',
   '/(fr|en)/home',
+  '/(fr|en)/demo',
+  '/(fr|en)/magic-hango',
   '/(fr|en)/leastory',
 ]);
 
@@ -81,7 +85,7 @@ export default clerkMiddleware(async (auth, req) => {
     const url = nextUrl.clone();
     url.pathname = userId
       ? `/${preferredLocale}/myweek`
-      : `/${preferredLocale}/home`;
+      : `/${preferredLocale}/demo`;
     return withLocaleCookie(NextResponse.redirect(url), preferredLocale);
   }
 
@@ -96,7 +100,7 @@ export default clerkMiddleware(async (auth, req) => {
   if (pathname === `/${locale}`) {
     const { userId } = await auth({ treatPendingAsSignedOut: true });
     const url = nextUrl.clone();
-    url.pathname = userId ? `/${locale}/myweek` : `/${locale}/home`;
+    url.pathname = userId ? `/${locale}/myweek` : `/${locale}/demo`;
     return withLocaleCookie(NextResponse.redirect(url), locale);
   }
 

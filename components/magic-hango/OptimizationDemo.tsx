@@ -1,0 +1,838 @@
+import Image from 'next/image';
+import { Poppins } from 'next/font/google';
+import { getTranslations } from 'next-intl/server';
+import { AnimatedAgendaShowcase } from '@/components/magic-hango/AnimatedAgendaShowcase';
+import type { Locale } from '@/src/lib/i18n';
+
+type MiniSlot = {
+  start: string;
+  end: string;
+  title: string;
+  meta: string;
+  tone: 'service' | 'travel' | 'recommended' | 'gap';
+  mapsUrl?: string;
+};
+
+type ComparisonRow = {
+  label: string;
+  before: string;
+  after: string;
+  gain: string;
+};
+
+type AgendaStats = {
+  sessionCount: number;
+  billableMinutes: number;
+  travelMinutes: number;
+  gapMinutes: number;
+  endMinutes: number;
+  lastClient: string;
+};
+
+const BEFORE_DISTANCE_MILES = 154;
+const AFTER_DISTANCE_MILES = 68.7;
+const ASSUMED_MPG = 25;
+const AAA_AVERAGE_REGULAR_GAS_USD_PER_GALLON = 2.839;
+const FRENCH_AVERAGE_SP95_E10_EUR_PER_LITER = 2.002;
+const ASSUMED_LITERS_PER_100KM = 235.214583 / ASSUMED_MPG;
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '600', '700', '800', '900'],
+});
+
+function buildGoogleMapsDirections(origin: string, destination: string) {
+  return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&travelmode=driving`;
+}
+
+function toMinutes(value: string) {
+  const [hours, minutes] = value.split(':').map(Number);
+  return hours * 60 + minutes;
+}
+
+function getSlotDuration(slot: MiniSlot) {
+  return toMinutes(slot.end) - toMinutes(slot.start);
+}
+
+function formatDuration(minutes: number) {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+
+  if (hours === 0) {
+    return `${remainingMinutes}m`;
+  }
+
+  if (remainingMinutes === 0) {
+    return `${hours}h`;
+  }
+
+  return `${hours}h${String(remainingMinutes).padStart(2, '0')}`;
+}
+
+function formatClock(minutes: number) {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+
+  return `${String(hours).padStart(2, '0')}:${String(remainingMinutes).padStart(2, '0')}`;
+}
+
+function formatClockForLocale(locale: Locale, minutes: number) {
+  if (locale === 'fr') {
+    return formatClock(minutes);
+  }
+
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  const suffix = hours >= 12 ? 'PM' : 'AM';
+  const normalizedHours = hours % 12 || 12;
+
+  return `${normalizedHours}:${String(remainingMinutes).padStart(2, '0')} ${suffix}`;
+}
+
+function formatDistance(locale: Locale, miles: number) {
+  if (locale === 'fr') {
+    const kilometers = miles * 1.60934;
+    return `${kilometers.toFixed(1).replace('.', ',')} km`;
+  }
+
+  return `${miles.toFixed(1).replace(/\.0$/, '')} mi`;
+}
+
+function formatCurrencyPerDay(locale: Locale, amount: number) {
+  const formatted = new Intl.NumberFormat(locale === 'fr' ? 'fr-FR' : 'en-US', {
+    style: 'currency',
+    currency: locale === 'fr' ? 'EUR' : 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+
+  return locale === 'fr' ? `${formatted}/jour` : `${formatted}/day`;
+}
+
+function formatSavings(locale: Locale, amount: number) {
+  const formatted = new Intl.NumberFormat(locale === 'fr' ? 'fr-FR' : 'en-US', {
+    style: 'currency',
+    currency: locale === 'fr' ? 'EUR' : 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+
+  return locale === 'fr' ? `${formatted} économisés` : `${formatted} saved`;
+}
+
+function computeAgendaStats(slots: MiniSlot[]): AgendaStats {
+  return slots.reduce<AgendaStats>(
+    (accumulator, slot) => {
+      const duration = getSlotDuration(slot);
+
+      if (slot.tone === 'travel') {
+        accumulator.travelMinutes += duration;
+      }
+
+      if (slot.tone === 'gap') {
+        accumulator.gapMinutes += duration;
+      }
+
+      if (slot.tone === 'service' || slot.tone === 'recommended') {
+        accumulator.sessionCount += 1;
+        accumulator.billableMinutes += duration;
+        accumulator.lastClient = slot.meta || slot.title;
+      }
+
+      accumulator.endMinutes = Math.max(accumulator.endMinutes, toMinutes(slot.end));
+
+      return accumulator;
+    },
+    {
+      sessionCount: 0,
+      billableMinutes: 0,
+      travelMinutes: 0,
+      gapMinutes: 0,
+      endMinutes: 0,
+      lastClient: '',
+    },
+  );
+}
+
+function ComparisonTable({
+  title,
+  note,
+  assumption,
+  rows,
+  beforeLabel,
+  afterLabel,
+  gainLabel,
+}: {
+  title: string;
+  note: string;
+  assumption: string;
+  rows: ComparisonRow[];
+  beforeLabel: string;
+  afterLabel: string;
+  gainLabel: string;
+}) {
+  return (
+    <section className="overflow-hidden rounded-[32px] border border-black/8 bg-white/92 shadow-[0_30px_80px_-56px_rgba(15,23,42,0.45)] backdrop-blur">
+      <div className="border-b border-black/6 bg-[linear-gradient(135deg,rgba(255,255,255,0.95),rgba(255,245,214,0.92))] px-5 py-4 md:px-6">
+        <div className={`${poppins.className} text-[11px] font-semibold uppercase tracking-[0.2em] text-black/45`}>
+          {title}
+        </div>
+        <p className="mt-2 text-sm leading-6 text-black/65">{note}</p>
+        <p className="mt-1 text-xs leading-5 text-black/48">{assumption}</p>
+      </div>
+      <div className="overflow-x-auto px-5 py-3 md:px-6 md:py-4">
+        <table className="min-w-full text-left text-sm">
+          <thead>
+            <tr className="border-b border-black/8 text-black/50">
+              <th className="px-0 py-3 font-medium">{''}</th>
+              <th className="px-3 py-3 font-medium">{beforeLabel}</th>
+              <th className="px-3 py-3 font-medium">{afterLabel}</th>
+              <th className="px-3 py-3 font-medium">{gainLabel}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr
+                key={row.label}
+                className="border-b border-black/6 last:border-b-0"
+              >
+                <td className="px-0 py-3.5 font-medium text-slate-950">
+                  {row.label}
+                </td>
+                <td className="px-3 py-3.5 text-black/68">{row.before}</td>
+                <td className="px-3 py-3.5 text-black/68">{row.after}</td>
+                <td className="px-3 py-3.5">
+                  <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-950">
+                    {row.gain}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+  accent,
+  detail,
+  comparison,
+  comparisonOnly,
+}: {
+  label: string;
+  value: string;
+  accent?: 'neutral' | 'warm';
+  detail?: string;
+  comparison?: {
+    beforeLabel: string;
+    beforeValue: string;
+    afterLabel: string;
+    afterValue: string;
+  };
+  comparisonOnly?: boolean;
+}) {
+  if (comparisonOnly && comparison) {
+    return (
+      <article className="rounded-[24px] border border-amber-200 bg-[linear-gradient(180deg,rgba(255,247,217,0.98),rgba(255,255,255,0.94))] p-4 shadow-[0_24px_50px_-36px_rgba(217,119,6,0.42)]">
+        <div className="flex items-start justify-between gap-3">
+          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/45">
+            {label}
+          </div>
+          {detail ? (
+            <div className="rounded-full bg-black/5 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-black/45">
+              {detail}
+            </div>
+          ) : null}
+        </div>
+
+        <div className="mt-4 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 rounded-[18px] border border-black/7 bg-white/82 px-3 py-3">
+          <div className="min-w-0">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40">
+              {comparison.beforeLabel}
+            </div>
+            <div className="mt-1 truncate text-sm font-semibold text-slate-700">
+              {comparison.beforeValue}
+            </div>
+          </div>
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-950 text-white shadow-[0_12px_30px_-18px_rgba(15,23,42,0.7)]">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 20 20"
+              className="h-4 w-4"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3.5 10h13" />
+              <path d="m11.5 6.5 5 3.5-5 3.5" />
+            </svg>
+          </div>
+          <div className="min-w-0 text-right">
+            <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40">
+              {comparison.afterLabel}
+            </div>
+            <div className="mt-1 truncate text-sm font-semibold text-slate-950">
+              {comparison.afterValue}
+            </div>
+          </div>
+        </div>
+      </article>
+    );
+  }
+
+  return (
+    <article
+      className={`rounded-[24px] border p-4 ${
+        accent === 'warm'
+          ? 'border-amber-200 bg-[linear-gradient(180deg,rgba(255,247,217,0.98),rgba(255,255,255,0.94))] shadow-[0_24px_50px_-36px_rgba(217,119,6,0.42)]'
+          : 'border-black/8 bg-white/90 shadow-[0_18px_40px_-32px_rgba(15,23,42,0.22)]'
+      }`}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/45">
+          {label}
+        </div>
+        {detail ? (
+          <div className="rounded-full bg-black/5 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-black/45">
+            {detail}
+          </div>
+        ) : null}
+      </div>
+      <div className={`${poppins.className} mt-3 text-3xl font-bold tracking-tight text-slate-950 md:text-[2rem]`}>
+        {value}
+      </div>
+
+      {comparison ? (
+        <div className="mt-4 rounded-[18px] border border-black/7 bg-white/82 px-3 py-3">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
+            <div className="min-w-0">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40">
+                {comparison.beforeLabel}
+              </div>
+              <div className="mt-1 truncate text-sm font-semibold text-slate-700">
+                {comparison.beforeValue}
+              </div>
+            </div>
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-950 text-white shadow-[0_12px_30px_-18px_rgba(15,23,42,0.7)]">
+              <svg
+                aria-hidden="true"
+                viewBox="0 0 20 20"
+                className="h-4 w-4"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3.5 10h13" />
+                <path d="m11.5 6.5 5 3.5-5 3.5" />
+              </svg>
+            </div>
+            <div className="min-w-0 text-right">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40">
+                {comparison.afterLabel}
+              </div>
+              <div className="mt-1 truncate text-sm font-semibold text-slate-950">
+                {comparison.afterValue}
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </article>
+  );
+}
+
+function RouteMapCard({
+  title,
+  totalLabel,
+  totalValue,
+  caption,
+  imageSrc,
+  mapsUrl,
+}: {
+  title: string;
+  totalLabel: string;
+  totalValue: string;
+  caption: string;
+  imageSrc: string;
+  mapsUrl: string;
+}) {
+  return (
+    <a
+      href={mapsUrl}
+      target="_blank"
+      rel="noreferrer noopener"
+      className="block overflow-hidden rounded-[30px] border border-black/8 bg-white/94 shadow-[0_24px_70px_-52px_rgba(15,23,42,0.42)] transition hover:-translate-y-0.5 hover:shadow-[0_30px_80px_-52px_rgba(15,23,42,0.5)] focus:outline-none focus:ring-2 focus:ring-slate-950/20"
+      aria-label={title}
+      title={title}
+    >
+      <div className="flex items-center justify-between gap-4 border-b border-black/6 px-5 py-4">
+        <div className="flex min-w-0 items-center gap-3">
+          <Image
+            src="/GoogleMaps.svg"
+            alt="Google Maps"
+            width={86}
+            height={22}
+            className="h-auto w-[86px] shrink-0"
+          />
+          <div className="min-w-0 text-sm font-semibold text-slate-950">
+            {title}
+          </div>
+        </div>
+        <div className="shrink-0 rounded-full border border-black/10 bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700">
+          {totalLabel}: {totalValue}
+        </div>
+      </div>
+
+      <div className="relative h-64 overflow-hidden bg-slate-100">
+        <Image
+          src={imageSrc}
+          alt={title}
+          fill
+          sizes="(max-width: 1024px) 100vw, 50vw"
+          className="object-cover"
+        />
+      </div>
+
+      <div className="px-5 py-4 text-sm leading-6 text-black/68">{caption}</div>
+    </a>
+  );
+}
+
+export async function OptimizationDemo({ locale }: { locale: Locale }) {
+  const t = await getTranslations({ locale, namespace: 'magicHango' });
+  const isFrench = locale === 'fr';
+  const slotLabels: Record<MiniSlot['tone'], string> = {
+    service: t('simple.labels.service'),
+    travel: t('simple.labels.travel'),
+    recommended: t('simple.labels.recommended'),
+    gap: t('simple.labels.gap'),
+  };
+
+  const beforePlaces = {
+    home: 'Mason Municipal Center, 6000 Mason-Montgomery Rd, Mason, OH 45040, USA',
+    clientOne:
+      'Miamisburg Civic Center, 10 N First St, Miamisburg, OH 45342, USA',
+    clientTwo:
+      'Loveland City Hall, 120 W Loveland Ave, Loveland, OH 45140, USA',
+    clientThree: 'Dayton City Hall, 101 W 3rd St, Dayton, OH 45402, USA',
+  };
+
+  const afterPlaces = {
+    home: 'Mason Municipal Center, 6000 Mason-Montgomery Rd, Mason, OH 45040, USA',
+    clientA: 'Franklin Public Library, 44 E 4th St, Franklin, OH 45005, USA',
+    clientB:
+      'Miamisburg Civic Center, 10 N First St, Miamisburg, OH 45342, USA',
+    clientC:
+      'Lebanon Public Library, 101 S Broadway St, Lebanon, OH 45036, USA',
+    clientD: 'Loveland City Hall, 120 W Loveland Ave, Loveland, OH 45140, USA',
+  };
+
+  const beforeSlots: MiniSlot[] = [
+    {
+      start: '08:30',
+      end: '09:10',
+      title: t('simple.before.slots.rideFromHome.title'),
+      meta: t('simple.before.slots.rideFromHome.meta'),
+      tone: 'travel',
+      mapsUrl: buildGoogleMapsDirections(
+        beforePlaces.home,
+        beforePlaces.clientOne,
+      ),
+    },
+    {
+      start: '09:10',
+      end: '10:10',
+      title: t('simple.before.slots.sessionOne.title'),
+      meta: t('simple.before.slots.sessionOne.meta'),
+      tone: 'service',
+    },
+    {
+      start: '10:10',
+      end: '11:05',
+      title: t('simple.before.slots.longDriveOne.title'),
+      meta: t('simple.before.slots.longDriveOne.meta'),
+      tone: 'travel',
+      mapsUrl: buildGoogleMapsDirections(
+        beforePlaces.clientOne,
+        beforePlaces.clientTwo,
+      ),
+    },
+    {
+      start: '11:05',
+      end: '12:05',
+      title: t('simple.before.slots.sessionTwo.title'),
+      meta: t('simple.before.slots.sessionTwo.meta'),
+      tone: 'service',
+    },
+    {
+      start: '12:05',
+      end: '13:40',
+      title: t('simple.before.slots.idleGap.title'),
+      meta: t('simple.before.slots.idleGap.meta'),
+      tone: 'gap',
+    },
+    {
+      start: '13:40',
+      end: '14:35',
+      title: t('simple.before.slots.longDriveTwo.title'),
+      meta: t('simple.before.slots.longDriveTwo.meta'),
+      tone: 'travel',
+      mapsUrl: buildGoogleMapsDirections(
+        beforePlaces.clientTwo,
+        beforePlaces.clientThree,
+      ),
+    },
+    {
+      start: '14:35',
+      end: '15:35',
+      title: t('simple.before.slots.sessionThree.title'),
+      meta: t('simple.before.slots.sessionThree.meta'),
+      tone: 'service',
+    },
+    {
+      start: '15:35',
+      end: '16:15',
+      title: t('simple.before.slots.longTripHome.title'),
+      meta: t('simple.before.slots.longTripHome.meta'),
+      tone: 'travel',
+      mapsUrl: buildGoogleMapsDirections(
+        beforePlaces.clientThree,
+        beforePlaces.home,
+      ),
+    },
+  ];
+
+  const afterSlots: MiniSlot[] = [
+    {
+      start: '08:30',
+      end: '09:00',
+      title: t('simple.after.slots.rideFromHome.title'),
+      meta: t('simple.after.slots.rideFromHome.meta'),
+      tone: 'travel',
+      mapsUrl: buildGoogleMapsDirections(afterPlaces.home, afterPlaces.clientA),
+    },
+    {
+      start: '09:00',
+      end: '10:00',
+      title: t('simple.after.slots.sessionOne.title'),
+      meta: t('simple.after.slots.sessionOne.meta'),
+      tone: 'service',
+    },
+    {
+      start: '10:00',
+      end: '10:15',
+      title: t('simple.after.slots.optimizedDriveOne.title'),
+      meta: t('simple.after.slots.optimizedDriveOne.meta'),
+      tone: 'travel',
+      mapsUrl: buildGoogleMapsDirections(
+        afterPlaces.clientA,
+        afterPlaces.clientB,
+      ),
+    },
+    {
+      start: '10:15',
+      end: '11:15',
+      title: t('simple.after.slots.sessionTwo.title'),
+      meta: t('simple.after.slots.sessionTwo.meta'),
+      tone: 'recommended',
+    },
+    {
+      start: '11:15',
+      end: '11:45',
+      title: t('simple.after.slots.optimizedDriveTwo.title'),
+      meta: t('simple.after.slots.optimizedDriveTwo.meta'),
+      tone: 'travel',
+      mapsUrl: buildGoogleMapsDirections(
+        afterPlaces.clientB,
+        afterPlaces.clientC,
+      ),
+    },
+    {
+      start: '11:45',
+      end: '12:45',
+      title: t('simple.after.slots.sessionThree.title'),
+      meta: t('simple.after.slots.sessionThree.meta'),
+      tone: 'service',
+    },
+    {
+      start: '12:45',
+      end: '13:40',
+      title: t('simple.after.slots.realBreak.title'),
+      meta: t('simple.after.slots.realBreak.meta'),
+      tone: 'gap',
+    },
+    {
+      start: '13:40',
+      end: '14:00',
+      title: t('simple.after.slots.shortDrive.title'),
+      meta: t('simple.after.slots.shortDrive.meta'),
+      tone: 'travel',
+      mapsUrl: buildGoogleMapsDirections(
+        afterPlaces.clientC,
+        afterPlaces.clientD,
+      ),
+    },
+    {
+      start: '14:00',
+      end: '15:00',
+      title: t('simple.after.slots.sessionFour.title'),
+      meta: t('simple.after.slots.sessionFour.meta'),
+      tone: 'recommended',
+    },
+    {
+      start: '15:00',
+      end: '15:25',
+      title: t('simple.after.slots.shortTripHome.title'),
+      meta: t('simple.after.slots.shortTripHome.meta'),
+      tone: 'travel',
+      mapsUrl: buildGoogleMapsDirections(afterPlaces.clientD, afterPlaces.home),
+    },
+  ];
+
+  const morphSlots = [
+    {
+      key: 'ride-from-home',
+      before: beforeSlots[0],
+      after: afterSlots[0],
+    },
+    {
+      key: 'session-one',
+      before: beforeSlots[1],
+      after: afterSlots[1],
+    },
+    {
+      key: 'drive-one',
+      before: beforeSlots[2],
+      after: afterSlots[2],
+    },
+    {
+      key: 'session-two',
+      before: beforeSlots[3],
+      after: afterSlots[5],
+    },
+    {
+      key: 'inserted-session-two',
+      after: afterSlots[3],
+    },
+    {
+      key: 'drive-two',
+      before: beforeSlots[5],
+      after: afterSlots[7],
+    },
+    {
+      key: 'middle-gap',
+      before: beforeSlots[4],
+      after: afterSlots[6],
+    },
+    {
+      key: 'new-drive',
+      after: afterSlots[4],
+    },
+    {
+      key: 'new-session',
+      before: beforeSlots[6],
+      after: afterSlots[8],
+    },
+    {
+      key: 'return-home',
+      before: beforeSlots[7],
+      after: afterSlots[9],
+    },
+  ];
+
+  const beforeStats = computeAgendaStats(beforeSlots);
+  const afterStats = computeAgendaStats(afterSlots);
+  const travelSavedMinutes = beforeStats.travelMinutes - afterStats.travelMinutes;
+  const returnSavedMinutes = beforeStats.endMinutes - afterStats.endMinutes;
+  const gapSavedMinutes = beforeStats.gapMinutes - afterStats.gapMinutes;
+  const sessionGain = afterStats.sessionCount - beforeStats.sessionCount;
+  const billableGainPercent = Math.round(
+    ((afterStats.billableMinutes - beforeStats.billableMinutes) / beforeStats.billableMinutes) *
+      100,
+  );
+  const beforeDistanceKm = BEFORE_DISTANCE_MILES * 1.60934;
+  const afterDistanceKm = AFTER_DISTANCE_MILES * 1.60934;
+  const beforeFuelCost = isFrench
+    ? (beforeDistanceKm / 100) *
+      ASSUMED_LITERS_PER_100KM *
+      FRENCH_AVERAGE_SP95_E10_EUR_PER_LITER
+    : (BEFORE_DISTANCE_MILES / ASSUMED_MPG) * AAA_AVERAGE_REGULAR_GAS_USD_PER_GALLON;
+  const afterFuelCost = isFrench
+    ? (afterDistanceKm / 100) *
+      ASSUMED_LITERS_PER_100KM *
+      FRENCH_AVERAGE_SP95_E10_EUR_PER_LITER
+    : (AFTER_DISTANCE_MILES / ASSUMED_MPG) * AAA_AVERAGE_REGULAR_GAS_USD_PER_GALLON;
+  const fuelSavings = beforeFuelCost - afterFuelCost;
+
+  const comparisonRows: ComparisonRow[] = [
+    {
+      label: t('comparison.rows.sessions'),
+      before: String(beforeStats.sessionCount),
+      after: String(afterStats.sessionCount),
+      gain: isFrench ? `+${sessionGain} séance` : `+${sessionGain} session`,
+    },
+    {
+      label: t('comparison.rows.billable'),
+      before: formatDuration(beforeStats.billableMinutes),
+      after: formatDuration(afterStats.billableMinutes),
+      gain: `+${billableGainPercent}%`,
+    },
+    {
+      label: t('comparison.rows.travel'),
+      before: formatDuration(beforeStats.travelMinutes),
+      after: formatDuration(afterStats.travelMinutes),
+      gain: `-${formatDuration(travelSavedMinutes)}`,
+    },
+    {
+      label: t('comparison.rows.distance'),
+      before: formatDistance(locale, BEFORE_DISTANCE_MILES),
+      after: formatDistance(locale, AFTER_DISTANCE_MILES),
+      gain: `-${formatDistance(locale, BEFORE_DISTANCE_MILES - AFTER_DISTANCE_MILES)}`,
+    },
+    {
+      label: t('comparison.rows.fuel'),
+      before: formatCurrencyPerDay(locale, beforeFuelCost),
+      after: formatCurrencyPerDay(locale, afterFuelCost),
+      gain: formatSavings(locale, fuelSavings),
+    },
+    {
+      label: t('comparison.rows.deadTime'),
+      before: formatDuration(beforeStats.gapMinutes),
+      after: formatDuration(afterStats.gapMinutes),
+      gain: `-${formatDuration(gapSavedMinutes)}`,
+    },
+    {
+      label: t('comparison.rows.returnTime'),
+      before: formatClockForLocale(locale, beforeStats.endMinutes),
+      after: formatClockForLocale(locale, afterStats.endMinutes),
+      gain: isFrench
+        ? `${formatDuration(returnSavedMinutes)} plus tôt`
+        : `${formatDuration(returnSavedMinutes)} earlier`,
+    },
+    {
+      label: t('comparison.rows.endQuality'),
+      before: beforeStats.lastClient,
+      after: afterStats.lastClient,
+      gain: isFrench ? 'Plus proche du domicile' : 'Closer to home',
+    },
+  ];
+
+  return (
+    <div className="space-y-8 md:space-y-10">
+      <section className="relative overflow-hidden rounded-[38px] border border-black/8 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(255,247,221,0.98)_42%,rgba(255,252,242,0.94)_100%)] p-6 shadow-[0_34px_90px_-56px_rgba(217,119,6,0.48)] md:p-8">
+        <div className="absolute -left-20 top-0 h-48 w-48 rounded-full bg-amber-200/30 blur-3xl" />
+        <div className="absolute bottom-0 right-0 h-56 w-56 rounded-full bg-sky-100/45 blur-3xl" />
+        <div className="relative grid gap-7 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-end">
+            <div>
+              <div className={`${poppins.className} inline-flex rounded-full border border-black/8 bg-white/76 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.24em] text-black/45 shadow-sm`}>
+                {t('simple.eyebrow')}
+              </div>
+              <h1 className={`${poppins.className} mt-4 max-w-4xl text-[clamp(1.65rem,4.5vw,2.95rem)] font-black tracking-tight text-slate-950 md:leading-[1.02]`}>
+                {t('hero.title')}
+              </h1>
+              <p className="mt-4 max-w-3xl text-sm leading-7 text-black/68 md:text-base">
+              {t('simple.subtitle')}
+            </p>
+          </div>
+
+          <div className="grid gap-3">
+            <StatCard
+              label={t('hero.proof.travel')}
+              value={`-${formatDuration(travelSavedMinutes)}`}
+              detail={t('hero.proofDetails.perDay')}
+            />
+            <StatCard
+              label={t('hero.proof.finish')}
+              value={formatClockForLocale(locale, afterStats.endMinutes)}
+              accent="warm"
+              comparisonOnly
+              comparison={{
+                beforeLabel: t('hero.timeline.before'),
+                beforeValue: formatClockForLocale(locale, beforeStats.endMinutes),
+                afterLabel: t('hero.timeline.after'),
+                afterValue: formatClockForLocale(locale, afterStats.endMinutes),
+              }}
+            />
+            <StatCard
+              label={t('hero.proof.choice')}
+              value={`+${sessionGain}`}
+              detail={t('hero.proofDetails.sessions')}
+            />
+          </div>
+          </div>
+        </section>
+
+      <AnimatedAgendaShowcase
+        locale={locale}
+        beforeTitle={t('simple.before.title')}
+        beforeSubtitle={t('simple.before.subtitle')}
+        beforeFooter={t('simple.before.footer')}
+        afterTitle={t('simple.after.title')}
+        afterSubtitle={t('simple.after.subtitle')}
+        afterFooter={t('simple.after.footer')}
+        labels={slotLabels}
+        slots={morphSlots}
+        ui={{
+          eyebrow: t('animation.eyebrow'),
+          beforeState: t('animation.beforeState'),
+          afterState: t('animation.afterState'),
+          toBefore: t('animation.toBefore'),
+          toAfter: t('animation.toAfter'),
+          whyLabel: t('animation.whyLabel'),
+          impactLabel: t('animation.impactLabel'),
+          mapsOpenInDesktop: t('animation.mapsOpenInDesktop'),
+          mapsHint: t('animation.mapsHint'),
+        }}
+        details={{
+          before: [
+            t('animation.beforeReasonOne'),
+            t('animation.beforeReasonTwo'),
+            t('animation.beforeReasonThree'),
+          ],
+          after: [
+            t('animation.afterReasonOne'),
+            t('animation.afterReasonTwo'),
+            t('animation.afterReasonThree'),
+          ],
+        }}
+      />
+
+      <section className="grid gap-5 lg:grid-cols-2">
+        <RouteMapCard
+          title={t('routeCards.before.title')}
+          totalLabel={t('routeCards.totalLabel')}
+          totalValue={formatDuration(beforeStats.travelMinutes)}
+          caption={t('routeCards.before.caption')}
+          imageSrc="/demo/DemoCalendarWithoutMagicHango.png"
+          mapsUrl="https://www.google.com/maps/dir/Mason+Municipal+Center,+6000+Mason+Montgomery+Rd,+Mason,+OH+45040,+%C3%89tats-Unis/Miamisburg+Civic+Center,+10+N+1st+St,+Miamisburg,+OH+45342,+%C3%89tats-Unis/Loveland+City+Hall,+120+W+Loveland+Ave,+Loveland,+OH+45140,+%C3%89tats-Unis/Dayton+City+Hall,+101+W+Third+St,+Dayton,+OH+45402,+%C3%89tats-Unis/Mason+Municipal+Center,+6000+Mason+Montgomery+Rd,+Mason,+OH+45040,+%C3%89tats-Unis/@39.5236406,-84.5308826,10z/data=!4m32!4m31!1m5!1m1!1s0x8840580e2dd467b5:0x6efd7c758be091b0!2m2!1d-84.3083587!2d39.3533767!1m5!1m1!1s0x8840628c5c5af86b:0x36fade715f8a2f31!2m2!1d-84.2871069!2d39.6422979!1m5!1m1!1s0x8840f9ebf206cdcb:0x2c64e4646b56bd24!2m2!1d-84.2576323!2d39.2682205!1m5!1m1!1s0x8840815188ab450f:0x6e74731f3e572ca1!2m2!1d-84.1938873!2d39.7596041!1m5!1m1!1s0x8840580e2dd467b5:0x6efd7c758be091b0!2m2!1d-84.3083587!2d39.3533767!3e0?entry=ttu&g_ep=EgoyMDI2MDQyOC4wIKXMDSoASAFQAw%3D%3D"
+        />
+        <RouteMapCard
+          title={t('routeCards.after.title')}
+          totalLabel={t('routeCards.totalLabel')}
+          totalValue={formatDuration(afterStats.travelMinutes)}
+          caption={t('routeCards.after.caption')}
+          imageSrc="/demo/DemoCalendarWithMagicHango.png"
+          mapsUrl="https://www.google.com/maps/dir/Mason+Municipal+Center,+6000+Mason+Montgomery+Rd,+Mason,+OH+45040,+%C3%89tats-Unis/Franklin-Springboro+Public+Library+-+Main,+44+E+4th+St,+Franklin,+OH+45005,+%C3%89tats-Unis/Miamisburg+Civic+Center,+10+N+1st+St,+Miamisburg,+OH+45342,+%C3%89tats-Unis/39.3921927,-84.2866677/Loveland+City+Hall,+120+W+Loveland+Ave,+Loveland,+OH+45140,+%C3%89tats-Unis/Mason+Municipal+Center,+6000+Mason+Montgomery+Rd,+Mason,+OH+45040,+%C3%89tats-Unis/@39.4917662,-84.4494124,11z/data=!4m33!4m32!1m5!1m1!1s0x8840580e2dd467b5:0x6efd7c758be091b0!2m2!1d-84.3083587!2d39.3533767!1m5!1m1!1s0x884061ade123f897:0x18dd6f635efd343d!2m2!1d-84.3026632!2d39.5586492!1m5!1m1!1s0x8840628c5c5af86b:0x36fade715f8a2f31!2m2!1d-84.2871069!2d39.6422979!1m0!1m5!1m1!1s0x8840f9ebf206cdcb:0x2c64e4646b56bd24!2m2!1d-84.2576323!2d39.2682205!1m5!1m1!1s0x8840580e2dd467b5:0x6efd7c758be091b0!2m2!1d-84.3083587!2d39.3533767!3e0?entry=ttu&g_ep=EgoyMDI2MDQyOC4wIKXMDSoASAFQAw%3D%3D"
+        />
+      </section>
+
+      <ComparisonTable
+        title={t('comparison.title')}
+        note={t('comparison.note')}
+        assumption={t('comparison.assumption')}
+        rows={comparisonRows}
+        beforeLabel={t('comparison.headers.before')}
+        afterLabel={t('comparison.headers.after')}
+        gainLabel={t('comparison.headers.gain')}
+      />
+    </div>
+  );
+}

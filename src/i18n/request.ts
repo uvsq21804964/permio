@@ -1,6 +1,7 @@
 // src/i18n/request.ts
 
 import { getRequestConfig } from 'next-intl/server';
+import { getMessages } from '@/src/i18n/getMessages';
 
 const SUPPORTED = ['fr', 'en'] as const;
 type Locale = (typeof SUPPORTED)[number];
@@ -11,7 +12,6 @@ export default getRequestConfig(async ({ locale }) => {
     ? (locale as Locale)
     : DEFAULT_LOCALE;
 
-  // Chemin selon ton arbo (adapte ../messages si besoin)
-  const messages = (await import(`../../messages/${l}.json`)).default;
+  const messages = await getMessages(l);
   return { locale: l, messages };
 });

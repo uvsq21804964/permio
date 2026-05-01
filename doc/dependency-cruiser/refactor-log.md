@@ -503,6 +503,195 @@
 - Commande exÃ©cutÃ©e : `cmd /c npx tsc --noEmit`
 - RÃ©sultat final : OK
 
+## 2026-04-29 - Lot MAGIC-HANGO-EXACT-DATA
+
+### PÃ©rimÃ¨tre
+
+- Reprise de la page `magic-hango` Ã  partir d'un jeu de donnÃ©es mÃ©tier explicite.
+- Alignement de la dÃ©mo sur deux agendas exacts `sans / avec MagicHango`.
+
+### Fichiers modifiÃ©s
+
+- `components/magic-hango/OptimizationDemo.tsx`
+- `messages/en/magicHango.json`
+- `messages/fr/magicHango.json`
+
+### Changements rÃ©alisÃ©s
+
+- Remplacement du contenu gÃ©nÃ©rique par les horaires exacts fournis pour les deux journÃ©es.
+- Ajout des bilans complets `sans / avec MagicHango`.
+- Ajout de la table de comparaison directe avec les gains attendus.
+- Reprise du message marketing FR/EN pour coller au positionnement demandÃ©.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifiÃ©.
+- Aucun appel API ajoutÃ©.
+
+### VÃ©rification TypeScript
+
+- Commande exÃ©cutÃ©e : `cmd /c npx tsc --noEmit`
+- RÃ©sultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-SERVER-I18N
+
+### PÃ©rimÃ¨tre
+
+- SÃ©curisation du rendu des traductions de la dÃ©mo `magic-hango`.
+
+### Fichiers modifiÃ©s
+
+- `components/magic-hango/OptimizationDemo.tsx`
+
+### Changements rÃ©alisÃ©s
+
+- Passage de la dÃ©mo d'un composant client Ã  un composant rendu cÃ´tÃ© serveur.
+- RÃ©solution directe des traductions via `getTranslations('magicHango')`.
+- Suppression de la dÃ©pendance du mini agenda au provider client pour Ã©viter l'affichage brut de clÃ©s comme `magicHango.simple.before.slots.sessionOne.title`.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifiÃ©.
+
+### VÃ©rification TypeScript
+
+- Commande exÃ©cutÃ©e : `cmd /c npx tsc --noEmit`
+- RÃ©sultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-NO-OVERLAP
+
+### PÃ©rimÃ¨tre
+
+- Correction du rendu des durÃ©es dans le mini agenda `magic-hango`.
+
+### Fichiers modifiÃ©s
+
+- `components/magic-hango/OptimizationDemo.tsx`
+
+### Changements rÃ©alisÃ©s
+
+- Passage Ã  une hauteur exacte par crÃ©neau au lieu d'une `minHeight` qui uniformisait les blocs.
+- Suppression du dÃ©calage vertical artificiel qui contribuait aux chevauchements.
+- Ajout d'un rendu compact spÃ©cifique pour les trajets et crÃ©neaux courts afin qu'ils restent lisibles sans forcer une hauteur trop grande.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifiÃ©.
+
+### VÃ©rification TypeScript
+
+- Commande exÃ©cutÃ©e : `cmd /c npx tsc --noEmit`
+- RÃ©sultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-MORPH
+
+### PÃ©rimÃ¨tre
+
+- Ajout d'une transformation animÃ©e entre la journÃ©e `sans` et `avec` MagicHango.
+
+### Fichiers modifiÃ©s
+
+- `components/magic-hango/AnimatedAgendaShowcase.tsx`
+- `components/magic-hango/OptimizationDemo.tsx`
+- `messages/en/magicHango.json`
+- `messages/fr/magicHango.json`
+
+### Changements rÃ©alisÃ©s
+
+- CrÃ©ation d'un composant client dÃ©diÃ© pour animer le passage d'un agenda cassÃ© Ã  une tournÃ©e optimisÃ©e.
+- DÃ©placement, redimensionnement et transformation visuelle des crÃ©neaux pendant la transition.
+- Ajout d'un contrÃ´le explicite pour rejouer le passage `sans -> avec` et revenir en arriÃ¨re.
+- Conservation des bilans et de la table de comparaison sous la dÃ©mo animÃ©e.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifiÃ©.
+- Aucun appel API ajoutÃ©.
+
+### VÃ©rification TypeScript
+
+- Commande exÃ©cutÃ©e : `cmd /c npx tsc --noEmit`
+- RÃ©sultat final : OK
+
+## 2026-04-29 - Lot I18N-DEV-CACHE
+
+### PÃ©rimÃ¨tre
+
+- Fiabilisation du rechargement des messages `next-intl` en dÃ©veloppement.
+
+### Fichiers modifiÃ©s
+
+- `src/i18n/getMessages.ts`
+
+### Changements rÃ©alisÃ©s
+
+- DÃ©sactivation du cache mÃ©moire des messages par locale en environnement de dÃ©veloppement.
+- Conservation du cache en production.
+- Correction des cas oÃ¹ de nouvelles clÃ©s JSON restaient invisibles et s'affichaient brutes aprÃ¨s modification des fichiers de messages.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifiÃ©.
+
+### VÃ©rification TypeScript
+
+- Commande exÃ©cutÃ©e : `cmd /c npx tsc --noEmit`
+- RÃ©sultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-LOCALE-LOCK
+
+### PÃ©rimÃ¨tre
+
+- Verrouillage explicite de la locale sur la page `magic-hango`.
+
+### Fichiers modifiÃ©s
+
+- `app/[locale]/(routes)/magic-hango/page.tsx`
+- `components/magic-hango/OptimizationDemo.tsx`
+
+### Changements rÃ©alisÃ©s
+
+- Passage de la locale d'URL au rendu serveur de la page.
+- Utilisation de `getTranslations({ locale, namespace: 'magicHango' })` au lieu d'une rÃ©solution implicite.
+- Suppression du fallback silencieux vers l'anglais observÃ© sur `/fr/magic-hango`.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifiÃ©.
+
+### VÃ©rification TypeScript
+
+- Commande exÃ©cutÃ©e : `cmd /c npx tsc --noEmit`
+- RÃ©sultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-SPLIT-PANEL
+
+### PÃ©rimÃ¨tre
+
+- SÃ©paration du bloc agenda `magic-hango` en deux zones lisibles.
+
+### Fichiers modifiÃ©s
+
+- `components/magic-hango/AnimatedAgendaShowcase.tsx`
+- `components/magic-hango/OptimizationDemo.tsx`
+- `messages/en/magicHango.json`
+- `messages/fr/magicHango.json`
+
+### Changements rÃ©alisÃ©s
+
+- Agenda visuel isolÃ© dans la colonne de gauche.
+- Panneau d'explication dÃ©diÃ© dans la colonne de droite avec bouton d'action, texte courant et raisons concrÃ¨tes de la transformation.
+- Ajout de microcopies explicites sur l'Ã©loignement des clients, les trous perdus et le retour au domicile.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifiÃ©.
+
+### VÃ©rification TypeScript
+
+- Commande exÃ©cutÃ©e : `cmd /c npx tsc --noEmit`
+- RÃ©sultat final : OK
+
 ### Risques restants
 
 - Validation manuelle encore nÃ©cessaire sur la navigation semaine prÃ©cÃ©dente / suivante et le dialogue d'alignement d'adresse.
@@ -3410,6 +3599,438 @@
 - Ajout d'un microcopy visible avant abonnement dans la page billing.
 - Ajout du même rappel à côté des actions d'abonnement quand aucun abonnement n'est encore actif.
 - Précision explicite que le premier prélèvement n'a lieu qu'après la fin de l'essai restant.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+- Résultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-DEMO
+
+### Périmètre
+
+- Création d'une page publique autonome pour démontrer la valeur de Magic Hango.
+- Démo visuelle avant/après sans aucun appel API.
+
+### Fichiers modifiés
+
+- `app/[locale]/(routes)/magic-hango/page.tsx`
+- `components/magic-hango/OptimizationDemo.tsx`
+- `messages/fr/magicHango.json`
+- `messages/en/magicHango.json`
+- `middleware.ts`
+
+### Changements réalisés
+
+- Ajout d'une nouvelle page publique `/{locale}/magic-hango`.
+- Construction d'une démo statique avec deux scénarios d'agenda, comparatif avant/après, métriques de trajet et de temps creux.
+- Ajout d'une navigation publique cohérente avec bouton d'ouverture de l'app quand l'utilisateur est déjà connecté.
+- Déclaration explicite de la route comme publique dans le middleware.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+- Aucun appel API ajouté à cette page.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+- Résultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-NAV
+
+### Périmètre
+
+- Ajout d'un accès direct vers la page `magic-hango` dans les navbars.
+
+### Fichiers modifiés
+
+- `app/[locale]/(routes)/home/page.tsx`
+- `app/[locale]/(routes)/(routes)/layout.tsx`
+- `messages/fr/home.json`
+- `messages/en/home.json`
+
+### Changements réalisés
+
+- Ajout d'un bouton `Magic Hango` dans la navbar publique de la home.
+- Ajout d'une entrée `Magic Hango` dans la navigation principale de l'application connectée.
+- Ajout du libellé correspondant dans les messages FR/EN.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+- Résultat final : OK
+
+## 2026-04-29 - Lot I18N-MAGIC-HANGO-FIX
+
+### Périmètre
+
+- Correction du chargement des messages `next-intl` pour la page `magic-hango`.
+
+### Fichiers modifiés
+
+- `src/i18n/request.ts`
+
+### Changements réalisés
+
+- Remplacement du chargement legacy via `messages/{locale}.json` par le chargeur unifié `getMessages`.
+- Alignement du provider `next-intl` avec les namespaces réellement présents dans `messages/en/*` et `messages/fr/*`.
+- Correction de l'erreur `MISSING_MESSAGE` sur `magicHango`.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+- Résultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-MESSAGES
+
+### Périmètre
+
+- Complétion et nettoyage des messages de la page `magic-hango`.
+
+### Fichiers modifiés
+
+- `messages/en/magicHango.json`
+- `messages/fr/magicHango.json`
+
+### Changements réalisés
+
+- Ajout des clés manquantes `hero.proof.*` utilisées par la démo.
+- Réécriture propre des fichiers FR/EN pour éviter les incohérences de clés.
+- Nettoyage du texte FR avec accents corrects sur cette page.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+- Résultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-CLARITY
+
+### Périmètre
+
+- Renforcement de la lisibilité et de la démonstration de valeur de la page `magic-hango`.
+
+### Fichiers modifiés
+
+- `components/magic-hango/OptimizationDemo.tsx`
+- `messages/en/magicHango.json`
+- `messages/fr/magicHango.json`
+
+### Changements réalisés
+
+- Ajout d'un résumé explicite par scénario pour expliquer en une lecture ce qui ne va pas avant optimisation.
+- Ajout d'une section de gains concrets visibles immédiatement.
+- Ajout d'une légende pour rendre l'agenda avant/après plus lisible sans effort.
+- Ajout d'un bloc distinct `client / éducateur / business` pour rendre la valeur plus claire selon le point de vue.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+- Résultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-SIMPLIFY
+
+### Périmètre
+
+- Refonte complète de la page `magic-hango` en version plus simple.
+- Passage de `magic-hango` comme landing page publique par défaut.
+
+### Fichiers modifiés
+
+- `components/magic-hango/OptimizationDemo.tsx`
+- `app/[locale]/(routes)/magic-hango/page.tsx`
+- `messages/en/magicHango.json`
+- `messages/fr/magicHango.json`
+- `middleware.ts`
+
+### Changements réalisés
+
+- Suppression de la version dense avec scénarios multiples, légendes et nombreux blocs.
+- Remplacement par une démo unique avant/après beaucoup plus courte et lisible.
+- Recentrage de la page sur trois idées : moins de trajet, journée plus compacte, choix client conservé.
+- Ajustement du logo de la page pour pointer vers `magic-hango`.
+- Changement de la redirection publique par défaut : `/` et `/{locale}` envoient maintenant vers `/{locale}/magic-hango` pour les visiteurs non connectés.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+- Aucun appel API ajouté.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+- Résultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-I18N-KEYS
+
+### Périmètre
+
+- Correction de l'affichage brut des clés de traduction dans la démo simplifiée.
+
+### Fichiers modifiés
+
+- `components/magic-hango/OptimizationDemo.tsx`
+- `messages/en/magicHango.json`
+- `messages/fr/magicHango.json`
+
+### Changements réalisés
+
+- Remplacement des clés numériques de type `slots.0.title` par des clés nommées explicites.
+- Rebranchement du composant sur ces nouvelles clés.
+- Suppression de l'affichage brut `magicHango.simple.before.slots.0.title`.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+- Résultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-GAPS
+
+### Périmètre
+
+- Renforcement de la visibilité des trous entre séances dans la démo `magic-hango`.
+
+### Fichiers modifiés
+
+- `components/magic-hango/OptimizationDemo.tsx`
+- `messages/en/magicHango.json`
+- `messages/fr/magicHango.json`
+
+### Changements réalisés
+
+- Ajout d'un type visuel dédié aux trous dans l'agenda.
+- Ajout d'un `Idle gap / Grand trou` explicite dans la version avant optimisation.
+- Ajout d'une `Short buffer / Petite marge` dans la version optimisée pour rendre la comparaison plus lisible.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+- Résultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-MINI-AGENDA
+
+### Périmètre
+
+- Passage de la démo `magic-hango` en vrai mini agenda visuel.
+
+### Fichiers modifiés
+
+- `components/magic-hango/OptimizationDemo.tsx`
+
+### Changements réalisés
+
+- Remplacement de la simple liste de cartes par deux mini agendas verticaux avec heures et blocs positionnés.
+- Affichage explicite des horaires de début et de fin pour chaque créneau.
+- Mise en évidence plus nette des trous avec un grand bloc hachuré dans la version non optimisée.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+- Résultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-AGENDA-REBUILD
+
+### Périmètre
+
+- Refonte complète du mini agenda de la page `magic-hango`.
+
+### Fichiers modifiés
+
+- `components/magic-hango/OptimizationDemo.tsx`
+
+### Changements réalisés
+
+- Remplacement du rendu fragile par un mini agenda vertical plus propre avec grille horaire stable.
+- Positionnement explicite des blocs via `start/end` pour mieux visualiser la durée des créneaux.
+- Affichage clair des trous, trajets et créneaux recommandés directement dans la timeline.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+- Résultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-AGENDA-FIX
+
+### Périmètre
+
+- Correction des derniers bugs d'affichage sur le mini agenda `magic-hango`.
+
+### Fichiers modifiés
+
+- `components/magic-hango/OptimizationDemo.tsx`
+
+### Changements réalisés
+
+- Augmentation de la hauteur du mini agenda pour laisser respirer les blocs.
+- Suppression de la ligne d'horaire redondante qui créait des chevauchements visuels.
+- Passage à une hauteur minimale plus généreuse pour chaque bloc.
+- Placement de l'heure de fin dans la colonne horaire du bloc pour garder un rendu plus stable.
+- Limitation visuelle du texte descriptif pour éviter les débordements.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+- Résultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-TYPES
+
+### Périmètre
+
+- Renforcement de la distinction visuelle entre séances, trajets, marges et créneaux recommandés.
+
+### Fichiers modifiés
+
+- `components/magic-hango/OptimizationDemo.tsx`
+- `messages/en/magicHango.json`
+- `messages/fr/magicHango.json`
+
+### Changements réalisés
+
+- Couleurs plus distinctes entre les types de blocs.
+- Ajout d'un badge visible sur chaque bloc pour indiquer explicitement son type.
+- Séparation plus nette entre une séance standard et un créneau recommandé.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+- Résultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-BLOCK-DISTINCTION
+
+### Périmètre
+
+- Renforcement final de la distinction entre séances, trajets, marges et recommandations dans le mini agenda.
+
+### Fichiers modifiés
+
+- `components/magic-hango/OptimizationDemo.tsx`
+
+### Changements réalisés
+
+- Palette plus contrastée entre les quatre types de blocs.
+- Ajout de badges visibles et explicites directement dans chaque créneau.
+- Différenciation plus nette entre une séance classique et un créneau recommandé.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+- Résultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-RETURN-HOME
+
+### Périmètre
+
+- Ajout d'un scénario de long retour à la maison dans la démo `magic-hango`.
+
+### Fichiers modifiés
+
+- `components/magic-hango/OptimizationDemo.tsx`
+- `messages/en/magicHango.json`
+- `messages/fr/magicHango.json`
+
+### Changements réalisés
+
+- Extension de l'agenda jusqu'à 17h pour montrer la fin réelle de journée.
+- Ajout d'un `Long trip home / Long retour à la maison` dans la version non optimisée.
+- Ajout d'un `Short trip home / Retour plus court` dans la version optimisée pour rendre le contraste plus concret.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+- Résultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-DURATION-SCALE
+
+### Périmètre
+
+- Correction de l'échelle de durée dans le mini agenda `magic-hango`.
+
+### Fichiers modifiés
+
+- `components/magic-hango/OptimizationDemo.tsx`
+
+### Changements réalisés
+
+- Remplacement du positionnement en pourcentage par un positionnement en pixels par minute.
+- Calcul de la hauteur des créneaux directement à partir de leur durée réelle.
+- Conservation d'une petite hauteur minimale seulement pour éviter qu'un très court trajet devienne illisible.
+
+### Contrats HTTP
+
+- Aucun contrat HTTP modifié.
+
+### Vérification TypeScript
+
+- Commande exécutée : `cmd /c npx tsc --noEmit`
+- Résultat final : OK
+
+## 2026-04-29 - Lot MAGIC-HANGO-TIMING-ACCURACY
+
+### Périmètre
+
+- Correction de la correspondance exacte entre horaires, position et durée dans le mini agenda.
+
+### Fichiers modifiés
+
+- `components/magic-hango/OptimizationDemo.tsx`
+
+### Changements réalisés
+
+- Passage complet à un modèle en pixels par minute pour la hauteur totale de l'agenda.
+- Alignement de la colonne horaire et de la timeline sur la même hauteur réelle.
+- Correction de la position et de la hauteur des blocs pour qu'elles correspondent précisément aux horaires affichés.
 
 ### Contrats HTTP
 

@@ -1,0 +1,251 @@
+{
+  "nav": {
+    "blog": "Blog",
+    "openApp": "Open app",
+    "signIn": "Sign in",
+    "tryFree": "Try 1 month, no card"
+  },
+  "hero": {
+    "title": "Your calendar can look full and still waste your day",
+    "timeline": {
+      "before": "Before",
+      "after": "After"
+    },
+    "proof": {
+      "travel": "Travel reduced",
+      "finish": "Earlier return",
+      "choice": "Extra session",
+      "distance": "Distance driven"
+    },
+    "proofDetails": {
+      "perDay": "per day",
+      "sessions": "worked day"
+    },
+    "proofValues": {
+      "travel": "-1h25",
+      "finish": "16:30 -> 15:35",
+      "choice": "100%"
+    }
+  },
+  "simple": {
+    "eyebrow": "MagicHango demo",
+    "subtitle": "Same job, same kind of clients, but a very different day. MagicHango helps clients book the slots that actually fit the trainer's route, instead of scattering visits across the city.",
+    "labels": {
+      "service": "session",
+      "travel": "travel",
+      "gap": "gap",
+      "recommended": "recommended"
+    },
+    "before": {
+      "title": "Agenda 1 — Without MagicHango",
+      "subtitle": "3 sessions, but the day is broken by long drives and lost gaps.",
+      "footer": "The day is not empty, but it is badly assembled. The trainer only bills 3 hours while too much of the day is consumed by travel and wasted time.",
+      "slots": {
+        "rideFromHome": {
+          "title": "Drive from home",
+          "meta": ""
+        },
+        "sessionOne": {
+          "title": "Session 1",
+          "meta": "Marcus & Blue"
+        },
+        "longDriveOne": {
+          "title": "Drive",
+          "meta": ""
+        },
+        "sessionTwo": {
+          "title": "Session 2",
+          "meta": "Olivia & Pepper"
+        },
+        "idleGap": {
+          "title": "Lost gap",
+          "meta": "Too short or too awkward to insert another session"
+        },
+        "longDriveTwo": {
+          "title": "Drive",
+          "meta": ""
+        },
+        "sessionThree": {
+          "title": "Session 3",
+          "meta": "Chloe & Archie"
+        },
+        "longTripHome": {
+          "title": "Return home",
+          "meta": ""
+        }
+      }
+    },
+    "after": {
+      "title": "Agenda 2 — With MagicHango",
+      "subtitle": "4 sessions, less waste, and the last client is closer to home.",
+      "footer": "MagicHango does not just fill the calendar. It helps place the right clients in the right time slots, in an order that actually makes sense for the route.",
+      "slots": {
+        "rideFromHome": {
+          "title": "Drive from home",
+          "meta": ""
+        },
+        "sessionOne": {
+          "title": "Session 1",
+          "meta": "Ava & Bear"
+        },
+        "optimizedDriveOne": {
+          "title": "Optimized drive",
+          "meta": ""
+        },
+        "sessionTwo": {
+          "title": "Session 2",
+          "meta": "Marcus & Blue"
+        },
+        "optimizedDriveTwo": {
+          "title": "Optimized drive",
+          "meta": ""
+        },
+        "sessionThree": {
+          "title": "Session 3",
+          "meta": "Ethan & Maple"
+        },
+        "realBreak": {
+          "title": "Real break",
+          "meta": "Lunch / rest / admin"
+        },
+        "shortDrive": {
+          "title": "Short drive",
+          "meta": ""
+        },
+        "sessionFour": {
+          "title": "Session 4",
+          "meta": "Olivia & Pepper"
+        },
+        "shortTripHome": {
+          "title": "Return home",
+          "meta": ""
+        }
+      }
+    }
+  },
+  "animation": {
+    "eyebrow": "See the day transform",
+    "helper": "Switch between the two states to watch slots move, shrink, appear, and reorganize into a more logical route.",
+    "beforeState": "Without MagicHango",
+    "afterState": "With MagicHango",
+    "toBefore": "Back to the broken day",
+    "toAfter": "Show the optimized route",
+    "whyLabel": "What changes",
+    "impactLabel": "Business impact",
+    "mapsOpenInDesktop": "Click to open in",
+    "mapsOpenInMobile": "Open in",
+    "mapsHint": "Click to open in Google Maps",
+    "mapsFeatureTitle": "Open directly in Google Maps",
+    "mapsFeatureBody": "Travel slots can also become action points. In this demo, clicking a travel slot opens a Google Maps route so the trainer can go straight from schedule to navigation.",
+    "beforeReasonOne": "At first, Marcus & Blue are too early in the day, so the late morning cannot be used for a client who fits the route better.",
+    "beforeReasonTwo": "Olivia & Pepper are close to home. Moving them to the afternoon makes room to push Marcus & Blue later and free the 9:00 to 10:00 slot.",
+    "beforeReasonThree": "After those moves, the route is compact enough to keep a real break and still add one more session.",
+    "afterReasonOne": "Marcus & Blue are recommended later, which opens space for a closer session before them.",
+    "afterReasonTwo": "Olivia & Pepper are recommended in the afternoon, closer to home. That helps free the morning for the 9:00 to 10:00 session.",
+    "afterReasonThree": "The result is simple: one more session, less driving, and an easier return home."
+  },
+  "summary": {
+    "rows": {
+      "sessions": "Sessions completed",
+      "billable": "Billable time",
+      "travel": "Travel time",
+      "deadTime": "Gap / break",
+      "finish": "Useful end of day",
+      "lastClient": "Last client"
+    },
+    "before": {
+      "title": "Summary without MagicHango",
+      "sessions": "3",
+      "billable": "3h",
+      "travel": "2h45",
+      "deadTime": "1h35",
+      "finish": "16:30",
+      "lastClient": "Far from home"
+    },
+    "after": {
+      "title": "Summary with MagicHango",
+      "sessions": "4",
+      "billable": "4h",
+      "travel": "1h20",
+      "deadTime": "Almost none",
+      "finish": "15:35",
+      "lastClient": "Close to home"
+    }
+  },
+  "comparison": {
+    "title": "Direct comparison",
+    "note": "All stats below are for one worked day.",
+    "assumption": "Fuel cost uses 154 mi vs 68.7 mi, the AAA U.S. regular gas average ($2.839/gal), and a 25 mpg vehicle.",
+    "headers": {
+      "before": "Without MagicHango",
+      "after": "With MagicHango",
+      "gain": "Gain"
+    },
+    "rows": {
+      "sessions": "Number of sessions",
+      "billable": "Billable time",
+      "travel": "Travel time",
+      "distance": "Distance driven",
+      "fuel": "Fuel cost",
+      "deadTime": "Gap / break",
+      "returnTime": "Return time",
+      "endQuality": "Last client"
+    },
+    "before": {
+      "sessions": "3",
+      "billable": "3h",
+      "travel": "2h45",
+      "deadTime": "1h35",
+      "returnTime": "16:30",
+      "endQuality": "Last client far"
+    },
+    "after": {
+      "sessions": "4",
+      "billable": "4h",
+      "travel": "1h20",
+      "deadTime": "Almost 0",
+      "returnTime": "15:35",
+      "endQuality": "Last client close"
+    },
+    "gain": {
+      "sessions": "+1 session",
+      "billable": "+33%",
+      "travel": "-1h25",
+      "deadTime": "Much smoother day",
+      "returnTime": "Earlier return",
+      "endQuality": "Less fatigue"
+    }
+  },
+  "routeCards": {
+    "totalLabel": "Total driving",
+    "before": {
+      "title": "Southwest Ohio route without MagicHango",
+      "total": "2h45",
+      "caption": "A scattered Southwest Ohio route forces long crossings before the trainer can finally get back home."
+    },
+    "after": {
+      "title": "Southwest Ohio route with MagicHango",
+      "total": "1h20",
+      "caption": "The Southwest Ohio route becomes tighter, with shorter links and a much easier way back home."
+    }
+  },
+  "marketing": {
+    "title": "Marketing message",
+    "beforeLabel": "Without MagicHango",
+    "beforeText": "Your calendar looks full, but your day leaks time between appointments.",
+    "afterLabel": "With MagicHango",
+    "afterText": "MagicHango helps clients book the slots that actually fit your route — so you can do more sessions, drive less, and finish closer to home."
+  },
+  "cta": {
+    "eyebrow": "Ready to make this your default booking flow",
+    "title": "Use MagicHango to fit the right clients into the right route.",
+    "subtitle": "Do more sessions, lose less time on the road, and centralize your full booking flow in one app.",
+    "requestDemo": "Request a demo",
+    "demoMailSubject": "Custom MagicHango demo request",
+    "demoMailBody": "Hi Tom,%0D%0A%0D%0AI'd like to request a custom in-person demo of MagicHango.%0D%0A%0D%0AMy name:%0D%0AMy business:%0D%0AMy city:%0D%0AMy preferred dates:%0D%0A%0D%0AThanks,",
+    "noCardRequired": "Free trial, no credit card required.",
+    "openApp": "Open the app",
+    "startTrial": "Start the free trial",
+    "viewPlans": "View plans"
+  }
+}

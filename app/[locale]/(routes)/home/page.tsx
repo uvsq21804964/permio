@@ -94,9 +94,16 @@ export default function HomePage() {
           <nav className="flex items-center gap-2 md:gap-3">
             <Link
               href={`/${locale}/blog`}
-              className="inline-flex items-center rounded-full px-3 py-1.5 text-[11px] md:text-sm font-semibold text-white hover:bg-white hover:text-primary transition whitespace-nowrap"
+              className="hidden md:inline-flex items-center rounded-full px-3 py-1.5 text-sm font-semibold text-white hover:bg-white hover:text-primary transition whitespace-nowrap"
             >
               {t('nav.blog')}
+            </Link>
+
+            <Link
+              href={`/${locale}/demo`}
+              className="inline-flex items-center rounded-full px-3 py-1.5 text-[11px] md:text-sm font-semibold text-white hover:bg-white hover:text-primary transition whitespace-nowrap"
+            >
+              {t('nav.magicHango')}
             </Link>
 
             <Link
