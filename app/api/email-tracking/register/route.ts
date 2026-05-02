@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server';
-
 import { registerTrackedEmail } from '@/lib/server/services/email-tracking-service';
 
 type RegisterPayload = {
@@ -18,7 +17,9 @@ function isAuthorized(request: Request) {
     return true;
   }
 
-  const bearerToken = request.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
+  const bearerToken = request.headers
+    .get('authorization')
+    ?.replace(/^Bearer\s+/i, '');
   const headerToken = request.headers.get('x-email-tracking-token');
 
   return bearerToken === expectedToken || headerToken === expectedToken;
@@ -39,7 +40,10 @@ export async function POST(request: Request) {
 
   const trackingId = payload?.trackingId?.trim();
   if (!trackingId) {
-    return NextResponse.json({ error: 'TRACKING_ID_REQUIRED' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'TRACKING_ID_REQUIRED' },
+      { status: 400 },
+    );
   }
 
   try {
