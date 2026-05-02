@@ -39,12 +39,6 @@ export default async function RootLayout({
   const pages: NavPage[] = [
     { nameFR: 'Ma semaine', nameEN: 'Schedule', link: '/myweek', visible: 2 },
     { nameFR: 'Blog', nameEN: 'Blog', link: '/blog', visible: 2 },
-    {
-      nameFR: 'Demo',
-      nameEN: 'Demo',
-      link: '/demo',
-      visible: 2,
-    },
     { nameFR: 'Mes clients', nameEN: 'Clients', link: '/gestion', visible: 0 },
     {
       nameFR: 'Mes services',

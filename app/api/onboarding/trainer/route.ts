@@ -28,6 +28,8 @@ type AddressPayload = {
 const DEFAULT_ORG_ROLE =
   process.env.CLERK_DEFAULT_ORG_ROLE?.trim() || 'org:member';
 
+let ensureTrainerOnboardingSchemaPromise: Promise<void> | null = null;
+
 function rowsOf<T = any>(res: any): T[] {
   if (!res) return [];
   if (Array.isArray(res)) return res as T[];
@@ -94,6 +96,40 @@ async function getClerk() {
   // compat versions: parfois clerkClient est un objet, parfois une fonction
   const anyClient: any = clerkClient as any;
   return typeof anyClient === 'function' ? await anyClient() : anyClient;
+}
+
+async function ensureTrainerOnboardingSchema() {
+  if (!ensureTrainerOnboardingSchemaPromise) {
+    ensureTrainerOnboardingSchemaPromise = (async () => {
+      await sql`ALTER TABLE IF EXISTS "Agency" ADD COLUMN IF NOT EXISTS join_code text`;
+      await sql`ALTER TABLE IF EXISTS "Agency" ADD COLUMN IF NOT EXISTS clerk_org_id text`;
+      await sql`ALTER TABLE IF EXISTS "Agency" ADD COLUMN IF NOT EXISTS createdat timestamptz NOT NULL DEFAULT now()`;
+      await sql`ALTER TABLE IF EXISTS "Agency" ADD COLUMN IF NOT EXISTS updatedat timestamptz NOT NULL DEFAULT now()`;
+
+      await sql`ALTER TABLE IF EXISTS "User" ADD COLUMN IF NOT EXISTS "agencyId" text`;
+      await sql`ALTER TABLE IF EXISTS "User" ADD COLUMN IF NOT EXISTS formatted_address text`;
+      await sql`ALTER TABLE IF EXISTS "User" ADD COLUMN IF NOT EXISTS lat double precision`;
+      await sql`ALTER TABLE IF EXISTS "User" ADD COLUMN IF NOT EXISTS lng double precision`;
+      await sql`ALTER TABLE IF EXISTS "User" ADD COLUMN IF NOT EXISTS street text`;
+      await sql`ALTER TABLE IF EXISTS "User" ADD COLUMN IF NOT EXISTS street_number text`;
+      await sql`ALTER TABLE IF EXISTS "User" ADD COLUMN IF NOT EXISTS postal_code text`;
+      await sql`ALTER TABLE IF EXISTS "User" ADD COLUMN IF NOT EXISTS city text`;
+      await sql`ALTER TABLE IF EXISTS "User" ADD COLUMN IF NOT EXISTS country text`;
+      await sql`ALTER TABLE IF EXISTS "User" ADD COLUMN IF NOT EXISTS country_code text`;
+      await sql`ALTER TABLE IF EXISTS "User" ADD COLUMN IF NOT EXISTS google_place_id text`;
+      await sql`ALTER TABLE IF EXISTS "User" ADD COLUMN IF NOT EXISTS raw_input text`;
+      await sql`ALTER TABLE IF EXISTS "User" ADD COLUMN IF NOT EXISTS address_label text`;
+      await sql`ALTER TABLE IF EXISTS "User" ADD COLUMN IF NOT EXISTS is_primary boolean`;
+      await sql`ALTER TABLE IF EXISTS "User" ADD COLUMN IF NOT EXISTS website_url text`;
+      await sql`ALTER TABLE IF EXISTS "User" ADD COLUMN IF NOT EXISTS phone_country_code text`;
+      await sql`ALTER TABLE IF EXISTS "User" ADD COLUMN IF NOT EXISTS phone_number text`;
+    })().catch((error) => {
+      ensureTrainerOnboardingSchemaPromise = null;
+      throw error;
+    });
+  }
+
+  await ensureTrainerOnboardingSchemaPromise;
 }
 
 async function createClerkOrganizationStrict(
@@ -281,22 +317,45 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const clerk = await getClerk();
-  const clerkUser = await clerk.users.getUser(userId);
+  let step = 'ensuring schema';
+  let clerk: any;
+  let displayName = 'User';
 
-  const displayName =
-    [clerkUser?.firstName, clerkUser?.lastName]
-      .filter(Boolean)
-      .join(' ')
-      .trim() ||
-    clerkUser?.username ||
-    clerkUser?.emailAddresses?.[0]?.emailAddress ||
-    'User';
+  try {
+    await ensureTrainerOnboardingSchema();
+
+    step = 'loading Clerk user';
+    clerk = await getClerk();
+    const clerkUser = await clerk.users.getUser(userId);
+
+    displayName =
+      [clerkUser?.firstName, clerkUser?.lastName]
+        .filter(Boolean)
+        .join(' ')
+        .trim() ||
+      clerkUser?.username ||
+      clerkUser?.emailAddresses?.[0]?.emailAddress ||
+      'User';
+  } catch (e: any) {
+    const st = extractHttpStatus(e);
+    const status = st && st >= 400 && st <= 599 ? st : 500;
+    console.error('[onboarding/trainer] failed during step:', step, e);
+    const details =
+      e?.errors || e?.message
+        ? `${step}: ${formatClerkError(e)}`
+        : `${step}: Unknown error`;
+
+    return NextResponse.json(
+      { error: 'Onboarding failed', details },
+      { status }
+    );
+  }
 
   const dbAny: any = sql as any;
 
   const run = async (execSql: any) => {
     // 0) Find agency by name
+    step = 'looking up agency';
     const existingRes = await execSql`
       SELECT id, join_code, clerk_org_id
       FROM "Agency"
@@ -315,6 +374,7 @@ export async function POST(req: NextRequest) {
 
     // ✅ si l'agence existe mais n'a pas d'org Clerk -> on la crée (STRICT)
     if (agencyId && !clerkOrgId) {
+      step = 'creating Clerk organization for existing agency';
       const org = await createClerkOrganizationStrict(
         clerk,
         agencyName,
@@ -331,6 +391,7 @@ export async function POST(req: NextRequest) {
 
     // ✅ création complète (STRICT)
     if (!agencyId) {
+      step = 'creating agency';
       joinCode = await generateJoinCode(execSql);
       agencyId = makeId();
 
@@ -376,12 +437,15 @@ export async function POST(req: NextRequest) {
       throw err;
     }
 
+    step = 'ensuring Clerk organization membership';
     await ensureClerkOrganizationMembership(clerk, clerkOrgId, userId);
 
     // RLS context
+    step = 'setting agency context';
     await execSql`SELECT set_config('app.agency_id', ${agencyId}, true)`;
 
     // 1) Upsert User
+    step = 'upserting user';
     await execSql`
       INSERT INTO "User" (
         id,
@@ -451,9 +515,11 @@ export async function POST(req: NextRequest) {
     `;
 
     // 2) Replace Availability (id required)
+    step = 'replacing availabilities';
     await execSql`DELETE FROM "Availability" WHERE "userId" = ${userId}`;
 
     for (const a of merged) {
+      step = 'inserting availability';
       const availabilityId = makeId();
       await execSql`
         INSERT INTO "Availability" (
@@ -476,6 +542,7 @@ export async function POST(req: NextRequest) {
       `;
     }
 
+    step = 'updating Clerk user metadata';
     await updateClerkUserMetadata(clerk, userId, {
       agencyId,
       agencyName,
@@ -506,8 +573,8 @@ export async function POST(req: NextRequest) {
     // si c’est Clerk qui bloque, on renvoie un message exploitable
     const details =
       e?.errors || e?.message
-        ? formatClerkError(e)
-        : e?.message || 'Unknown error';
+        ? `${step}: ${formatClerkError(e)}`
+        : `${step}: Unknown error`;
 
     return NextResponse.json(
       { error: 'Onboarding failed', details },

@@ -30,6 +30,7 @@ function getErrorMessage(data: unknown, fallbackMessage: string): string {
   const message = data.message;
   const error = data.error;
   const detail = data.detail;
+  const details = data.details;
 
   if (typeof message === 'string' && message.trim()) {
     return message;
@@ -39,12 +40,20 @@ function getErrorMessage(data: unknown, fallbackMessage: string): string {
     return `${error}: ${detail}`;
   }
 
-  if (typeof error === 'string' && error.trim()) {
-    return error;
+  if (typeof error === 'string' && typeof details === 'string' && details.trim()) {
+    return `${error}: ${details}`;
   }
 
   if (typeof detail === 'string' && detail.trim()) {
     return detail;
+  }
+
+  if (typeof details === 'string' && details.trim()) {
+    return details;
+  }
+
+  if (typeof error === 'string' && error.trim()) {
+    return error;
   }
 
   return fallbackMessage;

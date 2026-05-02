@@ -148,6 +148,12 @@ export default async function DemoPage({
                   >
                     {demoMailLabel}
                   </Link>
+                  <Link
+                    href={`/${locale}/email-tracking`}
+                    className="inline-flex items-center rounded-full border border-emerald-300/30 bg-emerald-400/12 px-3 py-1.5 text-xs font-medium text-emerald-100 transition hover:bg-emerald-400/18 hover:text-white md:text-sm"
+                  >
+                    {isFrench ? 'voir le suivi des emails' : 'view email tracking'}
+                  </Link>
                 </div>
               </div>
             </div>

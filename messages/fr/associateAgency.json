@@ -1,0 +1,47 @@
+{
+  "label": {
+    "code": "Code de l'agence",
+    "address": "Votre adresse de départ",
+    "linkedAgency": "Agence déjà détectée"
+  },
+  "placeholder": {
+    "code": "Code de l'agence",
+    "address": "Commencez à saisir puis choisissez une suggestion Google"
+  },
+  "help": {
+    "code": "Ce code est fourni par votre organisation.",
+    "address": "Sélectionnez une adresse suggérée par Google pour garantir son utilisation dans les itinéraires et les calculs de distance.",
+    "lockedCode": "Ce lien vous connecte déjà à la bonne agence. Il vous reste seulement à confirmer votre adresse.",
+    "lockedCodeWithAgency": "Ce lien vous connecte déjà à {agencyName}. Il vous reste seulement à confirmer votre adresse."
+  },
+  "preview": {
+    "label": "Éducateur détecté",
+    "loading": "Recherche de l'éducateur lié à ce code...",
+    "help": "Ce code semble correspondre au bon éducateur.",
+    "helpWithAgency": "Ce code semble correspondre à {agencyName}.",
+    "reviewsTitle": "{count, plural, one {# avis client} other {# avis clients}}",
+    "anonymousClient": "Client",
+    "stats": {
+      "clients": "Clients",
+      "courses": "Séances",
+      "rating": "Note moyenne",
+      "noRating": "Aucun avis pour le moment"
+    }
+  },
+  "selectedAddress": {
+    "title": "Adresse sélectionnée :",
+    "street": "Rue :",
+    "city": "Ville :"
+  },
+  "button": {
+    "submit": "Lier et continuer",
+    "loading": "Liaison en cours..."
+  },
+  "error": {
+    "codeRequired": "Veuillez saisir un code d'agence.",
+    "addressRequired": "Veuillez choisir une adresse parmi les suggestions Google avant de continuer.",
+    "geoFailed": "Impossible de récupérer la géolocalisation de cette adresse.",
+    "mapsScript": "Impossible de charger l'autocomplétion Google des adresses. Veuillez vérifier votre clé API.",
+    "unknown": "Erreur inconnue"
+  }
+}

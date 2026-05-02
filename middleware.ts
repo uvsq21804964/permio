@@ -79,6 +79,10 @@ export default clerkMiddleware(async (auth, req) => {
     return NextResponse.next();
   }
 
+  if (pathname.startsWith('/track/')) {
+    return NextResponse.next();
+  }
+
   if (pathname === '/') {
     const preferredLocale = getPreferredLocale(req);
     const { userId } = await auth({ treatPendingAsSignedOut: true });
