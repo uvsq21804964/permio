@@ -158,7 +158,16 @@ export function PublicBlogHeader({
 
           <PublicBlogHeaderAuthLinks locale={locale} />
 
-          <LocaleSwitcher />
+          <Suspense
+            fallback={
+              <span
+                aria-hidden="true"
+                className={`fi ${locale === 'fr' ? 'fi-fr' : 'fi-us'} fis rounded-[2px]`}
+              />
+            }
+          >
+            <LocaleSwitcher />
+          </Suspense>
         </nav>
       </div>
     </header>

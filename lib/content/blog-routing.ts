@@ -2,6 +2,14 @@ import type { Locale } from '@/src/lib/i18n';
 
 const BLOG_SLUGS = [
   {
+    en: 'track-travel-time-dog-trainer-calendar',
+    fr: 'suivre-temps-trajet-planning-educateur-canin',
+  },
+  {
+    en: 'client-self-booking-vs-trainer-booking',
+    fr: 'reservation-client-ou-educateur-canin',
+  },
+  {
     en: 'dog-trainer-weekly-planning',
     fr: 'planifier-semaine-educateur-canin',
   },
