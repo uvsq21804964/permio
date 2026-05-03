@@ -160,7 +160,7 @@ node .\doc\dependency-cruiser\generate-api-summary.js
 node .\doc\dependency-cruiser\generate-api-contracts.js
 ```
 
-### Génération complète des graphes documentés
+### Génération complète des graphes
 
 Créer le dossier de sortie :
 
