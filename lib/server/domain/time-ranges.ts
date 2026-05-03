@@ -14,6 +14,11 @@ export type WeeklyAvailabilityInput = {
   endTime: string;
 };
 
+type TimeRangeBounds = {
+  min: number;
+  max: number;
+} | null;
+
 export const DEFAULT_DAY_START_MINUTES = 8 * 60;
 export const DEFAULT_DAY_END_MINUTES = 20 * 60;
 
@@ -109,7 +114,7 @@ export function subtractMinuteRanges(
 
 export function validateTimeRange(
   range: TimeRange,
-  bounds = {
+  bounds: TimeRangeBounds = {
     min: DEFAULT_DAY_START_MINUTES,
     max: DEFAULT_DAY_END_MINUTES,
   }
@@ -125,7 +130,7 @@ export function validateTimeRange(
     return { ok: false, reason: 'INVALID_TIME_ORDER' };
   }
 
-  if (start < bounds.min || end > bounds.max) {
+  if (bounds && (start < bounds.min || end > bounds.max)) {
     return { ok: false, reason: 'OUT_OF_ALLOWED_RANGE' };
   }
 
@@ -133,13 +138,14 @@ export function validateTimeRange(
 }
 
 export function mergeWeeklyAvailabilities(
-  items: WeeklyAvailabilityInput[]
+  items: WeeklyAvailabilityInput[],
+  options: { bounds?: TimeRangeBounds } = {}
 ): WeeklyAvailabilityInput[] {
   const grouped = new Map<number, MinuteRange[]>();
 
   for (const item of items) {
     const day = Number(item.dayOfWeek);
-    const validation = validateTimeRange(item);
+    const validation = validateTimeRange(item, options.bounds);
 
     if (!Number.isInteger(day) || day < 0 || day > 6) continue;
     if (!validation.ok) continue;

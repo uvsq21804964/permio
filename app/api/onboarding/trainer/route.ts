@@ -306,7 +306,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const merged = mergeWeeklyAvailabilities(availabilities);
+  const merged = mergeWeeklyAvailabilities(availabilities, { bounds: null });
   if (merged.length === 0) {
     return NextResponse.json(
       {
