@@ -1,16 +1,14 @@
 'use client';
 
 import clsx from 'clsx';
-import { Poppins } from 'next/font/google';
+import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { trackButtonClick } from '@/lib/client/button-tracking';
 import { useLocale, useTranslations } from 'next-intl';
 import React, { useMemo } from 'react';
 import { useMySubscriptionStatus } from '@/lib/client/hooks/useMySubscriptionStatus';
 
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['400', '600', '700', '800', '900'],
-});
+const poppins = { className: 'font-sans' };
 
 type Currency = 'EUR' | 'USD';
 
@@ -87,8 +85,16 @@ export default function Plans({ withTrial }: Props) {
     !withTrial &&
     subscription?.loggedIn === true &&
     subscription?.role === 'instructor' &&
+    subscription.subscription_cancel_at_period_end !== true &&
     (subscription?.subscription_status === 'active' ||
       subscription?.subscription_status === 'trialing');
+  const isCancellationScheduled =
+    !withTrial &&
+    subscription?.loggedIn === true &&
+    subscription?.role === 'instructor' &&
+    subscription.subscription_cancel_at_period_end === true &&
+    (subscription.subscription_status === 'active' ||
+      subscription.subscription_status === 'trialing');
 
   const waitingForSubscriptionCheck = !withTrial && status === 'loading';
 
@@ -183,6 +189,28 @@ export default function Plans({ withTrial }: Props) {
                         : 'Vérification de l’abonnement…'}
                     </Button>
                   </div>
+                ) : isCancellationScheduled ? (
+                  <div className="mt-6 space-y-3">
+                    <p className="text-center text-sm text-black/70">
+                      {t('plans.cancellationScheduled')}
+                    </p>
+                    <Button asChild variant="outline" className="w-full rounded-xl">
+                      <Link
+                        href={`/${lang}/invoices`}
+                        onClick={() => {
+                          trackButtonClick({
+                            buttonKey: 'plans_manage_scheduled_cancellation',
+                            buttonLabel: t('plans.manageSubscription'),
+                            buttonContext: 'pricing_page',
+                            targetHref: `/${lang}/invoices`,
+                            locale: lang,
+                          });
+                        }}
+                      >
+                        {t('plans.manageSubscription')}
+                      </Link>
+                    </Button>
+                  </div>
                 ) : hideCheckoutButton ? (
                   <p className="mt-6 text-center text-sm text-black/70">
                     {t('plans.alreadySubscribed')}
@@ -221,6 +249,24 @@ export default function Plans({ withTrial }: Props) {
 
                       <Button
                         type="submit"
+                        onClick={() => {
+                          trackButtonClick({
+                            buttonKey: withTrial
+                              ? 'plans_trial_sign_up'
+                              : 'plans_checkout_submit',
+                            buttonLabel: withTrial
+                              ? t('plans.ctaPrimary')
+                              : t('plans.ctaSecondary'),
+                            buttonContext: withTrial ? 'home_pricing' : 'pricing_page',
+                            targetHref: withTrial ? `/${lang}/sign-up` : '/api/stripe/checkout',
+                            locale: lang,
+                            metadata: {
+                              planId: plan.id,
+                              currency,
+                              trialMode: withTrial ? 'trial' : 'no_trial',
+                            },
+                          });
+                        }}
                         className={clsx(
                           'w-full rounded-xl px-4 py-3 text-sm font-semibold transition shadow',
                           'text-white bg-gradient-to-r from-primary to-[#d400ff] hover:opacity-95'

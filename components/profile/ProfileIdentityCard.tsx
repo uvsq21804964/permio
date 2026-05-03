@@ -22,6 +22,7 @@ type ProfileIdentityCardProps = {
   onEditName: () => void;
   onEditPhone: () => void;
   profileImageUrl: string | null;
+  profileJoinUrl: string;
   profile: IdentityProfile;
   t: ProfileTranslator;
 };
@@ -35,6 +36,7 @@ export function ProfileIdentityCard({
   onEditName,
   onEditPhone,
   profileImageUrl,
+  profileJoinUrl,
   profile,
   t,
 }: ProfileIdentityCardProps) {
@@ -125,14 +127,14 @@ export function ProfileIdentityCard({
               </span>
 
               <div className="flex items-center gap-2">
-                <p className="flex-1 border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground font-mono">
-                  {profile.joinCode || '—'}
+                <p className="flex-1 truncate border rounded-md px-3 py-2 bg-muted/40 text-muted-foreground font-mono">
+                  {profileJoinUrl || '—'}
                 </p>
 
                 <button
                   type="button"
                   onClick={onCopyJoinCode}
-                  disabled={!profile.joinCode}
+                  disabled={!profileJoinUrl}
                   className="inline-flex items-center justify-center rounded-md border px-3 py-2 text-[11px] font-medium text-primary hover:bg-primary/5 disabled:opacity-60 disabled:cursor-not-allowed"
                   title={t('identity.educatorCode.copyTitle')}
                 >

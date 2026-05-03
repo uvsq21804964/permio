@@ -1,8 +1,8 @@
 'use client';
 
 import { useRef, useEffect, useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { TrackedButton } from '@/components/tracking/TrackedButton';
 import { useLocale, useTranslations } from 'next-intl';
 
 type Step = {
@@ -22,7 +22,6 @@ const COLORS = [
 const WorkflowCarousel = () => {
   const t = useTranslations('howItWorks');
   const locale = useLocale();
-  const router = useRouter();
 
   const [windowWidth, setWindowWidth] = useState(0);
   const [currentStep, setCurrentStep] = useState(0);
@@ -226,12 +225,16 @@ const WorkflowCarousel = () => {
             {t('workflow.bottom.pitchLine3')}
           </p>
 
-          <Button
+          <TrackedButton
+            href={`/${locale}/sign-up`}
+            trackingKey="home_workflow_bottom_sign_up"
+            trackingLabel={t('workflow.bottom.cta')}
+            trackingContext="home_how_it_works"
+            trackingMetadata={{ locale }}
             className="border border-[#d400ff]/40 text-[#d400ff] px-6 py-2 rounded-lg bg-white hover:bg-[#d400ff] hover:text-white transition-colors"
-            onClick={() => router.push(`/${locale}/sign-up`)}
           >
             <p>{t('workflow.bottom.cta')}</p>
-          </Button>
+          </TrackedButton>
         </div>
       </div>
 

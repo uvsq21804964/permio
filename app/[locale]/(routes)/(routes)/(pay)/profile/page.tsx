@@ -57,6 +57,7 @@ export default function ProfilePage() {
     openPhoneModal,
     openProfilePhotoSettings,
     profile,
+    profileJoinUrl,
     profileImageUrl,
     savingAddress,
     savingName,
@@ -147,6 +148,7 @@ export default function ProfilePage() {
                 onEditName={openNameModal}
                 onEditPhone={openPhoneModal}
                 profileImageUrl={profileImageUrl}
+                profileJoinUrl={profileJoinUrl}
                 profile={profile}
                 t={translator}
               />

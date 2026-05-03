@@ -12,6 +12,16 @@ export type OrgManagedUserListRow = {
   clerkUserId: string;
   plannedMinutes: number | null;
   remainingMinutes: number | null;
+  formatted_address: string | null;
+  lat: number | null;
+  lng: number | null;
+  street: string | null;
+  street_number: string | null;
+  postal_code: string | null;
+  city: string | null;
+  country: string | null;
+  country_code: string | null;
+  google_place_id: string | null;
 };
 
 export type OrgManagedStudentExportRow = {
@@ -43,7 +53,17 @@ export async function listAgencyUsersForOrg(params: {
           u."agencyId",
           u.id AS "clerkUserId",
           CASE WHEN u.role = 'student' THEN u.planned_minutes ELSE NULL END AS "plannedMinutes",
-          CASE WHEN u.role = 'student' THEN u.remaining_minutes ELSE NULL END AS "remainingMinutes"
+          CASE WHEN u.role = 'student' THEN u.remaining_minutes ELSE NULL END AS "remainingMinutes",
+          u.formatted_address,
+          u.lat,
+          u.lng,
+          u.street,
+          u.street_number,
+          u.postal_code,
+          u.city,
+          u.country,
+          u.country_code,
+          u.google_place_id
         FROM "User" u
         WHERE u."agencyId" = ${params.agencyId}
           AND u.role = ${params.role}
@@ -59,7 +79,17 @@ export async function listAgencyUsersForOrg(params: {
           u."agencyId",
           u.id AS "clerkUserId",
           CASE WHEN u.role = 'student' THEN u.planned_minutes ELSE NULL END AS "plannedMinutes",
-          CASE WHEN u.role = 'student' THEN u.remaining_minutes ELSE NULL END AS "remainingMinutes"
+          CASE WHEN u.role = 'student' THEN u.remaining_minutes ELSE NULL END AS "remainingMinutes",
+          u.formatted_address,
+          u.lat,
+          u.lng,
+          u.street,
+          u.street_number,
+          u.postal_code,
+          u.city,
+          u.country,
+          u.country_code,
+          u.google_place_id
         FROM "User" u
         WHERE u."agencyId" = ${params.agencyId}
         ORDER BY u.name ASC NULLS LAST

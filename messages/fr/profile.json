@@ -33,11 +33,11 @@
     "role": "Role",
     "agency": "Agence",
     "educatorCode": {
-      "label": "Code educateur",
+      "label": "URL d'association client",
       "copy": "Copier",
       "copied": "Copie ✓",
-      "copyTitle": "Copier le code",
-      "help": "Ce code est unique et ne peut pas etre modifie."
+      "copyTitle": "Copier l'URL d'association",
+      "help": "Partagez cette URL avec vos clients pour qu'ils puissent vous trouver et reserver."
     }
   },
   "delete": {

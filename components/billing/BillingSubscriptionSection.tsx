@@ -1,5 +1,3 @@
-import Link from 'next/link';
-
 import {
   BillingStatusBadge,
   btnDanger,
@@ -12,6 +10,10 @@ import {
   subtlePanel,
   type BillingTranslator,
 } from '@/components/billing/billing-shared';
+import {
+  TrackedBillingButton,
+  TrackedBillingLink,
+} from '@/components/billing/BillingTrackingActions';
 
 type BillingSubscriptionSectionProps = {
   amount: number;
@@ -235,17 +237,36 @@ export function BillingSubscriptionSection({
                     <input type="hidden" name="mode" value="subscription" />
                     <input type="hidden" name="successUrl" value={successUrl} />
                     <input type="hidden" name="cancelUrl" value={cancelUrl} />
-                    <button className={`${btnMagic} w-full`}>
+                    <TrackedBillingButton
+                      className={`${btnMagic} w-full`}
+                      tracking={{
+                        buttonKey: 'billing_subscribe_now',
+                        buttonLabel: locale === 'en' ? 'Subscribe now' : "S'abonner maintenant",
+                        buttonContext: 'billing_subscription',
+                        targetHref: '/api/stripe/checkout',
+                        locale,
+                        metadata: {
+                          priceLookupKey: defaultPriceLookupKey,
+                        },
+                      }}
+                    >
                       {locale === 'en' ? 'Subscribe now' : "S'abonner maintenant"}
-                    </button>
+                    </TrackedBillingButton>
                   </form>
 
-                      <Link
+                      <TrackedBillingLink
                         href={`/${locale}/plans?from=billing`}
+                        tracking={{
+                          buttonKey: 'billing_compare_plans',
+                          buttonLabel: t('actions.comparePlans'),
+                          buttonContext: 'billing_subscription',
+                          targetHref: `/${locale}/plans?from=billing`,
+                          locale,
+                        }}
                         className={`${btnGhost} w-full`}
                       >
                         {t('actions.comparePlans')}
-                      </Link>
+                      </TrackedBillingLink>
 
                       {isInDbTrialWindow ? (
                         <p className="text-xs leading-5 text-black/55">
@@ -263,13 +284,20 @@ export function BillingSubscriptionSection({
                         name="portalLocale"
                         value={locale === 'fr' ? 'fr' : 'en'}
                       />
-                      <button
+                      <TrackedBillingButton
                         type="submit"
                         className={`${btnPrimary} w-full`}
                         aria-label={t('actions.manageSubscription')}
+                        tracking={{
+                          buttonKey: 'billing_manage_subscription',
+                          buttonLabel: t('actions.manageSubscription'),
+                          buttonContext: 'billing_subscription',
+                          targetHref: '/api/stripe/portal',
+                          locale,
+                        }}
                       >
                         {t('actions.manageSubscription')}
-                      </button>
+                      </TrackedBillingButton>
                     </form>
                   ) : null}
 
@@ -278,17 +306,35 @@ export function BillingSubscriptionSection({
                       <form action="/api/stripe/subscription/resume" method="POST">
                         <input type="hidden" name="subscriptionId" value={subId} />
                         <input type="hidden" name="returnUrl" value={manageReturnUrl} />
-                        <button className={`${btnGhost} w-full`}>
+                        <TrackedBillingButton
+                          className={`${btnGhost} w-full`}
+                          tracking={{
+                            buttonKey: 'billing_resume_subscription',
+                            buttonLabel: t('actions.cancelClosure'),
+                            buttonContext: 'billing_subscription',
+                            targetHref: '/api/stripe/subscription/resume',
+                            locale,
+                          }}
+                        >
                           {t('actions.cancelClosure')}
-                        </button>
+                        </TrackedBillingButton>
                       </form>
                     ) : (
                       <form action="/api/stripe/subscription/cancel" method="POST">
                         <input type="hidden" name="subscriptionId" value={subId} />
                         <input type="hidden" name="returnUrl" value={manageReturnUrl} />
-                        <button className={`${btnDanger} w-full`}>
+                        <TrackedBillingButton
+                          className={`${btnDanger} w-full`}
+                          tracking={{
+                            buttonKey: 'billing_schedule_subscription_closure',
+                            buttonLabel: t('actions.scheduleClosure'),
+                            buttonContext: 'billing_subscription',
+                            targetHref: '/api/stripe/subscription/cancel',
+                            locale,
+                          }}
+                        >
                           {t('actions.scheduleClosure')}
-                        </button>
+                        </TrackedBillingButton>
                       </form>
                     )
                   ) : null}
@@ -309,20 +355,37 @@ export function BillingSubscriptionSection({
                         <input type="hidden" name="mode" value="subscription" />
                         <input type="hidden" name="successUrl" value={successUrl} />
                         <input type="hidden" name="cancelUrl" value={cancelUrl} />
-                        <button
+                        <TrackedBillingButton
                           className={`${btnMagic} w-full`}
                           aria-label={t('actions.upgradeMagic')}
+                          tracking={{
+                            buttonKey: 'billing_upgrade_magic',
+                            buttonLabel: t('actions.upgradeMagic'),
+                            buttonContext: 'billing_subscription',
+                            targetHref: '/api/stripe/checkout',
+                            locale,
+                            metadata: {
+                              priceLookupKey: localePriceLookupKey,
+                            },
+                          }}
                         >
                           {t('actions.upgradeMagic')}
-                        </button>
+                        </TrackedBillingButton>
                       </form>
 
-                      <Link
+                      <TrackedBillingLink
                         href={`/${locale}/plans?from=billing`}
+                        tracking={{
+                          buttonKey: 'billing_compare_plans',
+                          buttonLabel: t('actions.comparePlans'),
+                          buttonContext: 'billing_subscription_upgrade',
+                          targetHref: `/${locale}/plans?from=billing`,
+                          locale,
+                        }}
                         className={`${btnGhost} w-full`}
                       >
                         {t('actions.comparePlans')}
-                      </Link>
+                      </TrackedBillingLink>
                     </>
                   ) : null}
                 </>

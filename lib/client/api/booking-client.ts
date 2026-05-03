@@ -70,6 +70,7 @@ type AgendaQuery = {
   weekStart?: string;
   isRemote?: boolean;
   bookingAddress?: BookingAddressPayload | null;
+  clientUserId?: string | null;
 };
 
 export type CreateBookingSlotInput = {
@@ -78,12 +79,17 @@ export type CreateBookingSlotInput = {
   startTime: string;
   endTime: string;
   bookingAddress?: BookingAddressPayload;
+  clientUserId?: string | null;
 };
 
 function buildAgendaUrl(path: string, query: AgendaQuery): string {
   const params = new URLSearchParams();
   if (query.weekStart) {
     params.set('weekStart', query.weekStart);
+  }
+
+  if (query.clientUserId) {
+    params.set('clientUserId', query.clientUserId);
   }
 
   if (query.isRemote) {

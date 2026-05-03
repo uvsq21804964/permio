@@ -36,6 +36,7 @@ export type CreateSlotInput = {
   startTime: string;
   endTime: string;
   bookingAddress?: BookingAddressPayload;
+  clientUserId?: string | null;
 };
 
 type BookingLocale = 'fr' | 'en';
@@ -61,6 +62,7 @@ type SlotBookingEventPayload = {
 type CreateSlotServiceResult =
   | { ok: true; status: 201; body: { slot: SlotRecord } }
   | { ok: false; status: 400; body: { error: string } }
+  | { ok: false; status: 403; body: { error: string } }
   | { ok: false; status: 404; body: { error: string } }
   | { ok: false; status: 409; body: { error: string } }
   | { ok: false; status: 500; body: { error: string; detail?: string } };
@@ -113,6 +115,11 @@ function validateCreateSlotInput(
       startTime,
       endTime,
       bookingAddress: payload.bookingAddress,
+      clientUserId:
+        typeof payload.clientUserId === 'string' &&
+        payload.clientUserId.trim().length > 0
+          ? payload.clientUserId.trim()
+          : null,
       durationMinutes,
     },
   };
@@ -167,6 +174,69 @@ async function resolveInstructorForBooking(client: AppUserRecord) {
   }
 
   return getFirstAgencyInstructor(client.agencyId);
+}
+
+async function resolveBookingParticipants(params: {
+  actor: AppUserRecord;
+  targetClientUserId: string | null;
+}): Promise<
+  | { ok: true; instructor: AppUserRecord; client: AppUserRecord }
+  | { ok: false; status: 400 | 403 | 404; body: { error: string } }
+> {
+  const { actor, targetClientUserId } = params;
+
+  if (!targetClientUserId) {
+    const instructor = await resolveInstructorForBooking(actor);
+    if (!instructor) {
+      return {
+        ok: false,
+        status: 400,
+        body: { error: 'INSTRUCTOR_NOT_FOUND_FOR_AGENCY' },
+      };
+    }
+
+    return { ok: true, instructor, client: actor };
+  }
+
+  if (actor.role !== 'instructor' && actor.role !== 'admin') {
+    return {
+      ok: false,
+      status: 403,
+      body: { error: 'FORBIDDEN_CLIENT_BOOKING_DELEGATION' },
+    };
+  }
+
+  if (!actor.agencyId) {
+    return { ok: false, status: 400, body: { error: 'AGENCY_NOT_FOUND' } };
+  }
+
+  const targetClient = await getUserById(targetClientUserId);
+  if (!targetClient) {
+    return { ok: false, status: 404, body: { error: 'CLIENT_NOT_FOUND' } };
+  }
+
+  if (targetClient.role !== 'student' || targetClient.agencyId !== actor.agencyId) {
+    return {
+      ok: false,
+      status: 403,
+      body: { error: 'CLIENT_NOT_IN_AGENCY' },
+    };
+  }
+
+  if (actor.role === 'instructor') {
+    return { ok: true, instructor: actor, client: targetClient };
+  }
+
+  const instructor = await getFirstAgencyInstructor(actor.agencyId);
+  if (!instructor) {
+    return {
+      ok: false,
+      status: 400,
+      body: { error: 'INSTRUCTOR_NOT_FOUND_FOR_AGENCY' },
+    };
+  }
+
+  return { ok: true, instructor, client: targetClient };
 }
 
 function buildBookingEventPayload(params: {
@@ -244,23 +314,30 @@ export async function createSlotBooking(params: {
     return validation;
   }
 
-  const { serviceId, date, startTime, endTime, bookingAddress, durationMinutes } =
-    validation.value;
+  const {
+    serviceId,
+    date,
+    startTime,
+    endTime,
+    bookingAddress,
+    clientUserId,
+    durationMinutes,
+  } = validation.value;
 
-  const client = await getUserById(userId);
-  if (!client) {
+  const actor = await getUserById(userId);
+  if (!actor) {
     return { ok: false, status: 404, body: { error: 'USER_NOT_FOUND' } };
   }
 
-  const instructor = await resolveInstructorForBooking(client);
-  if (!instructor) {
-    return {
-      ok: false,
-      status: 400,
-      body: { error: 'INSTRUCTOR_NOT_FOUND_FOR_AGENCY' },
-    };
+  const participants = await resolveBookingParticipants({
+    actor,
+    targetClientUserId: clientUserId ?? null,
+  });
+  if (!participants.ok) {
+    return participants;
   }
 
+  const { instructor, client } = participants;
   if (!instructor.agencyId) {
     return { ok: false, status: 400, body: { error: 'AGENCY_NOT_FOUND' } };
   }

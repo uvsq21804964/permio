@@ -1,9 +1,12 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
 
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
 import { BrandWordmark } from '@/components/brand/BrandWordmark';
+import { trackButtonClick } from '@/lib/client/button-tracking';
 import type { Locale } from '@/src/lib/i18n';
 
 type PublicBlogHeaderProps = {
@@ -43,6 +46,15 @@ export function PublicBlogHeader({
           <div className="hidden items-center gap-1 md:flex">
             <Link
               href={demoLink.href}
+              onClick={() => {
+                trackButtonClick({
+                  buttonKey: 'public_blog_header_demo',
+                  buttonLabel: demoLink.label,
+                  buttonContext: 'public_blog_header_desktop',
+                  targetHref: demoLink.href,
+                  locale,
+                });
+              }}
               className={`inline-flex items-center rounded-full px-3 py-1.5 text-sm font-semibold transition whitespace-nowrap ${
                 demoLink.isActive
                   ? 'bg-white/18 text-white'
@@ -55,6 +67,15 @@ export function PublicBlogHeader({
 
           <Link
             href={demoLink.href}
+            onClick={() => {
+              trackButtonClick({
+                buttonKey: 'public_blog_header_demo_mobile',
+                buttonLabel: demoLink.label,
+                buttonContext: 'public_blog_header_mobile',
+                targetHref: demoLink.href,
+                locale,
+              });
+            }}
             className={`inline-flex items-center rounded-full px-3 py-1.5 text-[11px] font-semibold transition whitespace-nowrap md:hidden ${
               demoLink.isActive
                 ? 'bg-white/18 text-white'
@@ -67,6 +88,15 @@ export function PublicBlogHeader({
           <SignedOut>
             <Link
               href={`/${locale}/sign-in`}
+              onClick={() => {
+                trackButtonClick({
+                  buttonKey: 'public_blog_header_sign_in',
+                  buttonLabel: locale === 'fr' ? 'Connexion' : 'Sign in',
+                  buttonContext: 'public_blog_header',
+                  targetHref: `/${locale}/sign-in`,
+                  locale,
+                });
+              }}
               className="inline-flex items-center rounded-full px-3 py-1.5 text-[11px] font-semibold text-white transition hover:bg-white hover:text-primary whitespace-nowrap md:text-sm"
             >
               {locale === 'fr' ? 'Connexion' : 'Sign in'}
@@ -74,6 +104,15 @@ export function PublicBlogHeader({
 
             <Link
               href={`/${locale}/sign-up`}
+              onClick={() => {
+                trackButtonClick({
+                  buttonKey: 'public_blog_header_sign_up',
+                  buttonLabel: locale === 'fr' ? 'Essayer 1 mois, sans carte' : 'Try 1 month, no card',
+                  buttonContext: 'public_blog_header',
+                  targetHref: `/${locale}/sign-up`,
+                  locale,
+                });
+              }}
               className="inline-flex items-center rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-primary shadow-sm transition hover:bg-primary hover:text-white whitespace-nowrap md:text-sm"
             >
               {locale === 'fr' ? 'Essayer 1 mois, sans carte' : 'Try 1 month, no card'}
@@ -83,6 +122,15 @@ export function PublicBlogHeader({
           <SignedIn>
             <Link
               href={`/${locale}/myweek`}
+              onClick={() => {
+                trackButtonClick({
+                  buttonKey: 'public_blog_header_open_app',
+                  buttonLabel: locale === 'fr' ? "Ouvrir l'app" : 'Open app',
+                  buttonContext: 'public_blog_header',
+                  targetHref: `/${locale}/myweek`,
+                  locale,
+                });
+              }}
               className="inline-flex items-center rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-primary shadow-sm transition hover:bg-primary hover:text-white whitespace-nowrap md:text-sm"
             >
               {locale === 'fr' ? "Ouvrir l'app" : 'Open app'}

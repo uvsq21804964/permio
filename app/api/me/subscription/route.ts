@@ -21,7 +21,12 @@ export async function GET() {
 
   if (!userId) {
     return NextResponse.json(
-      { loggedIn: false, role: null, subscription_status: null },
+      {
+        loggedIn: false,
+        role: null,
+        subscription_cancel_at_period_end: null,
+        subscription_status: null,
+      },
       { status: 200 }
     );
   }
@@ -42,7 +47,12 @@ export async function GET() {
 
   if (!me) {
     return NextResponse.json(
-      { loggedIn: true, role: null, subscription_status: null },
+      {
+        loggedIn: true,
+        role: null,
+        subscription_cancel_at_period_end: null,
+        subscription_status: null,
+      },
       { status: 200 }
     );
   }
@@ -60,6 +70,8 @@ export async function GET() {
         {
           loggedIn: true,
           role: me.role,
+          subscription_cancel_at_period_end:
+            synced?.subscription_cancel_at_period_end ?? null,
           subscription_status: synced?.subscription_status ?? null,
         },
         { status: 200 }
@@ -73,6 +85,7 @@ export async function GET() {
     {
       loggedIn: true,
       role: me.role,
+      subscription_cancel_at_period_end: me.subscription_cancel_at_period_end,
       subscription_status: me.subscription_status,
     },
     { status: 200 }

@@ -1,6 +1,4 @@
 import { NextResponse } from 'next/server';
-import { readFile } from 'node:fs/promises';
-import path from 'node:path';
 
 import { recordTrackedEmailOpen } from '@/lib/server/services/email-tracking-service';
 
@@ -20,20 +18,6 @@ function buildPixelResponse() {
   });
 }
 
-async function buildSignatureImageResponse() {
-  const buffer = await readFile(path.join(process.cwd(), 'public', 'Icone.png'));
-
-  return new NextResponse(buffer, {
-    headers: {
-      'Content-Type': 'image/png',
-      'Content-Length': buffer.length.toString(),
-      'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-      Pragma: 'no-cache',
-      Expires: '0',
-    },
-  });
-}
-
 function getClientIp(request: Request) {
   const forwarded = request.headers.get('x-forwarded-for');
   if (forwarded) {
@@ -44,7 +28,8 @@ function getClientIp(request: Request) {
 }
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
+  const requestUrl = new URL(request.url);
+  const { searchParams } = requestUrl;
   const trackingId = searchParams.get('id')?.trim();
   const asset = searchParams.get('asset')?.trim();
 
@@ -63,11 +48,7 @@ export async function GET(request: Request) {
   }
 
   if (asset === 'signature') {
-    try {
-      return await buildSignatureImageResponse();
-    } catch (error) {
-      console.error('[email-tracking] signature image failed', error);
-    }
+    return NextResponse.redirect(new URL('/Icone.png', requestUrl), 302);
   }
 
   return buildPixelResponse();

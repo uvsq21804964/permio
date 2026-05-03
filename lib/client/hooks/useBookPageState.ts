@@ -67,6 +67,7 @@ export function useBookPageState() {
   const { isLoaded, isSignedIn } = useAuth();
   const searchParams = useSearchParams();
   const selectedServiceId = searchParams.get('serviceId');
+  const targetClientUserId = searchParams.get('clientUserId');
 
   const t = useTranslations('bookAgenda');
   const locale = useLocale();
@@ -135,6 +136,7 @@ export function useBookPageState() {
     weekStart,
     isRemote: selectedService?.isRemote ?? false,
     bookingAddress: selectedService?.isRemote ? null : bookingAddress,
+    clientUserId: targetClientUserId,
     loadErrorMessage: t('errors.loadAgendaApi'),
   });
 
@@ -173,7 +175,12 @@ export function useBookPageState() {
     if (!service) {
       setSelectedService(null);
       setServiceError(t('errors.serviceNotAvailable'));
-      router.push(`/${locale}/book/services`);
+      const params = new URLSearchParams();
+      if (targetClientUserId) {
+        params.set('clientUserId', targetClientUserId);
+      }
+      const suffix = params.toString();
+      router.push(`/${locale}/book/services${suffix ? `?${suffix}` : ''}`);
       return;
     }
 
@@ -192,6 +199,7 @@ export function useBookPageState() {
     services,
     servicesError,
     servicesLoading,
+    targetClientUserId,
     t,
   ]);
 
@@ -377,6 +385,7 @@ export function useBookPageState() {
         startTime: slot.serviceStartTime,
         endTime: slot.serviceEndTime,
         bookingAddress: toBookingAddressPayload(bookingAddress),
+        clientUserId: targetClientUserId,
       });
 
       toast.success(t('alerts.bookingSuccess'));

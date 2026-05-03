@@ -425,6 +425,73 @@ function toAgendaResponseUser(user: InstructorAgendaUserRow): AgendaResponseUser
   };
 }
 
+async function resolveAgendaParticipants(params: {
+  me: InstructorAgendaUserRow;
+  targetClientUserId: string | null;
+}): Promise<
+  | {
+      ok: true;
+      instructor: InstructorAgendaUserRow;
+      client: InstructorAgendaUserRow;
+    }
+  | { ok: false; status: number; body: { error: string } }
+> {
+  const { me, targetClientUserId } = params;
+
+  if (!targetClientUserId) {
+    if (me.role === 'instructor') {
+      return { ok: true, instructor: me, client: me };
+    }
+
+    const foundInstructor = await getFirstAgencyInstructorForAgenda(me.agencyId);
+    if (!foundInstructor) {
+      return {
+        ok: false,
+        status: 404,
+        body: { error: 'INSTRUCTOR_NOT_FOUND_FOR_AGENCY' },
+      };
+    }
+
+    return { ok: true, instructor: foundInstructor, client: me };
+  }
+
+  if (me.role !== 'instructor' && me.role !== 'admin') {
+    return {
+      ok: false,
+      status: 403,
+      body: { error: 'FORBIDDEN_CLIENT_BOOKING_DELEGATION' },
+    };
+  }
+
+  const targetClient = await getAgendaUserById(targetClientUserId);
+  if (!targetClient) {
+    return { ok: false, status: 404, body: { error: 'CLIENT_NOT_FOUND' } };
+  }
+
+  if (targetClient.role !== 'student' || targetClient.agencyId !== me.agencyId) {
+    return {
+      ok: false,
+      status: 403,
+      body: { error: 'CLIENT_NOT_IN_AGENCY' },
+    };
+  }
+
+  if (me.role === 'instructor') {
+    return { ok: true, instructor: me, client: targetClient };
+  }
+
+  const foundInstructor = await getFirstAgencyInstructorForAgenda(me.agencyId);
+  if (!foundInstructor) {
+    return {
+      ok: false,
+      status: 404,
+      body: { error: 'INSTRUCTOR_NOT_FOUND_FOR_AGENCY' },
+    };
+  }
+
+  return { ok: true, instructor: foundInstructor, client: targetClient };
+}
+
 export async function buildInstructorAgenda(params: {
   userId: string;
   startDate: string;
@@ -432,6 +499,7 @@ export async function buildInstructorAgenda(params: {
   clientLatParam: string | null;
   clientLngParam: string | null;
   clientFormattedParam: string | null;
+  targetClientUserId?: string | null;
 }): Promise<AgendaServiceResult> {
   const me = await getAgendaUserById(params.userId);
   if (!me) {
@@ -442,31 +510,33 @@ export async function buildInstructorAgenda(params: {
     };
   }
 
+  const participants = await resolveAgendaParticipants({
+    me,
+    targetClientUserId: params.targetClientUserId ?? null,
+  });
+  if (!participants.ok) {
+    return participants;
+  }
+
   const clientForAgenda = applyClientAddressOverride({
-    client: me,
+    client: participants.client,
     clientLatParam: params.clientLatParam,
     clientLngParam: params.clientLngParam,
     clientFormattedParam: params.clientFormattedParam,
   });
 
-  let instructor = me;
-  if (me.role !== 'instructor') {
-    const foundInstructor = await getFirstAgencyInstructorForAgenda(me.agencyId);
-    if (!foundInstructor) {
-      return {
-        ok: false,
-        status: 404,
-        body: { error: 'INSTRUCTOR_NOT_FOUND_FOR_AGENCY' },
-      };
-    }
-
-    instructor = foundInstructor;
-  }
-
   const [defaults, exceptions, bookedSlots] = await Promise.all([
-    listInstructorDefaultAvailabilities(instructor.id),
-    listInstructorDayExceptions(instructor.id, params.startDate, params.endDate),
-    listInstructorBookedSlots(instructor.id, params.startDate, params.endDate),
+    listInstructorDefaultAvailabilities(participants.instructor.id),
+    listInstructorDayExceptions(
+      participants.instructor.id,
+      params.startDate,
+      params.endDate,
+    ),
+    listInstructorBookedSlots(
+      participants.instructor.id,
+      params.startDate,
+      params.endDate,
+    ),
   ]);
 
   const clientSlotsByDate = await buildClientSlotsByDate({
@@ -475,7 +545,7 @@ export async function buildInstructorAgenda(params: {
     defaults,
     exceptions,
     bookedSlots,
-    instructor,
+    instructor: participants.instructor,
     client: clientForAgenda,
   });
 
@@ -484,7 +554,7 @@ export async function buildInstructorAgenda(params: {
     payload: {
       weekStart: params.startDate,
       weekEnd: params.endDate,
-      instructor: toAgendaResponseUser(instructor),
+      instructor: toAgendaResponseUser(participants.instructor),
       client: toAgendaResponseUser(clientForAgenda),
       defaults,
       exceptions,

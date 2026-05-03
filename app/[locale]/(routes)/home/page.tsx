@@ -16,6 +16,7 @@ import Comparison from '@/components/home/Comparison';
 import FAQ from '@/components/home/FAQ';
 import { BrandWordmark } from '@/components/brand/BrandWordmark';
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
+import { trackButtonClick } from '@/lib/client/button-tracking';
 
 export default function HomePage() {
   const logo = '/NouveauLogoRogne2.png';
@@ -101,6 +102,15 @@ export default function HomePage() {
 
             <Link
               href={`/${locale}/demo`}
+              onClick={() => {
+                trackButtonClick({
+                  buttonKey: 'home_header_demo',
+                  buttonLabel: t('nav.magicHango'),
+                  buttonContext: 'home_header',
+                  targetHref: `/${locale}/demo`,
+                  locale,
+                });
+              }}
               className="inline-flex items-center rounded-full px-3 py-1.5 text-[11px] md:text-sm font-semibold text-white hover:bg-white hover:text-primary transition whitespace-nowrap"
             >
               {t('nav.magicHango')}
@@ -108,6 +118,15 @@ export default function HomePage() {
 
             <Link
               href={`/${locale}/sign-in`}
+              onClick={() => {
+                trackButtonClick({
+                  buttonKey: 'home_header_sign_in',
+                  buttonLabel: t('nav.login'),
+                  buttonContext: 'home_header',
+                  targetHref: `/${locale}/sign-in`,
+                  locale,
+                });
+              }}
               className="inline-flex items-center rounded-full px-3 py-1.5 text-[11px] md:text-sm font-semibold text-white hover:bg-white hover:text-primary transition whitespace-nowrap"
             >
               {t('nav.login')}
@@ -115,6 +134,15 @@ export default function HomePage() {
 
             <Link
               href={`/${locale}/sign-up`}
+              onClick={() => {
+                trackButtonClick({
+                  buttonKey: 'home_header_sign_up',
+                  buttonLabel: t('nav.tryFree'),
+                  buttonContext: 'home_header',
+                  targetHref: `/${locale}/sign-up`,
+                  locale,
+                });
+              }}
               className="inline-flex items-center rounded-full bg-white/95 px-3 py-1.5 text-[11px] md:text-sm font-semibold text-primary shadow-sm hover:bg-primary hover:text-white transition whitespace-nowrap"
             >
               {t('nav.tryFree')}

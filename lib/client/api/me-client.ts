@@ -63,6 +63,7 @@ export type MyHoursResponse = {
 export type MySubscriptionStatus = {
   loggedIn: boolean;
   role: string | null;
+  subscription_cancel_at_period_end: boolean | null;
   subscription_status: string | null;
 };
 

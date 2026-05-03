@@ -3,13 +3,9 @@
 import { useMemo, useState } from 'react';
 import clsx from 'clsx';
 import Link from 'next/link';
-import { Poppins } from 'next/font/google';
 import { redirect } from 'next/navigation';
 
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['400', '600', '700', '800', '900'],
-});
+const poppins = { className: 'font-sans' };
 
 type Currency = 'EUR' | 'USD';
 const CURRENCY_META: Record<Currency, { symbol: string; label: string }> = {

@@ -1,16 +1,19 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 
 import { SelectableServicesCatalog } from '@/components/services/SelectableServicesCatalog';
+import { trackButtonClick } from '@/lib/client/button-tracking';
 import { useInstructorServices } from '@/lib/client/hooks/useInstructorServices';
 import type { ServicePricing } from '@/lib/client/api/services-client';
 
 export default function SelectServicePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations('bookServices');
   const locale = useLocale();
+  const clientUserId = searchParams.get('clientUserId');
 
   const { categories, services, loading, error } = useInstructorServices({
     loadErrorMessage: t('errors.loadServicesApi'),
@@ -19,6 +22,26 @@ export default function SelectServicePage() {
   const handleSelectService = (service: ServicePricing) => {
     const params = new URLSearchParams({
       serviceId: String(service.id),
+    });
+    if (clientUserId) {
+      params.set('clientUserId', clientUserId);
+    }
+    const targetHref = service.is_remote
+      ? `/book/proposals?${params.toString()}`
+      : `/book/address?${params.toString()}`;
+
+    trackButtonClick({
+      buttonKey: 'booking_select_service',
+      buttonLabel: service.name,
+      buttonContext: 'booking_services',
+      targetHref,
+      locale,
+      metadata: {
+        serviceId: service.id,
+        isRemote: Boolean(service.is_remote),
+        price: service.price,
+        durationMinutes: service.duration_minutes,
+      },
     });
 
     if (service.is_remote) {

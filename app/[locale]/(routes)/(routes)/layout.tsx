@@ -41,6 +41,12 @@ export default async function RootLayout({
     { nameFR: 'Blog', nameEN: 'Blog', link: '/blog', visible: 2 },
     { nameFR: 'Mes clients', nameEN: 'Clients', link: '/gestion', visible: 0 },
     {
+      nameFR: 'Réserver client',
+      nameEN: 'Book client',
+      link: '/book-for-client',
+      visible: 0,
+    },
+    {
       nameFR: 'Mes services',
       nameEN: 'Services',
       link: '/services',

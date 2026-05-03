@@ -16,6 +16,7 @@ export const PROFILE_LINKS = new Set([
   '/profile',
   '/sign-out',
   '/gestion',
+  '/book-for-client',
 ]);
 
 export function withLocalePath(path: string, locale: string) {

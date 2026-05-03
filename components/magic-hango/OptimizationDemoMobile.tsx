@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { Poppins } from 'next/font/google';
 import { getTranslations } from 'next-intl/server';
 import { MobileAnimatedAgendaShowcase } from '@/components/magic-hango/MobileAnimatedAgendaShowcase';
 import type { Locale } from '@/src/lib/i18n';
@@ -36,10 +35,7 @@ const AAA_AVERAGE_REGULAR_GAS_USD_PER_GALLON = 2.839;
 const FRENCH_AVERAGE_SP95_E10_EUR_PER_LITER = 2.002;
 const ASSUMED_LITERS_PER_100KM = 235.214583 / ASSUMED_MPG;
 
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['400', '600', '700', '800', '900'],
-});
+const poppins = { className: 'font-sans' };
 
 function buildGoogleMapsDirections(origin: string, destination: string) {
   return `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(origin)}&destination=${encodeURIComponent(destination)}&travelmode=driving`;

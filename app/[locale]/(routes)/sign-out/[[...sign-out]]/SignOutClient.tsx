@@ -1,10 +1,10 @@
-// app/[locale]/sign-out/[[...sign-out]]/SignOutClient.tsx
 'use client';
 
 import { SignOutButton } from '@clerk/nextjs';
 import Link from 'next/link';
-import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
 import { useLocale } from 'next-intl';
+
+import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
 
 type Props = {
   title: string;
@@ -31,11 +31,9 @@ export default function SignOutClient({
   const locale = useLocale();
   const isFR = locale.startsWith('fr');
 
-  // ✅ sécurise les urls si jamais elles arrivent sans préfixe
   const cancelHref = withLocalePath(cancelUrl, locale);
   const redirectHref = withLocalePath(redirectUrl, locale);
 
-  // Fallback au cas où (mais normalement inutile si messages OK)
   const fallback = {
     title: isFR ? 'Se déconnecter' : 'Log out',
     question: isFR

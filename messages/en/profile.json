@@ -33,11 +33,11 @@
     "role": "Role",
     "agency": "Agency",
     "educatorCode": {
-      "label": "Trainer code",
+      "label": "Client association URL",
       "copy": "Copy",
       "copied": "Copied ✓",
-      "copyTitle": "Copy code",
-      "help": "This code is unique and cannot be changed."
+      "copyTitle": "Copy association URL",
+      "help": "Share this URL with clients so they can find you and book."
     }
   },
   "delete": {

@@ -6,6 +6,7 @@ import { getTranslations } from 'next-intl/server';
 import { OptimizationDemo } from '@/components/magic-hango/OptimizationDemo';
 import { OptimizationDemoMobile } from '@/components/magic-hango/OptimizationDemoMobile';
 import { BrandWordmark } from '@/components/brand/BrandWordmark';
+import { TrackedButton } from '@/components/tracking/TrackedButton';
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
 import type { Locale } from '@/src/lib/i18n';
 
@@ -18,17 +19,10 @@ export default async function DemoPage({
   const t = await getTranslations({ locale, namespace: 'magicHango' });
   const { userId } = await auth();
   const logo = '/NouveauLogoRogne2.png';
-  const isFrench = locale === 'fr';
-  const demoMailLabel = isFrench ? 'ou demander une démo' : 'or request a demo';
-  const demoMailSubject = isFrench
-    ? 'Demande de demo personnalisee MagicHango'
-    : 'Custom MagicHango demo request';
-  const demoMailBody = isFrench
-    ? 'Bonjour Tom,\n\nJe souhaite demander une demo personnalisee de MagicHango en face a face.\n\nMon nom :\nMon entreprise :\nMa ville :\nMes disponibilites :\n\nMerci,'
-    : "Hi Tom,\n\nI'd like to request a custom in-person demo of MagicHango.\n\nMy name:\nMy business:\nMy city:\nMy preferred dates:\n\nThanks,";
-  const demoMailHref = `mailto:tom@magichango.com?subject=${encodeURIComponent(
-    demoMailSubject,
-  )}&body=${encodeURIComponent(demoMailBody)}`;
+  const localizedDemoMailBody = t('cta.demoMailBody').replace(/%0D%0A/g, '\n');
+  const localizedDemoMailHref = `mailto:tom@magichango.com?subject=${encodeURIComponent(
+    t('cta.demoMailSubject'),
+  )}&body=${encodeURIComponent(localizedDemoMailBody)}`;
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.98),rgba(255,251,224,0.98)_38%,rgba(247,244,213,1)_100%)] text-slate-950">
@@ -118,9 +112,17 @@ export default async function DemoPage({
 
               <div className="flex flex-wrap justify-end gap-3">
                 <div className="flex flex-col items-center gap-2">
-                  <Link
+                  <TrackedButton
                     href={`/${locale}/${userId ? 'myweek' : 'sign-up'}`}
-                    className="inline-flex items-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_16px_34px_-24px_rgba(255,255,255,0.7)] transition hover:bg-white/92"
+                    trackingKey={userId ? 'demo_open_app' : 'demo_start_trial'}
+                    trackingLabel={userId ? t('cta.openApp') : t('cta.startTrial')}
+                    trackingContext="demo_hero"
+                    trackingMetadata={{
+                      locale,
+                      surface: 'demo_hero',
+                      authenticated: Boolean(userId),
+                    }}
+                    className="rounded-full bg-white px-5 py-3 text-sm font-semibold text-slate-950 shadow-[0_16px_34px_-24px_rgba(255,255,255,0.7)] transition hover:bg-white/92"
                   >
                     {userId ? t('cta.openApp') : t('cta.startTrial')}
                     <svg
@@ -136,23 +138,17 @@ export default async function DemoPage({
                       <path d="M3.5 10h13" />
                       <path d="m11.5 6.5 5 3.5-5 3.5" />
                     </svg>
-                  </Link>
+                  </TrackedButton>
                   {!userId ? (
                     <p className="w-full text-center text-xs font-medium text-white/62">
                       {t('cta.noCardRequired')}
                     </p>
                   ) : null}
                   <Link
-                    href={demoMailHref}
+                    href={localizedDemoMailHref}
                     className="mt-2 inline-flex items-center rounded-full border border-white/16 px-3 py-1.5 text-xs font-medium text-white/82 transition hover:bg-white/6 hover:text-white md:text-sm"
                   >
-                    {demoMailLabel}
-                  </Link>
-                  <Link
-                    href={`/${locale}/email-tracking`}
-                    className="inline-flex items-center rounded-full border border-emerald-300/30 bg-emerald-400/12 px-3 py-1.5 text-xs font-medium text-emerald-100 transition hover:bg-emerald-400/18 hover:text-white md:text-sm"
-                  >
-                    {isFrench ? 'voir le suivi des emails' : 'view email tracking'}
+                    {t('cta.requestDemo')}
                   </Link>
                 </div>
               </div>

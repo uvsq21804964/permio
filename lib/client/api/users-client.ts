@@ -11,6 +11,16 @@ export type AgencyUser = {
   updatedAt?: string;
   plannedMinutes?: number;
   remainingMinutes?: number;
+  formatted_address: string | null;
+  lat: number | null;
+  lng: number | null;
+  street: string | null;
+  street_number: string | null;
+  postal_code: string | null;
+  city: string | null;
+  country: string | null;
+  country_code: string | null;
+  google_place_id: string | null;
 };
 
 type UsersErrorBody = {

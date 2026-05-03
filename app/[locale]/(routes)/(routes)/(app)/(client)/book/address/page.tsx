@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import AddressMapPreview from '@/components/shared/AddressMapPreview';
 import GooglePlacesScript from '@/components/shared/GooglePlacesScript';
 import { getMyProfile } from '@/lib/client/api/me-client';
+import { getAgencyUsers } from '@/lib/client/api/users-client';
 import {
   getInstructorServiceCatalog,
   type ServicePricing,
@@ -34,6 +35,7 @@ export default function BookAddressPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const serviceId = searchParams.get('serviceId');
+  const clientUserId = searchParams.get('clientUserId');
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -75,7 +77,11 @@ export default function BookAddressPage() {
         );
 
         if (service?.is_remote) {
-          router.replace(`/book/proposals?serviceId=${serviceId}`);
+          const params = new URLSearchParams({ serviceId: String(serviceId) });
+          if (clientUserId) {
+            params.set('clientUserId', clientUserId);
+          }
+          router.replace(`/book/proposals?${params.toString()}`);
         }
       } catch (fetchError) {
         console.error('Remote service check failed', fetchError);
@@ -83,12 +89,22 @@ export default function BookAddressPage() {
     };
 
     void run();
-  }, [router, serviceId, t]);
+  }, [clientUserId, router, serviceId, t]);
 
   useEffect(() => {
     const fetchProfile = async () => {
       setSavedAddressLoading(true);
       try {
+        if (clientUserId) {
+          const users = await getAgencyUsers({
+            role: 'student',
+            fallbackMessage: t('errorNoSavedAddress'),
+          });
+          const client = users.find((user) => user.id === clientUserId);
+          setSavedAddress(client ? mapProfileAddressToDetails(client) : null);
+          return;
+        }
+
         const data = await getMyProfile();
         setSavedAddress(mapProfileAddressToDetails(data.user));
       } catch (fetchError) {
@@ -99,7 +115,7 @@ export default function BookAddressPage() {
     };
 
     void fetchProfile();
-  }, []);
+  }, [clientUserId, t]);
 
   useGooglePlacesAutocomplete({
     enabled: isMapsReady && addressMode === 'custom',
@@ -137,9 +153,15 @@ export default function BookAddressPage() {
       return;
     }
 
-    router.push(
-      `/book/proposals?serviceId=${serviceId}&addr=${encodeAddress(address!)}`,
-    );
+    const params = new URLSearchParams({
+      serviceId,
+      addr: encodeAddress(address!),
+    });
+    if (clientUserId) {
+      params.set('clientUserId', clientUserId);
+    }
+
+    router.push(`/book/proposals?${params.toString()}`);
   };
 
   const canSubmit =

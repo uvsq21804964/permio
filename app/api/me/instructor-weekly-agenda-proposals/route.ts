@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
     const clientLatParam = url.searchParams.get('clientLat');
     const clientLngParam = url.searchParams.get('clientLng');
     const clientFormattedParam = url.searchParams.get('clientFormatted');
+    const targetClientUserId = url.searchParams.get('clientUserId');
     const result = await buildInstructorAgenda({
       userId,
       startDate: rangeStart,
@@ -43,6 +44,7 @@ export async function GET(req: NextRequest) {
       clientLatParam,
       clientLngParam,
       clientFormattedParam,
+      targetClientUserId,
     });
 
     if (!result.ok) {

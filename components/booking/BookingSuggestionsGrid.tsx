@@ -2,6 +2,7 @@ import { ChevronRight } from 'lucide-react';
 
 import type { ServicePricing } from '@/lib/client/api/services-client';
 import type { BookingAddress } from '@/lib/client/utils/booking';
+import { trackButtonClick } from '@/lib/client/button-tracking';
 
 import {
   buildSuggestionReason,
@@ -55,7 +56,20 @@ export function BookingSuggestionsGrid({
           <div className="flex flex-col items-start gap-2 md:items-end">
             <button
               type="button"
-              onClick={onSeeAllSlots}
+              onClick={() => {
+                trackButtonClick({
+                  buttonKey: 'booking_see_all_slots',
+                  buttonLabel: t('header.seeAll'),
+                  buttonContext: 'booking_suggestions',
+                  locale,
+                  metadata: {
+                    serviceId: selectedService.id,
+                    serviceName: selectedService.name,
+                    suggestionsCount: suggestions.length,
+                  },
+                });
+                onSeeAllSlots();
+              }}
               className="inline-flex items-center gap-2 rounded-full border border-foreground/15 bg-foreground px-4 py-2 text-sm font-semibold text-background shadow-sm transition hover:-translate-y-0.5 hover:bg-foreground/90 hover:shadow-md"
             >
               {t('header.seeAll')}
@@ -138,7 +152,22 @@ export function BookingSuggestionsGrid({
               <button
                 key={slot.id}
                 type="button"
-                onClick={() => onBookSlot(slot)}
+                onClick={() => {
+                  trackButtonClick({
+                    buttonKey: 'booking_suggestion_book_slot',
+                    buttonLabel: t('booking.button'),
+                    buttonContext: 'booking_suggestions',
+                    locale,
+                    metadata: {
+                      serviceId: selectedService.id,
+                      serviceName: selectedService.name,
+                      slotId: slot.id,
+                      slotDate: slot.date,
+                      slotRank: index + 1,
+                    },
+                  });
+                  onBookSlot(slot);
+                }}
                 disabled={bookingLoading}
                 className="group flex min-h-[220px] cursor-pointer flex-col justify-between rounded-[1.5rem] border border-black/10 bg-card p-4 text-left shadow-sm ring-1 ring-transparent transition hover:-translate-y-1 hover:border-black/20 hover:ring-black/5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 disabled:cursor-not-allowed disabled:opacity-60"
               >

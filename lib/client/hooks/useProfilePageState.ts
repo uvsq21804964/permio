@@ -26,6 +26,7 @@ import {
   type AddressDetails,
 } from '@/lib/client/utils/address';
 import { isGoogleMapsPlacesReady } from '@/lib/client/utils/google-maps';
+import { buildJoinUrl } from '@/lib/client/utils/join-url';
 import type { MyProfileUser } from '@/lib/client/api/me-client';
 
 export type UserProfile = MyProfileUser;
@@ -125,17 +126,17 @@ export function useProfilePageState() {
   }, [t]);
 
   const copyJoinCode = useCallback(async () => {
-    const code = profile?.joinCode || '';
-    if (!code) return;
+    const joinUrl = buildJoinUrl(profile?.joinCode, locale);
+    if (!joinUrl) return;
 
     try {
-      await navigator.clipboard.writeText(code);
+      await navigator.clipboard.writeText(joinUrl);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1200);
     } catch {
-      alert(code);
+      alert(joinUrl);
     }
-  }, [profile?.joinCode]);
+  }, [locale, profile?.joinCode]);
 
   useEffect(() => {
     if (isGoogleMapsPlacesReady()) {
@@ -484,6 +485,7 @@ export function useProfilePageState() {
     openPhoneModal,
     openProfilePhotoSettings,
     profile,
+    profileJoinUrl: buildJoinUrl(profile?.joinCode, locale),
     profileImageUrl: user?.imageUrl ?? null,
     savingAddress,
     savingName,

@@ -15,6 +15,7 @@ import {
 } from '@/components/schedule/last-week-agenda-shared';
 import { useOwnServiceSummary } from '@/lib/client/hooks/useOwnServiceSummary';
 import { useMyWeeks } from '@/lib/client/hooks/useMyWeeks';
+import { buildJoinUrl } from '@/lib/client/utils/join-url';
 import {
   addDaysToISO,
   formatShortDate,
@@ -159,21 +160,22 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
   const travelsByDate = data?.travelsByDate ?? {};
   const myServicesUrl = withLocalePath('/services', locale);
   const bookingServicesUrl = withLocalePath('/book/services', locale);
+  const joinUrl = buildJoinUrl(joinCode, locale);
 
   const handleCopyJoinCode = async () => {
-    if (!joinCode) {
+    if (!joinUrl) {
       return;
     }
 
     try {
-      await navigator.clipboard.writeText(joinCode);
+      await navigator.clipboard.writeText(joinUrl);
       setCopied(true);
       window.setTimeout(() => setCopied(false), 1200);
     } catch {
       alert(
         isFrenchLocale(locale)
-          ? 'Impossible de copier automatiquement. Copie le code manuellement.'
-          : 'Auto-copy failed. Please copy the code manually.'
+          ? "Impossible de copier automatiquement. Copie l'URL manuellement."
+          : 'Auto-copy failed. Please copy the URL manually.'
       );
     }
   };
@@ -185,6 +187,7 @@ export default function LastWeekAgenda({ userId }: { userId?: string }) {
         error={error}
         headerRange={headerRange}
         joinCode={joinCode}
+        joinUrl={joinUrl}
         locale={locale}
         onCopyJoinCode={handleCopyJoinCode}
         onCurrentWeek={() => {

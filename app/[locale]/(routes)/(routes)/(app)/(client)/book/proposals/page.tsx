@@ -32,6 +32,7 @@ export default function ProposalsPage() {
 
   const serviceIdParam = searchParams.get('serviceId');
   const addrParam = searchParams.get('addr');
+  const clientUserId = searchParams.get('clientUserId');
 
   const bookingAddress = useDecodedBookingAddress(addrParam, {
     onError: (e) => {
@@ -72,6 +73,7 @@ export default function ProposalsPage() {
       (selectedService.is_remote || !!bookingAddress),
     isRemote: selectedService?.is_remote ?? false,
     bookingAddress: selectedService?.is_remote ? null : bookingAddress,
+    clientUserId,
     loadErrorMessage: t('errors.loadAgendaApi'),
   });
 
@@ -108,6 +110,7 @@ export default function ProposalsPage() {
         startTime: slot.serviceStartTime,
         endTime: slot.serviceEndTime,
         bookingAddress: toBookingAddressPayload(bookingAddress),
+        clientUserId,
       });
 
       toast.success(t('booking.noticeSuccess'));
@@ -156,6 +159,9 @@ export default function ProposalsPage() {
     if (addrParam) {
       params.set('addr', addrParam);
     }
+    if (clientUserId) {
+      params.set('clientUserId', clientUserId);
+    }
     router.push(toLocalizedPath(`/book?${params.toString()}`));
   };
 
@@ -184,7 +190,14 @@ export default function ProposalsPage() {
           <button
             type="button"
             onClick={() =>
-              router.push(toLocalizedPath(`/book/address?serviceId=${serviceIdParam}`))
+              router.push(
+                toLocalizedPath(
+                  `/book/address?${new URLSearchParams({
+                    serviceId: serviceIdParam,
+                    ...(clientUserId ? { clientUserId } : {}),
+                  }).toString()}`
+                )
+              )
             }
             className="text-primary text-xs underline"
           >

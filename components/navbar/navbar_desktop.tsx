@@ -7,6 +7,7 @@ import { useLocale } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
 import { BrandWordmark } from '@/components/brand/BrandWordmark';
+import { trackButtonClick } from '@/lib/client/button-tracking';
 import {
   filterNavbarPages,
   PROFILE_LINKS,
@@ -88,11 +89,36 @@ export default function DesktopNavbar({
   const burgerSrLabel = isFR ? 'Ouvrir le menu' : 'Open menu';
   const currentNoLocale = stripLocalePrefix(currentPath, locale);
 
+  const trackNavClick = (page: NavPage, label: string, href: string, surface: string) => {
+    trackButtonClick({
+      buttonKey: page.cta ? 'app_nav_cta' : 'app_nav_link',
+      buttonLabel: label,
+      buttonContext: surface,
+      targetHref: href,
+      locale,
+      metadata: {
+        link: page.link,
+        role: meRole,
+        isCta: Boolean(page.cta),
+      },
+    });
+  };
+
   return (
     <nav className="fixed inset-x-0 top-0 z-50 border-b border-neutral-200 bg-white/90 text-white backdrop-blur supports-[backdrop-filter]:bg-[#8920D1] dark:border-neutral-800 dark:bg-neutral-900/80">
       <div className="flex h-10 items-center justify-between px-0">
         <Link
           href={withLocalePath('/myweek', locale)}
+          onClick={() => {
+            trackButtonClick({
+              buttonKey: 'app_nav_logo_home',
+              buttonLabel: homeSrLabel,
+              buttonContext: 'desktop_nav',
+              targetHref: withLocalePath('/myweek', locale),
+              locale,
+              metadata: { role: meRole },
+            });
+          }}
           className="flex h-10 items-end gap-2 pl-2 pr-4 dark:focus:ring-neutral-600"
         >
           <span className="sr-only">{homeSrLabel}</span>
@@ -123,6 +149,7 @@ export default function DesktopNavbar({
                       <Link
                         key={page.link}
                         href={href}
+                        onClick={() => trackNavClick(page, label, href, 'desktop_nav_main')}
                         className="inline-flex items-center justify-center rounded-md bg-navbar px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:brightness-110 active:translate-y-px focus:outline-none focus:ring-2 focus:ring-navbar/60 focus:ring-offset-2"
                       >
                         {label}
@@ -134,6 +161,7 @@ export default function DesktopNavbar({
                     <Link
                       key={page.link}
                       href={href}
+                      onClick={() => trackNavClick(page, label, href, 'desktop_nav_main')}
                       className={`group relative rounded-md px-3 py-2 text-sm font-medium transition hover:bg-neutral-100/60 focus:outline-none focus:ring-2 focus:ring-neutral-300 focus:ring-offset-2 dark:hover:bg-neutral-800/60 dark:focus:ring-neutral-700 ${
                         isActive
                           ? 'text-white dark:text-white'
@@ -196,7 +224,10 @@ export default function DesktopNavbar({
                                 <Link
                                   role="menuitem"
                                   href={href}
-                                  onClick={() => setProfileOpen(false)}
+                                  onClick={() => {
+                                    trackNavClick(page, label, href, 'desktop_nav_profile');
+                                    setProfileOpen(false);
+                                  }}
                                   className={`flex items-center justify-between px-3 py-2 transition hover:bg-neutral-100 focus:bg-neutral-100 focus:outline-none dark:hover:bg-neutral-800 dark:focus:bg-neutral-800 ${
                                     isActive
                                       ? 'text-neutral-900 dark:text-neutral-50'

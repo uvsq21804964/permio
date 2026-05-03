@@ -23,6 +23,8 @@
         "Unlimited services and appointments"
       ]
     },
-    "alreadySubscribed": "You already have an active subscription"
+    "alreadySubscribed": "You already have an active subscription",
+    "cancellationScheduled": "Cancellation is scheduled for your current plan.",
+    "manageSubscription": "Manage subscription"
   }
 }

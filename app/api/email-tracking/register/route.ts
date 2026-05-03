@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { isEmailTrackingTokenAuthorized } from '@/lib/server/email-tracking-auth';
 import { registerTrackedEmail } from '@/lib/server/services/email-tracking-service';
 
 type RegisterPayload = {
@@ -10,23 +11,8 @@ type RegisterPayload = {
   sentAt?: string | null;
 };
 
-function isAuthorized(request: Request) {
-  const expectedToken = process.env.EMAIL_TRACKING_WRITE_TOKEN;
-
-  if (!expectedToken) {
-    return true;
-  }
-
-  const bearerToken = request.headers
-    .get('authorization')
-    ?.replace(/^Bearer\s+/i, '');
-  const headerToken = request.headers.get('x-email-tracking-token');
-
-  return bearerToken === expectedToken || headerToken === expectedToken;
-}
-
 export async function POST(request: Request) {
-  if (!isAuthorized(request)) {
+  if (!isEmailTrackingTokenAuthorized(request.headers)) {
     return NextResponse.json({ error: 'UNAUTHORIZED' }, { status: 401 });
   }
 

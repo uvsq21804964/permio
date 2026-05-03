@@ -13,6 +13,7 @@ type UseInstructorWeeklyAgendaOptions = {
   weekStart?: string;
   isRemote?: boolean;
   bookingAddress?: BookingAddressPayload | null;
+  clientUserId?: string | null;
   loadErrorMessage?: string;
 };
 
@@ -32,6 +33,7 @@ export function useInstructorWeeklyAgenda(
     weekStart,
     isRemote,
     bookingAddress,
+    clientUserId,
     loadErrorMessage = 'Failed to fetch instructor weekly agenda',
   } = options;
 
@@ -55,6 +57,7 @@ export function useInstructorWeeklyAgenda(
           weekStart,
           isRemote,
           bookingAddress,
+          clientUserId,
         },
         {
           fallbackMessage: loadErrorMessage,
@@ -72,6 +75,7 @@ export function useInstructorWeeklyAgenda(
     }
   }, [
     bookingAddress,
+    clientUserId,
     enabled,
     isRemote,
     loadErrorMessage,

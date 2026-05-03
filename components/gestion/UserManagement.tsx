@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useAuth, useOrganization } from '@clerk/nextjs';
 import { useLocale, useTranslations } from 'next-intl';
+import { toast } from 'sonner';
 
 import { useAgencyUsers } from '@/lib/client/hooks/useAgencyUsers';
 
@@ -95,7 +96,7 @@ export default function UserManagement({ meRole: _meRole }: { meRole: Role }) {
       window.URL.revokeObjectURL(url);
     } catch (nextError) {
       console.error('export users error', nextError);
-      alert(t('errors.export'));
+      toast.error(t('errors.export'));
     } finally {
       setExporting(false);
     }
@@ -133,7 +134,7 @@ export default function UserManagement({ meRole: _meRole }: { meRole: Role }) {
       window.URL.revokeObjectURL(url);
     } catch (nextError) {
       console.error('export user details error', nextError);
-      alert(t('errors.exportDetails'));
+      toast.error(t('errors.exportDetails'));
     } finally {
       setExportingUserId(null);
     }

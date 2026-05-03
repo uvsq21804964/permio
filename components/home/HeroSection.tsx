@@ -2,16 +2,11 @@
 
 import React from 'react';
 import Image from 'next/image';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Poppins } from 'next/font/google';
 import { Sparkles, CalendarDays, MapPinned } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
+import { TrackedButton } from '@/components/tracking/TrackedButton';
 
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['400', '600', '700', '800', '900'],
-});
+const poppins = { className: 'font-sans' };
 
 export default function HeroSection() {
   const t = useTranslations('heroSection');
@@ -93,8 +88,12 @@ export default function HeroSection() {
             </h2>
 
             <div className="mt-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-center lg:justify-start gap-3 sm:gap-4">
-              <Button
-                asChild
+              <TrackedButton
+                href={`/${locale}/sign-up`}
+                trackingKey="home_hero_sign_up"
+                trackingLabel={t('hero.ctaPrimary')}
+                trackingContext="home_hero"
+                trackingMetadata={{ locale }}
                 className="
                   w-full sm:w-auto
                   px-6 md:px-8 py-3 text-base md:text-lg font-semibold
@@ -102,13 +101,15 @@ export default function HeroSection() {
                   rounded-2xl shadow-lg hover:shadow-xl transition
                 "
               >
-                <Link className="text-white" href={`/${locale}/sign-up`}>
-                  {t('hero.ctaPrimary')}
-                </Link>
-              </Button>
+                {t('hero.ctaPrimary')}
+              </TrackedButton>
 
-              <Button
-                asChild
+              <TrackedButton
+                href={`/${locale}/sign-in`}
+                trackingKey="home_hero_sign_in"
+                trackingLabel={t('hero.ctaSecondary')}
+                trackingContext="home_hero"
+                trackingMetadata={{ locale }}
                 variant="outline"
                 className="
                   w-full sm:w-auto
@@ -118,10 +119,8 @@ export default function HeroSection() {
                   rounded-2xl backdrop-blur-sm
                 "
               >
-                <Link href={`/${locale}/sign-in`} className="text-primary">
-                  {t('hero.ctaSecondary')}
-                </Link>
-              </Button>
+                {t('hero.ctaSecondary')}
+              </TrackedButton>
             </div>
           </div>
 

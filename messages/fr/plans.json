@@ -23,6 +23,8 @@
         "Nombre illimité de services et de rendez-vous"
       ]
     },
-    "alreadySubscribed": "Vous avez déjà un abonnement actif"
+    "alreadySubscribed": "Vous avez déjà un abonnement actif",
+    "cancellationScheduled": "La clôture de votre formule est programmée.",
+    "manageSubscription": "Gérer l'abonnement"
   }
 }

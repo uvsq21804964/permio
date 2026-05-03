@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { usePathname } from 'next/navigation';
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
+import { trackButtonClick } from '@/lib/client/button-tracking';
 import {
   filterNavbarPages,
   stripLocalePrefix,
@@ -51,6 +52,21 @@ const MobileNavbar: React.FC<NavbarProps> = ({
       ? 'Ouvrir le menu'
       : 'Open menu';
 
+  const trackNavClick = (page: NavPage, label: string, href: string, surface: string) => {
+    trackButtonClick({
+      buttonKey: page.cta ? 'app_nav_cta' : 'app_nav_link',
+      buttonLabel: label,
+      buttonContext: surface,
+      targetHref: href,
+      locale,
+      metadata: {
+        link: page.link,
+        role: meRole,
+        isCta: Boolean(page.cta),
+      },
+    });
+  };
+
   return (
     <nav className="fixed inset-x-0 top-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/90 dark:bg-neutral-900/80 border-b border-neutral-200 dark:border-neutral-800">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -59,7 +75,17 @@ const MobileNavbar: React.FC<NavbarProps> = ({
             <Link
               href={withLocalePath('/myweek', locale)}
               className="flex items-end gap-2 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-400 dark:focus:ring-neutral-600"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={() => {
+                trackButtonClick({
+                  buttonKey: 'app_nav_logo_home',
+                  buttonLabel: homeSrLabel,
+                  buttonContext: 'mobile_nav',
+                  targetHref: withLocalePath('/myweek', locale),
+                  locale,
+                  metadata: { role: meRole },
+                });
+                setIsMenuOpen(false);
+              }}
             >
               <span className="sr-only">{homeSrLabel}</span>
               <span className="relative h-10 w-12 shrink-0">
@@ -86,6 +112,7 @@ const MobileNavbar: React.FC<NavbarProps> = ({
                   <Link
                     key={page.link}
                     href={href}
+                    onClick={() => trackNavClick(page, label, href, 'mobile_nav_desktop_row')}
                     className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-semibold bg-navbar text-white shadow-sm transition hover:brightness-110 active:translate-y-px focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-navbar/60"
                   >
                     {label}
@@ -97,6 +124,7 @@ const MobileNavbar: React.FC<NavbarProps> = ({
                 <Link
                   key={page.link}
                   href={href}
+                  onClick={() => trackNavClick(page, label, href, 'mobile_nav_desktop_row')}
                   className={`group relative px-3 py-2 text-sm font-medium rounded-md transition hover:bg-neutral-100/60 dark:hover:bg-neutral-800/60 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700 ${
                     isActive
                       ? 'text-neutral-900 dark:text-white'
@@ -167,7 +195,10 @@ const MobileNavbar: React.FC<NavbarProps> = ({
                     key={page.link}
                     href={href}
                     className="w-full rounded-lg px-3 py-2 text-sm font-medium transition bg-navbar text-white shadow-sm hover:brightness-110 active:translate-y-px focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-300 dark:focus:ring-neutral-700"
-                    onClick={() => setIsMenuOpen(false)}
+                    onClick={() => {
+                      trackNavClick(page, label, href, 'mobile_nav_menu');
+                      setIsMenuOpen(false);
+                    }}
                   >
                     {label}
                   </Link>
@@ -183,7 +214,10 @@ const MobileNavbar: React.FC<NavbarProps> = ({
                       ? 'text-neutral-900 dark:text-white'
                       : 'text-neutral-600 dark:text-neutral-300'
                   }`}
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={() => {
+                    trackNavClick(page, label, href, 'mobile_nav_menu');
+                    setIsMenuOpen(false);
+                  }}
                 >
                   {label}
                 </Link>

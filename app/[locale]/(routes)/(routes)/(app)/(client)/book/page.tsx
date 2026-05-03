@@ -16,6 +16,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { trackButtonClick } from '@/lib/client/button-tracking';
 import { useBookPageState } from '@/lib/client/hooks/useBookPageState';
 import { type Locale, withLocale } from '@/src/lib/i18n';
 
@@ -81,10 +82,29 @@ export default function BookPage() {
       })
     : null;
 
+  const handleTrackedRequestBooking = () => {
+    trackButtonClick({
+      buttonKey: 'booking_place_booking',
+      buttonLabel: t('buttons.placeBooking'),
+      buttonContext: 'booking_exact_slot',
+      locale,
+      metadata: {
+        serviceName: selectedService?.name ?? null,
+        selectedDate: selectedSlot?.date ?? null,
+        selectedStart: selectedSlot?.serviceStartTime ?? null,
+        selectedEnd: selectedSlot?.serviceEndTime ?? null,
+        hasAddress: Boolean(bookingAddress),
+      },
+    });
+
+    handleRequestBooking();
+  };
+
   const handleBackToSuggestions = () => {
     const params = new URLSearchParams();
     const serviceId = searchParams.get('serviceId');
     const addr = searchParams.get('addr');
+    const clientUserId = searchParams.get('clientUserId');
 
     if (serviceId) {
       params.set('serviceId', serviceId);
@@ -92,6 +112,10 @@ export default function BookPage() {
 
     if (addr) {
       params.set('addr', addr);
+    }
+
+    if (clientUserId) {
+      params.set('clientUserId', clientUserId);
     }
 
     const query = params.toString();
@@ -303,7 +327,7 @@ export default function BookPage() {
 
               <div className="mt-5 flex flex-col gap-2">
                 <Button
-                  onClick={handleRequestBooking}
+                  onClick={handleTrackedRequestBooking}
                   disabled={bookingLoading || !selectedService || !selectedSlot}
                 >
                   {bookingLoading ? t('buttons.bookingInProgress') : t('buttons.placeBooking')}
@@ -327,7 +351,7 @@ export default function BookPage() {
               </div>
 
               <Button
-                onClick={handleRequestBooking}
+                onClick={handleTrackedRequestBooking}
                 disabled={bookingLoading || !selectedService || !selectedSlot}
                 className="shrink-0"
               >

@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
+import { TrackedButton } from '@/components/tracking/TrackedButton';
 import { useLocale, useTranslations } from 'next-intl';
 
 type CallToActionProps = {
@@ -58,37 +57,43 @@ const CallToAction: React.FC<CallToActionProps> = ({
             </p>
 
             <div className="mt-8 md:mt-10 flex flex-col items-stretch gap-3 sm:flex-row sm:justify-center">
-              <Link href={primaryHrefWithLocale} className="sm:w-auto">
-                <Button
-                  aria-label={t('cta.primaryLabel')}
-                  className={[
-                    'w-full sm:w-auto rounded-xl px-6 py-5 text-base font-semibold',
-                    'bg-yellow-400 text-[#6A1B9A]',
-                    'hover:bg-primary hover:text-white',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent',
-                    'shadow-[0_6px_20px_rgba(0,0,0,0.15)]',
-                    'motion-safe:transition motion-safe:duration-200',
-                  ].join(' ')}
-                >
-                  {t('cta.primaryLabel')}
-                </Button>
-              </Link>
+              <TrackedButton
+                href={primaryHrefWithLocale}
+                trackingKey="home_bottom_cta_primary"
+                trackingLabel={t('cta.primaryLabel')}
+                trackingContext="home_bottom_cta"
+                trackingMetadata={{ locale, primaryHref }}
+                aria-label={t('cta.primaryLabel')}
+                className={[
+                  'w-full sm:w-auto rounded-xl px-6 py-5 text-base font-semibold',
+                  'bg-yellow-400 text-[#6A1B9A]',
+                  'hover:bg-primary hover:text-white',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent',
+                  'shadow-[0_6px_20px_rgba(0,0,0,0.15)]',
+                  'motion-safe:transition motion-safe:duration-200',
+                ].join(' ')}
+              >
+                {t('cta.primaryLabel')}
+              </TrackedButton>
 
-              <Link href={mailtoHref} className="sm:w-auto">
-                <Button
-                  aria-label={t('cta.secondaryLabel')}
-                  variant="outline"
-                  className={[
-                    'w-full sm:w-auto rounded-xl px-6 py-5 text-base font-semibold',
-                    'border-white/70 text-white',
-                    'bg-white/10 hover:border-transparent',
-                    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent',
-                    'motion-safe:transition motion-safe:duration-200',
-                  ].join(' ')}
-                >
-                  {t('cta.secondaryLabel')}
-                </Button>
-              </Link>
+              <TrackedButton
+                href={mailtoHref}
+                trackingKey="home_bottom_cta_email"
+                trackingLabel={t('cta.secondaryLabel')}
+                trackingContext="home_bottom_cta"
+                trackingMetadata={{ locale, contactEmail }}
+                aria-label={t('cta.secondaryLabel')}
+                variant="outline"
+                className={[
+                  'w-full sm:w-auto rounded-xl px-6 py-5 text-base font-semibold',
+                  'border-white/70 text-white',
+                  'bg-white/10 hover:border-transparent',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent',
+                  'motion-safe:transition motion-safe:duration-200',
+                ].join(' ')}
+              >
+                {t('cta.secondaryLabel')}
+              </TrackedButton>
             </div>
 
             <ul

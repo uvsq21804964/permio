@@ -10,7 +10,7 @@ export default async function SignOutPage({
 }) {
   const { locale } = await params;
 
-  const t = await getTranslations({ locale, namespace: 'SignOut' });
+  const t = await getTranslations({ locale, namespace: 'signOut' });
 
   return (
     <SignOutClient

@@ -4,6 +4,7 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from '@/src/i18n/getMessages';
 import { ClerkProvider } from '@clerk/nextjs';
 import { frFR, enUS } from '@clerk/localizations';
+import { UserJourneyTracker } from '@/components/tracking/UserJourneyTracker';
 import type { Locale } from '@/src/lib/i18n';
 
 type Props = {
@@ -85,6 +86,7 @@ export default async function LocaleLayout({ children, params }: Props) {
       }}
     >
       <NextIntlClientProvider locale={locale} messages={messages}>
+        <UserJourneyTracker locale={locale} />
         <div className="h-full w-full">{children}</div>
       </NextIntlClientProvider>
     </ClerkProvider>

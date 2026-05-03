@@ -77,6 +77,270 @@ type BlogUiCopy = {
 
 const BLOG_ENTRIES: BlogEntry[] = [
   {
+    id: 'travel-time-dashboard',
+    publishedAt: '2026-04-30',
+    readingMinutes: 6,
+    translations: {
+      en: {
+        slug: 'track-travel-time-dog-trainer-calendar',
+        category: 'Operations',
+        title: 'The simple metrics dog trainers should watch before opening more slots',
+        description:
+          'A practical way to read your calendar through travel time, gaps, and booking density before deciding whether your week can really handle more sessions.',
+        excerpt:
+          'More available slots do not always mean more revenue. Sometimes the best growth lever is seeing where the week quietly leaks time.',
+        tags: ['Metrics', 'Travel', 'Planning'],
+        coverImage: {
+          src: '/blog/covers/travel-metrics.svg',
+          alt: 'Dashboard-style view of travel time, gaps, and session density for a dog trainer',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Turn the calendar into a clearer signal',
+        ctaDescription:
+          'MagicHango helps dog trainers understand which slots improve the day, not just which slots are technically free.',
+        ctaLabel: 'See MagicHango in action',
+        sections: [
+          {
+            heading: 'Start with the time that does not get invoiced',
+            paragraphs: [
+              'A dog trainer can look busy and still lose a surprising amount of the week between visits. Travel time, parking, early arrivals, late departures, and awkward gaps rarely appear as a single line in the calendar, but together they decide how profitable the week feels.',
+              'Before opening more slots, it helps to know how much of the day is actually service time. The answer does not need to be perfect. A rough weekly view is often enough to reveal the patterns that matter.',
+            ],
+            image: {
+              src: '/blog/content/travel-metrics-board.svg',
+              alt: 'Simple board comparing service time, travel time, and empty gaps',
+              caption: 'A useful dashboard does not need dozens of charts. It needs to show where the week leaks energy.',
+              width: 1400,
+              height: 840,
+            },
+          },
+          {
+            heading: 'Watch three numbers before changing availability',
+            paragraphs: [
+              'The goal is not to turn your business into a spreadsheet. The goal is to notice whether your current availability creates a healthy operating rhythm.',
+              'Three numbers are usually enough to begin: travel minutes, gap minutes, and session density by day. Together, they show whether the calendar is compact, scattered, or quietly overloaded.',
+            ],
+            bullets: [
+              'Travel minutes: how much time is spent moving between sessions.',
+              'Gap minutes: how much time is too short to use but too long to ignore.',
+              'Session density: how many useful appointments fit into a day without rushing.',
+            ],
+          },
+          {
+            heading: 'Use the metrics to make smaller adjustments',
+            paragraphs: [
+              'The best response is often not a dramatic reorganization. A trainer may simply narrow one morning to a specific area, stop offering a low-value time window, or guide clients toward two stronger afternoons.',
+              'Small adjustments are easier to maintain, and clients usually accept them better than sudden rule changes. The calendar becomes cleaner without making the business feel less accessible.',
+            ],
+          },
+          {
+            heading: 'Better data should make the week calmer',
+            paragraphs: [
+              'Metrics are useful only if they lead to better decisions. If a dashboard makes you feel guilty for every imperfect day, it is the wrong dashboard.',
+              'The right view should help you protect energy, explain availability with confidence, and choose the next slots you open with more intention. That is where tracking becomes operational calm rather than noise.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'suivre-temps-trajet-planning-educateur-canin',
+        category: 'Organisation',
+        title:
+          "Les indicateurs simples à suivre avant d'ouvrir plus de créneaux",
+        description:
+          "Une méthode concrète pour lire son planning à travers les temps de trajet, les trous et la densité de rendez-vous avant de décider si la semaine peut vraiment accueillir plus de séances.",
+        excerpt:
+          "Plus de créneaux disponibles ne veut pas toujours dire plus de chiffre d'affaires. Parfois, le meilleur levier consiste à voir où la semaine perd discrètement du temps.",
+        tags: ['Indicateurs', 'Déplacements', 'Planning'],
+        coverImage: {
+          src: '/blog/covers/travel-metrics.svg',
+          alt: 'Tableau de bord des trajets, trous et séances pour éducateur canin',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Transformer le planning en signal clair',
+        ctaDescription:
+          'MagicHango aide les éducateurs canins à comprendre quels créneaux améliorent vraiment la journée, pas seulement quels créneaux sont libres.',
+        ctaLabel: 'Voir MagicHango en action',
+        sections: [
+          {
+            heading: "Commencer par le temps qui n'est pas facturé",
+            paragraphs: [
+              "Un éducateur canin peut avoir l'air très occupé tout en perdant une grande partie de sa semaine entre deux visites. Trajets, stationnement, arrivées en avance, départs retardés et trous mal placés n'apparaissent pas toujours clairement dans l'agenda, mais ils déterminent souvent la rentabilité ressentie.",
+              "Avant d'ouvrir plus de créneaux, il est utile de savoir quelle part de la journée correspond réellement à du temps de séance. La mesure n'a pas besoin d'être parfaite. Une vue hebdomadaire approximative suffit souvent à révéler les tendances importantes.",
+            ],
+            image: {
+              src: '/blog/content/travel-metrics-board.svg',
+              alt: 'Tableau simple comparant temps de séance, temps de trajet et trous',
+              caption: "Un bon tableau de bord n'a pas besoin de dizaines de graphiques. Il doit montrer où la semaine perd de l'énergie.",
+              width: 1400,
+              height: 840,
+            },
+          },
+          {
+            heading: "Observer trois chiffres avant de modifier ses disponibilités",
+            paragraphs: [
+              "L'objectif n'est pas de transformer l'activité en tableur permanent. L'objectif est de savoir si les disponibilités actuelles créent un rythme de travail sain.",
+              "Trois chiffres suffisent souvent pour commencer : les minutes de trajet, les minutes de trou et la densité de séances par jour. Ensemble, ils montrent si l'agenda est compact, dispersé ou discrètement surchargé.",
+            ],
+            bullets: [
+              'Minutes de trajet : le temps passé à se déplacer entre deux séances.',
+              'Minutes de trou : le temps trop court pour être vraiment utilisé mais trop long pour être ignoré.',
+              'Densité de séances : le nombre de rendez-vous utiles qui tiennent dans une journée sans se presser.',
+            ],
+          },
+          {
+            heading: 'Utiliser ces indicateurs pour ajuster doucement',
+            paragraphs: [
+              "La meilleure réponse n'est pas toujours une grande réorganisation. Il suffit parfois de réserver une matinée à une zone précise, de supprimer un créneau peu rentable ou de guider les clients vers deux après-midis plus fluides.",
+              "Les petits ajustements sont plus faciles à tenir dans le temps, et les clients les acceptent souvent mieux que des changements de règles soudains. Le planning devient plus propre sans rendre l'activité moins accessible.",
+            ],
+          },
+          {
+            heading: 'De meilleures données doivent rendre la semaine plus calme',
+            paragraphs: [
+              "Les indicateurs ne servent que s'ils aident à prendre de meilleures décisions. Si un tableau de bord vous fait culpabiliser à chaque journée imparfaite, ce n'est pas le bon tableau de bord.",
+              "La bonne vue doit aider à protéger son énergie, expliquer ses disponibilités avec plus de confiance et choisir les prochains créneaux à ouvrir avec davantage d'intention. C'est là que le suivi devient un outil de calme opérationnel plutôt qu'un bruit supplémentaire.",
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: 'client-booking-handoff',
+    publishedAt: '2026-04-24',
+    readingMinutes: 6,
+    translations: {
+      en: {
+        slug: 'client-self-booking-vs-trainer-booking',
+        category: 'Booking',
+        title: 'When should clients book themselves, and when should you book for them?',
+        description:
+          'A practical guide for dog trainers who want the speed of self-booking without losing the personal touch when a client needs help choosing the right session.',
+        excerpt:
+          'Self-booking works best when the path is obvious. Trainer-assisted booking works best when context matters more than speed.',
+        tags: ['Booking', 'Client experience', 'Operations'],
+        coverImage: {
+          src: '/blog/covers/client-booking-flow.svg',
+          alt: 'Split booking flow showing a client self-booking and a trainer booking for a client',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Keep booking simple without losing control',
+        ctaDescription:
+          'MagicHango helps trainers guide clients toward better slots while keeping the booking journey clear and flexible.',
+        ctaLabel: 'Explore MagicHango',
+        sections: [
+          {
+            heading: 'Self-booking is strongest when the decision is simple',
+            paragraphs: [
+              'Many clients are perfectly happy to book without calling or messaging first. If they know the service they need, understand the location, and can choose from a small set of good options, self-booking removes friction for everyone.',
+              'The mistake is to make self-booking look like a huge calendar with every possible slot. A clear shortlist usually performs better: it lowers hesitation and gently guides the client toward times that also make sense for your route.',
+            ],
+            image: {
+              src: '/blog/content/booking-handoff.svg',
+              alt: 'Decision map for choosing between self-booking and trainer-assisted booking',
+              caption: 'The best booking flow is not always the most automated one. It is the one that fits the client context.',
+              width: 1400,
+              height: 840,
+            },
+          },
+          {
+            heading: 'Book for the client when context changes the answer',
+            paragraphs: [
+              'Some bookings need more judgment. A first session with a reactive dog, a family with unusual constraints, a follow-up after a difficult appointment, or a client who is not comfortable with digital tools may need a more guided path.',
+              'In those cases, booking on behalf of the client is not a step backward. It is a service gesture. The important part is that the booking still lands in the same system, with the same confirmations, reminders, and calendar visibility.',
+            ],
+            bullets: [
+              'Use self-booking for repeat clients and straightforward services.',
+              'Use trainer-assisted booking for sensitive first sessions or complex travel choices.',
+              'Keep the notification flow identical so the client receives the same confirmation either way.',
+            ],
+          },
+          {
+            heading: 'The handoff should feel invisible',
+            paragraphs: [
+              'A client should not have to understand whether a booking was created by them or by you. What matters is that the time, service, address, and next steps are clear.',
+              'That means the trainer-assisted path should reuse the same booking rules as the client path. Same buffers, same availability logic, same email tone. The admin shortcut should not create a separate reality.',
+            ],
+          },
+          {
+            heading: 'A mixed model gives you better control',
+            paragraphs: [
+              'The most sustainable setup is rarely fully manual or fully automated. Let clients handle the obvious bookings, then step in when your expertise genuinely improves the choice.',
+              'This protects your time without making the experience cold. It also helps you keep the calendar cleaner, because every booking still passes through the same operational frame.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'reservation-client-ou-educateur-canin',
+        category: 'Réservation',
+        title:
+          'Quand laisser le client réserver seul, et quand réserver à sa place ?',
+        description:
+          "Un guide concret pour les éducateurs canins qui veulent gagner du temps avec la réservation autonome sans perdre l'accompagnement humain quand le client a besoin d'aide.",
+        excerpt:
+          "La réservation autonome fonctionne quand le choix est évident. La réservation accompagnée fonctionne quand le contexte compte plus que la vitesse.",
+        tags: ['Réservation', 'Expérience client', 'Organisation'],
+        coverImage: {
+          src: '/blog/covers/client-booking-flow.svg',
+          alt: 'Parcours de réservation partagé entre client et éducateur canin',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Simplifier la réservation sans perdre le contrôle',
+        ctaDescription:
+          'MagicHango aide les éducateurs à guider les clients vers de meilleurs créneaux tout en gardant un parcours clair et flexible.',
+        ctaLabel: 'Découvrir MagicHango',
+        sections: [
+          {
+            heading: 'La réservation autonome marche quand la décision est simple',
+            paragraphs: [
+              "Beaucoup de clients sont très contents de réserver sans appeler ni envoyer de message. S'ils savent de quel service ils ont besoin, comprennent le lieu du rendez-vous et voient quelques bons créneaux, la réservation autonome enlève de la friction pour tout le monde.",
+              "L'erreur consiste à transformer cette autonomie en grand calendrier rempli de possibilités. Une sélection courte fonctionne souvent mieux : elle réduit l'hésitation et oriente naturellement le client vers des horaires qui restent cohérents avec votre tournée.",
+            ],
+            image: {
+              src: '/blog/content/booking-handoff.svg',
+              alt: 'Carte de décision entre réservation autonome et réservation accompagnée',
+              caption: "Le meilleur parcours de réservation n'est pas toujours le plus automatisé. C'est celui qui correspond au contexte du client.",
+              width: 1400,
+              height: 840,
+            },
+          },
+          {
+            heading: 'Réserver pour le client quand le contexte change la réponse',
+            paragraphs: [
+              "Certaines réservations demandent davantage de jugement. Une première séance avec un chien réactif, une famille avec des contraintes particulières, un suivi après une séance difficile ou un client peu à l'aise avec le numérique peuvent nécessiter un parcours plus guidé.",
+              "Dans ces cas-là, réserver à la place du client n'est pas un retour en arrière. C'est un geste de service. Le point important est que la réservation arrive tout de même dans le même système, avec les mêmes confirmations, les mêmes rappels et la même visibilité dans l'agenda.",
+            ],
+            bullets: [
+              'Utiliser la réservation autonome pour les clients réguliers et les services simples.',
+              'Utiliser la réservation accompagnée pour les premières séances sensibles ou les choix de trajet complexes.',
+              'Garder le même flux de notifications afin que le client reçoive la même confirmation dans les deux cas.',
+            ],
+          },
+          {
+            heading: 'Le passage de relais doit être invisible',
+            paragraphs: [
+              "Le client n'a pas besoin de savoir si la réservation a été créée par lui ou par vous. Ce qui compte, c'est que l'horaire, le service, l'adresse et les prochaines étapes soient clairs.",
+              "Cela veut dire que le parcours côté éducateur doit réutiliser les mêmes règles que le parcours client : mêmes marges de déplacement, même logique de disponibilité, même ton dans les emails. Le raccourci administratif ne doit pas créer une réalité séparée.",
+            ],
+          },
+          {
+            heading: 'Un modèle mixte donne plus de maîtrise',
+            paragraphs: [
+              "Le système le plus durable est rarement entièrement manuel ou entièrement automatisé. Laissez les clients gérer les réservations évidentes, puis intervenez lorsque votre expertise améliore réellement le choix.",
+              "Vous protégez ainsi votre temps sans rendre l'expérience froide. Et vous gardez un agenda plus propre, car chaque réservation passe malgré tout par le même cadre opérationnel.",
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
     id: 'weekly-planning',
     publishedAt: '2026-04-10',
     readingMinutes: 6,

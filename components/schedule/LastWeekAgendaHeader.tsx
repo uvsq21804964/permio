@@ -2,6 +2,7 @@
 
 import { Check, Copy, Info } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { trackButtonClick } from '@/lib/client/button-tracking';
 import {
   NextSlot,
   Role,
@@ -20,6 +21,7 @@ type LastWeekAgendaHeaderProps = {
   error: string | null;
   headerRange: string;
   joinCode: string | null;
+  joinUrl: string;
   locale: string;
   onCopyJoinCode: () => void;
   onCurrentWeek: () => void;
@@ -42,6 +44,7 @@ export function LastWeekAgendaHeader({
   error,
   headerRange,
   joinCode,
+  joinUrl,
   locale,
   onCopyJoinCode,
   onCurrentWeek,
@@ -80,7 +83,16 @@ export function LastWeekAgendaHeader({
             <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:justify-end">
               <button
                 type="button"
-                onClick={onOpenServices}
+                onClick={() => {
+                  trackButtonClick({
+                    buttonKey: 'agenda_no_services_open_services',
+                    buttonLabel: isFrench ? 'Aller a mes services' : 'Go to my services',
+                    buttonContext: 'agenda_no_services_modal',
+                    locale,
+                    metadata: { role: user?.role ?? null },
+                  });
+                  onOpenServices();
+                }}
                 className="rounded-xl bg-gradient-to-r from-primary to-[#d400ff] px-4 py-2 text-sm font-semibold text-white hover:opacity-95"
               >
                 {isFrench ? 'Aller à mes services' : 'Go to my services'}
@@ -120,7 +132,19 @@ export function LastWeekAgendaHeader({
 
                   <button
                     type="button"
-                    onClick={onOpenServices}
+                    onClick={() => {
+                      trackButtonClick({
+                        buttonKey: 'agenda_manage_services',
+                        buttonLabel: isFrench ? 'Gerer mes services' : 'Manage my services',
+                        buttonContext: 'agenda_header',
+                        locale,
+                        metadata: {
+                          role: user?.role ?? null,
+                          servicesCount: servicesCount ?? null,
+                        },
+                      });
+                      onOpenServices();
+                    }}
                     className="rounded-md border border-primary px-2 py-1 text-xs text-primary hover:bg-primary/5"
                   >
                     {isFrench ? 'Gérer mes services' : 'Manage my services'}
@@ -137,7 +161,7 @@ export function LastWeekAgendaHeader({
 
                 <div className="flex items-center gap-2 text-[11px] text-black/60">
                   <span className="font-medium">
-                    {isFrench ? "Code d'association" : 'Association code'}
+                    {isFrench ? "URL d'association" : 'Association URL'}
                   </span>
 
                   <TooltipProvider delayDuration={150}>
@@ -151,21 +175,33 @@ export function LastWeekAgendaHeader({
                       <TooltipContent className="max-w-[320px] border border-[#d400ff]/40 bg-white text-xs text-black shadow-lg">
                         {isFrench
                           ? 'Affiche ce code sur ton site web personnel. Les clients devront le saisir pour te trouver et réserver.'
-                          : 'Display this code on your personal website. Clients will need to enter it to find you and book.'}
+                          : 'Display this URL on your personal website. Clients can open it to find you and book.'}
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
 
                   {servicesCount != null && servicesCount > 0 && joinCode ? (
                     <div className="inline-flex items-center gap-2">
-                      <span className="inline-flex items-center rounded-full border border-black/15 bg-white/70 px-2 py-0.5 font-mono text-[11px] text-black">
-                        {joinCode}
+                      <span className="inline-flex max-w-[320px] items-center rounded-full border border-black/15 bg-white/70 px-2 py-0.5 font-mono text-[11px] text-black">
+                        <span className="truncate">{joinUrl}</span>
                       </span>
                       <button
                         type="button"
-                        onClick={onCopyJoinCode}
+                        onClick={() => {
+                          trackButtonClick({
+                            buttonKey: 'agenda_copy_join_code',
+                            buttonLabel: isFrench ? 'Copier URL' : 'Copy URL',
+                            buttonContext: 'agenda_header',
+                            locale,
+                            metadata: {
+                              role: user?.role ?? null,
+                              hasJoinCode: Boolean(joinCode),
+                            },
+                          });
+                          onCopyJoinCode();
+                        }}
                         className="inline-flex items-center gap-1 rounded-md border px-2 py-1 text-[11px] hover:bg-muted"
-                        title={isFrench ? 'Copier le code' : 'Copy code'}
+                        title={isFrench ? "Copier l'URL" : 'Copy URL'}
                       >
                         {copied ? (
                           <>
@@ -175,7 +211,7 @@ export function LastWeekAgendaHeader({
                         ) : (
                           <>
                             <Copy className="h-3.5 w-3.5" />
-                            {isFrench ? 'Copier' : 'Copy'}
+                            {isFrench ? 'Copier URL' : 'Copy URL'}
                           </>
                         )}
                       </button>
@@ -183,8 +219,8 @@ export function LastWeekAgendaHeader({
                   ) : (
                     <span className="text-black/50">
                       {isFrench
-                        ? 'Ajoutez au moins un service pour afficher le code.'
-                        : 'Add at least one service to display the code.'}
+                        ? "Ajoutez au moins un service pour afficher l'URL."
+                        : 'Add at least one service to display the URL.'}
                     </span>
                   )}
                 </div>
@@ -257,7 +293,16 @@ export function LastWeekAgendaHeader({
                 <span>{t('upcoming.empty')}</span>
                 <button
                   type="button"
-                  onClick={onOpenBooking}
+                  onClick={() => {
+                    trackButtonClick({
+                      buttonKey: 'agenda_upcoming_empty_open_booking',
+                      buttonLabel: t('upcoming.cta'),
+                      buttonContext: 'agenda_header',
+                      locale,
+                      metadata: { role: user?.role ?? null },
+                    });
+                    onOpenBooking();
+                  }}
                   className="mt-2 inline-flex items-center justify-center rounded-md border border-primary px-2 py-1 text-[11px] font-medium text-primary hover:bg-primary/5 sm:mt-0"
                 >
                   {t('upcoming.cta')}
