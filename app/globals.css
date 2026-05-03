@@ -19,11 +19,11 @@
 
   /* mappe vers shadcn */
   --primary: var(--brand);
-  --primary-foreground: 255 255 255; /* blanc */
-  --secondary: 248 240 255; /* léger lavande pour fonds */
-  --secondary-foreground: 40 0 60; /* texte foncé lisible */
+  --primary-foreground: #ffffff; /* blanc */
+  --secondary: #f8f0ff; /* léger lavande pour fonds */
+  --secondary-foreground: #28003c; /* texte foncé lisible */
   --accent: var(--brand3);
-  --accent-foreground: 46 0 58;
+  --accent-foreground: #2e003a;
   --ring: var(--brand);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
@@ -56,8 +56,8 @@
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.985 0 0);
   --primary-foreground: oklch(0.205 0 0);
-  --secondary: 35 8 54;
-  --secondary-foreground: 250 245 255;
+  --secondary: #230836;
+  --secondary-foreground: #faf5ff;
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);

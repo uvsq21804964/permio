@@ -97,7 +97,7 @@ export default function HeroSection() {
                 className="
                   w-full sm:w-auto
                   px-6 md:px-8 py-3 text-base md:text-lg font-semibold
-                  bg-primary text-brand hover:bg-primary/90
+                  bg-primary text-white hover:bg-primary/90
                   rounded-2xl shadow-lg hover:shadow-xl transition
                 "
               >
