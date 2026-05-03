@@ -42,7 +42,7 @@ function absoluteUrl(appUrl: string, path: string) {
   return `${base}${normalizedPath}`;
 }
 
-function formatDate(date?: string, locale: 'fr' | 'en' = 'fr') {
+function formatDate(date?: string, locale: 'fr' | 'en' = 'en') {
   if (!date) return '';
 
   try {
@@ -61,7 +61,7 @@ function formatDate(date?: string, locale: 'fr' | 'en' = 'fr') {
 export default function BookingClientCancellationEmail({
   firstName,
   agencyName,
-  locale = 'fr',
+  locale = 'en',
   appUrl = 'https://magichango.com',
   instructorName,
   serviceName,
@@ -76,7 +76,7 @@ export default function BookingClientCancellationEmail({
   instructorPhone,
   instructorPhoneHref,
 }: BookingClientCancellationEmailProps) {
-  const fr = isFr(locale);
+  const fr = false;
   const appName = 'MagicHango';
   const name = (firstName || '').trim();
   const logoUrl = absoluteUrl(appUrl, '/NouveauLogoRogne.png');
@@ -84,29 +84,38 @@ export default function BookingClientCancellationEmail({
   const linkedinUrl = 'https://www.linkedin.com/company/magichango';
 
   const formattedDate = formatDate(date, fr ? 'fr' : 'en');
-  const greeting = name ? (fr ? `Bonjour ${name}` : `Hi ${name}`) : fr ? 'Bonjour' : 'Hi';
+  const greeting = name
+    ? fr
+      ? `Bonjour ${name}`
+      : `Hi ${name}`
+    : fr
+      ? 'Bonjour'
+      : 'Hi';
   const title = fr ? 'Seance annulee' : 'Session cancelled';
   const previewText = fr
     ? `Votre seance${agencyName ? ` chez ${agencyName}` : ''} a ete annulee.`
     : `Your session${agencyName ? ` with ${agencyName}` : ''} has been cancelled.`;
 
-  const intro = instructorName?.trim() && serviceName?.trim()
-    ? fr
-      ? `Votre seance "${serviceName}" avec ${instructorName} ne peut finalement pas etre maintenue.`
-      : `Your "${serviceName}" session with ${instructorName} can no longer be maintained.`
-    : instructorName?.trim()
+  const intro =
+    instructorName?.trim() && serviceName?.trim()
       ? fr
-        ? `Votre seance avec ${instructorName} ne peut finalement pas etre maintenue.`
-        : `Your session with ${instructorName} can no longer be maintained.`
-      : serviceName?.trim()
+        ? `Votre seance "${serviceName}" avec ${instructorName} ne peut finalement pas etre maintenue.`
+        : `Your "${serviceName}" session with ${instructorName} can no longer be maintained.`
+      : instructorName?.trim()
         ? fr
-          ? `Votre seance "${serviceName}" ne peut finalement pas etre maintenue.`
-          : `Your "${serviceName}" session can no longer be maintained.`
-        : fr
-          ? 'Votre rendez-vous a ete annule.'
-          : 'Your appointment was cancelled.';
+          ? `Votre seance avec ${instructorName} ne peut finalement pas etre maintenue.`
+          : `Your session with ${instructorName} can no longer be maintained.`
+        : serviceName?.trim()
+          ? fr
+            ? `Votre seance "${serviceName}" ne peut finalement pas etre maintenue.`
+            : `Your "${serviceName}" session can no longer be maintained.`
+          : fr
+            ? 'Votre rendez-vous a ete annule.'
+            : 'Your appointment was cancelled.';
 
-  const detailsTitle = fr ? 'Details du rendez-vous annule' : 'Cancelled booking details';
+  const detailsTitle = fr
+    ? 'Details du rendez-vous annule'
+    : 'Cancelled booking details';
   const actor =
     cancelledByName?.trim() ||
     (cancelledByRole === 'instructor'
@@ -124,7 +133,9 @@ export default function BookingClientCancellationEmail({
   const timeLabel = fr ? 'Horaire' : 'Time';
   const addressLabel = fr ? 'Adresse' : 'Address';
   const timeValue =
-    startTime && endTime ? `${startTime} - ${endTime}` : startTime || endTime || '';
+    startTime && endTime
+      ? `${startTime} - ${endTime}`
+      : startTime || endTime || '';
 
   const noteText = fr
     ? 'Votre agenda client reste accessible pour consulter vos autres rendez-vous ou reserver un nouveau creneau.'
@@ -197,7 +208,12 @@ export default function BookingClientCancellationEmail({
               <tbody>
                 <tr>
                   <td style={styles.topBarLeft}>
-                    <table cellPadding="0" cellSpacing="0" border={0} role="presentation">
+                    <table
+                      cellPadding="0"
+                      cellSpacing="0"
+                      border={0}
+                      role="presentation"
+                    >
                       <tbody>
                         <tr>
                           <td style={styles.logoCell}>
@@ -273,7 +289,10 @@ export default function BookingClientCancellationEmail({
                       {instructorEmail ? (
                         <Text style={styles.detailLine}>
                           <strong>{instructorEmailLabel} :</strong>{' '}
-                          <Link href={`mailto:${instructorEmail}`} style={styles.inlineLink}>
+                          <Link
+                            href={`mailto:${instructorEmail}`}
+                            style={styles.inlineLink}
+                          >
                             {instructorEmail}
                           </Link>
                         </Text>
@@ -283,7 +302,10 @@ export default function BookingClientCancellationEmail({
                         <Text style={styles.detailLine}>
                           <strong>{instructorPhoneLabel} :</strong>{' '}
                           {instructorPhoneHref ? (
-                            <Link href={`tel:${instructorPhoneHref}`} style={styles.inlineLink}>
+                            <Link
+                              href={`tel:${instructorPhoneHref}`}
+                              style={styles.inlineLink}
+                            >
                               {instructorPhone}
                             </Link>
                           ) : (

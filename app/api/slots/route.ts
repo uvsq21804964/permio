@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     const result = await createSlotBooking({
       userId: auth.userId,
       input: body,
-      locale: getLocaleFromRequest(request),
+      locale: body.locale || getLocaleFromRequest(request),
     });
 
     return NextResponse.json(result.body, { status: result.status });

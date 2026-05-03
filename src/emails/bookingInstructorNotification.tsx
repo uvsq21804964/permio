@@ -55,7 +55,7 @@ function formatDate(date?: string, locale: 'fr' | 'en' = 'fr') {
 export default function BookingInstructorNotificationEmail({
   firstName,
   agencyName = 'votre agence',
-  locale = 'fr',
+  locale = 'en',
   agendaUrl = 'https://example.com',
   clientName,
   serviceName,
@@ -64,7 +64,7 @@ export default function BookingInstructorNotificationEmail({
   endTime,
   appUrl = 'https://magichango.com',
 }: BookingInstructorNotificationEmailProps) {
-  const fr = isFr(locale);
+  const fr = false;
   const name = (firstName || '').trim();
   const appName = 'MagicHango';
 

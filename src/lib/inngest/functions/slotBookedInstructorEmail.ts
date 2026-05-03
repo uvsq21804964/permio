@@ -119,11 +119,14 @@ export const slotBookedInstructorEmail = inngest.createFunction(
 
       const recipientEmail = instructorClerk?.email ?? null;
       if (!recipientEmail) {
-        inngestEmailLogger.warn('[slotBookedInstructorEmail] no instructor email', {
-          instructorUserId,
-          agencyId,
-          slotId,
-        });
+        inngestEmailLogger.warn(
+          '[slotBookedInstructorEmail] no instructor email',
+          {
+            instructorUserId,
+            agencyId,
+            slotId,
+          },
+        );
         return { skipped: true, reason: 'no_instructor_email' };
       }
 
@@ -134,10 +137,7 @@ export const slotBookedInstructorEmail = inngest.createFunction(
       const displayServiceName =
         service?.name || (lang === 'fr' ? 'une reservation' : 'a booking');
 
-      const subject =
-        lang === 'fr'
-          ? `Nouvelle reservation par ${displayClientName} !`
-          : `New booking by ${displayClientName} !`;
+      const subject = `New booking by ${displayClientName} !`;
 
       const baseUrl = getAppBaseUrl();
       const agendaUrl = buildLocalizedAppUrl(lang, '/myweek');
@@ -159,10 +159,13 @@ export const slotBookedInstructorEmail = inngest.createFunction(
         );
       });
 
-      inngestEmailLogger.info('[slotBookedInstructorEmail] about to send email', {
-        recipientEmail,
-        subject,
-      });
+      inngestEmailLogger.info(
+        '[slotBookedInstructorEmail] about to send email',
+        {
+          recipientEmail,
+          subject,
+        },
+      );
 
       const result = await step.run('send-email', async () => {
         return sendTransactionalEmail({
@@ -173,10 +176,16 @@ export const slotBookedInstructorEmail = inngest.createFunction(
         });
       });
 
-      inngestEmailLogger.info('[slotBookedInstructorEmail] send-email result', result);
+      inngestEmailLogger.info(
+        '[slotBookedInstructorEmail] send-email result',
+        result,
+      );
 
       if ((result as any)?.error) {
-        inngestEmailLogger.error('[slotBookedInstructorEmail] send-email error', result);
+        inngestEmailLogger.error(
+          '[slotBookedInstructorEmail] send-email error',
+          result,
+        );
         throw new Error('Resend error');
       }
 
@@ -187,7 +196,10 @@ export const slotBookedInstructorEmail = inngest.createFunction(
         slotId,
       };
     } catch (error) {
-      inngestEmailLogger.error('[slotBookedInstructorEmail] fatal error', error);
+      inngestEmailLogger.error(
+        '[slotBookedInstructorEmail] fatal error',
+        error,
+      );
       throw error;
     }
   },

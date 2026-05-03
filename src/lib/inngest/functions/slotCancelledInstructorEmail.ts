@@ -37,27 +37,27 @@ export const slotCancelledInstructorEmail = inngest.createFunction(
     const lang = toEmailLocale(data.locale);
     const clerk = await clerkClient();
 
-    const instructorContact = await step.run('load-instructor-email', async () => {
-      try {
-        return await loadClerkUserContact(clerk, data.instructorUserId);
-      } catch (error) {
-        inngestEmailLogger.error(
-          '[slotCancelledInstructorEmail] load-instructor-email error',
-          error,
-        );
-        return { email: null, name: null };
-      }
-    });
+    const instructorContact = await step.run(
+      'load-instructor-email',
+      async () => {
+        try {
+          return await loadClerkUserContact(clerk, data.instructorUserId);
+        } catch (error) {
+          inngestEmailLogger.error(
+            '[slotCancelledInstructorEmail] load-instructor-email error',
+            error,
+          );
+          return { email: null, name: null };
+        }
+      },
+    );
 
     const recipientEmail = instructorContact.email;
     if (!recipientEmail) {
       return { skipped: true, reason: 'no_instructor_email' };
     }
 
-    const subject =
-      lang === 'fr'
-        ? `Annulation d'un créneau${data.clientName ? ` avec ${data.clientName}` : ''}`
-        : `A slot was cancelled${data.clientName ? ` with ${data.clientName}` : ''}`;
+    const subject = `A slot was cancelled${data.clientName ? ` with ${data.clientName}` : ''}`;
 
     const html = await step.run('render-email', async () =>
       render(

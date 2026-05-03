@@ -30,13 +30,7 @@ export const slotReminderClientEmail = inngest.createFunction(
     triggers: [{ event: 'slot/booked-client' }],
   },
   async ({ event, step }) => {
-    const {
-      slotId,
-      clientUserId,
-      date,
-      startTime,
-      locale,
-    } = event.data as {
+    const { slotId, clientUserId, date, startTime, locale } = event.data as {
       slotId: number | string;
       clientUserId: string;
       date: string;
@@ -87,15 +81,19 @@ export const slotReminderClientEmail = inngest.createFunction(
     });
 
     if (!details) {
-      inngestEmailLogger.warn('[slotReminderClientEmail] slot missing, skipping', {
-        slotId,
-      });
+      inngestEmailLogger.warn(
+        '[slotReminderClientEmail] slot missing, skipping',
+        {
+          slotId,
+        },
+      );
       return { skipped: true, reason: 'slot_missing' };
     }
 
     const clerk = await clerkClient();
-    const instructorContact = await step.run('load-instructor-contact', async () =>
-      loadTrainerContactDetails(clerk, details.instructorUserId),
+    const instructorContact = await step.run(
+      'load-instructor-contact',
+      async () => loadTrainerContactDetails(clerk, details.instructorUserId),
     );
     const clientClerk = await step.run('load-client-email', async () => {
       try {
@@ -125,10 +123,7 @@ export const slotReminderClientEmail = inngest.createFunction(
       .join(', ');
 
     const agendaUrl = buildLocalizedAppUrl(lang, '/myweek');
-    const subject =
-      lang === 'fr'
-        ? `Rappel : votre séance du ${details.date} à ${details.startTime}`
-        : `Reminder: your session on ${details.date} at ${details.startTime}`;
+    const subject = `Reminder: your session on ${details.date} at ${details.startTime}`;
 
     const html = await step.run('render-email', async () => {
       return render(
@@ -160,7 +155,10 @@ export const slotReminderClientEmail = inngest.createFunction(
     });
 
     if ((result as any)?.error) {
-      inngestEmailLogger.error('[slotReminderClientEmail] send-email error', result);
+      inngestEmailLogger.error(
+        '[slotReminderClientEmail] send-email error',
+        result,
+      );
       throw new Error('Resend error');
     }
 

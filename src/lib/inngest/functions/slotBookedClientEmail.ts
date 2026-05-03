@@ -68,10 +68,16 @@ export const slotBookedClientEmail = inngest.createFunction(
       });
 
       const lang = toEmailLocale(locale);
+      inngestEmailLogger.info('[slotBookedClientEmail] resolved locale', {
+        rawLocale: locale,
+        lang,
+      });
+
       const clerk = await clerkClient();
 
-      const instructorContact = await step.run('load-instructor-contact', async () =>
-        loadTrainerContactDetails(clerk, instructorUserId),
+      const instructorContact = await step.run(
+        'load-instructor-contact',
+        async () => loadTrainerContactDetails(clerk, instructorUserId),
       );
 
       const service = await step.run('load-service', async () => {
@@ -111,10 +117,7 @@ export const slotBookedClientEmail = inngest.createFunction(
       const displayClientName = clientClerk?.name || 'Client';
       const displayServiceName =
         service?.name || (lang === 'fr' ? 'votre reservation' : 'your booking');
-      const subject =
-        lang === 'fr'
-          ? `Reservation confirmee chez ${agencyName}`
-          : `Booking confirmed with ${agencyName}`;
+      const subject = `Booking confirmed with ${agencyName}`;
 
       const baseUrl = getAppBaseUrl();
       const reservationsUrl = buildLocalizedAppUrl(lang, '/reservations');
@@ -155,10 +158,16 @@ export const slotBookedClientEmail = inngest.createFunction(
         });
       });
 
-      inngestEmailLogger.info('[slotBookedClientEmail] send-email result', result);
+      inngestEmailLogger.info(
+        '[slotBookedClientEmail] send-email result',
+        result,
+      );
 
       if ((result as any)?.error) {
-        inngestEmailLogger.error('[slotBookedClientEmail] send-email error', result);
+        inngestEmailLogger.error(
+          '[slotBookedClientEmail] send-email error',
+          result,
+        );
         throw new Error('Resend error');
       }
 

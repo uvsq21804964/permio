@@ -58,7 +58,7 @@ function formatDate(date?: string, locale: 'fr' | 'en' = 'fr') {
 export default function BookingClientConfirmationEmail({
   firstName,
   agencyName = 'votre agence',
-  locale = 'fr',
+  locale = 'en',
   reservationsUrl = 'https://magichango.com',
   instructorName,
   serviceName,
@@ -70,7 +70,7 @@ export default function BookingClientConfirmationEmail({
   instructorPhone,
   instructorPhoneHref,
 }: BookingClientConfirmationEmailProps) {
-  const fr = isFr(locale);
+  const fr = false;
   const name = (firstName || '').trim();
   const appName = 'MagicHango';
 
@@ -283,7 +283,10 @@ export default function BookingClientConfirmationEmail({
                       {instructorEmail ? (
                         <Text style={styles.detailLine}>
                           <strong>{instructorEmailLabel} :</strong>{' '}
-                          <Link href={`mailto:${instructorEmail}`} style={styles.inlineLink}>
+                          <Link
+                            href={`mailto:${instructorEmail}`}
+                            style={styles.inlineLink}
+                          >
                             {instructorEmail}
                           </Link>
                         </Text>
@@ -293,7 +296,10 @@ export default function BookingClientConfirmationEmail({
                         <Text style={styles.detailLine}>
                           <strong>{instructorPhoneLabel} :</strong>{' '}
                           {instructorPhoneHref ? (
-                            <Link href={`tel:${instructorPhoneHref}`} style={styles.inlineLink}>
+                            <Link
+                              href={`tel:${instructorPhoneHref}`}
+                              style={styles.inlineLink}
+                            >
                               {instructorPhone}
                             </Link>
                           ) : (

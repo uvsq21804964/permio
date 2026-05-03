@@ -53,7 +53,7 @@ export default function BookingClientReminderEmail({
   agencyName = 'MagicHango',
   firstName,
   instructorName,
-  locale = 'fr',
+  locale = 'en',
   meetingAddress,
   serviceName,
   date,
@@ -63,7 +63,7 @@ export default function BookingClientReminderEmail({
   instructorPhone,
   instructorPhoneHref,
 }: BookingClientReminderEmailProps) {
-  const fr = isFr(locale);
+  const fr = false;
   const formattedDate = formatDate(date, fr ? 'fr' : 'en');
   const greeting = firstName?.trim()
     ? fr
@@ -74,7 +74,9 @@ export default function BookingClientReminderEmail({
       : 'Hi';
 
   const timeValue =
-    startTime && endTime ? `${startTime} - ${endTime}` : startTime || endTime || '';
+    startTime && endTime
+      ? `${startTime} - ${endTime}`
+      : startTime || endTime || '';
 
   const preview = fr
     ? `Rappel : votre séance approche chez ${agencyName}.`
@@ -108,22 +110,31 @@ export default function BookingClientReminderEmail({
               ) : null}
               {instructorName ? (
                 <Text style={styles.detailLine}>
-                  <strong>{fr ? 'Éducateur :' : 'Trainer:'}</strong> {instructorName}
+                  <strong>{fr ? 'Éducateur :' : 'Trainer:'}</strong>{' '}
+                  {instructorName}
                 </Text>
               ) : null}
               {instructorEmail ? (
                 <Text style={styles.detailLine}>
                   <strong>{fr ? 'Email éducateur :' : 'Trainer email:'}</strong>{' '}
-                  <Link href={`mailto:${instructorEmail}`} style={styles.inlineLink}>
+                  <Link
+                    href={`mailto:${instructorEmail}`}
+                    style={styles.inlineLink}
+                  >
                     {instructorEmail}
                   </Link>
                 </Text>
               ) : null}
               {instructorPhone ? (
                 <Text style={styles.detailLine}>
-                  <strong>{fr ? 'Téléphone éducateur :' : 'Trainer phone:'}</strong>{' '}
+                  <strong>
+                    {fr ? 'Téléphone éducateur :' : 'Trainer phone:'}
+                  </strong>{' '}
                   {instructorPhoneHref ? (
-                    <Link href={`tel:${instructorPhoneHref}`} style={styles.inlineLink}>
+                    <Link
+                      href={`tel:${instructorPhoneHref}`}
+                      style={styles.inlineLink}
+                    >
                       {instructorPhone}
                     </Link>
                   ) : (
@@ -143,7 +154,8 @@ export default function BookingClientReminderEmail({
               ) : null}
               {meetingAddress ? (
                 <Text style={styles.detailLine}>
-                  <strong>{fr ? 'Lieu :' : 'Location:'}</strong> {meetingAddress}
+                  <strong>{fr ? 'Lieu :' : 'Location:'}</strong>{' '}
+                  {meetingAddress}
                 </Text>
               ) : null}
             </Section>

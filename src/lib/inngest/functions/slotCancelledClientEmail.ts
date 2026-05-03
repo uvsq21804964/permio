@@ -38,8 +38,9 @@ export const slotCancelledClientEmail = inngest.createFunction(
 
     const lang = toEmailLocale(data.locale);
     const clerk = await clerkClient();
-    const instructorContact = await step.run('load-instructor-contact', async () =>
-      loadTrainerContactDetails(clerk, data.instructorUserId),
+    const instructorContact = await step.run(
+      'load-instructor-contact',
+      async () => loadTrainerContactDetails(clerk, data.instructorUserId),
     );
 
     const clientContact = await step.run('load-client-email', async () => {
@@ -59,10 +60,7 @@ export const slotCancelledClientEmail = inngest.createFunction(
       return { skipped: true, reason: 'no_client_email' };
     }
 
-    const subject =
-      lang === 'fr'
-        ? `Annulation de votre séance${data.agencyName ? ` chez ${data.agencyName}` : ''}`
-        : `Your lesson was cancelled${data.agencyName ? ` with ${data.agencyName}` : ''}`;
+    const subject = `Your lesson was cancelled${data.agencyName ? ` with ${data.agencyName}` : ''}`;
 
     const html = await step.run('render-email', async () =>
       render(

@@ -38,9 +38,14 @@ export type CreateSlotInput = {
   endTime: string;
   bookingAddress?: BookingAddressPayload;
   clientUserId?: string | null;
+  locale?: 'fr' | 'en';
 };
 
 type BookingLocale = 'fr' | 'en';
+
+function toBookingLocale(locale?: string | null): BookingLocale {
+  return locale?.toLowerCase().startsWith('en') ? 'en' : 'fr';
+}
 
 type SlotBookingEventPayload = {
   id: string;
@@ -79,9 +84,7 @@ type ValidateCreateSlotInputResult =
       body: { error: string };
     };
 
-function validateCreateSlotInput(
-  body: unknown,
-): ValidateCreateSlotInputResult {
+function validateCreateSlotInput(body: unknown): ValidateCreateSlotInputResult {
   const payload = (body ?? {}) as Partial<CreateSlotInput>;
   const { serviceId, date, startTime, endTime } = payload;
 
@@ -234,7 +237,10 @@ async function resolveBookingParticipants(params: {
     return { ok: false, status: 404, body: { error: 'CLIENT_NOT_FOUND' } };
   }
 
-  if (targetClient.role !== 'student' || targetClient.agencyId !== actor.agencyId) {
+  if (
+    targetClient.role !== 'student' ||
+    targetClient.agencyId !== actor.agencyId
+  ) {
     return {
       ok: false,
       status: 403,
@@ -324,9 +330,10 @@ async function emitBookingEvent(
 export async function createSlotBooking(params: {
   userId: string;
   input: CreateSlotInput;
-  locale: BookingLocale;
+  locale?: string | null;
 }): Promise<CreateSlotServiceResult> {
-  const { userId, input, locale } = params;
+  const { userId, input } = params;
+  const locale = toBookingLocale(params.locale);
   const validation = validateCreateSlotInput(input);
 
   if (!validation.ok) {

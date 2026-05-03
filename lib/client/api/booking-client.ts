@@ -1,5 +1,8 @@
 import { requestJson } from '@/lib/client/api/request';
-import type { DayAvailability, DefaultAvailability } from '@/types/availability';
+import type {
+  DayAvailability,
+  DefaultAvailability,
+} from '@/types/availability';
 
 export type BookingAddressPayload = {
   formattedAddress: string;
@@ -80,7 +83,12 @@ export type CreateBookingSlotInput = {
   endTime: string;
   bookingAddress?: BookingAddressPayload;
   clientUserId?: string | null;
+  locale?: 'fr' | 'en';
 };
+
+function normalizeLocale(locale?: string | null): 'fr' | 'en' {
+  return locale?.toLowerCase().startsWith('en') ? 'en' : 'fr';
+}
 
 function buildAgendaUrl(path: string, query: AgendaQuery): string {
   const params = new URLSearchParams();
@@ -134,12 +142,21 @@ export function getInstructorWeeklyAgendaProposals(
 
 export function createBookingSlot(
   payload: CreateBookingSlotInput,
-  options?: { fallbackMessage?: string },
+  options?: { fallbackMessage?: string; locale?: string | null },
 ) {
+  const locale = normalizeLocale(payload.locale ?? options?.locale);
+
   return requestJson<{ slot: unknown }, BookingErrorBody>('/api/slots', {
     method: 'POST',
     credentials: 'include',
-    body: JSON.stringify(payload),
+    headers: {
+      'Content-Type': 'application/json',
+      'x-locale': locale,
+    },
+    body: JSON.stringify({
+      ...payload,
+      locale,
+    }),
     fallbackMessage: options?.fallbackMessage ?? 'Failed to create booking',
   });
 }

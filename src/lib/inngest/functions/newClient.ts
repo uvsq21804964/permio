@@ -94,7 +94,8 @@ export const newClientEmail = inngest.createFunction(
         email: emailById[instructor.id] ?? null,
       }))
       .filter(
-        (entry: Recipient): entry is Recipient & { email: string } => !!entry.email,
+        (entry: Recipient): entry is Recipient & { email: string } =>
+          !!entry.email,
       );
 
     inngestEmailLogger.info('[newClientEmail] recipients debug', {
@@ -126,10 +127,7 @@ export const newClientEmail = inngest.createFunction(
       clientClerk?.name ||
       (lang === 'fr' ? 'Nouveau client' : 'New client');
 
-    const subject =
-      lang === 'fr'
-        ? `Nouveau client associe a ${agencyName} ! Felicitations !`
-        : `New client connected to ${agencyName}`;
+    const subject = `New client connected to ${agencyName}`;
 
     const res = await step.run('send-email', async () => {
       inngestEmailLogger.info('[newClientEmail] sending email', {

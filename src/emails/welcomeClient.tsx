@@ -37,14 +37,14 @@ function absoluteUrl(appUrl: string, path: string) {
 export default function WelcomeClientEmail({
   firstName,
   agencyName,
-  locale = 'fr',
+  locale = 'en',
   actionUrl = 'https://example.com',
   manageUrl,
   instructorName,
   // appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://magichango.com',
   appUrl = 'https://magichango.com',
 }: WelcomeClientEmailProps) {
-  const fr = isFr(locale);
+  const fr = false;
   const name = (firstName || '').trim();
   const appName = 'MagicHango';
 

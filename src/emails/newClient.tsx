@@ -34,13 +34,13 @@ function absoluteUrl(appUrl: string, path: string) {
 
 export default function NewClientInterestEducatorEmail({
   firstName,
-  locale = 'fr',
+  locale = 'en',
   dashboardUrl = 'https://magichango.com',
   bookingsUrl,
   // appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://magichango.com',
   appUrl = 'https://magichango.com',
 }: NewClientInterestEducatorEmailProps) {
-  const fr = isFr(locale);
+  const fr = false;
   const name = (firstName || '').trim();
 
   const logoUrl = absoluteUrl(appUrl, '/NouveauLogoRogne.png');

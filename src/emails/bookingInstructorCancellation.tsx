@@ -58,7 +58,7 @@ function formatDate(date?: string, locale: 'fr' | 'en' = 'fr') {
 export default function BookingInstructorCancellationEmail({
   firstName,
   agencyName,
-  locale = 'fr',
+  locale = 'en',
   appUrl = 'https://magichango.com',
   clientName,
   serviceName,
@@ -70,7 +70,7 @@ export default function BookingInstructorCancellationEmail({
   cancelledByRole,
   scheduleUrl = 'https://magichango.com/fr/myweek',
 }: BookingInstructorCancellationEmailProps) {
-  const fr = isFr(locale);
+  const fr = false;
   const appName = 'MagicHango';
   const name = (firstName || '').trim();
   const logoUrl = absoluteUrl(appUrl, '/NouveauLogoRogne.png');
@@ -78,29 +78,38 @@ export default function BookingInstructorCancellationEmail({
   const linkedinUrl = 'https://www.linkedin.com/company/magichango';
 
   const formattedDate = formatDate(date, fr ? 'fr' : 'en');
-  const greeting = name ? (fr ? `Bonjour ${name}` : `Hi ${name}`) : fr ? 'Bonjour' : 'Hi';
+  const greeting = name
+    ? fr
+      ? `Bonjour ${name}`
+      : `Hi ${name}`
+    : fr
+      ? 'Bonjour'
+      : 'Hi';
   const title = fr ? 'Creneau annule' : 'Slot cancelled';
   const previewText = fr
     ? `Un creneau${clientName ? ` avec ${clientName}` : ''} a ete annule.`
     : `A slot${clientName ? ` with ${clientName}` : ''} has been cancelled.`;
 
-  const intro = clientName?.trim() && serviceName?.trim()
-    ? fr
-      ? `Le rendez-vous "${serviceName}" prevu avec ${clientName} a ete retire de votre agenda.`
-      : `The "${serviceName}" appointment scheduled with ${clientName} has been removed from your schedule.`
-    : clientName?.trim()
+  const intro =
+    clientName?.trim() && serviceName?.trim()
       ? fr
-        ? `Le rendez-vous prevu avec ${clientName} a ete retire de votre agenda.`
-        : `The appointment scheduled with ${clientName} has been removed from your schedule.`
-      : serviceName?.trim()
+        ? `Le rendez-vous "${serviceName}" prevu avec ${clientName} a ete retire de votre agenda.`
+        : `The "${serviceName}" appointment scheduled with ${clientName} has been removed from your schedule.`
+      : clientName?.trim()
         ? fr
-          ? `Le rendez-vous "${serviceName}" a ete retire de votre agenda.`
-          : `The "${serviceName}" appointment has been removed from your schedule.`
-        : fr
-          ? 'Un rendez-vous a ete annule dans votre agenda.'
-          : 'An appointment was cancelled in your schedule.';
+          ? `Le rendez-vous prevu avec ${clientName} a ete retire de votre agenda.`
+          : `The appointment scheduled with ${clientName} has been removed from your schedule.`
+        : serviceName?.trim()
+          ? fr
+            ? `Le rendez-vous "${serviceName}" a ete retire de votre agenda.`
+            : `The "${serviceName}" appointment has been removed from your schedule.`
+          : fr
+            ? 'Un rendez-vous a ete annule dans votre agenda.'
+            : 'An appointment was cancelled in your schedule.';
 
-  const detailsTitle = fr ? 'Details du rendez-vous annule' : 'Cancelled slot details';
+  const detailsTitle = fr
+    ? 'Details du rendez-vous annule'
+    : 'Cancelled slot details';
   const actor =
     cancelledByName?.trim() ||
     (cancelledByRole === 'student'
@@ -116,7 +125,9 @@ export default function BookingInstructorCancellationEmail({
   const timeLabel = fr ? 'Horaire' : 'Time';
   const addressLabel = fr ? 'Adresse' : 'Address';
   const timeValue =
-    startTime && endTime ? `${startTime} - ${endTime}` : startTime || endTime || '';
+    startTime && endTime
+      ? `${startTime} - ${endTime}`
+      : startTime || endTime || '';
 
   const noteText = fr
     ? 'Votre agenda a ete mis a jour. Vous pouvez consulter votre semaine pour reorganiser votre journee.'
@@ -189,7 +200,12 @@ export default function BookingInstructorCancellationEmail({
               <tbody>
                 <tr>
                   <td style={styles.topBarLeft}>
-                    <table cellPadding="0" cellSpacing="0" border={0} role="presentation">
+                    <table
+                      cellPadding="0"
+                      cellSpacing="0"
+                      border={0}
+                      role="presentation"
+                    >
                       <tbody>
                         <tr>
                           <td style={styles.logoCell}>

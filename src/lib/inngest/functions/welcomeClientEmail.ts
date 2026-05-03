@@ -57,7 +57,9 @@ export const welcomeClientEmail = inngest.createFunction(
     });
 
     if (!client) {
-      inngestEmailLogger.warn('[welcomeClientEmail] no client found', { userId });
+      inngestEmailLogger.warn('[welcomeClientEmail] no client found', {
+        userId,
+      });
       return { skipped: true, reason: 'no_client' };
     }
 
@@ -79,7 +81,10 @@ export const welcomeClientEmail = inngest.createFunction(
       try {
         return await loadClerkUserContact(clerk, userId);
       } catch (error) {
-        inngestEmailLogger.error('[welcomeClientEmail] load-client-email error', error);
+        inngestEmailLogger.error(
+          '[welcomeClientEmail] load-client-email error',
+          error,
+        );
         return { email: null, name: null };
       }
     });
@@ -94,15 +99,9 @@ export const welcomeClientEmail = inngest.createFunction(
     }
 
     const lang = toEmailLocale(locale);
-    const displayClientName =
-      client?.name ||
-      clientClerk?.name ||
-      'Client';
+    const displayClientName = client?.name || clientClerk?.name || 'Client';
 
-    const subject =
-      lang === 'fr'
-        ? `Bienvenue chez ${agencyName}`
-        : `Welcome to ${agencyName}`;
+    const subject = `Welcome to ${agencyName}`;
 
     const baseUrl = getAppBaseUrl();
     const actionUrl = buildLocalizedAppUrl(lang, '/book');
