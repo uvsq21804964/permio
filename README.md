@@ -9,13 +9,13 @@ Ce README sert de mémo de travail pour lancer le projet, vérifier le code, pr�
 Installer les dépendances :
 
 ```bash
-npm install
+pnpm install
 ```
 
 Lancer l'application en local :
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 L'application Next.js est ensuite disponible sur :
@@ -35,6 +35,14 @@ Le projet utilise un fichier `.env` à la racine. Vérifier notamment les variab
 - base de données
 - Google Maps / Places si le parcours adresse est utilisé
 
+Pour Inngest, garder les variables du même environnement Cloud :
+
+```env
+INNGEST_ENV=production
+INNGEST_EVENT_KEY=...
+INNGEST_SIGNING_KEY=...
+```
+
 Ne pas commiter les secrets.
 
 ## Scripts utiles
@@ -48,7 +56,7 @@ Vérifier TypeScript :
 Build Next.js :
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 Attention : sur certaines machines Windows/sandbox, le build peut compiler puis échouer sur `spawn EPERM`. Dans ce cas, vérifier surtout les erreurs avant cette étape.
@@ -66,7 +74,7 @@ Route Inngest :
 Lancer Inngest en local :
 
 ```bash
-npx --ignore-scripts=false inngest-cli@latest dev -u http://localhost:3000/api/inngest
+pnpm dlx inngest-cli@latest dev -u http://localhost:3000/api/inngest
 ```
 
 Dashboard Inngest :
@@ -92,13 +100,13 @@ http://localhost:3001
 Script équivalent disponible dans `package.json` :
 
 ```bash
-npm run email:dev
+pnpm run email:dev
 ```
 
 Exporter les templates :
 
 ```bash
-npm run email:export
+pnpm run email:export
 ```
 
 ## Knip
@@ -115,7 +123,7 @@ npx knip --fix
 Script équivalent :
 
 ```bash
-npm run knip
+pnpm run knip
 ```
 
 ## Dependency Cruiser
@@ -186,7 +194,7 @@ Cette section garde le mémo original sous forme rangée, pour ne pas perdre les
 
 ```bash
 /app/api/inngest/route.ts
-npx --ignore-scripts=false inngest-cli@latest dev -u http://localhost:3000/api/inngest
+pnpm dlx inngest-cli@latest dev -u http://localhost:3000/api/inngest
 http://localhost:8288
 ```
 
