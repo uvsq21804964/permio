@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
     const clientLatParam = url.searchParams.get('clientLat');
     const clientLngParam = url.searchParams.get('clientLng');
     const clientFormattedParam = url.searchParams.get('clientFormatted');
+    const isRemote = url.searchParams.get('isRemote') === '1';
     const targetClientUserId = url.searchParams.get('clientUserId');
     const result = await buildInstructorAgenda({
       userId,
@@ -44,6 +45,7 @@ export async function GET(req: NextRequest) {
       clientLatParam,
       clientLngParam,
       clientFormattedParam,
+      isRemote,
       targetClientUserId,
     });
 

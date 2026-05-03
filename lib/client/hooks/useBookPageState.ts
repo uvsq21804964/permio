@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '@clerk/nextjs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useLocale, useTranslations } from 'next-intl';
@@ -12,6 +12,7 @@ import {
   dateToISO,
   END_HOUR,
   getExactBookableSlotsForWindow,
+  getExactBookableSlotsForDate,
   PIXELS_PER_HOUR,
   START_HOUR,
   startOfWeekMondayISO,
@@ -27,6 +28,7 @@ import {
   type SuggestedBookingSlot,
 } from '@/components/booking/booking-proposals-shared';
 import { isHttpError } from '@/lib/client/api/request';
+import { getInstructorWeeklyAgendaProposals } from '@/lib/client/api/booking-client';
 import { useBookSlot } from '@/lib/client/hooks/useBookSlot';
 import { useBookingServices } from '@/lib/client/hooks/useBookingServices';
 import { useDecodedBookingAddress } from '@/lib/client/hooks/useDecodedBookingAddress';
@@ -62,6 +64,31 @@ function getSelectedSlotId(slot: SelectedBookingSlot | null) {
   return `${slot.date}-${slot.serviceStartTime}-${slot.serviceEndTime}`;
 }
 
+function findFirstBookableDate(params: {
+  agenda: Pick<WeeklyAgendaResponse, 'clientSlotsByDate'> | null;
+  serviceDuration: number | null | undefined;
+  earliestAllowed: Date;
+}): string | null {
+  const { agenda, earliestAllowed, serviceDuration } = params;
+  if (!agenda?.clientSlotsByDate) return null;
+
+  const dates = Object.keys(agenda.clientSlotsByDate).sort();
+  for (const dateIso of dates) {
+    const exactSlots = getExactBookableSlotsForDate({
+      dateIso,
+      rawSlots: agenda.clientSlotsByDate[dateIso] ?? [],
+      serviceDuration,
+      earliestAllowed,
+    });
+
+    if (exactSlots.length > 0) {
+      return dateIso;
+    }
+  }
+
+  return null;
+}
+
 export function useBookPageState() {
   const router = useRouter();
   const { isLoaded, isSignedIn } = useAuth();
@@ -87,6 +114,7 @@ export function useBookPageState() {
   const [nudgeOpen, setNudgeOpen] = useState(false);
   const [nudgeAlternative, setNudgeAlternative] =
     useState<SuggestedBookingSlot | null>(null);
+  const autoWeekSearchKeyRef = useRef<string | null>(null);
 
   const weekEnd = useMemo(() => addDaysISO(weekStart, 6), [weekStart]);
   const earliestAllowed = useMemo(() => getEarliestAllowedDateTime(), []);
@@ -126,6 +154,23 @@ export function useBookPageState() {
     !!selectedService &&
     (selectedService.isRemote || !!bookingAddress);
 
+  const autoWeekSearchKey = useMemo(() => {
+    if (!selectedService) return null;
+
+    const locationKey = selectedService.isRemote
+      ? 'remote'
+      : bookingAddress
+        ? `${bookingAddress.lat}:${bookingAddress.lng}:${bookingAddress.formattedAddress}`
+        : 'no-address';
+
+    return [
+      selectedService.id,
+      selectedService.durationMinutes ?? 'no-duration',
+      locationKey,
+      targetClientUserId ?? 'self',
+    ].join('|');
+  }, [bookingAddress, selectedService, targetClientUserId]);
+
   const {
     data: agendaData,
     loading,
@@ -146,6 +191,10 @@ export function useBookPageState() {
     () => Array.from({ length: 7 }, (_, index) => addDaysISO(weekStart, index)),
     [weekStart],
   );
+
+  useEffect(() => {
+    autoWeekSearchKeyRef.current = null;
+  }, [autoWeekSearchKey]);
 
   useEffect(() => {
     if (!selectedServiceId) {
@@ -221,6 +270,97 @@ export function useBookPageState() {
         : [],
     [data, selectedService?.durationMinutes],
   );
+
+  useEffect(() => {
+    if (
+      !agendaEnabled ||
+      !selectedService ||
+      !data ||
+      loading ||
+      error ||
+      !autoWeekSearchKey ||
+      autoWeekSearchKeyRef.current === autoWeekSearchKey
+    ) {
+      return;
+    }
+
+    autoWeekSearchKeyRef.current = autoWeekSearchKey;
+
+    const firstDateInLoadedWeek = findFirstBookableDate({
+      agenda: data,
+      serviceDuration: selectedService.durationMinutes,
+      earliestAllowed,
+    });
+    if (firstDateInLoadedWeek) {
+      return;
+    }
+
+    let cancelled = false;
+
+    async function moveToFirstAvailableWeek() {
+      let cursorWeekStart = todayWeekStart;
+
+      while (cursorWeekStart <= maxWeekStart) {
+        const futureAgenda = await getInstructorWeeklyAgendaProposals(
+          {
+            weekStart: cursorWeekStart,
+            isRemote: selectedService?.isRemote ?? false,
+            bookingAddress: selectedService?.isRemote
+              ? null
+              : toBookingAddressPayload(bookingAddress),
+            clientUserId: targetClientUserId,
+          },
+          {
+            fallbackMessage: t('errors.loadAgendaApi'),
+          },
+        );
+
+        if (cancelled) {
+          return;
+        }
+
+        const firstDate = findFirstBookableDate({
+          agenda: futureAgenda as WeeklyAgendaResponse,
+          serviceDuration: selectedService?.durationMinutes,
+          earliestAllowed,
+        });
+
+        if (firstDate) {
+          const firstWeekStart = startOfWeekMondayISO(firstDate);
+          if (firstWeekStart !== weekStart) {
+            setWeekStart(firstWeekStart);
+            setSelectedWindow(null);
+            setSelectedSlot(null);
+          }
+          return;
+        }
+
+        cursorWeekStart = addDaysISO(cursorWeekStart, 42);
+      }
+    }
+
+    void moveToFirstAvailableWeek().catch((nextError) => {
+      devLogger.error('[BOOKING] first available week search failed', nextError);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    agendaEnabled,
+    autoWeekSearchKey,
+    bookingAddress,
+    data,
+    earliestAllowed,
+    error,
+    loading,
+    maxWeekStart,
+    selectedService,
+    t,
+    targetClientUserId,
+    todayWeekStart,
+    weekStart,
+  ]);
 
   const scoredBookingOptionsById = useMemo(
     () =>
@@ -384,7 +524,9 @@ export function useBookPageState() {
         date: slot.date,
         startTime: slot.serviceStartTime,
         endTime: slot.serviceEndTime,
-        bookingAddress: toBookingAddressPayload(bookingAddress),
+        bookingAddress: selectedService.isRemote
+          ? undefined
+          : toBookingAddressPayload(bookingAddress),
         clientUserId: targetClientUserId,
       });
 

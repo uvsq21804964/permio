@@ -86,6 +86,20 @@ export async function listServicePricingByUserId(
   return rows as unknown as ServicePricingRecord[];
 }
 
+export async function getServicePricingByIdForUser(params: {
+  serviceId: number;
+  userId: string;
+}): Promise<Pick<ServicePricingRecord, 'id' | 'is_remote'> | null> {
+  const rows = await sql`
+    SELECT id, is_remote
+    FROM services_pricing
+    WHERE id = ${params.serviceId} AND user_id = ${params.userId}
+    LIMIT 1
+  `;
+
+  return (rows[0] ?? null) as Pick<ServicePricingRecord, 'id' | 'is_remote'> | null;
+}
+
 export async function getAgencyJoinCodeByUserId(userId: string) {
   const rows = await sql`
     SELECT a.join_code, a.name AS agency_name

@@ -15,6 +15,7 @@ import {
   getUserById,
   type AppUserRecord,
 } from '@/lib/server/repositories/user-repository';
+import { getServicePricingByIdForUser } from '@/lib/server/repositories/service-repository';
 import { devLogger } from '@/lib/shared/dev-logger';
 
 export type BookingAddressPayload = {
@@ -161,6 +162,24 @@ function buildAddressSource(
     raw_input: client.raw_input ?? null,
     address_label: client.address_label ?? null,
     is_primary: client.is_primary ?? true,
+  };
+}
+
+function buildRemoteAddressSource(): SlotAddressSource {
+  return {
+    formatted_address: null,
+    lat: null,
+    lng: null,
+    street: null,
+    street_number: null,
+    postal_code: null,
+    city: null,
+    country: null,
+    country_code: null,
+    google_place_id: null,
+    raw_input: null,
+    address_label: null,
+    is_primary: false,
   };
 }
 
@@ -347,7 +366,17 @@ export async function createSlotBooking(params: {
     return { ok: false, status: 400, body: { error: 'AGENCY_NOT_FOUND' } };
   }
 
-  const addressSource = buildAddressSource(client, bookingAddress);
+  const service = await getServicePricingByIdForUser({
+    serviceId,
+    userId: instructor.id,
+  });
+  if (!service) {
+    return { ok: false, status: 404, body: { error: 'SERVICE_NOT_FOUND' } };
+  }
+
+  const addressSource = service.is_remote
+    ? buildRemoteAddressSource()
+    : buildAddressSource(client, bookingAddress);
 
   try {
     const slot = await insertSlot({

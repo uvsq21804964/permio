@@ -199,6 +199,7 @@ async function buildClientSlotsByDate(params: {
   bookedSlots: InstructorAgendaBookedSlot[];
   instructor: InstructorAgendaUserRow;
   client: InstructorAgendaUserRow;
+  isRemote: boolean;
 }): Promise<Record<string, ClientSlot[]>> {
   const {
     startDate,
@@ -208,6 +209,7 @@ async function buildClientSlotsByDate(params: {
     bookedSlots,
     instructor,
     client,
+    isRemote,
   } = params;
 
   const cache = createTravelDurationCache();
@@ -270,18 +272,20 @@ async function buildClientSlotsByDate(params: {
         : instructorPoint;
       const nextPoint = nextSlot ? buildNeighborPoint(nextSlot) : instructorPoint;
 
-      const travelBefore =
-        (await getTravelDurationMinutesWithCache(
-          previousPoint,
-          clientPoint,
-          cache,
-        )) ?? 0;
-      const travelAfter =
-        (await getTravelDurationMinutesWithCache(
-          clientPoint,
-          nextPoint,
-          cache,
-        )) ?? 0;
+      const travelBefore = isRemote
+        ? 0
+        : ((await getTravelDurationMinutesWithCache(
+            previousPoint,
+            clientPoint,
+            cache,
+          )) ?? 0);
+      const travelAfter = isRemote
+        ? 0
+        : ((await getTravelDurationMinutesWithCache(
+            clientPoint,
+            nextPoint,
+            cache,
+          )) ?? 0);
 
       const totalTravel = travelBefore + travelAfter;
       const clientStartMinutes = freeStartMinutes + travelBefore;
@@ -345,16 +349,18 @@ async function buildClientSlotsByDate(params: {
         endTime: minutesToTime(clientEndMinutes),
         travelBeforeMinutes: travelBefore,
         travelAfterMinutes: travelAfter,
-        fromLabel:
-          previousSlot?.formatted_address ||
-          previousSlot?.city ||
-          instructor.formatted_address ||
-          'Domicile du moniteur',
-        toLabel:
-          nextSlot?.formatted_address ||
-          nextSlot?.city ||
-          instructor.formatted_address ||
-          'Domicile du moniteur',
+        fromLabel: isRemote
+          ? 'Remote'
+          : previousSlot?.formatted_address ||
+            previousSlot?.city ||
+            instructor.formatted_address ||
+            'Domicile du moniteur',
+        toLabel: isRemote
+          ? 'Remote'
+          : nextSlot?.formatted_address ||
+            nextSlot?.city ||
+            instructor.formatted_address ||
+            'Domicile du moniteur',
       };
 
       devLogger.log('[SLOT DEBUG] accepted', {
@@ -499,6 +505,7 @@ export async function buildInstructorAgenda(params: {
   clientLatParam: string | null;
   clientLngParam: string | null;
   clientFormattedParam: string | null;
+  isRemote: boolean;
   targetClientUserId?: string | null;
 }): Promise<AgendaServiceResult> {
   const me = await getAgendaUserById(params.userId);
@@ -547,6 +554,7 @@ export async function buildInstructorAgenda(params: {
     bookedSlots,
     instructor: participants.instructor,
     client: clientForAgenda,
+    isRemote: params.isRemote,
   });
 
   return {

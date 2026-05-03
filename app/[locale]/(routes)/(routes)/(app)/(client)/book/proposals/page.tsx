@@ -109,7 +109,9 @@ export default function ProposalsPage() {
         date: slot.date,
         startTime: slot.serviceStartTime,
         endTime: slot.serviceEndTime,
-        bookingAddress: toBookingAddressPayload(bookingAddress),
+        bookingAddress: selectedService.is_remote
+          ? undefined
+          : toBookingAddressPayload(bookingAddress),
         clientUserId,
       });
 
@@ -182,7 +184,7 @@ export default function ProposalsPage() {
     );
   }
 
-  if (!isRemote && !bookingAddress) {
+  if (selectedService && !isRemote && !bookingAddress) {
     return (
       <main className="min-h-screen bg-background flex items-center justify-center p-6">
         <div className="w-full max-w-md rounded-2xl border bg-card p-6 space-y-3 text-sm">
