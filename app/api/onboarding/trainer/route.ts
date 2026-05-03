@@ -67,6 +67,17 @@ function formatClerkError(e: any): string {
   return e?.message || 'Clerk error';
 }
 
+function isClerkResourceNotFound(e: any): boolean {
+  const status = extractHttpStatus(e);
+  const message =
+    e?.errors?.[0]?.message ||
+    e?.errors?.[0]?.longMessage ||
+    e?.message ||
+    '';
+
+  return status === 404 || /resource not found/i.test(message);
+}
+
 function normalizeWebsiteUrl(input: string): string | null {
   const s = String(input || '').trim();
   if (!s) return null;
@@ -143,6 +154,39 @@ async function createClerkOrganizationStrict(
   });
 
   return { clerkOrgId: org.id };
+}
+
+async function ensureClerkOrganizationExists(params: {
+  agencyId: string;
+  agencyName: string;
+  clerk: any;
+  clerkOrgId: string | null;
+  createdBy: string;
+  execSql: any;
+}): Promise<string> {
+  const { agencyId, agencyName, clerk, createdBy, execSql } = params;
+  let clerkOrgId = params.clerkOrgId;
+
+  if (clerkOrgId) {
+    try {
+      await clerk.organizations.getOrganization({ organizationId: clerkOrgId });
+      return clerkOrgId;
+    } catch (e: any) {
+      if (!isClerkResourceNotFound(e)) {
+        throw e;
+      }
+      clerkOrgId = null;
+    }
+  }
+
+  const org = await createClerkOrganizationStrict(clerk, agencyName, createdBy);
+  await execSql`
+    UPDATE "Agency"
+    SET clerk_org_id = ${org.clerkOrgId}
+    WHERE id = ${agencyId}
+  `;
+
+  return org.clerkOrgId;
 }
 
 async function ensureClerkOrganizationMembership(
@@ -430,15 +474,45 @@ export async function POST(req: NextRequest) {
       clerkOrgId = created[0]?.clerk_org_id ?? clerkOrgId;
     }
 
-    if (!agencyId || !clerkOrgId) {
+    if (!agencyId) {
       // en strict: impossible
       const err: any = new Error('Agency/Clerk organization creation failed.');
       err.status = 500;
       throw err;
     }
 
+    step = 'ensuring Clerk organization exists';
+    let activeClerkOrgId = await ensureClerkOrganizationExists({
+      agencyId,
+      agencyName,
+      clerk,
+      clerkOrgId,
+      createdBy: userId,
+      execSql,
+    });
+    clerkOrgId = activeClerkOrgId;
+
     step = 'ensuring Clerk organization membership';
-    await ensureClerkOrganizationMembership(clerk, clerkOrgId, userId);
+    try {
+      await ensureClerkOrganizationMembership(clerk, activeClerkOrgId, userId);
+    } catch (e: any) {
+      if (!isClerkResourceNotFound(e)) {
+        throw e;
+      }
+
+      step = 'recreating missing Clerk organization';
+      const org = await createClerkOrganizationStrict(clerk, agencyName, userId);
+      activeClerkOrgId = org.clerkOrgId;
+      clerkOrgId = activeClerkOrgId;
+      await execSql`
+        UPDATE "Agency"
+        SET clerk_org_id = ${activeClerkOrgId}
+        WHERE id = ${agencyId}
+      `;
+
+      step = 'retrying Clerk organization membership';
+      await ensureClerkOrganizationMembership(clerk, activeClerkOrgId, userId);
+    }
 
     // RLS context
     step = 'setting agency context';
@@ -546,10 +620,10 @@ export async function POST(req: NextRequest) {
     await updateClerkUserMetadata(clerk, userId, {
       agencyId,
       agencyName,
-      clerkOrgId,
+      clerkOrgId: activeClerkOrgId,
     });
 
-    return { agencyId, joinCode, clerkOrgId };
+    return { agencyId, joinCode, clerkOrgId: activeClerkOrgId };
   };
 
   try {
