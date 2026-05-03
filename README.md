@@ -188,7 +188,7 @@ Générer les SVG :
 start .\doc\dependency-cruiser\dependency-graph.front-lib.svg
 ```
 
-## Commandes historiques conservées
+## Commandes historiques
 
 Cette section garde le mémo original sous forme rangée, pour ne pas perdre les commandes déjà présentes.
 
