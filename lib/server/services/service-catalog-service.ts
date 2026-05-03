@@ -178,6 +178,7 @@ export function validateServicePayload(body: any) {
   if (
     durationMinutes == null ||
     Number.isNaN(durationMinutes) ||
+    !Number.isInteger(durationMinutes) ||
     durationMinutes < 0
   ) {
     return {
@@ -186,6 +187,17 @@ export function validateServicePayload(body: any) {
       body: {
         error: 'INVALID_DURATION',
         message: 'Duration must be provided and be >= 0',
+      },
+    };
+  }
+
+  if (durationMinutes % 5 !== 0) {
+    return {
+      ok: false as const,
+      status: 400,
+      body: {
+        error: 'INVALID_DURATION_STEP',
+        message: 'Duration must use 5-minute increments',
       },
     };
   }

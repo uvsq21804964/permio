@@ -175,9 +175,14 @@ export default function ServicesPage() {
       return;
     }
 
-    const duration = Number.parseInt(serviceDraft.duration_minutes.trim(), 10);
-    if (Number.isNaN(duration) || duration < 0) {
+    const duration = Number(serviceDraft.duration_minutes.trim());
+    if (!Number.isInteger(duration) || duration < 0) {
       setServiceFormError(t('errors.serviceDurationInvalid'));
+      return;
+    }
+
+    if (duration % 5 !== 0) {
+      setServiceFormError(t('errors.serviceDurationStepInvalid'));
       return;
     }
 
