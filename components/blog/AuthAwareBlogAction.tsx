@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
+import { Suspense } from 'react';
 
 import { trackButtonClick } from '@/lib/client/button-tracking';
 
@@ -21,7 +22,13 @@ export function AuthAwareBlogAction({
   signedOutLabel,
 }: AuthAwareBlogActionProps) {
   return (
-    <>
+    <Suspense
+      fallback={
+        <Link href={signedOutHref} className={className}>
+          {signedOutLabel}
+        </Link>
+      }
+    >
       <SignedOut>
         <Link
           href={signedOutHref}
@@ -55,6 +62,6 @@ export function AuthAwareBlogAction({
           {signedInLabel}
         </Link>
       </SignedIn>
-    </>
+    </Suspense>
   );
 }

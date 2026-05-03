@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { SignedIn, SignedOut } from '@clerk/nextjs';
+import { Suspense } from 'react';
 
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
 import { BrandWordmark } from '@/components/brand/BrandWordmark';
@@ -13,6 +14,76 @@ type PublicBlogHeaderProps = {
   currentPath: '/blog' | '/demo';
   locale: Locale;
 };
+
+function PublicBlogHeaderAuthLinks({ locale }: { locale: Locale }) {
+  return (
+    <Suspense
+      fallback={
+        <Link
+          href={`/${locale}/sign-up`}
+          className="inline-flex items-center rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-primary shadow-sm transition hover:bg-primary hover:text-white whitespace-nowrap md:text-sm"
+        >
+          {locale === 'fr' ? 'Essayer 1 mois, sans carte' : 'Try 1 month, no card'}
+        </Link>
+      }
+    >
+      <SignedOut>
+        <Link
+          href={`/${locale}/sign-in`}
+          onClick={() => {
+            trackButtonClick({
+              buttonKey: 'public_blog_header_sign_in',
+              buttonLabel: locale === 'fr' ? 'Connexion' : 'Sign in',
+              buttonContext: 'public_blog_header',
+              targetHref: `/${locale}/sign-in`,
+              locale,
+            });
+          }}
+          className="inline-flex items-center rounded-full px-3 py-1.5 text-[11px] font-semibold text-white transition hover:bg-white hover:text-primary whitespace-nowrap md:text-sm"
+        >
+          {locale === 'fr' ? 'Connexion' : 'Sign in'}
+        </Link>
+
+        <Link
+          href={`/${locale}/sign-up`}
+          onClick={() => {
+            trackButtonClick({
+              buttonKey: 'public_blog_header_sign_up',
+              buttonLabel:
+                locale === 'fr'
+                  ? 'Essayer 1 mois, sans carte'
+                  : 'Try 1 month, no card',
+              buttonContext: 'public_blog_header',
+              targetHref: `/${locale}/sign-up`,
+              locale,
+            });
+          }}
+          className="inline-flex items-center rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-primary shadow-sm transition hover:bg-primary hover:text-white whitespace-nowrap md:text-sm"
+        >
+          {locale === 'fr' ? 'Essayer 1 mois, sans carte' : 'Try 1 month, no card'}
+        </Link>
+      </SignedOut>
+
+      <SignedIn>
+        <Link
+          href={`/${locale}/myweek`}
+          onClick={() => {
+            trackButtonClick({
+              buttonKey: 'public_blog_header_open_app',
+              buttonLabel: locale === 'fr' ? "Ouvrir l'app" : 'Open app',
+              buttonContext: 'public_blog_header',
+              targetHref: `/${locale}/myweek`,
+              locale,
+            });
+          }}
+          className="inline-flex items-center rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-primary shadow-sm transition hover:bg-primary hover:text-white whitespace-nowrap md:text-sm"
+        >
+          {locale === 'fr' ? "Ouvrir l'app" : 'Open app'}
+        </Link>
+      </SignedIn>
+    </Suspense>
+  );
+}
 
 export function PublicBlogHeader({
   currentPath,
@@ -85,57 +156,7 @@ export function PublicBlogHeader({
             {demoLink.label}
           </Link>
 
-          <SignedOut>
-            <Link
-              href={`/${locale}/sign-in`}
-              onClick={() => {
-                trackButtonClick({
-                  buttonKey: 'public_blog_header_sign_in',
-                  buttonLabel: locale === 'fr' ? 'Connexion' : 'Sign in',
-                  buttonContext: 'public_blog_header',
-                  targetHref: `/${locale}/sign-in`,
-                  locale,
-                });
-              }}
-              className="inline-flex items-center rounded-full px-3 py-1.5 text-[11px] font-semibold text-white transition hover:bg-white hover:text-primary whitespace-nowrap md:text-sm"
-            >
-              {locale === 'fr' ? 'Connexion' : 'Sign in'}
-            </Link>
-
-            <Link
-              href={`/${locale}/sign-up`}
-              onClick={() => {
-                trackButtonClick({
-                  buttonKey: 'public_blog_header_sign_up',
-                  buttonLabel: locale === 'fr' ? 'Essayer 1 mois, sans carte' : 'Try 1 month, no card',
-                  buttonContext: 'public_blog_header',
-                  targetHref: `/${locale}/sign-up`,
-                  locale,
-                });
-              }}
-              className="inline-flex items-center rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-primary shadow-sm transition hover:bg-primary hover:text-white whitespace-nowrap md:text-sm"
-            >
-              {locale === 'fr' ? 'Essayer 1 mois, sans carte' : 'Try 1 month, no card'}
-            </Link>
-          </SignedOut>
-
-          <SignedIn>
-            <Link
-              href={`/${locale}/myweek`}
-              onClick={() => {
-                trackButtonClick({
-                  buttonKey: 'public_blog_header_open_app',
-                  buttonLabel: locale === 'fr' ? "Ouvrir l'app" : 'Open app',
-                  buttonContext: 'public_blog_header',
-                  targetHref: `/${locale}/myweek`,
-                  locale,
-                });
-              }}
-              className="inline-flex items-center rounded-full bg-white/95 px-3 py-1.5 text-[11px] font-semibold text-primary shadow-sm transition hover:bg-primary hover:text-white whitespace-nowrap md:text-sm"
-            >
-              {locale === 'fr' ? "Ouvrir l'app" : 'Open app'}
-            </Link>
-          </SignedIn>
+          <PublicBlogHeaderAuthLinks locale={locale} />
 
           <LocaleSwitcher />
         </nav>
