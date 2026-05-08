@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import { MobileAnimatedAgendaShowcase } from '@/components/magic-hango/MobileAnimatedAgendaShowcase';
 import type { Locale } from '@/src/lib/i18n';
@@ -200,64 +199,6 @@ function MobileComparisonCard({
   );
 }
 
-function MobileRouteMapCard({
-  title,
-  totalLabel,
-  totalValue,
-  caption,
-  imageSrc,
-  mapsUrl,
-}: {
-  title: string;
-  totalLabel: string;
-  totalValue: string;
-  caption: string;
-  imageSrc: string;
-  mapsUrl: string;
-}) {
-  return (
-    <a
-      href={mapsUrl}
-      target="_blank"
-      rel="noreferrer noopener"
-      className="block overflow-hidden rounded-[28px] border border-black/8 bg-white/94 shadow-[0_24px_70px_-52px_rgba(15,23,42,0.42)]"
-    >
-      <div className="flex items-center justify-between gap-3 border-b border-black/6 px-4 py-4">
-        <div className="min-w-0">
-          <div className="flex items-center gap-2">
-            <Image
-              src="/GoogleMaps.svg"
-              alt="Google Maps"
-              width={72}
-              height={18}
-              className="h-auto w-[72px] shrink-0"
-            />
-          </div>
-          <div className="mt-2 text-sm font-semibold text-slate-950">{title}</div>
-        </div>
-        <div className="shrink-0 rounded-full border border-black/10 bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700">
-          {totalValue}
-        </div>
-      </div>
-      <div className="relative h-48 overflow-hidden bg-slate-100">
-        <Image
-          src={imageSrc}
-          alt={title}
-          fill
-          sizes="100vw"
-          className="object-cover"
-        />
-      </div>
-      <div className="px-4 py-4">
-        <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/40">
-          {totalLabel}
-        </div>
-        <p className="mt-2 text-sm leading-6 text-black/68">{caption}</p>
-      </div>
-    </a>
-  );
-}
-
 export async function OptimizationDemoMobile({ locale }: { locale: Locale }) {
   const t = await getTranslations({ locale, namespace: 'magicHango' });
   const isFrench = locale === 'fr';
@@ -268,26 +209,33 @@ export async function OptimizationDemoMobile({ locale }: { locale: Locale }) {
     recommended: t('simple.labels.recommended'),
     gap: t('simple.labels.gap'),
   };
-  const conversationSteps = [
+  const valueItems = [
+    t('conversationPreview.items.0'),
+    t('conversationPreview.items.1'),
+    t('conversationPreview.items.2'),
+    t('conversationPreview.items.3'),
+    t('conversationPreview.items.4'),
+  ];
+  const smsSteps = [
     {
-      label: t('conversationPreview.steps.0.label'),
-      title: t('conversationPreview.steps.0.title'),
-      body: t('conversationPreview.steps.0.body'),
+      label: t('smsDemo.steps.0.label'),
+      title: t('smsDemo.steps.0.title'),
+      body: t('smsDemo.steps.0.body'),
     },
     {
-      label: t('conversationPreview.steps.1.label'),
-      title: t('conversationPreview.steps.1.title'),
-      body: t('conversationPreview.steps.1.body'),
+      label: t('smsDemo.steps.1.label'),
+      title: t('smsDemo.steps.1.title'),
+      body: t('smsDemo.steps.1.body'),
     },
     {
-      label: t('conversationPreview.steps.2.label'),
-      title: t('conversationPreview.steps.2.title'),
-      body: t('conversationPreview.steps.2.body'),
+      label: t('smsDemo.steps.2.label'),
+      title: t('smsDemo.steps.2.title'),
+      body: t('smsDemo.steps.2.body'),
     },
     {
-      label: t('conversationPreview.steps.3.label'),
-      title: t('conversationPreview.steps.3.title'),
-      body: t('conversationPreview.steps.3.body'),
+      label: t('smsDemo.steps.3.label'),
+      title: t('smsDemo.steps.3.title'),
+      body: t('smsDemo.steps.3.body'),
     },
   ];
 
@@ -579,60 +527,45 @@ export async function OptimizationDemoMobile({ locale }: { locale: Locale }) {
         </div>
 
         <div className="mt-5 rounded-[24px] border border-black/8 bg-white/92 p-4 shadow-[0_24px_50px_-36px_rgba(15,23,42,0.28)]">
-          <div className="flex items-center justify-between gap-3">
-            <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/45">
-              {t('conversationPreview.eyebrow')}
-            </div>
-            <span className="rounded-full bg-rose-50 px-2.5 py-1 text-[10px] font-semibold text-rose-700">
-              {conversationSteps[0]?.label}
-            </span>
+          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/45">
+            {t('conversationPreview.eyebrow')}
           </div>
+          <h2 className={`${poppins.className} mt-3 text-xl font-black tracking-tight text-slate-950`}>
+            {t('conversationPreview.title')}
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-black/66">
+            {t('conversationPreview.subtitle')}
+          </p>
 
-          <div className="mt-4 space-y-3">
-            <div className="rounded-[18px] border border-black/7 bg-slate-950 px-4 py-3 text-sm font-semibold leading-6 text-white shadow-[0_16px_34px_-24px_rgba(15,23,42,0.7)]">
-              {conversationSteps[1]?.title}
-            </div>
-
-            <div className="rounded-[18px] border border-amber-200 bg-amber-50 px-4 py-3 shadow-[0_16px_34px_-24px_rgba(217,119,6,0.4)]">
-              <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-black/45">
-                {conversationSteps[2]?.label}
-              </div>
-              <div className="mt-2 text-sm font-semibold leading-6 text-slate-950">
-                {conversationSteps[2]?.title}
-              </div>
-              <p className="mt-2 text-sm leading-6 text-black/66">
-                {conversationSteps[2]?.body}
-              </p>
-            </div>
-
-            <div className="rounded-[18px] border border-emerald-200 bg-emerald-50/90 px-4 py-3 shadow-[0_16px_34px_-24px_rgba(5,150,105,0.35)]">
-              <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700/80">
-                {conversationSteps[3]?.label}
-              </div>
-              <div className="mt-2 text-sm font-semibold leading-6 text-slate-950">
-                {conversationSteps[3]?.title}
-              </div>
-              <p className="mt-2 text-sm leading-6 text-black/66">
-                {conversationSteps[3]?.body}
-              </p>
-            </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {valueItems.map((item) => (
+              <span
+                key={item}
+                className="rounded-full border border-black/8 bg-white/78 px-3 py-2 text-xs font-semibold text-slate-800 shadow-[0_10px_24px_-22px_rgba(15,23,42,0.32)]"
+              >
+                {item}
+              </span>
+            ))}
           </div>
         </div>
       </section>
 
-      <section className="rounded-[28px] border border-black/8 bg-white/92 p-4 shadow-[0_24px_70px_-52px_rgba(15,23,42,0.3)]">
+      <section
+        id="missed-call-workflow"
+        className="rounded-[28px] border border-black/8 bg-white/92 p-4 shadow-[0_24px_70px_-52px_rgba(15,23,42,0.3)]"
+      >
         <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/45">
-          {t('conversationPreview.eyebrow')}
+          {t('smsDemo.eyebrow')}
         </div>
         <h2 className={`${poppins.className} mt-3 text-2xl font-black tracking-tight text-slate-950`}>
-          {t('conversationPreview.title')}
+          {t('smsDemo.title')}
         </h2>
         <p className="mt-3 text-sm leading-7 text-black/68">
-          {t('conversationPreview.subtitle')}
+          {t('smsDemo.subtitle')}
         </p>
 
         <div className="mt-5 grid gap-3">
-          {conversationSteps.map((step, index) => (
+          {smsSteps.map((step, index) => (
             <article
               key={step.label}
               className="rounded-[22px] border border-black/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,247,217,0.9))] p-4 shadow-[0_18px_40px_-32px_rgba(15,23,42,0.22)]"
@@ -654,25 +587,27 @@ export async function OptimizationDemoMobile({ locale }: { locale: Locale }) {
         </div>
       </section>
 
-      <MobileAnimatedAgendaShowcase
-        locale={locale}
-        beforeTitle={t('simple.before.title')}
-        beforeSubtitle={t('simple.before.subtitle')}
-        beforeFooter={t('simple.before.footer')}
-        afterTitle={t('simple.after.title')}
-        afterSubtitle={t('simple.after.subtitle')}
-        afterFooter={t('simple.after.footer')}
-        labels={labels}
-        slots={morphSlots}
-        ui={{
-          beforeState: t('animation.beforeState'),
-          afterState: t('animation.afterState'),
-          toBefore: t('animation.toBefore'),
-          toAfter: t('animation.toAfter'),
-          mapsOpenInMobile: t('animation.mapsOpenInMobile'),
-          mapsHint: t('animation.mapsHint'),
-        }}
-      />
+      <section>
+        <MobileAnimatedAgendaShowcase
+          locale={locale}
+          beforeTitle={t('simple.before.title')}
+          beforeSubtitle={t('simple.before.subtitle')}
+          beforeFooter={t('simple.before.footer')}
+          afterTitle={t('simple.after.title')}
+          afterSubtitle={t('simple.after.subtitle')}
+          afterFooter={t('simple.after.footer')}
+          labels={labels}
+          slots={morphSlots}
+          ui={{
+            beforeState: t('animation.beforeState'),
+            afterState: t('animation.afterState'),
+            toBefore: t('animation.toBefore'),
+            toAfter: t('animation.toAfter'),
+            mapsOpenInMobile: t('animation.mapsOpenInMobile'),
+            mapsHint: t('animation.mapsHint'),
+          }}
+        />
+      </section>
 
       <MobileComparisonCard
         title={t('comparison.title')}
@@ -684,25 +619,6 @@ export async function OptimizationDemoMobile({ locale }: { locale: Locale }) {
         gainLabel={t('comparison.headers.gain')}
       />
 
-      <div className="grid gap-4">
-        <MobileRouteMapCard
-          title={t('routeCards.before.title')}
-          totalLabel={t('routeCards.totalLabel')}
-          totalValue={formatDuration(beforeStats.travelMinutes)}
-          caption={t('routeCards.before.caption')}
-          imageSrc="/demo/DemoCalendarWithoutMagicHango.png"
-          mapsUrl="https://www.google.com/maps/dir/Mason+Municipal+Center,+6000+Mason+Montgomery+Rd,+Mason,+OH+45040,+%C3%89tats-Unis/Miamisburg+Civic+Center,+10+N+1st+St,+Miamisburg,+OH+45342,+%C3%89tats-Unis/@39.4978571,-84.462854,11z/data=!4m14!4m13!1m5!1m1!1s0x8840580e2dd467b5:0x6efd7c758be091b0!2m2!1d-84.3083587!2d39.3533767!1m5!1m1!1s0x8840628c5c5af86b:0x36fade715f8a2f31!2m2!1d-84.2871069!2d39.6422979!3e0?entry=ttu&g_ep=EgoyMDI2MDQyOC4wIKXMDSoASAFQAw%3D%3D"
-        />
-
-        <MobileRouteMapCard
-          title={t('routeCards.after.title')}
-          totalLabel={t('routeCards.totalLabel')}
-          totalValue={formatDuration(afterStats.travelMinutes)}
-          caption={t('routeCards.after.caption')}
-          imageSrc="/demo/DemoCalendarWithMagicHango.png"
-          mapsUrl="https://www.google.com/maps/dir/Franklin-Springboro+Public+Library+-+Main,+44+E+4th+St,+Franklin,+OH+45005,+%C3%89tats-Unis/Miamisburg+Civic+Center,+10+N+1st+St,+Miamisburg,+OH+45342,+%C3%89tats-Unis/@39.6002809,-84.3333406,13z/data=!3m1!4b1!4m14!4m13!1m5!1m1!1s0x884061ade123f897:0x18dd6f635efd343d!2m2!1d-84.3026632!2d39.5586492!1m5!1m1!1s0x8840628c5c5af86b:0x36fade715f8a2f31!2m2!1d-84.2871069!2d39.6422979!3e0?entry=ttu&g_ep=EgoyMDI2MDQyOC4wIKXMDSoASAFQAw%3D%3D"
-        />
-      </div>
     </div>
   );
 }

@@ -29,23 +29,23 @@
     "steps": [
       {
         "label": "Appel manqué",
-        "title": "Nouvelle cliente : Sarah M.",
-        "body": "Vous continuez le toilettage au lieu de tout arrêter pour répondre."
+        "title": "Nouvel appel manqué de Jessica",
+        "body": "Vous continuez le toilettage au lieu d’interrompre le rendez-vous pour répondre."
       },
       {
         "label": "SMS envoyé",
-        "title": "Je peux vous aider à réserver par SMS.",
-        "body": "MagicHango répond tout de suite et demande la race, le service et l’adresse."
+        "title": "Bonjour, ici Bella’s Mobile Grooming. Je suis avec un chien en ce moment, mais je peux vous aider à réserver par SMS. Quelle race et quel service vous faut-il ?",
+        "body": "L’appelant reçoit une réponse immédiate au lieu d’attendre un rappel plus tard."
       },
       {
         "label": "Demande qualifiée",
-        "title": "Golden retriever, toilettage complet, 32 kg, Boca Raton.",
-        "body": "Les infos animal, service, localisation et préférences arrivent dans une seule demande claire."
+        "title": "Golden retriever, toilettage complet, 32 kg, bourres légères, Boca Raton, préfère la semaine prochaine.",
+        "body": "Les infos animal, service, adresse et préférences arrivent dans une seule demande."
       },
       {
-        "label": "Validation prête",
-        "title": "Meilleur créneau : jeudi 11 h 30, à 12 min du rendez-vous précédent.",
-        "body": "Vous relisez l’option compatible avec la tournée avant toute confirmation."
+        "label": "Validation groomer",
+        "title": "Meilleur créneau : jeudi 11 h 30 — à 12 min du rendez-vous précédent. Valider ?",
+        "body": "Vous gardez la main avant toute confirmation."
       }
     ]
   }

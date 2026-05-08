@@ -10,29 +10,41 @@
     "cta": "Voir le fonctionnement"
   },
   "conversationPreview": {
-    "eyebrow": "Voyez la qualification avant la tournée",
-    "title": "Appel manqué → SMS → demande qualifiée → créneau à valider",
-    "subtitle": "Avant d’améliorer la tournée, MagicHango récupère l’appel manqué, collecte les bonnes informations et vous remet une proposition de rendez-vous qui tient dans la journée.",
+    "eyebrow": "La valeur",
+    "title": "Moins d'admin. Réponses rapides. Meilleures tournées.",
+    "subtitle": "MagicHango vous aide à gagner plus de clients sans ajouter de travail de bureau. Vous payez uniquement les leads générés : 1 $ par lead, plafonné à 35 $.",
+    "items": [
+      "Moins d'admin",
+      "Réponses rapides",
+      "Moins de trajets",
+      "Plus de clients",
+      "1 $/lead. Plafond 35 $"
+    ]
+  },
+  "smsDemo": {
+    "eyebrow": "Workflow d'appel manqué",
+    "title": "De l'appel manqué au créneau à valider",
+    "subtitle": "L'amélioration de la tournée commence par une réponse SMS rapide et une demande qualifiée.",
     "steps": [
       {
         "label": "Appel manqué",
-        "title": "Nouvelle cliente : Sarah M.",
-        "body": "Vous restez concentré sur l’animal en face de vous au lieu d’interrompre le toilettage."
+        "title": "Nouvel appel manqué de Jessica",
+        "body": "Vous restez concentré sur l'animal en face de vous au lieu d'interrompre le toilettage."
       },
       {
         "label": "SMS envoyé",
-        "title": "Je peux vous aider à réserver par SMS.",
-        "body": "MagicHango répond tout de suite et demande la race, le service et l’adresse."
+        "title": "Bonjour, ici Bella's Mobile Grooming. Je suis avec un chien en ce moment, mais je peux vous aider à réserver par SMS. Quelle race et quel service vous faut-il ?",
+        "body": "MagicHango répond tout de suite au lieu de laisser refroidir la demande."
       },
       {
         "label": "Demande qualifiée",
-        "title": "Golden retriever, toilettage complet, 32 kg, Boca Raton.",
-        "body": "Les infos animal, service, localisation et préférences arrivent dans une seule demande."
+        "title": "Golden retriever, toilettage complet, 32 kg, bourres légères, Boca Raton, préfère la semaine prochaine.",
+        "body": "Les infos animal, service, adresse et préférences arrivent dans une seule demande."
       },
       {
-        "label": "Validation prête",
-        "title": "Meilleur créneau : jeudi 11 h 30, à 12 min du rendez-vous précédent.",
-        "body": "Vous relisez l’option compatible avec la tournée avant toute confirmation."
+        "label": "Validation groomer",
+        "title": "Meilleur créneau : jeudi 11 h 30 - à 12 min du rendez-vous précédent. Valider ?",
+        "body": "Vous relisez l'option compatible avec la tournée avant toute confirmation."
       }
     ]
   },

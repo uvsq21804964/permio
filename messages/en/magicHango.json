@@ -10,28 +10,40 @@
     "cta": "See how it works"
   },
   "conversationPreview": {
-    "eyebrow": "See the intake before the route",
-    "title": "Missed call → SMS → qualified request → slot to approve",
-    "subtitle": "Before MagicHango improves the route, it first catches the missed caller, collects the right details, and hands you a booking option that fits the day.",
+    "eyebrow": "The value",
+    "title": "Less admin. Faster replies. Better routes.",
+    "subtitle": "MagicHango helps you win more grooming clients without adding office work. You only pay for generated leads: $1 per lead, capped at $35.",
+    "items": [
+      "Less admin",
+      "Faster replies",
+      "Better routes",
+      "More clients",
+      "$1/lead. $35 cap"
+    ]
+  },
+  "smsDemo": {
+    "eyebrow": "Missed-call workflow",
+    "title": "From missed call to booking option",
+    "subtitle": "The route improvement starts with a fast SMS follow-up and a qualified request.",
     "steps": [
       {
         "label": "Missed call",
-        "title": "New caller: Sarah M.",
+        "title": "New missed call from Jessica",
         "body": "You stay focused on the dog in front of you instead of stopping the groom."
       },
       {
         "label": "SMS sent",
-        "title": "I can help you book by text.",
-        "body": "MagicHango replies right away and asks for breed, service, and address."
+        "title": "Hi, this is Bella's Mobile Grooming. I'm with a dog right now, but I can help you book by text. What breed and service do you need?",
+        "body": "MagicHango replies right away instead of letting the lead cool off."
       },
       {
         "label": "Qualified request",
-        "title": "Golden retriever, full groom, 70 lb, Boca Raton.",
-        "body": "Pet details, service, location, and timing preferences arrive in one request."
+        "title": "Golden retriever, full groom, 70 lbs, mild matting, Boca Raton, prefers next week.",
+        "body": "Pet details, service, address, and timing preferences arrive in one request."
       },
       {
-        "label": "Approval ready",
-        "title": "Best slot: Thursday 11:30 AM, 12 min from your previous stop.",
+        "label": "Groomer approval",
+        "title": "Best slot: Thursday 11:30 AM - 12 min from your previous appointment. Approve?",
         "body": "You review the route-friendly option before anything is confirmed."
       }
     ]

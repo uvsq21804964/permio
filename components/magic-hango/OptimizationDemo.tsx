@@ -1,4 +1,3 @@
-import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import { AnimatedAgendaShowcase } from '@/components/magic-hango/AnimatedAgendaShowcase';
 import type { Locale } from '@/src/lib/i18n';
@@ -211,63 +210,6 @@ function ComparisonTable({
   );
 }
 
-function RouteMapCard({
-  title,
-  totalLabel,
-  totalValue,
-  caption,
-  imageSrc,
-  mapsUrl,
-}: {
-  title: string;
-  totalLabel: string;
-  totalValue: string;
-  caption: string;
-  imageSrc: string;
-  mapsUrl: string;
-}) {
-  return (
-    <a
-      href={mapsUrl}
-      target="_blank"
-      rel="noreferrer noopener"
-      className="block overflow-hidden rounded-[30px] border border-black/8 bg-white/94 shadow-[0_24px_70px_-52px_rgba(15,23,42,0.42)] transition hover:-translate-y-0.5 hover:shadow-[0_30px_80px_-52px_rgba(15,23,42,0.5)] focus:outline-none focus:ring-2 focus:ring-slate-950/20"
-      aria-label={title}
-      title={title}
-    >
-      <div className="flex items-center justify-between gap-4 border-b border-black/6 px-5 py-4">
-        <div className="flex min-w-0 items-center gap-3">
-          <Image
-            src="/GoogleMaps.svg"
-            alt="Google Maps"
-            width={86}
-            height={22}
-            className="h-auto w-[86px] shrink-0"
-          />
-          <div className="min-w-0 text-sm font-semibold text-slate-950">
-            {title}
-          </div>
-        </div>
-        <div className="shrink-0 rounded-full border border-black/10 bg-white/90 px-3 py-1 text-xs font-semibold text-slate-700">
-          {totalLabel}: {totalValue}
-        </div>
-      </div>
-
-      <div className="relative h-64 overflow-hidden bg-slate-100">
-        <Image
-          src={imageSrc}
-          alt={title}
-          fill
-          sizes="(max-width: 1024px) 100vw, 50vw"
-          className="object-cover"
-        />
-      </div>
-
-      <div className="px-5 py-4 text-sm leading-6 text-black/68">{caption}</div>
-    </a>
-  );
-}
-
 export async function OptimizationDemo({ locale }: { locale: Locale }) {
   const t = await getTranslations({ locale, namespace: 'magicHango' });
   const isFrench = locale === 'fr';
@@ -277,26 +219,33 @@ export async function OptimizationDemo({ locale }: { locale: Locale }) {
     recommended: t('simple.labels.recommended'),
     gap: t('simple.labels.gap'),
   };
-  const conversationSteps = [
+  const valueItems = [
+    t('conversationPreview.items.0'),
+    t('conversationPreview.items.1'),
+    t('conversationPreview.items.2'),
+    t('conversationPreview.items.3'),
+    t('conversationPreview.items.4'),
+  ];
+  const smsSteps = [
     {
-      label: t('conversationPreview.steps.0.label'),
-      title: t('conversationPreview.steps.0.title'),
-      body: t('conversationPreview.steps.0.body'),
+      label: t('smsDemo.steps.0.label'),
+      title: t('smsDemo.steps.0.title'),
+      body: t('smsDemo.steps.0.body'),
     },
     {
-      label: t('conversationPreview.steps.1.label'),
-      title: t('conversationPreview.steps.1.title'),
-      body: t('conversationPreview.steps.1.body'),
+      label: t('smsDemo.steps.1.label'),
+      title: t('smsDemo.steps.1.title'),
+      body: t('smsDemo.steps.1.body'),
     },
     {
-      label: t('conversationPreview.steps.2.label'),
-      title: t('conversationPreview.steps.2.title'),
-      body: t('conversationPreview.steps.2.body'),
+      label: t('smsDemo.steps.2.label'),
+      title: t('smsDemo.steps.2.title'),
+      body: t('smsDemo.steps.2.body'),
     },
     {
-      label: t('conversationPreview.steps.3.label'),
-      title: t('conversationPreview.steps.3.title'),
-      body: t('conversationPreview.steps.3.body'),
+      label: t('smsDemo.steps.3.label'),
+      title: t('smsDemo.steps.3.title'),
+      body: t('smsDemo.steps.3.body'),
     },
   ];
 
@@ -636,63 +585,48 @@ export async function OptimizationDemo({ locale }: { locale: Locale }) {
           </div>
 
           <div className="rounded-[28px] border border-black/8 bg-white/92 p-4 shadow-[0_24px_50px_-36px_rgba(15,23,42,0.28)]">
-            <div className="flex items-center justify-between gap-3">
-              <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/45">
-                {t('conversationPreview.eyebrow')}
-              </div>
-              <span className="rounded-full bg-rose-50 px-2.5 py-1 text-[10px] font-semibold text-rose-700">
-                {conversationSteps[0]?.label}
-              </span>
+            <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/45">
+              {t('conversationPreview.eyebrow')}
             </div>
+            <h2 className={`${poppins.className} mt-3 text-xl font-black tracking-tight text-slate-950`}>
+              {t('conversationPreview.title')}
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-black/66">
+              {t('conversationPreview.subtitle')}
+            </p>
 
-            <div className="mt-4 space-y-3">
-              <div className="rounded-[20px] border border-black/7 bg-slate-950 px-4 py-3 text-sm font-semibold leading-6 text-white shadow-[0_16px_34px_-24px_rgba(15,23,42,0.7)]">
-                {conversationSteps[1]?.title}
-              </div>
-
-              <div className="rounded-[20px] border border-amber-200 bg-amber-50 px-4 py-3 shadow-[0_16px_34px_-24px_rgba(217,119,6,0.4)]">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-black/45">
-                  {conversationSteps[2]?.label}
-                </div>
-                <div className="mt-2 text-sm font-semibold leading-6 text-slate-950">
-                  {conversationSteps[2]?.title}
-                </div>
-                <p className="mt-2 text-sm leading-6 text-black/66">
-                  {conversationSteps[2]?.body}
-                </p>
-              </div>
-
-              <div className="rounded-[20px] border border-emerald-200 bg-emerald-50/90 px-4 py-3 shadow-[0_16px_34px_-24px_rgba(5,150,105,0.35)]">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700/80">
-                  {conversationSteps[3]?.label}
-                </div>
-                <div className="mt-2 text-sm font-semibold leading-6 text-slate-950">
-                  {conversationSteps[3]?.title}
-                </div>
-                <p className="mt-2 text-sm leading-6 text-black/66">
-                  {conversationSteps[3]?.body}
-                </p>
-              </div>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {valueItems.map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-black/8 bg-white/78 px-3 py-2 text-xs font-semibold text-slate-800 shadow-[0_10px_24px_-22px_rgba(15,23,42,0.32)]"
+                >
+                  {item}
+                </span>
+              ))}
             </div>
           </div>
           </div>
         </section>
 
-      <section className="rounded-[32px] border border-black/8 bg-white/92 p-6 shadow-[0_26px_80px_-56px_rgba(15,23,42,0.32)] md:p-7">
+      <section
+        id="missed-call-workflow"
+        className="rounded-[32px] border border-black/8 bg-white/92 p-6 shadow-[0_26px_80px_-56px_rgba(15,23,42,0.32)] md:p-7"
+      >
         <div className="max-w-3xl">
           <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/45">
-            {t('conversationPreview.eyebrow')}
+            {t('smsDemo.eyebrow')}
           </div>
           <h2 className={`${poppins.className} mt-3 text-2xl font-black tracking-tight text-slate-950 md:text-[2rem]`}>
-            {t('conversationPreview.title')}
+            {t('smsDemo.title')}
           </h2>
           <p className="mt-3 text-sm leading-7 text-black/68 md:text-base">
-            {t('conversationPreview.subtitle')}
+            {t('smsDemo.subtitle')}
           </p>
         </div>
 
         <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-          {conversationSteps.map((step, index) => (
+          {smsSteps.map((step, index) => (
             <article
               key={step.label}
               className="rounded-[24px] border border-black/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,247,217,0.9))] p-5 shadow-[0_20px_44px_-34px_rgba(15,23,42,0.22)]"
@@ -714,57 +648,40 @@ export async function OptimizationDemo({ locale }: { locale: Locale }) {
         </div>
       </section>
 
-      <AnimatedAgendaShowcase
-        locale={locale}
-        beforeTitle={t('simple.before.title')}
-        beforeSubtitle={t('simple.before.subtitle')}
-        beforeFooter={t('simple.before.footer')}
-        afterTitle={t('simple.after.title')}
-        afterSubtitle={t('simple.after.subtitle')}
-        afterFooter={t('simple.after.footer')}
-        labels={slotLabels}
-        slots={morphSlots}
-        ui={{
-          eyebrow: t('animation.eyebrow'),
-          beforeState: t('animation.beforeState'),
-          afterState: t('animation.afterState'),
-          toBefore: t('animation.toBefore'),
-          toAfter: t('animation.toAfter'),
-          whyLabel: t('animation.whyLabel'),
-          impactLabel: t('animation.impactLabel'),
-          mapsOpenInDesktop: t('animation.mapsOpenInDesktop'),
-          mapsHint: t('animation.mapsHint'),
-        }}
-        details={{
-          before: [
-            t('animation.beforeReasonOne'),
-            t('animation.beforeReasonTwo'),
-            t('animation.beforeReasonThree'),
-          ],
-          after: [
-            t('animation.afterReasonOne'),
-            t('animation.afterReasonTwo'),
-            t('animation.afterReasonThree'),
-          ],
-        }}
-      />
-
-      <section className="grid gap-5 lg:grid-cols-2">
-        <RouteMapCard
-          title={t('routeCards.before.title')}
-          totalLabel={t('routeCards.totalLabel')}
-          totalValue={formatDuration(beforeStats.travelMinutes)}
-          caption={t('routeCards.before.caption')}
-          imageSrc="/demo/DemoCalendarWithoutMagicHango.png"
-          mapsUrl="https://www.google.com/maps/dir/Mason+Municipal+Center,+6000+Mason+Montgomery+Rd,+Mason,+OH+45040,+%C3%89tats-Unis/Miamisburg+Civic+Center,+10+N+1st+St,+Miamisburg,+OH+45342,+%C3%89tats-Unis/Loveland+City+Hall,+120+W+Loveland+Ave,+Loveland,+OH+45140,+%C3%89tats-Unis/Dayton+City+Hall,+101+W+Third+St,+Dayton,+OH+45402,+%C3%89tats-Unis/Mason+Municipal+Center,+6000+Mason+Montgomery+Rd,+Mason,+OH+45040,+%C3%89tats-Unis/@39.5236406,-84.5308826,10z/data=!4m32!4m31!1m5!1m1!1s0x8840580e2dd467b5:0x6efd7c758be091b0!2m2!1d-84.3083587!2d39.3533767!1m5!1m1!1s0x8840628c5c5af86b:0x36fade715f8a2f31!2m2!1d-84.2871069!2d39.6422979!1m5!1m1!1s0x8840f9ebf206cdcb:0x2c64e4646b56bd24!2m2!1d-84.2576323!2d39.2682205!1m5!1m1!1s0x8840815188ab450f:0x6e74731f3e572ca1!2m2!1d-84.1938873!2d39.7596041!1m5!1m1!1s0x8840580e2dd467b5:0x6efd7c758be091b0!2m2!1d-84.3083587!2d39.3533767!3e0?entry=ttu&g_ep=EgoyMDI2MDQyOC4wIKXMDSoASAFQAw%3D%3D"
-        />
-        <RouteMapCard
-          title={t('routeCards.after.title')}
-          totalLabel={t('routeCards.totalLabel')}
-          totalValue={formatDuration(afterStats.travelMinutes)}
-          caption={t('routeCards.after.caption')}
-          imageSrc="/demo/DemoCalendarWithMagicHango.png"
-          mapsUrl="https://www.google.com/maps/dir/Mason+Municipal+Center,+6000+Mason+Montgomery+Rd,+Mason,+OH+45040,+%C3%89tats-Unis/Franklin-Springboro+Public+Library+-+Main,+44+E+4th+St,+Franklin,+OH+45005,+%C3%89tats-Unis/Miamisburg+Civic+Center,+10+N+1st+St,+Miamisburg,+OH+45342,+%C3%89tats-Unis/39.3921927,-84.2866677/Loveland+City+Hall,+120+W+Loveland+Ave,+Loveland,+OH+45140,+%C3%89tats-Unis/Mason+Municipal+Center,+6000+Mason+Montgomery+Rd,+Mason,+OH+45040,+%C3%89tats-Unis/@39.4917662,-84.4494124,11z/data=!4m33!4m32!1m5!1m1!1s0x8840580e2dd467b5:0x6efd7c758be091b0!2m2!1d-84.3083587!2d39.3533767!1m5!1m1!1s0x884061ade123f897:0x18dd6f635efd343d!2m2!1d-84.3026632!2d39.5586492!1m5!1m1!1s0x8840628c5c5af86b:0x36fade715f8a2f31!2m2!1d-84.2871069!2d39.6422979!1m0!1m5!1m1!1s0x8840f9ebf206cdcb:0x2c64e4646b56bd24!2m2!1d-84.2576323!2d39.2682205!1m5!1m1!1s0x8840580e2dd467b5:0x6efd7c758be091b0!2m2!1d-84.3083587!2d39.3533767!3e0?entry=ttu&g_ep=EgoyMDI2MDQyOC4wIKXMDSoASAFQAw%3D%3D"
+      <section>
+        <AnimatedAgendaShowcase
+          locale={locale}
+          beforeTitle={t('simple.before.title')}
+          beforeSubtitle={t('simple.before.subtitle')}
+          beforeFooter={t('simple.before.footer')}
+          afterTitle={t('simple.after.title')}
+          afterSubtitle={t('simple.after.subtitle')}
+          afterFooter={t('simple.after.footer')}
+          labels={slotLabels}
+          slots={morphSlots}
+          ui={{
+            eyebrow: t('animation.eyebrow'),
+            beforeState: t('animation.beforeState'),
+            afterState: t('animation.afterState'),
+            toBefore: t('animation.toBefore'),
+            toAfter: t('animation.toAfter'),
+            whyLabel: t('animation.whyLabel'),
+            impactLabel: t('animation.impactLabel'),
+            mapsOpenInDesktop: t('animation.mapsOpenInDesktop'),
+            mapsHint: t('animation.mapsHint'),
+          }}
+          details={{
+            before: [
+              t('animation.beforeReasonOne'),
+              t('animation.beforeReasonTwo'),
+              t('animation.beforeReasonThree'),
+            ],
+            after: [
+              t('animation.afterReasonOne'),
+              t('animation.afterReasonTwo'),
+              t('animation.afterReasonThree'),
+            ],
+          }}
         />
       </section>
 
