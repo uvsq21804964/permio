@@ -7,24 +7,7 @@
   },
   "hero": {
     "title": "Transformez les appels manqués en rendez-vous compatibles avec votre tournée",
-    "cta": "Voir le fonctionnement",
-    "proofCards": {
-      "followUp": {
-        "label": "Appelants relancés",
-        "value": "SMS en quelques secondes",
-        "detail": "pendant le toilettage"
-      },
-      "qualification": {
-        "label": "Demande qualifiée",
-        "value": "Animal + service + adresse",
-        "detail": "dans un seul échange"
-      },
-      "approval": {
-        "label": "Vous gardez la main",
-        "value": "Créneau prêt à valider",
-        "detail": "avant confirmation"
-      }
-    }
+    "cta": "Voir le fonctionnement"
   },
   "conversationPreview": {
     "eyebrow": "Voyez la qualification avant la tournée",

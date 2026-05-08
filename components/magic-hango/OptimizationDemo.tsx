@@ -211,140 +211,6 @@ function ComparisonTable({
   );
 }
 
-function StatCard({
-  label,
-  value,
-  accent,
-  detail,
-  comparison,
-  comparisonOnly,
-}: {
-  label: string;
-  value: string;
-  accent?: 'neutral' | 'warm';
-  detail?: string;
-  comparison?: {
-    beforeLabel: string;
-    beforeValue: string;
-    afterLabel: string;
-    afterValue: string;
-  };
-  comparisonOnly?: boolean;
-}) {
-  if (comparisonOnly && comparison) {
-    return (
-      <article className="rounded-[24px] border border-amber-200 bg-[linear-gradient(180deg,rgba(255,247,217,0.98),rgba(255,255,255,0.94))] p-4 shadow-[0_24px_50px_-36px_rgba(217,119,6,0.42)]">
-        <div className="flex items-start justify-between gap-3">
-          <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/45">
-            {label}
-          </div>
-          {detail ? (
-            <div className="rounded-full bg-black/5 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-black/45">
-              {detail}
-            </div>
-          ) : null}
-        </div>
-
-        <div className="mt-4 grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2 rounded-[18px] border border-black/7 bg-white/82 px-3 py-3">
-          <div className="min-w-0">
-            <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40">
-              {comparison.beforeLabel}
-            </div>
-            <div className="mt-1 truncate text-sm font-semibold text-slate-700">
-              {comparison.beforeValue}
-            </div>
-          </div>
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-950 text-white shadow-[0_12px_30px_-18px_rgba(15,23,42,0.7)]">
-            <svg
-              aria-hidden="true"
-              viewBox="0 0 20 20"
-              className="h-4 w-4"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M3.5 10h13" />
-              <path d="m11.5 6.5 5 3.5-5 3.5" />
-            </svg>
-          </div>
-          <div className="min-w-0 text-right">
-            <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40">
-              {comparison.afterLabel}
-            </div>
-            <div className="mt-1 truncate text-sm font-semibold text-slate-950">
-              {comparison.afterValue}
-            </div>
-          </div>
-        </div>
-      </article>
-    );
-  }
-
-  return (
-    <article
-      className={`rounded-[24px] border p-4 ${
-        accent === 'warm'
-          ? 'border-amber-200 bg-[linear-gradient(180deg,rgba(255,247,217,0.98),rgba(255,255,255,0.94))] shadow-[0_24px_50px_-36px_rgba(217,119,6,0.42)]'
-          : 'border-black/8 bg-white/90 shadow-[0_18px_40px_-32px_rgba(15,23,42,0.22)]'
-      }`}
-    >
-      <div className="flex items-start justify-between gap-3">
-        <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/45">
-          {label}
-        </div>
-        {detail ? (
-          <div className="rounded-full bg-black/5 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-black/45">
-            {detail}
-          </div>
-        ) : null}
-      </div>
-      <div className={`${poppins.className} mt-3 text-3xl font-bold tracking-tight text-slate-950 md:text-[2rem]`}>
-        {value}
-      </div>
-
-      {comparison ? (
-        <div className="mt-4 rounded-[18px] border border-black/7 bg-white/82 px-3 py-3">
-          <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-2">
-            <div className="min-w-0">
-              <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40">
-                {comparison.beforeLabel}
-              </div>
-              <div className="mt-1 truncate text-sm font-semibold text-slate-700">
-                {comparison.beforeValue}
-              </div>
-            </div>
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-950 text-white shadow-[0_12px_30px_-18px_rgba(15,23,42,0.7)]">
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 20 20"
-                className="h-4 w-4"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3.5 10h13" />
-                <path d="m11.5 6.5 5 3.5-5 3.5" />
-              </svg>
-            </div>
-            <div className="min-w-0 text-right">
-              <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/40">
-                {comparison.afterLabel}
-              </div>
-              <div className="mt-1 truncate text-sm font-semibold text-slate-950">
-                {comparison.afterValue}
-              </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
-    </article>
-  );
-}
-
 function RouteMapCard({
   title,
   totalLabel,
@@ -769,23 +635,45 @@ export async function OptimizationDemo({ locale }: { locale: Locale }) {
               </div>
           </div>
 
-          <div className="grid gap-3">
-            <StatCard
-              label={t('hero.proofCards.followUp.label')}
-              value={t('hero.proofCards.followUp.value')}
-              detail={t('hero.proofCards.followUp.detail')}
-            />
-            <StatCard
-              label={t('hero.proofCards.qualification.label')}
-              value={t('hero.proofCards.qualification.value')}
-              detail={t('hero.proofCards.qualification.detail')}
-              accent="warm"
-            />
-            <StatCard
-              label={t('hero.proofCards.approval.label')}
-              value={t('hero.proofCards.approval.value')}
-              detail={t('hero.proofCards.approval.detail')}
-            />
+          <div className="rounded-[28px] border border-black/8 bg-white/92 p-4 shadow-[0_24px_50px_-36px_rgba(15,23,42,0.28)]">
+            <div className="flex items-center justify-between gap-3">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/45">
+                {t('conversationPreview.eyebrow')}
+              </div>
+              <span className="rounded-full bg-rose-50 px-2.5 py-1 text-[10px] font-semibold text-rose-700">
+                {conversationSteps[0]?.label}
+              </span>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              <div className="rounded-[20px] border border-black/7 bg-slate-950 px-4 py-3 text-sm font-semibold leading-6 text-white shadow-[0_16px_34px_-24px_rgba(15,23,42,0.7)]">
+                {conversationSteps[1]?.title}
+              </div>
+
+              <div className="rounded-[20px] border border-amber-200 bg-amber-50 px-4 py-3 shadow-[0_16px_34px_-24px_rgba(217,119,6,0.4)]">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-black/45">
+                  {conversationSteps[2]?.label}
+                </div>
+                <div className="mt-2 text-sm font-semibold leading-6 text-slate-950">
+                  {conversationSteps[2]?.title}
+                </div>
+                <p className="mt-2 text-sm leading-6 text-black/66">
+                  {conversationSteps[2]?.body}
+                </p>
+              </div>
+
+              <div className="rounded-[20px] border border-emerald-200 bg-emerald-50/90 px-4 py-3 shadow-[0_16px_34px_-24px_rgba(5,150,105,0.35)]">
+                <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700/80">
+                  {conversationSteps[3]?.label}
+                </div>
+                <div className="mt-2 text-sm font-semibold leading-6 text-slate-950">
+                  {conversationSteps[3]?.title}
+                </div>
+                <p className="mt-2 text-sm leading-6 text-black/66">
+                  {conversationSteps[3]?.body}
+                </p>
+              </div>
+            </div>
           </div>
           </div>
         </section>

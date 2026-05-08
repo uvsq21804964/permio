@@ -7,24 +7,7 @@
   },
   "hero": {
     "title": "Turn missed grooming calls into route-friendly bookings",
-    "cta": "See how it works",
-    "proofCards": {
-      "followUp": {
-        "label": "Missed callers reached",
-        "value": "SMS in seconds",
-        "detail": "while you keep grooming"
-      },
-      "qualification": {
-        "label": "Client request qualified",
-        "value": "Pet + service + address",
-        "detail": "in one thread"
-      },
-      "approval": {
-        "label": "Approval stays with you",
-        "value": "Best slot ready",
-        "detail": "before confirmation"
-      }
-    }
+    "cta": "See how it works"
   },
   "conversationPreview": {
     "eyebrow": "See the intake before the route",

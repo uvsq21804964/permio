@@ -137,28 +137,6 @@ function computeAgendaStats(slots: MiniSlot[]): AgendaStats {
   );
 }
 
-function MobileStatCard({
-  label,
-  value,
-  detail,
-}: {
-  label: string;
-  value: string;
-  detail?: string;
-}) {
-  return (
-    <article className="rounded-[22px] border border-black/8 bg-white/90 p-4 shadow-[0_18px_40px_-32px_rgba(15,23,42,0.22)]">
-      <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/45">
-        {label}
-      </div>
-      <div className={`${poppins.className} mt-2 text-2xl font-black tracking-tight text-slate-950`}>
-        {value}
-      </div>
-      {detail ? <div className="mt-1 text-xs text-black/55">{detail}</div> : null}
-    </article>
-  );
-}
-
 function MobileComparisonCard({
   title,
   note,
@@ -600,23 +578,44 @@ export async function OptimizationDemoMobile({ locale }: { locale: Locale }) {
           </div>
         </div>
 
-        <div className="mt-5 grid grid-cols-2 gap-3">
-          <MobileStatCard
-            label={t('hero.proofCards.followUp.label')}
-            value={t('hero.proofCards.followUp.value')}
-            detail={t('hero.proofCards.followUp.detail')}
-          />
-          <MobileStatCard
-            label={t('hero.proofCards.qualification.label')}
-            value={t('hero.proofCards.qualification.value')}
-            detail={t('hero.proofCards.qualification.detail')}
-          />
-          <div className="col-span-2">
-            <MobileStatCard
-              label={t('hero.proofCards.approval.label')}
-              value={t('hero.proofCards.approval.value')}
-              detail={t('hero.proofCards.approval.detail')}
-            />
+        <div className="mt-5 rounded-[24px] border border-black/8 bg-white/92 p-4 shadow-[0_24px_50px_-36px_rgba(15,23,42,0.28)]">
+          <div className="flex items-center justify-between gap-3">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/45">
+              {t('conversationPreview.eyebrow')}
+            </div>
+            <span className="rounded-full bg-rose-50 px-2.5 py-1 text-[10px] font-semibold text-rose-700">
+              {conversationSteps[0]?.label}
+            </span>
+          </div>
+
+          <div className="mt-4 space-y-3">
+            <div className="rounded-[18px] border border-black/7 bg-slate-950 px-4 py-3 text-sm font-semibold leading-6 text-white shadow-[0_16px_34px_-24px_rgba(15,23,42,0.7)]">
+              {conversationSteps[1]?.title}
+            </div>
+
+            <div className="rounded-[18px] border border-amber-200 bg-amber-50 px-4 py-3 shadow-[0_16px_34px_-24px_rgba(217,119,6,0.4)]">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-black/45">
+                {conversationSteps[2]?.label}
+              </div>
+              <div className="mt-2 text-sm font-semibold leading-6 text-slate-950">
+                {conversationSteps[2]?.title}
+              </div>
+              <p className="mt-2 text-sm leading-6 text-black/66">
+                {conversationSteps[2]?.body}
+              </p>
+            </div>
+
+            <div className="rounded-[18px] border border-emerald-200 bg-emerald-50/90 px-4 py-3 shadow-[0_16px_34px_-24px_rgba(5,150,105,0.35)]">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.16em] text-emerald-700/80">
+                {conversationSteps[3]?.label}
+              </div>
+              <div className="mt-2 text-sm font-semibold leading-6 text-slate-950">
+                {conversationSteps[3]?.title}
+              </div>
+              <p className="mt-2 text-sm leading-6 text-black/66">
+                {conversationSteps[3]?.body}
+              </p>
+            </div>
           </div>
         </div>
       </section>

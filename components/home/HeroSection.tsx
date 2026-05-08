@@ -269,49 +269,42 @@ export default function HeroSection() {
                     />
                   </div>
 
-                  {/* ✅ Carte overlay : centrée (presque au centre) + plus haute */}
+                  {/* ✅ Carte overlay : scène conversationnelle */}
                   <div
                     className="
-            absolute left-2 right-2 top-1/2 -translate-y-1/4 z-3
+            absolute left-2 right-2 top-[48%] -translate-y-1/4 z-3
             rounded-[1.35rem]
             bg-white/95
-            overflow-hidden
-            flex flex-col
             border border-black/20
             ring-1 ring-black/10
             shadow-[0_26px_70px_rgba(0,0,0,0.54)]
+            p-3
           "
                   >
-                    {/* Header : logo centré et plus gros */}
-                    <div className="relative z-3 px-3 py-2 bg-white/95">
-                      <div className="relative flex items-center justify-center">
-                        <Image
-                          src="/GoogleMaps.svg"
-                          alt="Google Maps"
-                          width={112}
-                          height={112}
-                          className="shrink-0"
-                        />
-
-                        {/* Badge à droite (optionnel) */}
-                        <span className="absolute right-0 text-[11px] text-black/50">
-                          {t('preview.badgeRoute')}
-                        </span>
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-black/42">
+                        {t('conversation.eyebrow')}
                       </div>
+                      <span className="rounded-full bg-rose-50 px-2.5 py-1 text-[10px] font-semibold text-rose-700">
+                        {conversationSteps[0]?.label}
+                      </span>
                     </div>
 
-                    {/* Séparateur */}
-                    <div className="h-px w-full bg-black/15" />
-
-                    {/* Map : un peu plus haute */}
-                    <div className="relative w-full aspect-[10/10] z-2">
-                      <Image
-                        src="/maps.png"
-                        alt={t('preview.altRoute')}
-                        fill
-                        className="object-cover scale-[1.25] origin-center"
-                      />
-                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-transparent" />
+                    <div className="mt-3 space-y-2.5">
+                      <div className="max-w-[82%] rounded-[1rem] rounded-tl-[0.45rem] bg-slate-950 px-3 py-2 text-[11px] leading-5 text-white shadow-[0_10px_24px_-18px_rgba(15,23,42,0.65)]">
+                        {conversationSteps[1]?.title}
+                      </div>
+                      <div className="max-w-[86%] rounded-[1rem] rounded-tr-[0.45rem] bg-amber-50 px-3 py-2 text-[11px] leading-5 text-slate-900 shadow-[0_10px_24px_-18px_rgba(217,119,6,0.45)] ml-auto">
+                        {conversationSteps[2]?.title}
+                      </div>
+                      <div className="rounded-[1rem] border border-emerald-200 bg-emerald-50/90 px-3 py-2.5 shadow-[0_12px_24px_-18px_rgba(5,150,105,0.35)]">
+                        <div className="text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-700/80">
+                          {conversationSteps[3]?.label}
+                        </div>
+                        <div className="mt-1 text-[11px] font-semibold leading-5 text-slate-950">
+                          {conversationSteps[3]?.title}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
