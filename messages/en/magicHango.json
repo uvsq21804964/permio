@@ -6,68 +6,69 @@
     "tryFree": "Try 1 month, no card"
   },
   "hero": {
-    "title": "Your calendar can look full and still waste your day",
+    "title": "Turn missed grooming calls into route-friendly bookings",
+    "cta": "See how it works",
     "timeline": {
       "before": "Before",
       "after": "After"
     },
     "proof": {
-      "travel": "Travel reduced",
-      "finish": "Earlier return",
-      "choice": "Extra session",
+      "travel": "Drive time cut",
+      "finish": "Earlier finish",
+      "choice": "Extra booking room",
       "distance": "Distance driven"
     },
     "proofDetails": {
-      "perDay": "per day",
-      "sessions": "worked day"
+      "perDay": "per worked day",
+      "sessions": "on a worked day"
     },
     "proofValues": {
       "travel": "-1h25",
-      "finish": "16:30 -> 15:35",
-      "choice": "100%"
+      "finish": "4:30 PM -> 3:35 PM",
+      "choice": "+1"
     }
   },
   "simple": {
-    "eyebrow": "MagicHango demo",
-    "subtitle": "Same job, same kind of clients, but a very different day. MagicHango helps clients book the slots that actually fit the trainer's route, instead of scattering visits across the city.",
+    "eyebrow": "Missed-call workflow",
+    "subtitle": "When you are busy grooming, MagicHango follows up with missed callers by SMS, collects pet and address details, and suggests appointment times that actually fit your route.",
     "labels": {
-      "service": "session",
-      "travel": "travel",
+      "service": "grooming",
+      "travel": "drive",
       "gap": "gap",
-      "recommended": "recommended"
+      "recommended": "approved slot"
     },
     "before": {
-      "title": "Agenda 1 — Without MagicHango",
-      "subtitle": "3 sessions, but the day is broken by long drives and lost gaps.",
-      "footer": "The day is not empty, but it is badly assembled. The trainer only bills 3 hours while too much of the day is consumed by travel and wasted time.",
+      "title": "Before MagicHango",
+      "subtitle": "Late callbacks turn into awkward bookings, extra driving, and a broken day.",
+      "footer": "Every missed call handled late makes it easier to accept the wrong time slot. The day looks busy, but too much of it disappears into driving and dead gaps.",
       "slots": {
         "rideFromHome": {
           "title": "Drive from home",
           "meta": ""
         },
         "sessionOne": {
-          "title": "Session 1",
-          "meta": "Marcus & Blue"
+          "title": "Grooming 1",
+          "meta": "Bella - doodle trim"
         },
         "longDriveOne": {
           "title": "Drive",
           "meta": ""
         },
         "sessionTwo": {
-          "title": "Session 2",
-          "meta": "Olivia & Pepper"
+          "title": "Grooming 2",
+          "meta": "Max - bath and brush"
         },
         "idleGap": {
-          "title": "Lost gap",
-          "meta": "Too short or too awkward to insert another session"
+          "title": "Awkward gap",
+          "meta": "Too late to fill well, too early to end the day"
         },
         "longDriveTwo": {
           "title": "Drive",
           "meta": ""
         },
         "sessionThree": {
-          "title": "Session 3",
-          "meta": "Chloe & Archie"
+          "title": "Grooming 3",
+          "meta": "Luna - full groom"
         },
         "longTripHome": {
           "title": "Return home",
@@ -76,45 +77,45 @@
       }
     },
     "after": {
-      "title": "Agenda 2 — With MagicHango",
-      "subtitle": "4 sessions, less waste, and the last client is closer to home.",
-      "footer": "MagicHango does not just fill the calendar. It helps place the right clients in the right time slots, in an order that actually makes sense for the route.",
+      "title": "After MagicHango",
+      "subtitle": "Qualified requests lead to cleaner routing, better slot choices, and one more booking.",
+      "footer": "MagicHango does not book blindly. It prepares the request, suggests the best route-friendly slots, and lets the groomer approve before anything is confirmed.",
       "slots": {
         "rideFromHome": {
           "title": "Drive from home",
           "meta": ""
         },
         "sessionOne": {
-          "title": "Session 1",
-          "meta": "Ava & Bear"
+          "title": "Grooming 1",
+          "meta": "Poppy - nail trim"
         },
         "optimizedDriveOne": {
-          "title": "Optimized drive",
+          "title": "Short drive",
           "meta": ""
         },
         "sessionTwo": {
-          "title": "Session 2",
-          "meta": "Marcus & Blue"
+          "title": "Grooming 2",
+          "meta": "Bella - doodle trim"
         },
         "optimizedDriveTwo": {
-          "title": "Optimized drive",
+          "title": "Short drive",
           "meta": ""
         },
         "sessionThree": {
-          "title": "Session 3",
-          "meta": "Ethan & Maple"
+          "title": "Grooming 3",
+          "meta": "Charlie - bath and brush"
         },
         "realBreak": {
           "title": "Real break",
-          "meta": "Lunch / rest / admin"
+          "meta": "Lunch, reset, or admin"
         },
         "shortDrive": {
           "title": "Short drive",
           "meta": ""
         },
         "sessionFour": {
-          "title": "Session 4",
-          "meta": "Olivia & Pepper"
+          "title": "Grooming 4",
+          "meta": "Max - full groom"
         },
         "shortTripHome": {
           "title": "Return home",
@@ -124,57 +125,27 @@
     }
   },
   "animation": {
-    "eyebrow": "See the day transform",
-    "helper": "Switch between the two states to watch slots move, shrink, appear, and reorganize into a more logical route.",
-    "beforeState": "Without MagicHango",
-    "afterState": "With MagicHango",
-    "toBefore": "Back to the broken day",
-    "toAfter": "Show the optimized route",
+    "eyebrow": "See the route improve",
+    "helper": "Switch between both states to see how a better booking order creates a tighter day.",
+    "beforeState": "Before MagicHango",
+    "afterState": "After MagicHango",
+    "toBefore": "Show the broken day",
+    "toAfter": "Show the better route",
     "whyLabel": "What changes",
     "impactLabel": "Business impact",
     "mapsOpenInDesktop": "Click to open in",
     "mapsOpenInMobile": "Open in",
     "mapsHint": "Click to open in Google Maps",
-    "mapsFeatureTitle": "Open directly in Google Maps",
-    "mapsFeatureBody": "Travel slots can also become action points. In this demo, clicking a travel slot opens a Google Maps route so the trainer can go straight from schedule to navigation.",
-    "beforeReasonOne": "At first, Marcus & Blue are too early in the day, so the late morning cannot be used for a client who fits the route better.",
-    "beforeReasonTwo": "Olivia & Pepper are close to home. Moving them to the afternoon makes room to push Marcus & Blue later and free the 9:00 to 10:00 slot.",
-    "beforeReasonThree": "After those moves, the route is compact enough to keep a real break and still add one more session.",
-    "afterReasonOne": "Marcus & Blue are recommended later, which opens space for a closer session before them.",
-    "afterReasonTwo": "Olivia & Pepper are recommended in the afternoon, closer to home. That helps free the morning for the 9:00 to 10:00 session.",
-    "afterReasonThree": "The result is simple: one more session, less driving, and an easier return home."
-  },
-  "summary": {
-    "rows": {
-      "sessions": "Sessions completed",
-      "billable": "Billable time",
-      "travel": "Travel time",
-      "deadTime": "Gap / break",
-      "finish": "Useful end of day",
-      "lastClient": "Last client"
-    },
-    "before": {
-      "title": "Summary without MagicHango",
-      "sessions": "3",
-      "billable": "3h",
-      "travel": "2h45",
-      "deadTime": "1h35",
-      "finish": "16:30",
-      "lastClient": "Far from home"
-    },
-    "after": {
-      "title": "Summary with MagicHango",
-      "sessions": "4",
-      "billable": "4h",
-      "travel": "1h20",
-      "deadTime": "Almost none",
-      "finish": "15:35",
-      "lastClient": "Close to home"
-    }
+    "beforeReasonOne": "When missed callers wait too long, you often end up accepting the first slot that works instead of the right slot for the route.",
+    "beforeReasonTwo": "That creates long drives, awkward gaps, and a last stop that leaves you far from home.",
+    "beforeReasonThree": "The day looks full, but too much revenue is lost to travel and preventable friction.",
+    "afterReasonOne": "MagicHango texts the missed caller quickly and collects the pet, service, and address details up front.",
+    "afterReasonTwo": "That makes it possible to suggest time slots that fit the route instead of forcing the day around a bad booking.",
+    "afterReasonThree": "You approve the best option before confirmation, which means better routes and less back-and-forth."
   },
   "comparison": {
-    "title": "Direct comparison",
-    "note": "All stats below are for one worked day.",
+    "title": "Example day comparison",
+    "note": "All stats below are based on one sample mobile grooming day.",
     "assumption": "Fuel cost uses 154 mi vs 68.7 mi, the AAA U.S. regular gas average ($2.839/gal), and a 25 mpg vehicle.",
     "headers": {
       "before": "Without MagicHango",
@@ -182,70 +153,107 @@
       "gain": "Gain"
     },
     "rows": {
-      "sessions": "Number of sessions",
-      "billable": "Billable time",
-      "travel": "Travel time",
+      "sessions": "Booked appointments",
+      "billable": "Grooming time",
+      "travel": "Driving time",
       "distance": "Distance driven",
       "fuel": "Fuel cost",
-      "deadTime": "Gap / break",
-      "returnTime": "Return time",
-      "endQuality": "Last client"
+      "deadTime": "Broken gaps",
+      "returnTime": "Day ends",
+      "endQuality": "Last stop"
     },
     "before": {
       "sessions": "3",
       "billable": "3h",
       "travel": "2h45",
       "deadTime": "1h35",
-      "returnTime": "16:30",
-      "endQuality": "Last client far"
+      "returnTime": "4:30 PM",
+      "endQuality": "Far from home"
     },
     "after": {
       "sessions": "4",
       "billable": "4h",
       "travel": "1h20",
-      "deadTime": "Almost 0",
-      "returnTime": "15:35",
-      "endQuality": "Last client close"
+      "deadTime": "Almost none",
+      "returnTime": "3:35 PM",
+      "endQuality": "Close to home"
     },
     "gain": {
-      "sessions": "+1 session",
+      "sessions": "+1 booking",
       "billable": "+33%",
       "travel": "-1h25",
-      "deadTime": "Much smoother day",
-      "returnTime": "Earlier return",
+      "deadTime": "Smoother day",
+      "returnTime": "Earlier finish",
       "endQuality": "Less fatigue"
     }
   },
   "routeCards": {
     "totalLabel": "Total driving",
     "before": {
-      "title": "Southwest Ohio route without MagicHango",
+      "title": "Example route without MagicHango",
       "total": "2h45",
-      "caption": "A scattered Southwest Ohio route forces long crossings before the trainer can finally get back home."
+      "caption": "Late callbacks and scattered booking decisions turn one day into too much driving."
     },
     "after": {
-      "title": "Southwest Ohio route with MagicHango",
+      "title": "Example route with MagicHango",
       "total": "1h20",
-      "caption": "The Southwest Ohio route becomes tighter, with shorter links and a much easier way back home."
+      "caption": "Qualified requests and route-friendly slot suggestions keep the day tighter and easier to approve."
     }
   },
-  "marketing": {
-    "title": "Marketing message",
-    "beforeLabel": "Without MagicHango",
-    "beforeText": "Your calendar looks full, but your day leaks time between appointments.",
-    "afterLabel": "With MagicHango",
-    "afterText": "MagicHango helps clients book the slots that actually fit your route — so you can do more sessions, drive less, and finish closer to home."
+  "pain": {
+    "eyebrow": "The problem",
+    "title": "Every missed call can become a lost grooming appointment",
+    "body": "And every bad booking can turn into extra driving, awkward gaps, late callbacks, endless SMS back-and-forth, and revenue that never lands in the day."
+  },
+  "workflow": {
+    "eyebrow": "How it works",
+    "title": "Missed call first. Better booking second.",
+    "subtitle": "MagicHango keeps the flow simple: reply fast, qualify the request, suggest better slots, and keep the groomer in control.",
+    "stepLabel": "Step {number}",
+    "steps": [
+      {
+        "title": "A client calls while you are grooming",
+        "body": "You miss the call because you are working with an animal, not sitting at a desk."
+      },
+      {
+        "title": "MagicHango follows up by SMS",
+        "body": "The caller gets a fast reply instead of waiting for you to call back at the end of the day."
+      },
+      {
+        "title": "The client shares pet, service, and address details",
+        "body": "Breed, size, requested service, address, and preferences are collected in one structured request."
+      },
+      {
+        "title": "You approve route-friendly booking options",
+        "body": "MagicHango suggests slots that fit your route, and you validate before the appointment is confirmed."
+      }
+    ]
+  },
+  "differentiation": {
+    "eyebrow": "Why it is different",
+    "title": "Not just a booking link. Not just an AI receptionist.",
+    "body": "MagicHango is built for mobile pet groomers who need appointment times that make sense on the road, not just any open slot.",
+    "cards": {
+      "route": {
+        "title": "Bookings that fit the day",
+        "body": "MagicHango understands that one bad appointment can create extra driving, ugly gaps, and a stressful route."
+      },
+      "control": {
+        "title": "You stay in control",
+        "body": "MagicHango does not book blindly. It prepares the request, suggests the best slots, and lets you approve before confirmation."
+      }
+    }
   },
   "cta": {
-    "eyebrow": "Ready to make this your default booking flow",
-    "title": "Use MagicHango to fit the right clients into the right route.",
-    "subtitle": "Do more sessions, lose less time on the road, and centralize your full booking flow in one app.",
+    "eyebrow": "Ready to make this your default workflow",
+    "title": "Recover missed calls. Book better routes.",
+    "subtitle": "Start with a workflow that replies by SMS, qualifies the request, and helps you approve better bookings before the day breaks apart.",
     "requestDemo": "Request a demo",
     "demoMailSubject": "Custom MagicHango demo request",
-    "demoMailBody": "Hi Tom,%0D%0A%0D%0AI'd like to request a custom in-person demo of MagicHango.%0D%0A%0D%0AMy name:%0D%0AMy business:%0D%0AMy city:%0D%0AMy preferred dates:%0D%0A%0D%0AThanks,",
+    "demoMailBody": "Hi Tom,%0D%0A%0D%0AI'd like to see the missed-call workflow for mobile pet grooming.%0D%0A%0D%0AMy name:%0D%0AMy business:%0D%0AMy city:%0D%0AMy preferred dates:%0D%0A%0D%0AThanks,",
     "noCardRequired": "Free trial, no credit card required.",
     "openApp": "Open the app",
-    "startTrial": "Start the free trial",
+    "startTrial": "Start with MagicHango",
     "viewPlans": "View plans"
   }
 }

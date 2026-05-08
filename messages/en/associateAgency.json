@@ -15,9 +15,9 @@
     "lockedCodeWithAgency": "This link already connects you to {agencyName}. You only need to confirm your address."
   },
   "preview": {
-    "label": "Trainer detected",
-    "loading": "Looking up the trainer linked to this code...",
-    "help": "This code seems to match the right trainer.",
+    "label": "Groomer detected",
+    "loading": "Looking up the groomer linked to this code...",
+    "help": "This code seems to match the right groomer.",
     "helpWithAgency": "This code seems to match {agencyName}.",
     "reviewsTitle": "{count, plural, one {# client review} other {# client reviews}}",
     "anonymousClient": "Client",

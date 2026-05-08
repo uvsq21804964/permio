@@ -1,38 +1,34 @@
 {
   "workflow": {
-    "heading": "An assistant that organizes your sessions and supports your clients",
-    "subheading": "Give your clients a simple, instant experience: booking becomes fast, frictionless, and effortless.",
+    "heading": "How the missed-call workflow works",
+    "subheading": "MagicHango replies fast, collects the right details, and helps you approve bookings that fit the day.",
     "nav": {
       "prev": "Previous",
       "next": "Next"
     },
     "steps": [
       {
-        "title": "Set up your workspace",
-        "description": "Create your account, set your weekly availability, and add the services you offer. In just a few minutes, everything is ready."
+        "title": "A client calls while you are grooming",
+        "description": "You stay focused on the dog in front of you instead of dropping everything to answer."
       },
       {
-        "title": "Bring your clients in",
-        "description": "Clients book directly on your private calendar. Travel times are automatically included, without ever revealing your address."
+        "title": "MagicHango follows up by SMS",
+        "description": "The missed caller gets a quick text instead of waiting hours for a callback."
       },
       {
-        "title": "Finally take time for yourself",
-        "description": "Your schedule builds and reshuffles automatically. Less back-and-forth, less stress, and more time to breathe… or enjoy your day."
+        "title": "The client shares the useful details",
+        "description": "Pet, breed, size, service, address, and preferences are collected in one place."
       },
       {
-        "title": "Run your day",
-        "description": "Each day, access your optimized route in one click. Open Google Maps instantly to get to your next appointment."
-      },
-      {
-        "title": "Watch your revenue grow",
-        "description": "By optimizing your schedule and cutting unnecessary driving, you free up more bookable time, more sessions, less fatigue."
+        "title": "You approve route-friendly options",
+        "description": "MagicHango suggests time slots that fit your route, and you validate before confirmation."
       }
     ],
     "bottom": {
-      "pitchLine1": "Bring the magic.",
-      "pitchLine2": "More spontaneous bookings, instant client trust… ",
-      "pitchLine3": "Let us prove it to you.",
-      "cta": "Try it free for 1 month!"
+      "pitchLine1": "Recover missed calls.",
+      "pitchLine2": "Cut the back-and-forth.",
+      "pitchLine3": "Keep control of the final booking.",
+      "cta": "Try the missed-call workflow"
     }
   }
 }

@@ -2,75 +2,75 @@
   "faq": {
     "badge": "FAQ",
     "title": "Foire aux questions",
-    "subtitle": "Tout ce qu’il faut savoir sur les plans, la facturation et la gestion des trajets.",
+    "subtitle": "Tout ce qu’il faut savoir sur le workflow d’appel manqué, le prix et le contrôle.",
     "items": {
       "whoFor": {
         "q": "À qui s’adresse l’outil ?",
-        "a": "Aux éducateurs canins et promeneurs de chiens qui se déplacent à domicile et veulent réduire leurs temps de trajet tout en remplissant un maximum de créneaux dans la journée. L’outil s’adresse aussi à ceux qui en ont assez de gérer toute la planification eux-mêmes et de passer leurs soirées à envoyer et lire des mails."
+        "a": "Aux toiletteurs mobiles indépendants et aux petites équipes qui manquent des appels pendant les prestations et veulent de meilleurs rendez-vous sans rajouter de route."
       },
       "whyUse": {
         "q": "Pourquoi utiliser MagicHango plutôt qu’un agenda classique ?",
-        "a": "Parce que l’objectif n’est pas seulement de “prendre des rendez-vous”, mais d’optimiser votre semaine. MagicHango vous aide à réduire les allers-retours, à éviter les trous entre deux séances et à regrouper les rendez-vous de façon réaliste en tenant compte des temps de trajet. Vous gagnez du temps, de la clarté, et vous facturez davantage d’heures utiles."
+        "a": "Parce que le vrai problème n’est pas seulement de stocker des rendez-vous. Il faut transformer les appels manqués en demandes qualifiées, puis en créneaux compatibles avec la tournée. MagicHango aide précisément sur ce workflow."
       },
       "publicBooking": {
-        "q": "Proposez-vous une page de réservation publique ?",
-        "a": "Oui. Vos clients réservent eux-mêmes leurs créneaux via une page de réservation sur la base des disponibilités que vous avez configurées. Ils ne paient pas sur la plateforme, mais peuvent sélectionner précisément un des services que vous proposez."
+        "q": "Proposez-vous une page de réservation ou un suivi client ?",
+        "a": "Oui. MagicHango peut guider vos clients dans votre flow de réservation, et les appelants manqués peuvent être relancés par SMS pour faire avancer la demande même quand vous ne pouvez pas répondre."
       },
       "payments": {
         "q": "Qui paie et comment ?",
-        "a": "L’abonnement est payé par l’éducateur canin ou l’agence (via Stripe). Les clients n’ont aucun paiement à effectuer. EUR et USD sont pris en charge."
+        "a": "L’abonnement est payé par le toiletteur ou l’entreprise via Stripe. Les clients ne paient pas sur la plateforme. EUR et USD sont pris en charge."
       },
       "hiddenFees": {
         "q": "Y a-t-il des frais cachés ?",
-        "a": "Non. Pas de frais de mise en place, pas de frais d’annulation, pas de frais “surprise”. Vous payez uniquement l’abonnement affiché. Les taxes peuvent s’appliquer selon votre pays."
+        "a": "Non. Pas de frais d’installation, pas de frais surprise et pas de frais d’annulation. Vous payez le prix d’abonnement affiché. Les taxes peuvent s’appliquer selon votre pays."
       },
       "cancelAnytime": {
-        "q": "Est-il possible d’annuler à tout moment ?",
-        "a": "Oui. Vous pouvez arrêter quand vous voulez. Une fois résilié, vous n’êtes plus facturé et vous gardez l’accès à vos données selon la période prévue dans l’app (export possible)."
+        "q": "Puis-je arrêter à tout moment ?",
+        "a": "Oui. Vous pouvez arrêter quand vous voulez. Une fois résilié, vous n’êtes plus facturé et vous gardez accès à vos données selon les règles de conservation prévues dans l’app."
       },
       "trialPricing": {
-        "q": "Y a-t-il un essai gratuit et quelles sont les formules ?",
-        "a": "Essai 1 mois sans carte. Une seule offre : Full Magic. Vous pouvez arrêter votre abonnement à tout moment."
+        "q": "Y a-t-il un essai gratuit et quelles sont les offres ?",
+        "a": "Oui. Il y a un essai gratuit d’un mois sans carte. L’offre principale est Full Magic."
       },
       "prorata": {
         "q": "Si je m’inscris en cours de mois, est-ce au prorata ?",
-        "a": "Votre cycle de facturation démarre le jour de votre inscription. Par exemple, si vous démarrez le 15, votre renouvellement se fera le 15 du mois suivant."
+        "a": "Votre cycle de facturation démarre le jour de votre inscription. Si vous commencez le 15, le prochain renouvellement sera le 15 du mois suivant."
       },
       "privacyLocation": {
-        "q": "Qui peut voir mon adresse ou savoir où je suis ?",
-        "a": "Vos clients n’accèdent qu’à une page avec vos créneaux disponibles, c’est-à-dire les moments où aucun rendez-vous n’est encore réservé. Ils ne voient ni votre adresse, ni votre trajet, ni les déplacements prévus entre deux rendez-vous. Seul vous avez accès à ces informations détaillées dans votre agenda."
+        "q": "Qui peut voir mon adresse ou ma tournée ?",
+        "a": "Les clients peuvent partager leur adresse pour la demande, mais ils ne voient ni votre tournée complète ni vos trajets. Ce contexte reste de votre côté."
       },
       "planningScope": {
-        "q": "Gérez-vous les lieux ou les temps de trajet ?",
-        "a": "Oui. Vos clients peuvent fournir leur adresse de domicile ou des adresses ponctuelles pour un créneau particulier et l’agenda affiche un temps de trajet entre deux séances. Un clic sur ce temps de trajet ouvre directement l’itinéraire correspondant dans Google Maps. L’objectif est de regrouper les cours et de limiter les allers-retours dans la journée."
+        "q": "Gérez-vous les adresses, les temps de trajet et la compatibilité tournée ?",
+        "a": "Oui. MagicHango utilise l’adresse de la demande pour suggérer des créneaux cohérents avec la journée et éviter les rendez-vous qui créent trop de route."
       },
       "optimization": {
-        "q": "Comment l’outil aide à remplir plus de créneaux ?",
-        "a": "Le moteur regroupe les rendez-vous dans la journée, limite les trous et prend en compte vos trajets. Il privilégie les créneaux difficiles à remplir et évite les enchaînements impossibles en gardant des marges de sécurité entre deux cours. Résultat : moins de temps perdu sur la route, plus d’heures facturables."
+        "q": "Comment l’outil aide-t-il à remplir plus de temps facturable ?",
+        "a": "Il vous aide à récupérer plus vite les appelants manqués, à collecter les bonnes informations dès le départ et à éviter les mauvais créneaux qui créent des trous ou des détours inutiles. En général, cela veut dire plus de rendez-vous qualifiés et moins de temps perdu."
       },
       "mobileApp": {
         "q": "Existe-t-il une application mobile ?",
-        "a": "Pas encore. MagicHango est pour l’instant optimisé pour le navigateur (mobile et desktop). Une application mobile pourra venir ensuite, selon les besoins les plus demandés."
+        "a": "Pas encore. MagicHango est pour l’instant optimisé pour le navigateur sur mobile et desktop."
       },
       "calendarSync": {
-        "q": "Puis-je synchroniser Google/Outlook ?",
-        "a": "Pas de synchronisation d’agenda pour le moment. Cette intégration est prévue en revanche."
+        "q": "Puis-je synchroniser Google ou Outlook ?",
+        "a": "Pas encore. La synchronisation de calendrier n’est pas disponible pour le moment, mais elle fait partie de la roadmap."
       },
       "cancellations": {
         "q": "Comment gérez-vous les annulations et remplacements ?",
-        "a": "Lorsqu’un client annule, le créneau peut être reproposé à un autre client ayant indiqué sa disponibilité sur ce créneau. Le professeur voit le créneau comme remplacé uniquement après confirmation via l’email de notification."
+        "a": "Vous gardez la main. Quand quelque chose change, MagicHango peut faire remonter de meilleures options, mais l’étape de confirmation finale reste visible pour vous."
       },
       "support": {
-        "q": "Comment fonctionne le support et la facturation ?",
-        "a": "Les factures sont générées dans l’app via Stripe et regroupées dans une page dédiée. Si vous avez un souci, vous pouvez contacter le support depuis l’app pour obtenir une réponse rapide."
+        "q": "Comment fonctionnent le support et la facturation ?",
+        "a": "Les factures sont disponibles dans l’app via Stripe, et le support est joignable depuis le produit si vous avez besoin d’aide."
       },
       "security": {
-        "q": "Mes données et celles de mes clients sont-elles en sécurité ?",
-        "a": "Oui. Nous appliquons des mesures de sécurité standard (contrôles d’accès, isolation par compte/organisation, et bonnes pratiques de protection des données). Vous gardez la propriété de vos données et pouvez demander une exportation à tout moment."
+        "q": "Mes données et celles de mes clients sont-elles sécurisées ?",
+        "a": "Oui. Nous utilisons des mesures de sécurité standard comme les contrôles d’accès, l’isolation des comptes et les bonnes pratiques de protection des données."
       },
       "enterprise": {
-        "q": "Et si j’ai besoin d’une solution plus avancée qu’un simple calendrier ?",
-        "a": "Si vous avez plusieurs éducateurs, plusieurs zones à couvrir, des règles complexes (secteurs, priorités, contraintes de trajets, capacités par jour) ou besoin d’intégrations spécifiques, nous pouvons proposer une version “agence/Enterprise”. Contactez-nous : on analysera votre cas et on vous proposera la bonne configuration."
+        "q": "Et si je gère plusieurs véhicules, toiletteurs ou zones ?",
+        "a": "Si vous avez une organisation plus complexe avec plusieurs toiletteurs, zones ou règles de réservation, contactez-nous. Nous regarderons votre workflow pour recommander la bonne configuration."
       }
     }
   }

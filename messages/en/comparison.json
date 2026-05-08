@@ -1,123 +1,118 @@
 {
   "comparison": {
-    "units": { "hoursShort": "hrs" },
-
+    "units": {
+      "hoursShort": "hrs"
+    },
     "headers": {
-      "free": "Alone",
+      "free": "Manual follow-up",
       "magic": "With MagicHango"
     },
-
     "table": {
-      "featureHeader": "Feature",
+      "featureHeader": "What changes",
       "moreInfo": "More info"
     },
-
     "values": {
       "unlimited": "Unlimited",
       "extraFee": "+ fee",
-
       "organizationMode": {
-        "free": "100% manual",
-        "magic": "Algorithm-driven"
+        "free": "Manual callbacks and guesswork",
+        "magic": "Structured intake before you reply"
       },
       "yourTime": {
-        "free": "Time spent planning and following up",
-        "magic": "More free time & billable sessions"
+        "free": "Phone tag, notes, and scattered texts",
+        "magic": "Less back-and-forth and fewer interruptions"
       },
       "notAlone": {
-        "free": "You handle everything yourself",
-        "magic": "A team that listens and turns your ideas into new features"
+        "free": "You chase every detail yourself",
+        "magic": "MagicHango prepares the request; you approve before confirmation"
       },
       "growth": {
-        "limited": "Limited",
-        "scalable": "Scalable"
+        "limited": "Missed calls often stay lost",
+        "scalable": "More missed calls turn into qualified bookings"
       },
       "clientPerception": {
-        "free": "An independent trainer “making it work”",
-        "magic": "An organized, in-demand professional"
+        "free": "Slow callback, unclear next step",
+        "magic": "Fast SMS reply and a clear next step"
       },
       "whatProspectsSee": {
-        "free": "A personal site with no visible reviews",
-        "magic": "A page showing reviews and experience"
+        "free": "Voicemail or a delayed reply",
+        "magic": "Questions that collect pet, service, and address details"
       }
     },
-
     "sections": {
-      "booking": "Booking & client experience",
-      "travel": "Travel & Google Maps",
-      "optimization": "Optimization & productivity",
+      "booking": "Missed calls & follow-up",
+      "travel": "Qualification & route fit",
+      "optimization": "Control & workload",
       "support": "Support & growth",
-      "branding": "Brand & credibility"
+      "branding": "Client experience"
     },
-
     "rows": {
       "selfBooking": {
-        "label": "Client self-booking",
-        "tooltip": "Clients choose a time slot from your configured availability—no email back-and-forth."
+        "label": "Automatic SMS after missed calls",
+        "tooltip": "Missed callers get a text right away instead of waiting for you to call back between appointments."
       },
       "smartGrouping": {
-        "label": "Smart appointment grouping",
-        "tooltip": "Automatically groups sessions to reduce gaps and concentrate your working hours at the best times."
+        "label": "Route-friendly slot suggestions",
+        "tooltip": "Suggested time slots are chosen to fit the route, not just your raw availability."
       },
       "travelTime": {
-        "label": "Travel time between sessions",
-        "tooltip": "Estimates travel time between appointments to avoid impossible sequences and unnecessary driving."
+        "label": "Address-aware route checks",
+        "tooltip": "The request includes the address so MagicHango can avoid slot suggestions that break the day."
       },
       "googleMaps": {
-        "label": "One-click Google Maps",
-        "tooltip": "Click the travel time to open the route in Google Maps—no retyping."
+        "label": "One-click Google Maps handoff",
+        "tooltip": "When the booking is approved, the route context is already ready to use."
       },
       "allInOne": {
-        "label": "Calendar, routes, and clients in one place (all-in-one)",
-        "tooltip": "Stop juggling multiple apps—your schedule, routes, and clients finally live in one tool."
+        "label": "Qualified request in one place",
+        "tooltip": "Pet details, service request, address, and booking suggestion stay together instead of across missed calls, notes, and texts."
       },
       "organizationMode": {
-        "label": "Organization mode"
+        "label": "How bookings happen"
       },
       "yourTime": {
-        "label": "Your time",
-        "tooltip": "Time lost organizing vs real time freed up to teach, travel efficiently… or rest."
+        "label": "Your mental load",
+        "tooltip": "Less phone tag, less admin, and fewer broken days caused by bad time slots."
       },
       "notAlone": {
-        "label": "Stop working alone"
+        "label": "Who keeps control"
       },
       "customNoFee": {
-        "label": "Custom features (at no extra cost)"
+        "label": "Approval before confirmation"
       },
       "growth": {
-        "label": "Client growth potential"
+        "label": "Booking recovery potential"
       },
       "clientPerception": {
-        "label": "How clients perceive you"
+        "label": "How clients experience you"
       },
       "whatProspectsSee": {
-        "label": "What prospects see",
-        "tooltip": "Personal site: few proofs. MagicHango page: reviews + experience visible."
+        "label": "What missed callers receive",
+        "tooltip": "Instead of silence or voicemail, they get a clear next step that moves the request forward."
       }
     },
-
     "plans": {
       "free": {
-        "title": "Free",
+        "title": "Manual",
         "features": [
-          "Up to 2 clients",
-          "Visual planner with manual session creation",
-          "Simple view of available time slots",
+          "You call back when you can",
+          "Pet details collected manually",
+          "Address and route checks handled by hand",
           "Email support"
         ]
       },
       "magic": {
         "title": "Full Magic",
         "features": [
-          "Unlimited clients",
-          "Self-booking, advanced prioritization and complex scenarios",
-          "Multi-trainer grouping and multi-area optimization",
-          "Detailed travel times and full routes, clickable to Google Maps",
-          "All-in-one agency view: calendar, routes, clients",
-          "Advanced optimization",
-          "Priority support (email & phone)",
-          "Personal branding/logo",
-          "Custom features at no extra cost!"
+          "SMS follow-up after missed calls",
+          "Structured intake for pet, service, and address details",
+          "Route-friendly booking suggestions",
+          "Approval before confirmation",
+          "Request, route, and client context in one place",
+          "Priority support",
+          "Made for mobile pet groomers",
+          "Custom features at no extra cost",
+          "Unlimited services and bookings"
         ]
       }
     }

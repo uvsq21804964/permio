@@ -5,6 +5,7 @@
   "packageManager": "pnpm@10.20.0",
   "scripts": {
     "build": "next build",
+    "clean:next": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\"",
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",

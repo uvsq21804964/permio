@@ -22,28 +22,28 @@ const LOCALIZED_METADATA: Record<
   }
 > = {
   en: {
-    title: 'Smart booking for dog trainers',
+    title: 'Missed-call booking workflow for mobile pet groomers',
     description:
-      'MagicHango helps dog trainers manage bookings, reduce travel time, organize appointments, and create a smoother booking experience for clients.',
+      'MagicHango helps mobile pet groomers turn missed calls into qualified, route-friendly bookings with SMS follow-up, pet intake, and approval-first scheduling.',
     keywords: [
-      'dog trainer booking',
-      'dog trainer calendar',
-      'dog training appointment software',
-      'dog trainer route optimization',
-      'pet service scheduling',
+      'mobile pet groomer booking',
+      'mobile dog grooming software',
+      'missed call sms follow up',
+      'route friendly bookings',
+      'pet grooming scheduling',
     ],
     openGraphLocale: 'en_US',
   },
   fr: {
-    title: 'Réservation intelligente pour éducateurs canins',
+    title: 'Workflow d’appels manqués pour toiletteurs mobiles',
     description:
-      'MagicHango aide les éducateurs canins à gérer les réservations, réduire les déplacements, organiser les rendez-vous et fluidifier l’expérience client.',
+      'MagicHango aide les toiletteurs mobiles à transformer les appels manqués en rendez-vous qualifiés et compatibles avec leur tournée grâce au SMS, à la qualification client et à la validation avant confirmation.',
     keywords: [
-      'réservation éducateur canin',
-      'agenda éducateur canin',
-      'logiciel réservation éducateur canin',
-      'optimisation planning éducateur canin',
-      'gestion rendez-vous canins',
+      'logiciel toiletteur mobile',
+      'toilettage mobile appels manqués',
+      'suivi sms appels manqués',
+      'rendez-vous compatibles tournée',
+      'prise de rendez-vous toilettage mobile',
     ],
     openGraphLocale: 'fr_FR',
   },

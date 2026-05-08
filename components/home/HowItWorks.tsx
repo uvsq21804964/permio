@@ -50,11 +50,6 @@ const WorkflowCarousel = () => {
         description: t('workflow.steps.3.description'),
         color: COLORS[3],
       },
-      {
-        title: t('workflow.steps.4.title'),
-        description: t('workflow.steps.4.description'),
-        color: COLORS[4],
-      },
     ],
     [t]
   );

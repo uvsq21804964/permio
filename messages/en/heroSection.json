@@ -4,23 +4,23 @@
     "tryFree": "Try 1 month, no card"
   },
   "hero": {
-    "titlePrefix": "The platform built for",
-    "highlight1": "dog trainers",
-    "titleMiddle": "who travel",
-    "highlight2": "to clients' homes",
-    "titleSuffix": ",",
-    "subtitlePrefix": "Spend less time driving and grow your client base",
-    "subtitleEmphasis": "in a blink",
-    "ctaPrimary": "Create my account — 1 minute",
+    "titlePrefix": "Turn",
+    "highlight1": "missed grooming calls",
+    "titleMiddle": "into",
+    "highlight2": "route-friendly bookings",
+    "titleSuffix": "with",
+    "subtitlePrefix": "MagicHango texts missed callers, qualifies the pet request, and suggests appointment times that fit your route",
+    "subtitleEmphasis": "without endless back-and-forth.",
+    "ctaPrimary": "Try the missed-call workflow",
     "ctaSecondary": "Sign in",
-    "imageAlt": "Preview of the MagicHango schedule",
-    "imageCaption": "Calendar, clients, and travel — all in one place."
+    "imageAlt": "Preview of the MagicHango workflow",
+    "imageCaption": "Missed-call follow-up, booking suggestions, and route context in one place."
   },
   "preview": {
-    "badgeSchedule": "Schedule",
-    "badgeRoute": "Routes",
-    "caption": "Preview: optimized schedule + one-click directions.",
-    "altSchedule": "MagicHango schedule preview",
-    "altRoute": "Route preview with travel time"
+    "badgeSchedule": "Workflow",
+    "badgeRoute": "Route fit",
+    "caption": "Preview: missed-call follow-up plus route-friendly booking suggestions.",
+    "altSchedule": "MagicHango workflow preview",
+    "altRoute": "Preview of a route-friendly booking suggestion"
   }
 }

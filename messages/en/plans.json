@@ -1,26 +1,29 @@
 {
   "plans": {
-    "heading": "Save time on driving, without changing how you work",
-    "subheading": "Clients book on their own, your appointments get grouped, and your whole schedule lives in one place.",
+    "heading": "Pay only for the leads you generate",
+    "subheading": "MagicHango follows up by SMS, qualifies the request, and turns missed calls into real opportunities for your route.",
     "banner": {
-      "label": "Best value",
-      "text": "Group appointments, reduce back-and-forth driving, and open Google Maps in one click from your calendar."
+      "label": "Performance-based pricing",
+      "text": "You pay only for value obtained: $1 per generated lead, with a hard cap at $35."
     },
-    "badge": "Made for dog trainers",
+    "badge": "Made for mobile pet groomers",
     "perMonth": "/month",
-    "note": "Ideal if you travel to clients’ homes.",
-    "ctaPrimary": "Try it for one month",
+    "priceDisplay": "$1",
+    "priceSuffix": "/lead",
+    "note": "Only pay when a lead is generated.",
+    "capNote": "Monthly cap: $35. No overpaying if volume grows.",
+    "ctaPrimary": "Start with MagicHango",
     "ctaSecondary": "Choose this plan",
-    "disclaimer": "No card required to start. Cancel anytime.",
+    "disclaimer": "You only pay for generated leads, capped at $35 per month.",
     "plan": {
       "title": "Full Magic",
       "features": [
-        "Clients can book 24/7",
-        "Travel times included, no scheduling conflicts",
-        "Fewer gaps and less back-and-forth driving",
-        "Google Maps integration",
-        "Calendar, routes, and client details in one place",
-        "Unlimited services and appointments"
+        "SMS follow-up after missed calls",
+        "Pet, service, address, and preference intake",
+        "Route-friendly appointment suggestions",
+        "Approval before confirmation",
+        "$1 per generated lead",
+        "Billing capped at $35"
       ]
     },
     "alreadySubscribed": "You already have an active subscription",

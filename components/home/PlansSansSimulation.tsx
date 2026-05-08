@@ -126,7 +126,6 @@ export default function Plans({ withTrial }: Props) {
         <section className="mt-8 flex justify-center">
           {plans.map((plan) => {
             const isHighlighted = Boolean(plan.highlighted);
-            const price = plan.prices[currency];
 
             return (
               <article
@@ -153,15 +152,19 @@ export default function Plans({ withTrial }: Props) {
 
                   <div className="mt-2 flex items-end gap-1">
                     <span className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-[#d400ff]">
-                      {formatCurrency(price, currency, lang)}
+                      {t('plans.priceDisplay')}
                     </span>
                     <span className="text-sm text-black/60">
-                      {t('plans.perMonth')}
+                      {t('plans.priceSuffix')}
                     </span>
                   </div>
 
                   <p className="mt-1 text-xs text-black/50">
                     {t('plans.note')}
+                  </p>
+
+                  <p className="mt-2 text-sm font-medium text-black/75">
+                    {t('plans.capNote')}
                   </p>
 
                   <ul className="mt-5 space-y-2 text-sm text-black/80">

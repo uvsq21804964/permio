@@ -4,23 +4,23 @@
     "tryFree": "Essayer 1 mois, sans carte"
   },
   "hero": {
-    "titlePrefix": "La plateforme dédiée aux",
-    "highlight1": "éducateurs canins",
-    "titleMiddle": "qui se déplacent",
-    "highlight2": "à domicile",
-    "titleSuffix": ",",
-    "subtitlePrefix": "Faites moins de trajets et développez votre base de clients",
-    "subtitleEmphasis": "en un clin d'œil",
-    "ctaPrimary": "Créer mon compte - en 1 minute",
+    "titlePrefix": "Transformez",
+    "highlight1": "les appels de toilettage manqués",
+    "titleMiddle": "en",
+    "highlight2": "rendez-vous compatibles avec votre tournée",
+    "titleSuffix": "avec",
+    "subtitlePrefix": "MagicHango répond par SMS aux appels manqués, qualifie la demande client et propose des créneaux qui respectent vos trajets",
+    "subtitleEmphasis": "sans échanges interminables.",
+    "ctaPrimary": "Tester le workflow d’appel manqué",
     "ctaSecondary": "Me connecter",
-    "imageAlt": "Aperçu du planning MagicHango",
-    "imageCaption": "Agenda, clients et trajets réunis au même endroit."
+    "imageAlt": "Aperçu du workflow MagicHango",
+    "imageCaption": "Suivi des appels manqués, suggestions de créneaux et contexte de tournée au même endroit."
   },
   "preview": {
-    "badgeSchedule": "Planning",
-    "badgeRoute": "Trajets",
-    "caption": "Aperçu : planning optimisé + itinéraire accessible en 1 clic.",
-    "altSchedule": "Aperçu du planning MagicHango",
-    "altRoute": "Aperçu d'un itinéraire et des temps de trajet"
+    "badgeSchedule": "Workflow",
+    "badgeRoute": "Tournée",
+    "caption": "Aperçu : suivi des appels manqués et suggestions de rendez-vous compatibles avec la tournée.",
+    "altSchedule": "Aperçu du workflow MagicHango",
+    "altRoute": "Aperçu d’une suggestion de rendez-vous compatible avec la tournée"
   }
 }

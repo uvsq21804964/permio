@@ -51,8 +51,8 @@ export function AssociateAgencyFlowHeader({
       >
         {clientInviteLocked
           ? isFrench
-            ? "Je suis educateur canin, pas client"
-            : "I'm a dog trainer, not a client"
+            ? "Je suis toiletteur canin, pas client"
+            : "I'm a dog groomer, not a client"
           : isFrench
             ? 'Retour au choix des roles'
             : 'Back to role selection'}

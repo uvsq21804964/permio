@@ -1,26 +1,29 @@
 {
   "plans": {
-    "heading": "Gagnez du temps sur vos trajets, sans changer vos habitudes",
-    "subheading": "Vos clients réservent seuls, vos rendez-vous sont regroupés, et tout votre planning vit au même endroit.",
+    "heading": "Ne payez que pour les leads générés",
+    "subheading": "MagicHango répond par SMS, qualifie la demande et transforme les appels manqués en vraies opportunités pour votre tournée.",
     "banner": {
-      "label": "Bon plan",
-      "text": "Regroupez vos rendez-vous, limitez les allers-retours et ouvrez Google Maps en un clic depuis votre agenda."
+      "label": "Tarification à la performance",
+      "text": "Vous payez uniquement pour la valeur obtenue : 1 dollar par lead généré, avec un plafond strict de 35 dollars."
     },
-    "badge": "Spécial éducateurs canins",
+    "badge": "Spécial toiletteurs mobiles",
     "perMonth": "/mois",
-    "note": "Idéal si vos clients demandent des déplacements à domicile.",
-    "ctaPrimary": "Essayer pendant un mois",
+    "priceDisplay": "1 $",
+    "priceSuffix": "/lead",
+    "note": "Vous payez seulement quand un lead est généré.",
+    "capNote": "Plafond mensuel : 35 $. Aucun surcoût si le volume augmente.",
+    "ctaPrimary": "Commencer avec MagicHango",
     "ctaSecondary": "Passer à cette formule",
-    "disclaimer": "Carte non requise pour démarrer. Vous êtes libre d’arrêter à tout moment.",
+    "disclaimer": "Vous ne payez que pour les leads générés, avec un plafond de 35 $ par mois.",
     "plan": {
       "title": "Full Magic",
       "features": [
-        "Vos clients réservent eux-mêmes 24h/24 et 7j/7",
-        "Prise en compte des temps de trajet, aucun conflits horaires",
-        "Réduction des trous et allers-retours",
-        "Intégration avec Google Maps !",
-        "Agenda, trajets et infos clients réunis au même endroit",
-        "Nombre illimité de services et de rendez-vous"
+        "Relance SMS après appel manqué",
+        "Collecte de l’animal, du service, de l’adresse et des préférences",
+        "Suggestions de créneaux compatibles avec la tournée",
+        "Validation avant confirmation",
+        "1 dollar par lead généré",
+        "Facturation plafonnée à 35 dollars"
       ]
     },
     "alreadySubscribed": "Vous avez déjà un abonnement actif",

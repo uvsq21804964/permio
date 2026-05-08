@@ -1,17 +1,17 @@
 {
   "cta": {
-    "title": "Soulagez votre quotidien",
-    "subtitle": "Moins de trajets, plus de temps libre, des clients satisfaits.",
-    "primaryLabel": "Tester pendant un mois avant de souscrire",
-    "secondaryLabel": "J’ai une question ou je veux une démo",
+    "title": "Récupérez les appels manqués. Remplissez de meilleures tournées.",
+    "subtitle": "MagicHango répond par SMS aux appels manqués, qualifie la demande et vous aide à valider de meilleurs rendez-vous sans échanges inutiles.",
+    "primaryLabel": "Commencer avec MagicHango",
+    "secondaryLabel": "Je veux une démo",
     "proof": [
-      "Aucune carte requise",
-      "Annulable en 2 clics",
-      "Pas de marketplace : vos disponibilités, vos règles"
+      "Sans carte bancaire",
+      "Vous validez avant confirmation",
+      "Pensé pour les toiletteurs mobiles"
     ],
     "email": {
-      "subject": "Demande de démo — optimisation des tournées",
-      "body": "Bonjour Tom,\n\nJe souhaiterais une démo rapide de l’outil d’optimisation (disponibilités + temps de trajet).\nCréneau idéal : __/__/____ à __:__\n\nContexte :\n- Nombre de clients : \n- Zones couvertes : \n- Outils actuels : \n\nMerci !"
+      "subject": "Demande de démo - workflow d’appel manqué",
+      "body": "Bonjour Tom,\n\nJe souhaite une démo du workflow d’appel manqué pour le toilettage mobile.\nCréneau idéal : __/__/____ à __:__\n\nContexte :\n- Nombre de toiletteurs :\n- Zones couvertes :\n- Outils actuels :\n\nMerci !"
     }
   }
 }

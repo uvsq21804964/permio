@@ -1,17 +1,17 @@
 {
   "cta": {
-    "title": "Make your day lighter",
-    "subtitle": "Less driving, more free time, happier clients.",
-    "primaryLabel": "Try it for 1 month before subscribing",
-    "secondaryLabel": "I have a question or I want a demo",
+    "title": "Recover missed calls. Book better routes.",
+    "subtitle": "MagicHango texts missed callers, qualifies the request, and helps you approve better bookings without extra back-and-forth.",
+    "primaryLabel": "Start with MagicHango",
+    "secondaryLabel": "I want a demo",
     "proof": [
       "No card required",
-      "Cancel in 2 clicks",
-      "No marketplace: your availability, your rules"
+      "You approve before confirmation",
+      "Made for mobile pet groomers"
     ],
     "email": {
-      "subject": "Demo request — route optimization",
-      "body": "Hi Tom,\n\nI’d like a quick demo of the optimization tool (availability + travel time).\nIdeal slot: __/__/____ at __:__\n\nContext:\n- Number of clients: \n- Areas covered: \n- Current tools: \n\nThanks!"
+      "subject": "Demo request - missed-call workflow",
+      "body": "Hi Tom,\n\nI'd like a demo of the missed-call workflow for mobile pet grooming.\nIdeal slot: __/__/____ at __:__\n\nContext:\n- Number of groomers:\n- Areas covered:\n- Current tools:\n\nThanks!"
     }
   }
 }

@@ -7,9 +7,9 @@ import './globals.css';
 
 const SITE_NAME = 'MagicHango';
 const DEFAULT_TITLE =
-  'MagicHango | Smart booking and schedule optimization for dog trainers';
+  'MagicHango | Missed-call SMS follow-up for mobile pet groomers';
 const DEFAULT_DESCRIPTION =
-  'MagicHango helps dog trainers manage bookings, reduce travel time, group appointments, and deliver a smoother client experience.';
+  'MagicHango helps mobile pet groomers turn missed calls into qualified, route-friendly bookings with SMS follow-up, client qualification, and approval-first scheduling.';
 
 function getMetadataBase() {
   const siteUrl =
@@ -31,12 +31,12 @@ export const metadata: Metadata = {
   },
   description: DEFAULT_DESCRIPTION,
   keywords: [
-    'dog trainer booking software',
-    'dog trainer scheduling',
-    'dog training appointment software',
-    'route optimization for dog trainers',
-    'client management for dog trainers',
-    'pet service scheduling',
+    'mobile pet groomer software',
+    'mobile dog grooming booking software',
+    'missed call follow up for groomers',
+    'sms booking workflow pet grooming',
+    'route friendly bookings for mobile groomers',
+    'pet groomer client qualification',
   ],
   authors: [{ name: SITE_NAME }],
   creator: SITE_NAME,

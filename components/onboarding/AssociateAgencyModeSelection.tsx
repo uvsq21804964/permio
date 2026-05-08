@@ -42,8 +42,8 @@ export function AssociateAgencyModeSelection({
             className="inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm md:text-base font-semibold bg-primary text-white shadow-sm border border-primary hover:bg-white hover:text-primary transition whitespace-nowrap"
           >
             {locale.startsWith('fr')
-              ? 'Je veux entraîner mon chien'
-              : 'I want to train my dog'}
+              ? 'Je veux reserver pour mon animal'
+              : 'I want to book for my pet'}
           </button>
 
           <button
@@ -52,8 +52,8 @@ export function AssociateAgencyModeSelection({
             className="inline-flex items-center justify-center rounded-full border border-primary bg-white/95 px-5 py-2.5 text-sm md:text-base font-semibold text-primary shadow-sm hover:bg-primary hover:text-white transition whitespace-nowrap"
           >
             {locale.startsWith('fr')
-              ? 'Je suis éducateur canin'
-              : "I'm a dog trainer"}
+              ? 'Je suis toiletteur canin'
+              : "I'm a dog groomer"}
           </button>
         </div>
       </div>

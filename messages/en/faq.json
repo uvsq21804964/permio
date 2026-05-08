@@ -2,75 +2,75 @@
   "faq": {
     "badge": "FAQ",
     "title": "Frequently asked questions",
-    "subtitle": "Everything you need to know about plans, billing, and travel management.",
+    "subtitle": "Everything you need to know about the missed-call workflow, pricing, and control.",
     "items": {
       "whoFor": {
         "q": "Who is this tool for?",
-        "a": "For independent dog trainers and dog walkers who travel to clients’ homes and want to reduce driving while filling more time slots in their day. It’s also for anyone tired of doing all the planning manually and spending evenings emailing back and forth."
+        "a": "For independent mobile pet groomers and small grooming teams who miss calls while working and want better bookings without extra driving."
       },
       "whyUse": {
         "q": "Why use MagicHango instead of a regular calendar?",
-        "a": "Because the goal isn’t just to “book appointments” — it's to optimize your week. MagicHango helps reduce back-and-forth driving, avoid gaps between sessions, and group appointments realistically by taking travel time into account. You gain clarity, save time, and sell more billable hours."
+        "a": "Because the real problem is not just storing appointments. It is turning missed calls into qualified requests, then into booking options that fit the route. MagicHango helps with that exact workflow."
       },
       "publicBooking": {
-        "q": "Do you offer a public booking page?",
-        "a": "Yes. Clients can book time slots through a booking page based on the availability you configured. They don’t pay on the platform, but they can select exactly which service they want."
+        "q": "Do you offer a booking page or follow-up flow for clients?",
+        "a": "Yes. MagicHango can guide clients into your booking flow, and missed callers can be followed up by SMS so the request keeps moving even when you cannot answer."
       },
       "payments": {
         "q": "Who pays and how?",
-        "a": "The subscription is paid by the dog trainer or the agency (via Stripe). Clients don’t pay anything on the platform. EUR and USD are supported."
+        "a": "The subscription is paid by the groomer or the business through Stripe. Clients do not pay on the platform. EUR and USD are supported."
       },
       "hiddenFees": {
         "q": "Are there any hidden fees?",
-        "a": "No. No setup fees, no cancellation fees, no surprise charges. You only pay the displayed subscription. Taxes may apply depending on your country."
+        "a": "No. No setup fee, no surprise fee, and no cancellation fee. You pay the displayed subscription price. Taxes may apply depending on your country."
       },
       "cancelAnytime": {
         "q": "Can I cancel anytime?",
-        "a": "Yes. You can cancel whenever you want. Once canceled, you’re no longer billed and you keep access to your data according to the retention period in the app (export available)."
+        "a": "Yes. You can stop whenever you want. Once canceled, you are no longer billed and you keep access to your data according to the retention rules in the app."
       },
       "trialPricing": {
         "q": "Is there a free trial and what plans do you offer?",
-        "a": "A 1-month free trial with no card. One plan: Full Magic. You can cancel anytime."
+        "a": "Yes. There is a 1-month free trial with no card. The main offer is Full Magic."
       },
       "prorata": {
         "q": "If I sign up mid-month, is it prorated?",
-        "a": "Your billing cycle starts on the day you sign up. For example, if you start on the 15th, your next renewal will be on the 15th of the following month."
+        "a": "Your billing cycle starts on the day you sign up. If you start on the 15th, the next renewal will be on the 15th of the following month."
       },
       "privacyLocation": {
-        "q": "Who can see my address or location?",
-        "a": "Clients only see your available time slots—times when no appointment has been booked yet. They don’t see your address, your route, or the travel legs between appointments. Only you can see those details in your calendar."
+        "q": "Who can see my address or route?",
+        "a": "Clients can share their address for the request, but they do not see your full route or travel legs. That route context stays on your side."
       },
       "planningScope": {
-        "q": "Do you handle locations and travel time?",
-        "a": "Yes. Clients can provide their home address or one-off addresses for a specific session, and the calendar shows travel time between sessions. Clicking a travel time opens the route directly in Google Maps. The goal is to group sessions and reduce unnecessary driving."
+        "q": "Do you handle addresses, travel time, and route fit?",
+        "a": "Yes. MagicHango uses the request address to suggest time slots that make sense for the day and to avoid bookings that create too much driving."
       },
       "optimization": {
-        "q": "How does the tool help fill more time slots?",
-        "a": "The engine groups sessions during the day, reduces gaps, and accounts for travel. It prioritizes hard-to-fill slots and avoids impossible sequences by keeping safety buffers between sessions. Result: less time on the road and more billable hours."
+        "q": "How does the tool help fill more bookable time?",
+        "a": "It helps you recover missed callers faster, collect the right details up front, and avoid bad slots that create awkward gaps or long detours. That usually means more qualified bookings and less wasted time."
       },
       "mobileApp": {
         "q": "Is there a mobile app?",
-        "a": "Not yet. MagicHango is currently optimized for the browser (mobile and desktop). A dedicated mobile app may come later depending on the most requested needs."
+        "a": "Not yet. MagicHango is currently optimized for the browser on mobile and desktop."
       },
       "calendarSync": {
-        "q": "Can I sync Google/Outlook calendars?",
-        "a": "Not yet. Calendar sync isn’t available for now, but it’s on the roadmap."
+        "q": "Can I sync Google or Outlook calendars?",
+        "a": "Not yet. Calendar sync is not available for now, but it is on the roadmap."
       },
       "cancellations": {
-        "q": "How do you handle cancellations and replacements?",
-        "a": "When a client cancels, the slot can be offered to another client who indicated availability for that time. The trainer sees the slot as replaced only after confirmation via the notification email."
+        "q": "How do cancellations and replacements work?",
+        "a": "You stay in control. When something changes, MagicHango can help surface better options, but the final confirmation step still stays visible to you."
       },
       "support": {
         "q": "How do support and billing work?",
-        "a": "Invoices are generated in the app via Stripe and grouped in a dedicated page. If you run into an issue, you can contact support from inside the app to get a fast response."
+        "a": "Invoices are available in the app through Stripe, and support can be reached from inside the product if you need help."
       },
       "security": {
         "q": "Are my data and my clients’ data secure?",
-        "a": "Yes. We apply standard security measures (access controls, account/organization isolation, and data protection best practices). You keep ownership of your data and can request an export at any time."
+        "a": "Yes. We use standard security measures such as access controls, account isolation, and data protection best practices."
       },
       "enterprise": {
-        "q": "What if I need something more advanced than a simple calendar?",
-        "a": "If you manage multiple trainers, multiple zones, complex rules (areas, priorities, travel constraints, daily capacity) or need specific integrations, we can offer an agency/Enterprise version. Contact us — we’ll analyze your case and recommend the right setup."
+        "q": "What if I manage multiple vans, groomers, or zones?",
+        "a": "If you run a more complex setup with several groomers, service areas, or booking rules, contact us. We can review your workflow and recommend the right setup."
       }
     }
   }

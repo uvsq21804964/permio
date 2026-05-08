@@ -1,123 +1,118 @@
 {
   "comparison": {
-    "units": { "hoursShort": "h" },
-
-    "headers": {
-      "free": "Gratuit",
-      "magic": "Full Magic"
+    "units": {
+      "hoursShort": "h"
     },
-
+    "headers": {
+      "free": "Relance manuelle",
+      "magic": "Avec MagicHango"
+    },
     "table": {
-      "featureHeader": "Fonctionnalité",
+      "featureHeader": "Ce qui change",
       "moreInfo": "Plus d'infos"
     },
-
     "values": {
       "unlimited": "Illimité",
       "extraFee": "+ frais",
-
       "organizationMode": {
-        "free": "100 % manuel",
-        "magic": "Piloté par l’algorithme"
+        "free": "Rappels manuels et décisions au feeling",
+        "magic": "Demande structurée avant votre réponse"
       },
       "yourTime": {
-        "free": "Temps passé à planifier et relancer",
-        "magic": "Temps libre & cours facturables"
+        "free": "Appels, notes et SMS dispersés",
+        "magic": "Moins d’allers-retours et moins d’interruptions"
       },
       "notAlone": {
-        "free": "Vous gérez tout vous-même",
-        "magic": "Une équipe qui écoute vos besoins et transforme vos idées en nouvelles fonctionnalités"
+        "free": "Vous poursuivez chaque détail vous-même",
+        "magic": "MagicHango prépare la demande ; vous validez avant confirmation"
       },
       "growth": {
-        "limited": "Limité",
-        "scalable": "Évolutif"
+        "limited": "Les appels manqués restent souvent perdus",
+        "scalable": "Plus d’appels manqués deviennent des rendez-vous qualifiés"
       },
       "clientPerception": {
-        "free": "Indépendant “qui se débrouille”",
-        "magic": "Professionnel organisé, très demandé"
+        "free": "Rappel lent, prochaine étape floue",
+        "magic": "Réponse SMS rapide et suite claire"
       },
       "whatProspectsSee": {
-        "free": "Site perso sans avis visibles",
-        "magic": "Page avec avis et expérience affichés"
+        "free": "Messagerie vocale ou réponse tardive",
+        "magic": "Questions qui récupèrent animal, service et adresse"
       }
     },
-
     "sections": {
-      "booking": "Réservations et expérience clients",
-      "travel": "Trajets & Google Maps",
-      "optimization": "Optimisation & productivité",
-      "support": "Accompagnement & évolution",
-      "branding": "Image & reconnaissance"
+      "booking": "Appels manqués et relance",
+      "travel": "Qualification et compatibilité tournée",
+      "optimization": "Contrôle et charge mentale",
+      "support": "Accompagnement et croissance",
+      "branding": "Expérience client"
     },
-
     "rows": {
       "selfBooking": {
-        "label": "Réservation par les clients (self-book)",
-        "tooltip": "Les clients choisissent eux-mêmes leurs créneaux dans les disponibilités que vous avez configurées, sans ping-pong de mails."
+        "label": "SMS automatique après appel manqué",
+        "tooltip": "L’appel manqué reçoit un message tout de suite au lieu d’attendre votre prochain créneau libre."
       },
       "smartGrouping": {
-        "label": "Regroupement intelligent des rendez-vous",
-        "tooltip": "Regroupe automatiquement les cours pour limiter les trous et concentrer vos heures de travail aux meilleurs moments."
+        "label": "Suggestions de créneaux compatibles avec la tournée",
+        "tooltip": "Les créneaux proposés tiennent compte de la route au lieu de montrer une simple disponibilité brute."
       },
       "travelTime": {
-        "label": "Temps de trajet entre deux cours",
-        "tooltip": "Estime vos trajets entre deux rendez-vous pour éviter les enchaînements impossibles et les déplacements inutiles."
+        "label": "Vérification du trajet à partir de l’adresse",
+        "tooltip": "La demande inclut l’adresse pour éviter les propositions qui cassent la journée."
       },
       "googleMaps": {
-        "label": "Clic direct vers Google Maps",
-        "tooltip": "Un clic sur le temps de trajet ouvre automatiquement l’itinéraire dans Google Maps : plus besoin de tout retaper."
+        "label": "Passerelle Google Maps en un clic",
+        "tooltip": "Une fois le rendez-vous validé, le contexte de trajet est déjà prêt à être utilisé."
       },
       "allInOne": {
-        "label": "Agenda, trajets et clients au même endroit (tout-en-un)",
-        "tooltip": "Terminé le jonglage entre plusieurs apps : votre planning, vos trajets et vos clients vivent enfin dans un seul outil."
+        "label": "Demande qualifiée au même endroit",
+        "tooltip": "Les informations sur l’animal, le service, l’adresse et la proposition restent regroupées au lieu d’être éparpillées."
       },
       "organizationMode": {
-        "label": "Mode d'organisation"
+        "label": "Comment les rendez-vous se construisent"
       },
       "yourTime": {
-        "label": "Votre temps",
-        "tooltip": "Heures perdues à organiser vs temps réellement libéré pour enseigner, vous déplacer efficacement… ou vous reposer."
+        "label": "Votre charge mentale",
+        "tooltip": "Moins de téléphone, moins d’admin et moins de journées cassées par de mauvais créneaux."
       },
       "notAlone": {
-        "label": "Ne plus travailler seul"
+        "label": "Qui garde le contrôle"
       },
       "customNoFee": {
-        "label": "Fonctionnalités sur-mesure (sans supplément)"
+        "label": "Validation avant confirmation"
       },
       "growth": {
-        "label": "Potentiel de croissance client"
+        "label": "Potentiel de récupération des demandes"
       },
       "clientPerception": {
-        "label": "Perception côté clients"
+        "label": "Ce que ressent le client"
       },
       "whatProspectsSee": {
-        "label": "Ce que voient vos prospects",
-        "tooltip": "Site perso : peu de preuves. Page MagicHango : avis + expérience visibles."
+        "label": "Ce que reçoit un appelant manqué",
+        "tooltip": "Au lieu du silence ou d’une messagerie, il reçoit une prochaine étape claire qui fait avancer la demande."
       }
     },
-
     "plans": {
       "free": {
-        "title": "Gratuit",
+        "title": "Manuel",
         "features": [
-          "Jusqu'à 2 étudiants",
-          "Planning visuel avec ajout manuel des cours",
-          "Vue simple des créneaux disponibles",
+          "Vous rappelez quand vous pouvez",
+          "Les infos animal sont récupérées à la main",
+          "Adresse et compatibilité tournée vérifiées à la main",
           "Support par email"
         ]
       },
       "magic": {
         "title": "Full Magic",
         "features": [
-          "Étudiants illimités",
-          "Self-booking, priorisation avancée et scénarios complexes",
-          "Regroupement multi-prof et optimisation sur plusieurs zones",
-          "Temps de trajet détaillés et trajets complets, cliquables vers Google Maps",
-          "Vue tout-en-un pour l'agence : agenda, trajets, clients",
-          "Optimisation avancée",
-          "Support prioritaire (email et téléphone)",
-          "Logo personnel",
-          "Features sur-mesure sans supplément !"
+          "Relance SMS après appel manqué",
+          "Qualification structurée de l’animal, du service et de l’adresse",
+          "Suggestions de rendez-vous compatibles avec la tournée",
+          "Validation avant confirmation",
+          "Demande, trajet et contexte client au même endroit",
+          "Support prioritaire",
+          "Pensé pour les toiletteurs mobiles",
+          "Fonctionnalités sur mesure sans supplément",
+          "Services et rendez-vous illimités"
         ]
       }
     }

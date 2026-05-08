@@ -568,6 +568,14 @@ export async function OptimizationDemoMobile({ locale }: { locale: Locale }) {
           <p className="mt-4 text-sm leading-7 text-black/68">
             {t('simple.subtitle')}
           </p>
+          <div className="mt-6">
+            <a
+              href="#missed-call-workflow"
+              className="inline-flex items-center rounded-full bg-slate-950 px-5 py-3 text-sm font-semibold text-white shadow-[0_18px_40px_-28px_rgba(15,23,42,0.55)] transition hover:bg-slate-900"
+            >
+              {t('hero.cta')}
+            </a>
+          </div>
         </div>
 
         <div className="mt-5 grid grid-cols-2 gap-3">

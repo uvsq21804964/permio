@@ -284,15 +284,15 @@ export function useAssociateAgencyPageState(params?: {
     if (mode === 'client') {
       return locale.startsWith('fr') ? (
         <>
-          Votre chien a hate
+          Votre animal merite le bon toiletteur
           <br />
-          Trouvons son prochain educateur !
+          Trouvons le bon professionnel !
         </>
       ) : (
         <>
-          Your dog can&apos;t wait
+          Your pet deserves the right groomer
           <br />
-          Let&apos;s find the next trainer!
+          Let&apos;s find the right professional!
         </>
       );
     }

@@ -23,6 +23,34 @@ export default async function DemoPage({
   const localizedDemoMailHref = `mailto:tom@magichango.com?subject=${encodeURIComponent(
     t('cta.demoMailSubject'),
   )}&body=${encodeURIComponent(localizedDemoMailBody)}`;
+  const workflowSteps = [
+    {
+      title: t('workflow.steps.0.title'),
+      body: t('workflow.steps.0.body'),
+    },
+    {
+      title: t('workflow.steps.1.title'),
+      body: t('workflow.steps.1.body'),
+    },
+    {
+      title: t('workflow.steps.2.title'),
+      body: t('workflow.steps.2.body'),
+    },
+    {
+      title: t('workflow.steps.3.title'),
+      body: t('workflow.steps.3.body'),
+    },
+  ];
+  const positioningCards = [
+    {
+      title: t('differentiation.cards.route.title'),
+      body: t('differentiation.cards.route.body'),
+    },
+    {
+      title: t('differentiation.cards.control.title'),
+      body: t('differentiation.cards.control.body'),
+    },
+  ];
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.98),rgba(255,251,224,0.98)_38%,rgba(247,244,213,1)_100%)] text-slate-950">
@@ -94,6 +122,80 @@ export default async function DemoPage({
           <div className="hidden md:block">
             <OptimizationDemo locale={locale} />
           </div>
+
+          <section className="mt-10 rounded-[32px] border border-black/8 bg-white/90 px-6 py-7 shadow-[0_24px_70px_-52px_rgba(15,23,42,0.28)] md:px-8">
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-black/45">
+              {t('pain.eyebrow')}
+            </div>
+            <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950 md:text-3xl">
+              {t('pain.title')}
+            </h2>
+            <p className="mt-3 max-w-4xl text-sm leading-7 text-black/68 md:text-base">
+              {t('pain.body')}
+            </p>
+          </section>
+
+          <section
+            id="missed-call-workflow"
+            className="mt-10 rounded-[36px] border border-black/8 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(255,247,221,0.92))] px-6 py-8 shadow-[0_30px_80px_-56px_rgba(217,119,6,0.38)] md:px-8"
+          >
+            <div className="max-w-3xl">
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-black/45">
+                {t('workflow.eyebrow')}
+              </div>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950 md:text-3xl">
+                {t('workflow.title')}
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-black/68 md:text-base">
+                {t('workflow.subtitle')}
+              </p>
+            </div>
+
+            <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+              {workflowSteps.map((step, index) => (
+                <article
+                  key={step.title}
+                  className="rounded-[24px] border border-black/8 bg-white/92 p-5 shadow-[0_20px_44px_-34px_rgba(15,23,42,0.28)]"
+                >
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/40">
+                    {t('workflow.stepLabel', { number: index + 1 })}
+                  </div>
+                  <h3 className="mt-3 text-lg font-semibold tracking-tight text-slate-950">
+                    {step.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-black/68">{step.body}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="mt-10 grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+            <article className="rounded-[32px] border border-black/8 bg-slate-950 px-6 py-7 text-white shadow-[0_30px_90px_-60px_rgba(15,23,42,0.9)] md:px-8">
+              <div className="text-xs font-semibold uppercase tracking-[0.2em] text-white/55">
+                {t('differentiation.eyebrow')}
+              </div>
+              <h2 className="mt-3 text-2xl font-semibold tracking-tight md:text-3xl">
+                {t('differentiation.title')}
+              </h2>
+              <p className="mt-3 max-w-3xl text-sm leading-7 text-white/74 md:text-base">
+                {t('differentiation.body')}
+              </p>
+            </article>
+
+            <div className="grid gap-4">
+              {positioningCards.map((card) => (
+                <article
+                  key={card.title}
+                  className="rounded-[28px] border border-black/8 bg-white/92 px-6 py-6 shadow-[0_24px_70px_-52px_rgba(15,23,42,0.28)]"
+                >
+                  <h3 className="text-lg font-semibold tracking-tight text-slate-950">
+                    {card.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-6 text-black/68">{card.body}</p>
+                </article>
+              ))}
+            </div>
+          </section>
 
           <section className="relative mt-10 overflow-hidden rounded-[36px] border border-slate-900/10 bg-slate-950 px-6 py-8 text-white shadow-[0_38px_100px_-60px_rgba(15,23,42,0.9)] md:px-8 md:py-9">
             <div className="absolute inset-x-0 top-0 h-36 bg-[radial-gradient(circle_at_top_right,rgba(251,191,36,0.24),transparent_55%)]" />
