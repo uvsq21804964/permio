@@ -290,6 +290,28 @@ export async function OptimizationDemoMobile({ locale }: { locale: Locale }) {
     recommended: t('simple.labels.recommended'),
     gap: t('simple.labels.gap'),
   };
+  const conversationSteps = [
+    {
+      label: t('conversationPreview.steps.0.label'),
+      title: t('conversationPreview.steps.0.title'),
+      body: t('conversationPreview.steps.0.body'),
+    },
+    {
+      label: t('conversationPreview.steps.1.label'),
+      title: t('conversationPreview.steps.1.title'),
+      body: t('conversationPreview.steps.1.body'),
+    },
+    {
+      label: t('conversationPreview.steps.2.label'),
+      title: t('conversationPreview.steps.2.title'),
+      body: t('conversationPreview.steps.2.body'),
+    },
+    {
+      label: t('conversationPreview.steps.3.label'),
+      title: t('conversationPreview.steps.3.title'),
+      body: t('conversationPreview.steps.3.body'),
+    },
+  ];
 
   const beforePlaces = {
     home: 'Mason Municipal Center, 6000 Mason-Montgomery Rd, Mason, OH 45040, USA',
@@ -580,22 +602,56 @@ export async function OptimizationDemoMobile({ locale }: { locale: Locale }) {
 
         <div className="mt-5 grid grid-cols-2 gap-3">
           <MobileStatCard
-            label={t('hero.proof.travel')}
-            value={`-${formatDuration(travelSavedMinutes)}`}
-            detail={t('hero.proofDetails.perDay')}
+            label={t('hero.proofCards.followUp.label')}
+            value={t('hero.proofCards.followUp.value')}
+            detail={t('hero.proofCards.followUp.detail')}
           />
           <MobileStatCard
-            label={t('hero.proof.choice')}
-            value={`+${sessionGain}`}
-            detail={t('hero.proofDetails.sessions')}
+            label={t('hero.proofCards.qualification.label')}
+            value={t('hero.proofCards.qualification.value')}
+            detail={t('hero.proofCards.qualification.detail')}
           />
           <div className="col-span-2">
             <MobileStatCard
-              label={t('hero.proof.finish')}
-              value={`${formatClock(beforeStats.endMinutes)} → ${formatClock(afterStats.endMinutes)}`}
-              detail={isFrench ? 'sur une journée type' : 'on a worked day'}
+              label={t('hero.proofCards.approval.label')}
+              value={t('hero.proofCards.approval.value')}
+              detail={t('hero.proofCards.approval.detail')}
             />
           </div>
+        </div>
+      </section>
+
+      <section className="rounded-[28px] border border-black/8 bg-white/92 p-4 shadow-[0_24px_70px_-52px_rgba(15,23,42,0.3)]">
+        <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/45">
+          {t('conversationPreview.eyebrow')}
+        </div>
+        <h2 className={`${poppins.className} mt-3 text-2xl font-black tracking-tight text-slate-950`}>
+          {t('conversationPreview.title')}
+        </h2>
+        <p className="mt-3 text-sm leading-7 text-black/68">
+          {t('conversationPreview.subtitle')}
+        </p>
+
+        <div className="mt-5 grid gap-3">
+          {conversationSteps.map((step, index) => (
+            <article
+              key={step.label}
+              className="rounded-[22px] border border-black/8 bg-[linear-gradient(180deg,rgba(255,255,255,0.98),rgba(255,247,217,0.9))] p-4 shadow-[0_18px_40px_-32px_rgba(15,23,42,0.22)]"
+            >
+              <div className="flex items-center gap-3">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-950 text-[11px] font-semibold text-white">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+                <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/45">
+                  {step.label}
+                </div>
+              </div>
+              <div className="mt-3 text-sm font-semibold leading-6 text-slate-950">
+                {step.title}
+              </div>
+              <p className="mt-2 text-sm leading-6 text-black/66">{step.body}</p>
+            </article>
+          ))}
         </div>
       </section>
 

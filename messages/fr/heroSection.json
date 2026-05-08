@@ -22,5 +22,31 @@
     "caption": "Aperçu : suivi des appels manqués et suggestions de rendez-vous compatibles avec la tournée.",
     "altSchedule": "Aperçu du workflow MagicHango",
     "altRoute": "Aperçu d’une suggestion de rendez-vous compatible avec la tournée"
+  },
+  "conversation": {
+    "eyebrow": "Ce qui se passe après un appel manqué",
+    "title": "MagicHango relance par SMS, qualifie la demande et vous remet un créneau qui vaut la peine d’être validé.",
+    "steps": [
+      {
+        "label": "Appel manqué",
+        "title": "Nouvelle cliente : Sarah M.",
+        "body": "Vous continuez le toilettage au lieu de tout arrêter pour répondre."
+      },
+      {
+        "label": "SMS envoyé",
+        "title": "Je peux vous aider à réserver par SMS.",
+        "body": "MagicHango répond tout de suite et demande la race, le service et l’adresse."
+      },
+      {
+        "label": "Demande qualifiée",
+        "title": "Golden retriever, toilettage complet, 32 kg, Boca Raton.",
+        "body": "Les infos animal, service, localisation et préférences arrivent dans une seule demande claire."
+      },
+      {
+        "label": "Validation prête",
+        "title": "Meilleur créneau : jeudi 11 h 30, à 12 min du rendez-vous précédent.",
+        "body": "Vous relisez l’option compatible avec la tournée avant toute confirmation."
+      }
+    ]
   }
 }

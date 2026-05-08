@@ -8,25 +8,50 @@
   "hero": {
     "title": "Transformez les appels manqués en rendez-vous compatibles avec votre tournée",
     "cta": "Voir le fonctionnement",
-    "timeline": {
-      "before": "Avant",
-      "after": "Après"
-    },
-    "proof": {
-      "travel": "Temps de route réduit",
-      "finish": "Fin plus tôt",
-      "choice": "Capacité en plus",
-      "distance": "Distance parcourue"
-    },
-    "proofDetails": {
-      "perDay": "par journée type",
-      "sessions": "sur une journée type"
-    },
-    "proofValues": {
-      "travel": "-1h25",
-      "finish": "16:30 -> 15:35",
-      "choice": "+1"
+    "proofCards": {
+      "followUp": {
+        "label": "Appelants relancés",
+        "value": "SMS en quelques secondes",
+        "detail": "pendant le toilettage"
+      },
+      "qualification": {
+        "label": "Demande qualifiée",
+        "value": "Animal + service + adresse",
+        "detail": "dans un seul échange"
+      },
+      "approval": {
+        "label": "Vous gardez la main",
+        "value": "Créneau prêt à valider",
+        "detail": "avant confirmation"
+      }
     }
+  },
+  "conversationPreview": {
+    "eyebrow": "Voyez la qualification avant la tournée",
+    "title": "Appel manqué → SMS → demande qualifiée → créneau à valider",
+    "subtitle": "Avant d’améliorer la tournée, MagicHango récupère l’appel manqué, collecte les bonnes informations et vous remet une proposition de rendez-vous qui tient dans la journée.",
+    "steps": [
+      {
+        "label": "Appel manqué",
+        "title": "Nouvelle cliente : Sarah M.",
+        "body": "Vous restez concentré sur l’animal en face de vous au lieu d’interrompre le toilettage."
+      },
+      {
+        "label": "SMS envoyé",
+        "title": "Je peux vous aider à réserver par SMS.",
+        "body": "MagicHango répond tout de suite et demande la race, le service et l’adresse."
+      },
+      {
+        "label": "Demande qualifiée",
+        "title": "Golden retriever, toilettage complet, 32 kg, Boca Raton.",
+        "body": "Les infos animal, service, localisation et préférences arrivent dans une seule demande."
+      },
+      {
+        "label": "Validation prête",
+        "title": "Meilleur créneau : jeudi 11 h 30, à 12 min du rendez-vous précédent.",
+        "body": "Vous relisez l’option compatible avec la tournée avant toute confirmation."
+      }
+    ]
   },
   "simple": {
     "eyebrow": "Workflow d’appel manqué",

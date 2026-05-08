@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Sparkles, CalendarDays, MapPinned } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { useLocale, useTranslations } from 'next-intl';
 import { TrackedButton } from '@/components/tracking/TrackedButton';
 
@@ -14,6 +14,28 @@ export default function HeroSection() {
   const scheduleSrc = locale.startsWith('fr')
     ? '/MyWeek2.png'
     : '/MyWeekEN2.png';
+  const conversationSteps = [
+    {
+      label: t('conversation.steps.0.label'),
+      title: t('conversation.steps.0.title'),
+      body: t('conversation.steps.0.body'),
+    },
+    {
+      label: t('conversation.steps.1.label'),
+      title: t('conversation.steps.1.title'),
+      body: t('conversation.steps.1.body'),
+    },
+    {
+      label: t('conversation.steps.2.label'),
+      title: t('conversation.steps.2.title'),
+      body: t('conversation.steps.2.body'),
+    },
+    {
+      label: t('conversation.steps.3.label'),
+      title: t('conversation.steps.3.title'),
+      body: t('conversation.steps.3.body'),
+    },
+  ];
 
   return (
     <section
@@ -53,7 +75,7 @@ export default function HeroSection() {
               {t('hero.titleMiddle')}{' '}
               <span className="decoration-brand/30 underline-offset-4 text-primary">
                 {t('hero.highlight2')}
-              </span>
+              </span>{' '}
               {t('hero.titleSuffix')}{' '}
               <span className="inline-flex items-baseline gap-2 whitespace-nowrap">
                 <span className="bg-gradient-to-r from-primary to-[#d400ff] bg-clip-text text-transparent">
@@ -121,6 +143,39 @@ export default function HeroSection() {
               >
                 {t('hero.ctaSecondary')}
               </TrackedButton>
+            </div>
+
+            <div className="mt-8 rounded-[28px] border border-black/8 bg-white/84 p-4 shadow-[0_24px_60px_-44px_rgba(15,23,42,0.28)] backdrop-blur-sm sm:p-5">
+              <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/45">
+                {t('conversation.eyebrow')}
+              </div>
+              <p className="mt-2 max-w-xl text-sm leading-6 text-black/68">
+                {t('conversation.title')}
+              </p>
+
+              <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                {conversationSteps.map((step, index) => (
+                  <article
+                    key={step.label}
+                    className="rounded-[22px] border border-black/7 bg-white/92 p-4 text-left shadow-[0_16px_36px_-30px_rgba(15,23,42,0.28)]"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-950 text-[11px] font-semibold text-white">
+                        {String(index + 1).padStart(2, '0')}
+                      </span>
+                      <div className="text-[11px] font-semibold uppercase tracking-[0.18em] text-black/45">
+                        {step.label}
+                      </div>
+                    </div>
+                    <div className="mt-3 text-sm font-semibold leading-6 text-slate-950">
+                      {step.title}
+                    </div>
+                    <p className="mt-2 text-sm leading-6 text-black/66">
+                      {step.body}
+                    </p>
+                  </article>
+                ))}
+              </div>
             </div>
           </div>
 
