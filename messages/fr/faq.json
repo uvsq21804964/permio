@@ -18,11 +18,11 @@
       },
       "payments": {
         "q": "Qui paie et comment ?",
-        "a": "L’abonnement est payé par le toiletteur ou l’entreprise via Stripe. Les clients ne paient pas sur la plateforme. EUR et USD sont pris en charge."
+        "a": "Le toiletteur ou l’entreprise paie via Stripe. La facturation est de 1 dollar par lead généré, avec un plafond de 35 dollars par mois. Les clients ne paient pas sur la plateforme. EUR et USD sont pris en charge."
       },
       "hiddenFees": {
         "q": "Y a-t-il des frais cachés ?",
-        "a": "Non. Pas de frais d’installation, pas de frais surprise et pas de frais d’annulation. Vous payez le prix d’abonnement affiché. Les taxes peuvent s’appliquer selon votre pays."
+        "a": "Non. Pas de frais d’installation, pas de frais surprise et pas de frais d’annulation. Vous payez uniquement pour les leads générés, avec un plafond de 35 $ par mois. Les taxes peuvent s’appliquer selon votre pays."
       },
       "cancelAnytime": {
         "q": "Puis-je arrêter à tout moment ?",
@@ -30,11 +30,11 @@
       },
       "trialPricing": {
         "q": "Y a-t-il un essai gratuit et quelles sont les offres ?",
-        "a": "Oui. Il y a un essai gratuit d’un mois sans carte. L’offre principale est Full Magic."
+        "a": "Oui. Il y a un essai gratuit d’un mois sans carte. Ensuite, vous payez 1 dollar par lead généré, avec un plafond de 35 dollars par mois."
       },
       "prorata": {
         "q": "Si je m’inscris en cours de mois, est-ce au prorata ?",
-        "a": "Votre cycle de facturation démarre le jour de votre inscription. Si vous commencez le 15, le prochain renouvellement sera le 15 du mois suivant."
+        "a": "Votre cycle de facturation démarre le jour de votre inscription. Le plafond de 35 dollars s’applique sur ce mois de facturation."
       },
       "privacyLocation": {
         "q": "Qui peut voir mon adresse ou ma tournée ?",

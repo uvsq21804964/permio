@@ -18,11 +18,11 @@
       },
       "payments": {
         "q": "Who pays and how?",
-        "a": "The subscription is paid by the groomer or the business through Stripe. Clients do not pay on the platform. EUR and USD are supported."
+        "a": "The groomer or business pays through Stripe. Billing is $1 per generated lead, capped at $35 per month. Clients do not pay on the platform. EUR and USD are supported."
       },
       "hiddenFees": {
         "q": "Are there any hidden fees?",
-        "a": "No. No setup fee, no surprise fee, and no cancellation fee. You pay the displayed subscription price. Taxes may apply depending on your country."
+        "a": "No. No setup fee, no surprise fee, and no cancellation fee. You only pay for generated leads, capped at $35 per month. Taxes may apply depending on your country."
       },
       "cancelAnytime": {
         "q": "Can I cancel anytime?",
@@ -30,11 +30,11 @@
       },
       "trialPricing": {
         "q": "Is there a free trial and what plans do you offer?",
-        "a": "Yes. There is a 1-month free trial with no card. The main offer is Full Magic."
+        "a": "Yes. There is a 1-month free trial with no card. After that, billing is $1 per generated lead, capped at $35 per month."
       },
       "prorata": {
         "q": "If I sign up mid-month, is it prorated?",
-        "a": "Your billing cycle starts on the day you sign up. If you start on the 15th, the next renewal will be on the 15th of the following month."
+        "a": "Your billing cycle starts on the day you sign up. The $35 cap applies within that billing month."
       },
       "privacyLocation": {
         "q": "Who can see my address or route?",
@@ -65,7 +65,7 @@
         "a": "Invoices are available in the app through Stripe, and support can be reached from inside the product if you need help."
       },
       "security": {
-        "q": "Are my data and my clients’ data secure?",
+        "q": "Are my data and my clients' data secure?",
         "a": "Yes. We use standard security measures such as access controls, account isolation, and data protection best practices."
       },
       "enterprise": {

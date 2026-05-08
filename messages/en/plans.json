@@ -26,8 +26,8 @@
         "Billing capped at $35"
       ]
     },
-    "alreadySubscribed": "You already have an active subscription",
-    "cancellationScheduled": "Cancellation is scheduled for your current plan.",
-    "manageSubscription": "Manage subscription"
+    "alreadySubscribed": "Your billing is already active",
+    "cancellationScheduled": "Billing changes are scheduled for your current plan.",
+    "manageSubscription": "Manage billing"
   }
 }

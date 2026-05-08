@@ -256,7 +256,7 @@ export function useAssociateAgencyPageState(params?: {
         if (hasConfiguredAccount && orgId) {
           setBlockingMessage(
             locale.startsWith('fr')
-              ? 'Votre compte est deja configure. Redirection vers votre semaine...'
+              ? 'Votre compte est déjà configuré. Redirection vers votre semaine...'
               : 'Your account is already set up. Redirecting to your week...',
           );
           setRedirecting(true);
@@ -284,7 +284,7 @@ export function useAssociateAgencyPageState(params?: {
     if (mode === 'client') {
       return locale.startsWith('fr') ? (
         <>
-          Votre animal merite le bon toiletteur
+          Votre animal mérite le bon toiletteur
           <br />
           Trouvons le bon professionnel !
         </>
@@ -301,9 +301,9 @@ export function useAssociateAgencyPageState(params?: {
       if (trainerStep === 'address') {
         return locale.startsWith('fr') ? (
           <>
-            Cote pro
+            Côté pro
             <br />
-            Parlez-nous de votre activite.
+            Parlez-nous de votre activité.
           </>
         ) : (
           <>
@@ -472,7 +472,7 @@ export function useAssociateAgencyPageState(params?: {
     if (trainerPhoneNumber.replace(/\D/g, '').length < 6) {
       setError(
         locale.startsWith('fr')
-          ? 'Veuillez renseigner un numero de telephone valide.'
+          ? 'Veuillez renseigner un numéro de téléphone valide.'
           : 'Please provide a valid phone number.',
       );
       return false;

@@ -54,7 +54,7 @@ export function AssociateAgencyFlowHeader({
             ? "Je suis toiletteur canin, pas client"
             : "I'm a dog groomer, not a client"
           : isFrench
-            ? 'Retour au choix des roles'
+            ? 'Retour au choix des rôles'
             : 'Back to role selection'}
       </button>
     </div>

@@ -42,7 +42,7 @@ export function AssociateAgencyModeSelection({
             className="inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm md:text-base font-semibold bg-primary text-white shadow-sm border border-primary hover:bg-white hover:text-primary transition whitespace-nowrap"
           >
             {locale.startsWith('fr')
-              ? 'Je veux reserver pour mon animal'
+              ? 'Je veux réserver pour mon animal'
               : 'I want to book for my pet'}
           </button>
 

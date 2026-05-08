@@ -1,35 +1,35 @@
 {
   "label": {
     "code": "Code de l'agence",
-    "address": "Votre adresse de depart",
-    "linkedAgency": "Agence deja detectee"
+    "address": "Votre adresse de départ",
+    "linkedAgency": "Agence déjà détectée"
   },
   "placeholder": {
     "code": "Code de l'agence",
-    "address": "Commencez a saisir puis choisissez une suggestion Google"
+    "address": "Commencez à saisir puis choisissez une suggestion Google"
   },
   "help": {
     "code": "Ce code est fourni par votre organisation.",
-    "address": "Selectionnez une adresse suggeree par Google pour garantir son utilisation dans les itineraires et les calculs de distance.",
-    "lockedCode": "Ce lien vous connecte deja a la bonne agence. Il vous reste seulement a confirmer votre adresse.",
-    "lockedCodeWithAgency": "Ce lien vous connecte deja a {agencyName}. Il vous reste seulement a confirmer votre adresse."
+    "address": "Sélectionnez une adresse suggérée par Google pour garantir son utilisation dans les itinéraires et les calculs de distance.",
+    "lockedCode": "Ce lien vous connecte déjà à la bonne agence. Il vous reste seulement à confirmer votre adresse.",
+    "lockedCodeWithAgency": "Ce lien vous connecte déjà à {agencyName}. Il vous reste seulement à confirmer votre adresse."
   },
   "preview": {
-    "label": "Toiletteur detecte",
-    "loading": "Recherche du toiletteur lie a ce code...",
+    "label": "Toiletteur détecté",
+    "loading": "Recherche du toiletteur lié à ce code...",
     "help": "Ce code semble correspondre au bon toiletteur.",
-    "helpWithAgency": "Ce code semble correspondre a {agencyName}.",
+    "helpWithAgency": "Ce code semble correspondre à {agencyName}.",
     "reviewsTitle": "{count, plural, one {# avis client} other {# avis clients}}",
     "anonymousClient": "Client",
     "stats": {
       "clients": "Clients",
-      "courses": "Seances",
+      "courses": "Séances",
       "rating": "Note moyenne",
       "noRating": "Aucun avis pour le moment"
     }
   },
   "selectedAddress": {
-    "title": "Adresse selectionnee :",
+    "title": "Adresse sélectionnée :",
     "street": "Rue :",
     "city": "Ville :"
   },
@@ -40,8 +40,8 @@
   "error": {
     "codeRequired": "Veuillez saisir un code d'agence.",
     "addressRequired": "Veuillez choisir une adresse parmi les suggestions Google avant de continuer.",
-    "geoFailed": "Impossible de recuperer la geolocalisation de cette adresse.",
-    "mapsScript": "Impossible de charger l'autocompletion Google des adresses. Veuillez verifier votre cle API.",
+    "geoFailed": "Impossible de récupérer la géolocalisation de cette adresse.",
+    "mapsScript": "Impossible de charger l'autocomplétion Google des adresses. Veuillez vérifier votre clé API.",
     "unknown": "Erreur inconnue"
   }
 }

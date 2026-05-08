@@ -4,7 +4,7 @@
     "subheading": "MagicHango répond par SMS, qualifie la demande et transforme les appels manqués en vraies opportunités pour votre tournée.",
     "banner": {
       "label": "Tarification à la performance",
-      "text": "Vous payez uniquement pour la valeur obtenue : 1 dollar par lead généré, avec un plafond strict de 35 dollars."
+      "text": "Vous payez uniquement pour la valeur obtenue : 1 dollar par lead généré, avec un plafond strict de 35 dollars par mois."
     },
     "badge": "Spécial toiletteurs mobiles",
     "perMonth": "/mois",
@@ -26,8 +26,8 @@
         "Facturation plafonnée à 35 dollars"
       ]
     },
-    "alreadySubscribed": "Vous avez déjà un abonnement actif",
-    "cancellationScheduled": "La clôture de votre formule est programmée.",
-    "manageSubscription": "Gérer l'abonnement"
+    "alreadySubscribed": "Votre facturation est déjà active",
+    "cancellationScheduled": "La modification de votre formule est programmée.",
+    "manageSubscription": "Gérer la facturation"
   }
 }
