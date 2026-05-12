@@ -2,6 +2,42 @@ import type { Locale } from '@/src/lib/i18n';
 
 const BLOG_SLUGS = [
   {
+    en: 'reactivate-past-dog-training-clients',
+    fr: 'relancer-anciens-clients-education-canine',
+  },
+  {
+    en: 'schedule-group-dog-training-sessions',
+    fr: 'planifier-seances-groupe-education-canine',
+  },
+  {
+    en: 'dog-training-appointment-reminder-quality',
+    fr: 'ameliorer-rappels-rendez-vous-education-canine',
+  },
+  {
+    en: 'dog-trainer-intake-form-before-first-session',
+    fr: 'formulaire-client-avant-premiere-seance-education-canine',
+  },
+  {
+    en: 'dog-training-package-scheduling',
+    fr: 'planifier-forfaits-seances-education-canine',
+  },
+  {
+    en: 'travel-buffers-between-dog-training-sessions',
+    fr: 'marges-trajet-entre-seances-education-canine',
+  },
+  {
+    en: 'dog-trainer-service-area-planning',
+    fr: 'organiser-zones-intervention-educateur-canin',
+  },
+  {
+    en: 'best-slots-to-offer-dog-training-clients',
+    fr: 'meilleurs-creneaux-proposer-clients-education-canine',
+  },
+  {
+    en: 'weekly-calendar-reset-dog-trainers',
+    fr: 'routine-hebdomadaire-planning-educateur-canin',
+  },
+  {
     en: 'track-travel-time-dog-trainer-calendar',
     fr: 'suivre-temps-trajet-planning-educateur-canin',
   },
