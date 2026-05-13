@@ -1,0 +1,20 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="900" rx="48" fill="#FDF2F8"/>
+  <rect x="82" y="74" width="1436" height="752" rx="42" fill="#FFFFFF"/>
+  <rect x="150" y="142" width="422" height="616" rx="32" fill="#831843"/>
+  <rect x="638" y="142" width="808" height="616" rx="32" fill="#FFF7ED"/>
+  <rect x="214" y="210" width="248" height="30" rx="15" fill="#FFFFFF" fill-opacity="0.28"/>
+  <rect x="214" y="306" width="294" height="72" rx="22" fill="#FFFFFF" fill-opacity="0.12"/>
+  <rect x="214" y="416" width="294" height="72" rx="22" fill="#FFFFFF" fill-opacity="0.12"/>
+  <rect x="214" y="526" width="294" height="72" rx="22" fill="#FFFFFF" fill-opacity="0.12"/>
+  <rect x="718" y="216" width="560" height="84" rx="28" fill="#FFFFFF"/>
+  <rect x="718" y="346" width="560" height="84" rx="28" fill="#FFFFFF"/>
+  <rect x="718" y="476" width="560" height="84" rx="28" fill="#FFFFFF"/>
+  <rect x="718" y="606" width="560" height="84" rx="28" fill="#FFFFFF"/>
+  <circle cx="1334" cy="258" r="42" fill="#DB2777"/>
+  <text x="1334" y="274" text-anchor="middle" font-family="Arial, sans-serif" font-size="44" font-weight="700" fill="#FFFFFF">1</text>
+  <circle cx="1334" cy="388" r="42" fill="#F97316"/>
+  <text x="1334" y="404" text-anchor="middle" font-family="Arial, sans-serif" font-size="44" font-weight="700" fill="#FFFFFF">2</text>
+  <circle cx="1334" cy="518" r="42" fill="#2563EB"/>
+  <text x="1334" y="534" text-anchor="middle" font-family="Arial, sans-serif" font-size="44" font-weight="700" fill="#FFFFFF">3</text>
+</svg>

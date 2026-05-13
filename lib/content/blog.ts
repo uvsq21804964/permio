@@ -77,6 +77,728 @@ type BlogUiCopy = {
 
 const BLOG_ENTRIES: BlogEntry[] = [
   {
+    id: 'urgent-request-qualification',
+    publishedAt: '2026-05-13',
+    readingMinutes: 6,
+    translations: {
+      en: {
+        slug: 'qualify-urgent-dog-training-requests',
+        category: 'Operations',
+        title: 'How to qualify urgent dog training requests without disrupting the whole week',
+        description:
+          'A practical triage framework for dog trainers who receive urgent messages and need to decide what deserves a fast slot.',
+        excerpt:
+          'Not every urgent request needs the same response. A simple triage flow protects the week while helping the cases that truly need priority.',
+        tags: ['Urgency', 'Triage', 'Planning'],
+        coverImage: {
+          src: '/blog/covers/urgent-requests.svg',
+          alt: 'Urgent dog training request triage board with priority levels',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Handle urgent requests with more clarity',
+        ctaDescription:
+          'MagicHango helps trainers keep booking choices connected to real capacity instead of reacting to every message in isolation.',
+        ctaLabel: 'Organize urgent bookings',
+        sections: [
+          {
+            heading: 'Urgent does not always mean immediate',
+            paragraphs: [
+              'Dog trainers often receive messages that sound urgent: biting, barking, pulling, a new puppy, a difficult walk, or a family that feels overwhelmed. The pressure is real, but not every request needs the same calendar response.',
+              'A triage habit helps you separate safety concerns, emotional urgency, and normal scheduling pressure. That distinction protects the week while still taking the client seriously.',
+            ],
+          },
+          {
+            heading: 'Ask the questions that change priority',
+            paragraphs: [
+              'The first reply should gather just enough information to decide the next step. Long forms slow the moment down, but vague replies leave you guessing.',
+              'A few targeted questions can show whether the case needs a faster slot, a phone screen, a referral, or a standard booking path.',
+            ],
+            bullets: [
+              'Has anyone been bitten or physically at risk?',
+              'Is the behavior happening daily, weekly, or only in one context?',
+              'Are children, elderly people, or other animals involved?',
+              'What changed recently in the dog routine or environment?',
+              'Can the client follow short safety instructions before the session?',
+            ],
+          },
+          {
+            heading: 'Create priority lanes',
+            paragraphs: [
+              'A simple priority model prevents every urgent message from becoming a calendar emergency. Safety cases may need a fast call. High-stress but stable cases may need a close appointment. Routine concerns can go through normal availability.',
+              'The client experience improves because the response feels structured rather than improvised.',
+            ],
+          },
+          {
+            heading: 'Keep one small buffer for real priority work',
+            paragraphs: [
+              'If every week is fully packed, urgent requests either break the schedule or get ignored. Keeping a small protected window gives you room to help without sacrificing the rest of the week.',
+              'That buffer should be used deliberately. When it is gone, the next urgent request needs a clear alternative rather than a squeezed appointment.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'qualifier-demandes-urgentes-education-canine',
+        category: 'Organisation',
+        title: 'Comment qualifier les demandes urgentes sans deranger toute la semaine',
+        description:
+          'Un cadre de tri pratique pour les educateurs canins qui recoivent des messages urgents et doivent choisir ce qui merite un creneau rapide.',
+        excerpt:
+          'Toutes les demandes urgentes ne demandent pas la meme reponse. Un tri simple protege la semaine tout en aidant les cas vraiment prioritaires.',
+        tags: ['Urgence', 'Tri', 'Planning'],
+        coverImage: {
+          src: '/blog/covers/urgent-requests.svg',
+          alt: 'Tableau de tri des demandes urgentes en education canine',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Gerer les urgences avec plus de clarte',
+        ctaDescription:
+          'MagicHango aide les educateurs a relier les choix de reservation a la vraie capacite au lieu de reagir a chaque message isolement.',
+        ctaLabel: 'Organiser les demandes urgentes',
+        sections: [
+          {
+            heading: 'Urgent ne veut pas toujours dire immediat',
+            paragraphs: [
+              'Les educateurs canins recoivent souvent des messages qui semblent urgents : morsure, aboiements, traction, nouveau chiot, promenade difficile ou famille depassee. La pression est reelle, mais toutes les demandes ne meritent pas la meme reponse dans l agenda.',
+              'Une habitude de tri aide a distinguer le risque de securite, l urgence emotionnelle et la pression normale de planning. Cette distinction protege la semaine tout en prenant le client au serieux.',
+            ],
+          },
+          {
+            heading: 'Poser les questions qui changent la priorite',
+            paragraphs: [
+              'La premiere reponse doit collecter juste assez d informations pour decider la suite. Les longs formulaires ralentissent le moment, mais les reponses vagues vous laissent deviner.',
+              'Quelques questions ciblees montrent si le cas demande un creneau plus rapide, un appel de qualification, une orientation ou un parcours de reservation standard.',
+            ],
+            bullets: [
+              'Quelqu un a-t-il ete mordu ou mis physiquement en danger ?',
+              'Le comportement arrive-t-il chaque jour, chaque semaine ou dans un seul contexte ?',
+              'Des enfants, personnes agees ou autres animaux sont-ils concernes ?',
+              'Qu est-ce qui a change recemment dans la routine ou l environnement du chien ?',
+              'Le client peut-il appliquer de courtes consignes de securite avant la seance ?',
+            ],
+          },
+          {
+            heading: 'Creer des niveaux de priorite',
+            paragraphs: [
+              'Un modele simple evite que chaque message urgent devienne une urgence de calendrier. Les cas de securite peuvent demander un appel rapide. Les cas tres stressants mais stables peuvent obtenir un rendez-vous proche. Les demandes courantes passent par les disponibilites normales.',
+              'L experience client s ameliore parce que la reponse parait structuree plutot qu improvisee.',
+            ],
+          },
+          {
+            heading: 'Garder une petite marge pour les vraies priorites',
+            paragraphs: [
+              'Si chaque semaine est totalement remplie, les demandes urgentes cassent le planning ou restent ignorees. Garder une petite fenetre protegee permet d aider sans sacrifier le reste de la semaine.',
+              'Cette marge doit etre utilisee volontairement. Lorsqu elle est prise, la demande urgente suivante a besoin d une alternative claire plutot que d un rendez-vous serre.',
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: 'address-change-management',
+    publishedAt: '2026-05-01',
+    readingMinutes: 5,
+    translations: {
+      en: {
+        slug: 'manage-address-changes-dog-training',
+        category: 'Booking',
+        title: 'How to handle address changes without breaking the route',
+        description:
+          'A practical approach for dog trainers when clients move a session location, update a meeting point, or add a new home address.',
+        excerpt:
+          'An address change is not a small detail when travel shapes the day. Treat it like a booking change, not a note.',
+        tags: ['Address', 'Travel', 'Booking'],
+        coverImage: {
+          src: '/blog/covers/address-changes.svg',
+          alt: 'Two home addresses connected by a route change arrow',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Keep locations aligned with the calendar',
+        ctaDescription:
+          'MagicHango helps trainers keep addresses, travel assumptions, and booking choices connected.',
+        ctaLabel: 'Manage booking locations',
+        sections: [
+          {
+            heading: 'An address change changes the appointment',
+            paragraphs: [
+              'When a client changes the meeting place, the session may still look identical in the calendar. Operationally, it can be a different appointment. Travel time, parking, route order, and arrival reliability can all change.',
+              'That is why address changes need a clear process. They should not sit as a casual note that the trainer discovers too late.',
+            ],
+          },
+          {
+            heading: 'Confirm the new location before accepting the change',
+            paragraphs: [
+              'A new address should be checked before the appointment is treated as confirmed. The trainer needs to know whether it still fits the route and whether the meeting instructions are clear.',
+              'This protects punctuality and avoids surprising the client later with a rushed correction.',
+            ],
+            bullets: [
+              'Ask for the exact address, not only a neighborhood.',
+              'Check travel time against the previous and next sessions.',
+              'Confirm parking, entry code, or meeting point details.',
+              'Re-send the confirmation with the updated location.',
+            ],
+          },
+          {
+            heading: 'Set a deadline for late location changes',
+            paragraphs: [
+              'Clients often see an address update as harmless because the service is the same. A clear deadline helps them understand that location affects the whole route.',
+              'The rule can stay calm: after a certain point, the change may need approval or may require rescheduling.',
+            ],
+          },
+          {
+            heading: 'Keep old and new addresses visible',
+            paragraphs: [
+              'If a client has multiple possible locations, the booking flow should make the selected address obvious. Ambiguity creates avoidable travel mistakes.',
+              'A good system makes the active appointment location easy to verify in reminders, confirmations, and the trainer agenda.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'gerer-changements-adresse-education-canine',
+        category: 'Reservation',
+        title: 'Comment gerer les changements d adresse sans casser la tournee',
+        description:
+          'Une approche pratique lorsqu un client change le lieu de seance, modifie un point de rendez-vous ou ajoute une nouvelle adresse.',
+        excerpt:
+          'Un changement d adresse n est pas un detail lorsque les trajets structurent la journee. Il faut le traiter comme une modification de reservation.',
+        tags: ['Adresse', 'Trajets', 'Reservation'],
+        coverImage: {
+          src: '/blog/covers/address-changes.svg',
+          alt: 'Deux adresses de domicile reliees par une fleche de changement de trajet',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Relier les lieux au planning',
+        ctaDescription:
+          'MagicHango aide les educateurs a garder adresses, hypotheses de trajet et choix de reservation connectes.',
+        ctaLabel: 'Gerer les lieux de rendez-vous',
+        sections: [
+          {
+            heading: 'Un changement d adresse change le rendez-vous',
+            paragraphs: [
+              'Quand un client modifie le lieu de rendez-vous, la seance peut sembler identique dans l agenda. En pratique, il peut s agir d un rendez-vous different. Temps de trajet, stationnement, ordre de tournee et ponctualite peuvent changer.',
+              'C est pourquoi les changements d adresse ont besoin d un processus clair. Ils ne doivent pas rester dans une simple note decouverte trop tard.',
+            ],
+          },
+          {
+            heading: 'Confirmer le nouveau lieu avant d accepter',
+            paragraphs: [
+              'Une nouvelle adresse doit etre verifiee avant de considerer le rendez-vous comme confirme. L educateur doit savoir si elle reste compatible avec la tournee et si les consignes d acces sont claires.',
+              'Cela protege la ponctualite et evite de surprendre le client plus tard avec une correction precipitee.',
+            ],
+            bullets: [
+              'Demander l adresse exacte, pas seulement un quartier.',
+              'Verifier le trajet avec la seance precedente et la suivante.',
+              'Confirmer stationnement, code d entree ou point de rendez-vous.',
+              'Renvoyer la confirmation avec le lieu mis a jour.',
+            ],
+          },
+          {
+            heading: 'Fixer une limite pour les changements tardifs',
+            paragraphs: [
+              'Les clients voient souvent une adresse comme un detail parce que le service reste le meme. Une limite claire leur fait comprendre que le lieu influence toute la tournee.',
+              'La regle peut rester calme : apres un certain moment, le changement doit etre approuve ou peut demander un report.',
+            ],
+          },
+          {
+            heading: 'Rendre visibles l ancienne et la nouvelle adresse',
+            paragraphs: [
+              'Si un client a plusieurs lieux possibles, le parcours de reservation doit rendre l adresse choisie evidente. L ambiguite cree des erreurs de trajet evitables.',
+              'Un bon systeme rend le lieu actif facile a verifier dans les rappels, les confirmations et l agenda de l educateur.',
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: 'client-feedback-loop',
+    publishedAt: '2026-04-29',
+    readingMinutes: 5,
+    translations: {
+      en: {
+        slug: 'use-client-feedback-dog-training-business',
+        category: 'Client experience',
+        title: 'How to turn client feedback into better dog training operations',
+        description:
+          'A practical way to collect feedback after sessions and use it to improve reminders, booking clarity, follow-up, and service quality.',
+        excerpt:
+          'Feedback is most useful when it changes small parts of the operating system, not when it sits as a testimonial folder.',
+        tags: ['Feedback', 'Quality', 'Operations'],
+        coverImage: {
+          src: '/blog/covers/client-feedback.svg',
+          alt: 'Client feedback cards connected to service improvement stars',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Use feedback to improve the flow',
+        ctaDescription:
+          'MagicHango helps trainers keep the client journey visible, from booking to follow-up.',
+        ctaLabel: 'Improve the client journey',
+        sections: [
+          {
+            heading: 'Collect feedback close to the session',
+            paragraphs: [
+              'The best feedback often arrives soon after the appointment, while the client still remembers what felt clear, confusing, reassuring, or missing.',
+              'A short request works better than a long survey. The goal is to learn what should be repeated and what should be improved before the next client reaches the same step.',
+            ],
+          },
+          {
+            heading: 'Ask about the process, not only the result',
+            paragraphs: [
+              'Dog training outcomes can take time. If you only ask whether the problem is solved, you may miss useful feedback about communication, booking, reminders, preparation, and follow-up.',
+              'Operational feedback helps you improve the experience even before long-term behavior change is visible.',
+            ],
+            bullets: [
+              'Was booking easy to understand?',
+              'Did the reminder include the right practical details?',
+              'Did the client know what to prepare?',
+              'Was the follow-up clear after the session?',
+              'What would have made the visit easier?',
+            ],
+          },
+          {
+            heading: 'Turn patterns into small fixes',
+            paragraphs: [
+              'One comment may be anecdotal. Three similar comments are a signal. If clients often ask the same question after booking, the page or confirmation email probably needs a small change.',
+              'Small fixes compound: clearer reminders, better preparation notes, improved intake questions, or a more explicit cancellation rule.',
+            ],
+          },
+          {
+            heading: 'Close the loop with clients',
+            paragraphs: [
+              'When feedback leads to a change, mention it when appropriate. Clients appreciate knowing their experience was heard, especially when the update helps future sessions feel smoother.',
+              'That loop builds trust and makes feedback feel like part of the service, not an afterthought.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'utiliser-avis-clients-education-canine',
+        category: 'Experience client',
+        title: 'Comment transformer les avis clients en meilleure organisation',
+        description:
+          'Une methode pratique pour collecter les retours apres les seances et ameliorer rappels, reservation, suivi et qualite de service.',
+        excerpt:
+          'Un avis devient vraiment utile lorsqu il modifie de petites parties du systeme, pas lorsqu il reste dans un dossier de temoignages.',
+        tags: ['Avis', 'Qualite', 'Organisation'],
+        coverImage: {
+          src: '/blog/covers/client-feedback.svg',
+          alt: 'Cartes de retours clients reliees a des ameliorations de service',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Utiliser les retours pour ameliorer le parcours',
+        ctaDescription:
+          'MagicHango aide les educateurs a garder le parcours client visible, de la reservation au suivi.',
+        ctaLabel: 'Ameliorer le parcours client',
+        sections: [
+          {
+            heading: 'Collecter le retour juste apres la seance',
+            paragraphs: [
+              'Les meilleurs retours arrivent souvent peu apres le rendez-vous, lorsque le client se souvient encore de ce qui etait clair, confus, rassurant ou manquant.',
+              'Une demande courte fonctionne mieux qu un long questionnaire. L objectif est de savoir ce qu il faut repeter et ce qu il faut ameliorer avant que le prochain client traverse la meme etape.',
+            ],
+          },
+          {
+            heading: 'Interroger le parcours, pas seulement le resultat',
+            paragraphs: [
+              'Les resultats en education canine prennent parfois du temps. Si vous demandez seulement si le probleme est resolu, vous manquez des retours utiles sur la communication, la reservation, les rappels, la preparation et le suivi.',
+              'Les retours operationnels ameliorent l experience avant meme que le changement comportemental long terme soit visible.',
+            ],
+            bullets: [
+              'La reservation etait-elle facile a comprendre ?',
+              'Le rappel contenait-il les bons details pratiques ?',
+              'Le client savait-il quoi preparer ?',
+              'Le suivi apres seance etait-il clair ?',
+              'Qu est-ce qui aurait rendu la visite plus simple ?',
+            ],
+          },
+          {
+            heading: 'Transformer les tendances en petites corrections',
+            paragraphs: [
+              'Un commentaire peut etre anecdotique. Trois commentaires similaires deviennent un signal. Si les clients posent souvent la meme question apres reservation, la page ou l email de confirmation doit probablement changer un peu.',
+              'Les petites corrections s additionnent : rappels plus clairs, meilleures notes de preparation, questions d intake plus utiles ou regle d annulation plus explicite.',
+            ],
+          },
+          {
+            heading: 'Boucler la boucle avec les clients',
+            paragraphs: [
+              'Lorsqu un retour mene a un changement, mentionnez-le lorsque c est pertinent. Les clients apprecient de savoir que leur experience a ete entendue, surtout lorsque la mise a jour rend les prochaines seances plus simples.',
+              'Cette boucle construit la confiance et fait du retour client une partie du service, pas une pensee apres coup.',
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: 'home-visit-prep',
+    publishedAt: '2026-05-13',
+    readingMinutes: 5,
+    translations: {
+      en: {
+        slug: 'prepare-home-dog-training-visit',
+        category: 'Client experience',
+        title: 'How to prepare clients for a home dog training visit',
+        description:
+          'A simple preparation framework that helps clients set up the home, reduce distractions, and make the first minutes of the session easier.',
+        excerpt:
+          'A home visit goes better when the client knows what to prepare before the trainer arrives.',
+        tags: ['Home visit', 'Preparation', 'Client experience'],
+        coverImage: {
+          src: '/blog/covers/home-visit-prep.svg',
+          alt: 'Home visit preparation checklist for a dog training session',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Make every visit easier to prepare',
+        ctaDescription:
+          'MagicHango helps trainers keep session details, addresses, and reminders clear before the appointment.',
+        ctaLabel: 'Prepare better sessions',
+        sections: [
+          {
+            heading: 'The first minutes shape the whole visit',
+            paragraphs: [
+              'A home session often begins before the trainer rings the bell. If the dog is overstimulated, the family is unsure what to do, or the equipment is missing, the first part of the appointment can become scattered.',
+              'A short preparation message helps the client create a calmer starting point. It does not need to be strict. It just needs to remove the obvious uncertainty.',
+            ],
+          },
+          {
+            heading: 'Tell clients what to have ready',
+            paragraphs: [
+              'Preparation is easier when the request is concrete. Clients should know what to gather, where the first conversation will happen, and whether the dog should be loose, leashed, or separated when the trainer arrives.',
+              'The more practical the message is, the less the client has to guess.',
+            ],
+            bullets: [
+              'A normal leash, treats the dog can eat, and any equipment already used.',
+              'A quiet place for the first conversation if possible.',
+              'Clear parking or entry instructions for the trainer.',
+              'A note about who should be present during the session.',
+            ],
+          },
+          {
+            heading: 'Reduce avoidable distractions',
+            paragraphs: [
+              'Home environments are naturally busy. Other pets, children, visitors, deliveries, and open doors can all change the session quickly.',
+              'The goal is not to create a perfect laboratory. It is to help the client control the first few minutes so the trainer can observe and guide instead of immediately putting out fires.',
+            ],
+          },
+          {
+            heading: 'Keep the tone reassuring',
+            paragraphs: [
+              'Some clients feel embarrassed about their home or their dog behavior. Preparation instructions should sound helpful, not judgmental.',
+              'A calm reminder that nothing needs to be perfect can make clients more honest, more relaxed, and easier to support during the visit.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'preparer-visite-domicile-education-canine',
+        category: 'Experience client',
+        title: 'Comment preparer les clients avant une seance a domicile',
+        description:
+          'Un cadre simple pour aider les clients a preparer le domicile, reduire les distractions et rendre les premieres minutes plus faciles.',
+        excerpt:
+          'Une visite a domicile se passe mieux lorsque le client sait quoi preparer avant l arrivee de l educateur.',
+        tags: ['Domicile', 'Preparation', 'Experience client'],
+        coverImage: {
+          src: '/blog/covers/home-visit-prep.svg',
+          alt: 'Checklist de preparation pour une seance canine a domicile',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Rendre chaque visite plus facile a preparer',
+        ctaDescription:
+          'MagicHango aide les educateurs a garder les details de seance, les adresses et les rappels clairs avant le rendez-vous.',
+        ctaLabel: 'Preparer de meilleures seances',
+        sections: [
+          {
+            heading: 'Les premieres minutes influencent toute la visite',
+            paragraphs: [
+              'Une seance a domicile commence souvent avant que l educateur sonne. Si le chien est deja tres excite, si la famille ne sait pas quoi faire ou si le materiel manque, le debut du rendez-vous peut devenir brouillon.',
+              'Un court message de preparation aide le client a creer un depart plus calme. Il n a pas besoin d etre strict. Il doit surtout enlever les incertitudes evidentes.',
+            ],
+          },
+          {
+            heading: 'Dire clairement quoi preparer',
+            paragraphs: [
+              'La preparation devient plus simple lorsque la demande est concrete. Le client doit savoir quoi rassembler, ou aura lieu la premiere discussion et si le chien doit etre libre, attache ou separe lorsque l educateur arrive.',
+              'Plus le message est pratique, moins le client doit deviner.',
+            ],
+            bullets: [
+              'Une laisse habituelle, des friandises adaptees et le materiel deja utilise.',
+              'Un endroit calme pour la premiere discussion si possible.',
+              'Des consignes claires de stationnement ou d entree.',
+              'Une note sur les personnes qui doivent etre presentes.',
+            ],
+          },
+          {
+            heading: 'Reduire les distractions evitables',
+            paragraphs: [
+              'Un domicile est naturellement vivant. Autres animaux, enfants, visiteurs, livraisons et portes ouvertes peuvent vite changer la seance.',
+              'L objectif n est pas de creer un laboratoire parfait. Il s agit d aider le client a maitriser les premieres minutes pour que l educateur puisse observer et guider au lieu de gerer l urgence.',
+            ],
+          },
+          {
+            heading: 'Garder un ton rassurant',
+            paragraphs: [
+              'Certains clients sont genes par leur logement ou par le comportement de leur chien. Les consignes de preparation doivent paraitre aidantes, pas jugeantes.',
+              'Un rappel calme que rien n a besoin d etre parfait peut rendre les clients plus honnetes, plus detendus et plus faciles a accompagner pendant la visite.',
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: 'waitlist-management',
+    publishedAt: '2026-05-04',
+    readingMinutes: 6,
+    translations: {
+      en: {
+        slug: 'dog-trainer-waitlist-management',
+        category: 'Operations',
+        title: 'How to manage a waitlist without losing good clients',
+        description:
+          'A practical way for busy dog trainers to collect demand, prioritize requests, and turn cancellations into useful booking opportunities.',
+        excerpt:
+          'A waitlist should not be a black hole. It should help clients understand what happens next and help trainers fill the right openings.',
+        tags: ['Waitlist', 'Capacity', 'Booking'],
+        coverImage: {
+          src: '/blog/covers/waitlist.svg',
+          alt: 'Prioritized waitlist cards for dog training requests',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Turn demand into a clearer queue',
+        ctaDescription:
+          'MagicHango helps trainers keep booking demand and availability close enough to act when a good slot appears.',
+        ctaLabel: 'Organize demand',
+        sections: [
+          {
+            heading: 'A waitlist needs a promise',
+            paragraphs: [
+              'When clients join a waitlist, they want to know whether anything will actually happen. If the process is vague, strong leads may keep searching and book somewhere else.',
+              'The promise does not need to guarantee a date. It should explain how requests are reviewed, what information matters, and when the client may hear back.',
+            ],
+          },
+          {
+            heading: 'Collect the information that changes priority',
+            paragraphs: [
+              'A waitlist is useful only if it helps you choose the right client when a slot opens. Collect just enough detail to understand urgency, location, service type, and scheduling flexibility.',
+              'This keeps the queue manageable and makes it easier to act quickly after a cancellation.',
+            ],
+            bullets: [
+              'Preferred service or main training goal.',
+              'Address or service area.',
+              'Days and times that could work.',
+              'Urgency and any safety context.',
+              'Whether the client can accept a short-notice opening.',
+            ],
+          },
+          {
+            heading: 'Prioritize fit, not only arrival order',
+            paragraphs: [
+              'First come, first served sounds fair, but it is not always operationally smart. A client near an existing route may be the best fit for a cancellation tomorrow, while another request may need a longer first-session slot.',
+              'A transparent waitlist can still be fair while considering route, readiness, and the type of opening available.',
+            ],
+          },
+          {
+            heading: 'Close the loop after each offer',
+            paragraphs: [
+              'When a waitlist client receives an offer, give a clear response window. If they decline or do not answer, move on kindly and keep the queue alive.',
+              'The goal is to make openings easy to fill without turning every cancellation into a scramble.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'gerer-liste-attente-educateur-canin',
+        category: 'Organisation',
+        title: 'Comment gerer une liste d attente sans perdre de bons clients',
+        description:
+          'Une methode pratique pour collecter la demande, prioriser les besoins et transformer les annulations en opportunites utiles.',
+        excerpt:
+          'Une liste d attente ne doit pas etre un trou noir. Elle doit expliquer la suite au client et aider l educateur a remplir les bons creneaux.',
+        tags: ['Liste d attente', 'Capacite', 'Reservation'],
+        coverImage: {
+          src: '/blog/covers/waitlist.svg',
+          alt: 'Cartes de liste d attente priorisees pour demandes en education canine',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Transformer la demande en file claire',
+        ctaDescription:
+          'MagicHango aide les educateurs a garder la demande et les disponibilites assez proches pour agir lorsqu un bon creneau apparait.',
+        ctaLabel: 'Organiser la demande',
+        sections: [
+          {
+            heading: 'Une liste d attente a besoin d une promesse',
+            paragraphs: [
+              'Lorsqu un client rejoint une liste d attente, il veut savoir si quelque chose va vraiment se passer. Si le processus est vague, les bons prospects continuent parfois a chercher ailleurs.',
+              'La promesse n a pas besoin de garantir une date. Elle doit expliquer comment les demandes sont relues, quelles informations comptent et quand le client peut avoir un retour.',
+            ],
+          },
+          {
+            heading: 'Collecter les informations qui changent la priorite',
+            paragraphs: [
+              'Une liste d attente est utile seulement si elle aide a choisir le bon client lorsqu un creneau se libere. Collectez juste assez de details pour comprendre l urgence, la localisation, le type de service et la flexibilite horaire.',
+              'Cela garde la file gerable et permet d agir plus vite apres une annulation.',
+            ],
+            bullets: [
+              'Service souhaite ou objectif principal.',
+              'Adresse ou secteur d intervention.',
+              'Jours et horaires possibles.',
+              'Urgence et contexte de securite eventuel.',
+              'Capacite a accepter un creneau de derniere minute.',
+            ],
+          },
+          {
+            heading: 'Prioriser l adequation, pas seulement l ordre d arrivee',
+            paragraphs: [
+              'Premier arrive, premier servi semble juste, mais ce n est pas toujours le plus intelligent pour l organisation. Un client proche d une tournee existante peut etre le meilleur choix pour une annulation demain, tandis qu une autre demande exige une longue premiere seance.',
+              'Une liste transparente peut rester equitable tout en tenant compte de la tournee, de la disponibilite du client et du type de creneau disponible.',
+            ],
+          },
+          {
+            heading: 'Boucler chaque proposition',
+            paragraphs: [
+              'Lorsqu un client en attente recoit une proposition, donnez une fenetre de reponse claire. S il refuse ou ne repond pas, passez au suivant avec bienveillance et gardez la file vivante.',
+              'L objectif est de remplir les ouvertures facilement sans transformer chaque annulation en course contre la montre.',
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: 'readable-booking-terms',
+    publishedAt: '2026-05-02',
+    readingMinutes: 5,
+    translations: {
+      en: {
+        slug: 'dog-training-booking-terms-that-clients-read',
+        category: 'Booking',
+        title: 'How to write booking terms clients will actually read',
+        description:
+          'A practical guide to making cancellation rules, payment expectations, and preparation notes clear without turning the booking page into legal noise.',
+        excerpt:
+          'Booking terms work better when they are short, visible, and written in the same calm tone as the rest of the client experience.',
+        tags: ['Booking', 'Policies', 'Client experience'],
+        coverImage: {
+          src: '/blog/covers/booking-terms.svg',
+          alt: 'Readable booking terms panel with confirmed checklist items',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Make booking rules easier to understand',
+        ctaDescription:
+          'MagicHango helps trainers keep booking rules visible at the moments where clients need them.',
+        ctaLabel: 'Clarify booking terms',
+        sections: [
+          {
+            heading: 'Rules are easier to accept when they are easy to read',
+            paragraphs: [
+              'Clients rarely object to every rule. They object when rules appear late, sound harsh, or feel hidden until there is a problem.',
+              'Readable booking terms make expectations clear before the appointment is confirmed. That makes the process feel fairer and reduces awkward conversations later.',
+            ],
+          },
+          {
+            heading: 'Put the most important rules near the decision',
+            paragraphs: [
+              'Long policy pages are easy to ignore. The rules that affect the booking should appear close to the confirmation step, written in short language.',
+              'You can still keep detailed terms elsewhere, but the practical version should be visible when the client chooses a time.',
+            ],
+            bullets: [
+              'Cancellation or rescheduling window.',
+              'Payment timing and accepted methods.',
+              'Travel or location requirements.',
+              'What happens if the client is late or absent.',
+              'Preparation notes that affect the session.',
+            ],
+          },
+          {
+            heading: 'Use a steady tone',
+            paragraphs: [
+              'A rule can be firm without sounding defensive. Plain language usually works better than legal phrasing for day-to-day booking expectations.',
+              'The tone should match the rest of the experience: professional, calm, and clear.',
+            ],
+          },
+          {
+            heading: 'Repeat rules at useful moments',
+            paragraphs: [
+              'The confirmation email and reminder are good places to repeat the most important rule in one sentence. Repetition makes the rule feel stable, not surprising.',
+              'When clients see the same expectation before, during, and after booking, the process feels less like a penalty and more like a normal part of working together.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'conditions-reservation-education-canine-lisibles',
+        category: 'Reservation',
+        title: 'Comment ecrire des conditions de reservation vraiment lues',
+        description:
+          'Un guide pratique pour rendre les regles d annulation, de paiement et de preparation claires sans transformer la page de reservation en bloc juridique.',
+        excerpt:
+          'Les conditions fonctionnent mieux lorsqu elles sont courtes, visibles et ecrites avec le meme ton calme que le reste du parcours client.',
+        tags: ['Reservation', 'Regles', 'Experience client'],
+        coverImage: {
+          src: '/blog/covers/booking-terms.svg',
+          alt: 'Panneau de conditions de reservation lisibles avec checklist',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Rendre les regles plus faciles a comprendre',
+        ctaDescription:
+          'MagicHango aide les educateurs a garder les regles de reservation visibles aux moments ou les clients en ont besoin.',
+        ctaLabel: 'Clarifier les conditions',
+        sections: [
+          {
+            heading: 'Les regles sont mieux acceptees lorsqu elles sont lisibles',
+            paragraphs: [
+              'Les clients ne refusent pas toutes les regles par principe. Ils reagissent surtout lorsque les regles apparaissent tard, semblent dures ou paraissent cachees jusqu au probleme.',
+              'Des conditions lisibles rendent les attentes claires avant la confirmation du rendez-vous. Le parcours parait plus juste et les conversations difficiles diminuent ensuite.',
+            ],
+          },
+          {
+            heading: 'Placer les regles importantes pres de la decision',
+            paragraphs: [
+              'Les longues pages de conditions sont faciles a ignorer. Les regles qui changent la reservation doivent apparaitre pres de l etape de confirmation, avec une formulation courte.',
+              'Vous pouvez garder des conditions detaillees ailleurs, mais la version pratique doit etre visible lorsque le client choisit un horaire.',
+            ],
+            bullets: [
+              'Fenetre d annulation ou de report.',
+              'Moment du paiement et moyens acceptes.',
+              'Exigences de trajet ou de lieu.',
+              'Ce qui se passe en cas de retard ou d absence.',
+              'Consignes de preparation qui changent la seance.',
+            ],
+          },
+          {
+            heading: 'Utiliser un ton stable',
+            paragraphs: [
+              'Une regle peut etre ferme sans paraitre defensive. Le langage simple fonctionne souvent mieux que le vocabulaire juridique pour les attentes de reservation du quotidien.',
+              'Le ton doit rester coherent avec le reste de l experience : professionnel, calme et clair.',
+            ],
+          },
+          {
+            heading: 'Repeter les regles aux bons moments',
+            paragraphs: [
+              'L email de confirmation et le rappel sont de bons endroits pour repeter la regle principale en une phrase. La repetition rend la regle stable, pas surprenante.',
+              'Lorsque les clients voient la meme attente avant, pendant et apres la reservation, le processus ressemble moins a une sanction et davantage a une base normale de collaboration.',
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
     id: 'client-reactivation',
     publishedAt: '2026-05-07',
     readingMinutes: 5,

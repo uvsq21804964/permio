@@ -2,6 +2,30 @@ import type { Locale } from '@/src/lib/i18n';
 
 const BLOG_SLUGS = [
   {
+    en: 'qualify-urgent-dog-training-requests',
+    fr: 'qualifier-demandes-urgentes-education-canine',
+  },
+  {
+    en: 'manage-address-changes-dog-training',
+    fr: 'gerer-changements-adresse-education-canine',
+  },
+  {
+    en: 'use-client-feedback-dog-training-business',
+    fr: 'utiliser-avis-clients-education-canine',
+  },
+  {
+    en: 'prepare-home-dog-training-visit',
+    fr: 'preparer-visite-domicile-education-canine',
+  },
+  {
+    en: 'dog-trainer-waitlist-management',
+    fr: 'gerer-liste-attente-educateur-canin',
+  },
+  {
+    en: 'dog-training-booking-terms-that-clients-read',
+    fr: 'conditions-reservation-education-canine-lisibles',
+  },
+  {
     en: 'reactivate-past-dog-training-clients',
     fr: 'relancer-anciens-clients-education-canine',
   },
