@@ -2,6 +2,30 @@ import type { Locale } from '@/src/lib/i18n';
 
 const BLOG_SLUGS = [
   {
+    en: 'prepare-outdoor-dog-training-session',
+    fr: 'preparer-seance-exterieur-education-canine',
+  },
+  {
+    en: 'weather-rescheduling-dog-training',
+    fr: 'report-meteo-seances-education-canine',
+  },
+  {
+    en: 'explain-dog-training-packages-booking-page',
+    fr: 'expliquer-forfaits-page-reservation-education-canine',
+  },
+  {
+    en: 'dog-trainer-school-holiday-planning',
+    fr: 'planning-vacances-scolaires-educateur-canin',
+  },
+  {
+    en: 'dog-training-maintenance-sessions',
+    fr: 'seances-entretien-education-canine',
+  },
+  {
+    en: 'best-first-session-time-slots-dog-training',
+    fr: 'meilleurs-creneaux-premiere-seance-education-canine',
+  },
+  {
     en: 'qualify-urgent-dog-training-requests',
     fr: 'qualifier-demandes-urgentes-education-canine',
   },

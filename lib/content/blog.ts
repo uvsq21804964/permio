@@ -77,6 +77,722 @@ type BlogUiCopy = {
 
 const BLOG_ENTRIES: BlogEntry[] = [
   {
+    id: 'outdoor-session-prep',
+    publishedAt: '2026-05-14',
+    readingMinutes: 5,
+    translations: {
+      en: {
+        slug: 'prepare-outdoor-dog-training-session',
+        category: 'Client experience',
+        title: 'How to prepare clients for an outdoor dog training session',
+        description:
+          'A practical checklist for meeting points, equipment, distractions, weather, and expectations before an outdoor training appointment.',
+        excerpt:
+          'Outdoor sessions work best when the client knows where to meet, what to bring, and how much unpredictability is normal.',
+        tags: ['Outdoor', 'Preparation', 'Client experience'],
+        coverImage: {
+          src: '/blog/covers/outdoor-session.svg',
+          alt: 'Outdoor dog training route with meeting points and preparation markers',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Make outdoor sessions easier to run',
+        ctaDescription:
+          'MagicHango helps trainers keep meeting points, reminders, and booking details clear before the session.',
+        ctaLabel: 'Prepare outdoor bookings',
+        sections: [
+          {
+            heading: 'Outdoor sessions need more context than indoor sessions',
+            paragraphs: [
+              'A park, street, or shared outdoor space can change quickly. Other dogs, traffic, weather, noise, and parking all affect the quality of the session.',
+              'A clear preparation message helps the client arrive ready instead of spending the first ten minutes solving practical issues.',
+            ],
+          },
+          {
+            heading: 'Confirm the meeting point precisely',
+            paragraphs: [
+              'A vague location creates stress before the work begins. Clients need the exact meeting point, parking guidance, and what to do if they arrive early or cannot find the trainer.',
+              'This is especially important in large parks, residential areas, or places with multiple entrances.',
+            ],
+            bullets: [
+              'Send the exact meeting address or map point.',
+              'Explain where to park or wait.',
+              'Tell the client whether the dog should stay in the car, on leash, or at a distance.',
+              'Include a simple contact path for last-minute location issues.',
+            ],
+          },
+          {
+            heading: 'Set expectations about distractions',
+            paragraphs: [
+              'Clients may expect an outdoor session to look clean and controlled from the start. It helps to explain that part of the work is observing and adjusting to the environment.',
+              'That framing lowers pressure and makes the session feel more purposeful when distractions appear.',
+            ],
+          },
+          {
+            heading: 'Prepare a weather fallback',
+            paragraphs: [
+              'Outdoor sessions should have a simple fallback rule. Light rain, heat, storms, or unsafe ground conditions can all affect whether the session should move, shorten, or reschedule.',
+              'When the rule is known before the appointment, weather decisions feel less improvised.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'preparer-seance-exterieur-education-canine',
+        category: 'Experience client',
+        title: 'Comment preparer les clients avant une seance en exterieur',
+        description:
+          'Une checklist pratique pour clarifier lieu de rendez-vous, materiel, distractions, meteo et attentes avant une seance dehors.',
+        excerpt:
+          'Une seance en exterieur se passe mieux lorsque le client sait ou aller, quoi apporter et quelle part d imprevisible est normale.',
+        tags: ['Exterieur', 'Preparation', 'Experience client'],
+        coverImage: {
+          src: '/blog/covers/outdoor-session.svg',
+          alt: 'Parcours de seance en exterieur avec points de rendez-vous',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Rendre les seances dehors plus simples',
+        ctaDescription:
+          'MagicHango aide les educateurs a garder lieux de rendez-vous, rappels et details de reservation clairs avant la seance.',
+        ctaLabel: 'Preparer les reservations exterieures',
+        sections: [
+          {
+            heading: 'Les seances dehors demandent plus de contexte',
+            paragraphs: [
+              'Un parc, une rue ou un espace partage peut changer rapidement. Autres chiens, circulation, meteo, bruit et stationnement influencent la qualite de la seance.',
+              'Un message de preparation clair aide le client a arriver pret au lieu de passer les dix premieres minutes a regler des details pratiques.',
+            ],
+          },
+          {
+            heading: 'Confirmer precisement le point de rendez-vous',
+            paragraphs: [
+              'Un lieu vague cree du stress avant meme de commencer. Les clients ont besoin du point exact, des consignes de stationnement et de savoir quoi faire s ils arrivent en avance ou ne trouvent pas l educateur.',
+              'C est encore plus important dans les grands parcs, les zones residentielles ou les lieux avec plusieurs entrees.',
+            ],
+            bullets: [
+              'Envoyer l adresse exacte ou le point sur la carte.',
+              'Expliquer ou se garer ou attendre.',
+              'Dire si le chien doit rester en voiture, en laisse ou a distance.',
+              'Inclure un moyen simple de contact en cas de souci de lieu.',
+            ],
+          },
+          {
+            heading: 'Poser les attentes sur les distractions',
+            paragraphs: [
+              'Les clients peuvent imaginer qu une seance dehors doit etre propre et controlee des le debut. Il est utile d expliquer qu une partie du travail consiste justement a observer et ajuster selon l environnement.',
+              'Ce cadrage baisse la pression et rend la seance plus logique lorsque les distractions apparaissent.',
+            ],
+          },
+          {
+            heading: 'Prevoir une solution meteo',
+            paragraphs: [
+              'Les seances dehors ont besoin d une regle simple en cas de meteo. Petite pluie, chaleur, orage ou sol dangereux peuvent demander de deplacer, raccourcir ou reporter.',
+              'Lorsque la regle est connue avant le rendez-vous, la decision semble moins improvisee.',
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: 'weather-rescheduling',
+    publishedAt: '2026-04-26',
+    readingMinutes: 5,
+    translations: {
+      en: {
+        slug: 'weather-rescheduling-dog-training',
+        category: 'Operations',
+        title: 'How to handle weather rescheduling without confusing clients',
+        description:
+          'A practical framework for outdoor dog training sessions when rain, heat, storms, or unsafe conditions affect the appointment.',
+        excerpt:
+          'Weather rules are easier to accept when they are visible before the forecast becomes a problem.',
+        tags: ['Weather', 'Rescheduling', 'Operations'],
+        coverImage: {
+          src: '/blog/covers/weather-rescheduling.svg',
+          alt: 'Weather rescheduling checklist for outdoor dog training appointments',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Keep rescheduling rules clear',
+        ctaDescription:
+          'MagicHango helps trainers keep booking rules, reminders, and client communication aligned.',
+        ctaLabel: 'Clarify rescheduling',
+        sections: [
+          {
+            heading: 'Weather decisions should not be invented at the last minute',
+            paragraphs: [
+              'Outdoor training depends on real conditions. Rain may be workable, heat may be unsafe, and storms may make a session impossible. If the rule is unclear, every forecast becomes a negotiation.',
+              'A simple weather policy keeps the decision professional and easier for clients to understand.',
+            ],
+          },
+          {
+            heading: 'Define what changes the plan',
+            paragraphs: [
+              'Clients do not need a long policy. They need to know which situations may change the appointment and when the decision will be made.',
+              'This reduces uncertainty and makes weather communication feel consistent.',
+            ],
+            bullets: [
+              'Unsafe heat or cold for the dog.',
+              'Storms, strong wind, or dangerous ground conditions.',
+              'Heavy rain that prevents the session goal.',
+              'A clear decision time before the appointment.',
+            ],
+          },
+          {
+            heading: 'Offer a few fallback paths',
+            paragraphs: [
+              'Rescheduling is not the only option. Some sessions can move indoors, change location, shorten the outdoor portion, or become a planning call.',
+              'Having options ready helps the trainer protect the day without cancelling more than necessary.',
+            ],
+          },
+          {
+            heading: 'Repeat the rule in reminders',
+            paragraphs: [
+              'The reminder is a good place to restate the weather rule in one short sentence. It prepares the client before the decision is needed.',
+              'When the forecast changes, the client already understands the logic behind the next message.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'report-meteo-seances-education-canine',
+        category: 'Organisation',
+        title: 'Comment gerer les reports meteo sans perdre les clients',
+        description:
+          'Un cadre pratique pour les seances en exterieur lorsque pluie, chaleur, orage ou conditions dangereuses influencent le rendez-vous.',
+        excerpt:
+          'Les regles meteo sont mieux acceptees lorsqu elles sont visibles avant que la prevision devienne un probleme.',
+        tags: ['Meteo', 'Report', 'Organisation'],
+        coverImage: {
+          src: '/blog/covers/weather-rescheduling.svg',
+          alt: 'Checklist de report meteo pour rendez-vous d education canine',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Clarifier les regles de report',
+        ctaDescription:
+          'MagicHango aide les educateurs a garder regles de reservation, rappels et communication client coherents.',
+        ctaLabel: 'Clarifier les reports',
+        sections: [
+          {
+            heading: 'Les decisions meteo ne doivent pas etre improvisees',
+            paragraphs: [
+              'L education en exterieur depend des vraies conditions. Une petite pluie peut etre acceptable, la chaleur peut etre dangereuse et l orage peut rendre la seance impossible. Si la regle est floue, chaque prevision devient une negociation.',
+              'Une politique meteo simple rend la decision plus professionnelle et plus facile a comprendre.',
+            ],
+          },
+          {
+            heading: 'Definir ce qui change le plan',
+            paragraphs: [
+              'Les clients n ont pas besoin d une longue politique. Ils doivent savoir quelles situations peuvent modifier le rendez-vous et quand la decision sera prise.',
+              'Cela reduit l incertitude et rend la communication meteo plus coherente.',
+            ],
+            bullets: [
+              'Chaleur ou froid dangereux pour le chien.',
+              'Orage, vent fort ou sol dangereux.',
+              'Pluie forte qui empeche l objectif de la seance.',
+              'Heure claire de decision avant le rendez-vous.',
+            ],
+          },
+          {
+            heading: 'Prevoir quelques alternatives',
+            paragraphs: [
+              'Reporter n est pas la seule option. Certaines seances peuvent passer en interieur, changer de lieu, raccourcir la partie dehors ou devenir un appel de preparation.',
+              'Avoir des options pretes aide l educateur a proteger la journee sans annuler plus que necessaire.',
+            ],
+          },
+          {
+            heading: 'Repeter la regle dans les rappels',
+            paragraphs: [
+              'Le rappel est un bon endroit pour rappeler la regle meteo en une phrase courte. Il prepare le client avant que la decision soit necessaire.',
+              'Lorsque la prevision change, le client comprend deja la logique du message suivant.',
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: 'package-page-explainer',
+    publishedAt: '2026-04-25',
+    readingMinutes: 5,
+    translations: {
+      en: {
+        slug: 'explain-dog-training-packages-booking-page',
+        category: 'Booking',
+        title: 'How to explain training packages on a booking page',
+        description:
+          'A practical structure for presenting dog training packages clearly so clients understand the difference between options before they book.',
+        excerpt:
+          'Packages sell better when clients can compare outcomes, rhythm, and commitment without decoding a wall of text.',
+        tags: ['Packages', 'Booking', 'Clarity'],
+        coverImage: {
+          src: '/blog/covers/package-page.svg',
+          alt: 'Three dog training package cards presented on a booking page',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Make package choices easier',
+        ctaDescription:
+          'MagicHango helps trainers present services and booking options in a way clients can actually act on.',
+        ctaLabel: 'Clarify service booking',
+        sections: [
+          {
+            heading: 'A package page should reduce comparison work',
+            paragraphs: [
+              'When clients see several package options, they try to understand what changes: number of sessions, rhythm, support, price, and expected outcome.',
+              'If those differences are buried in paragraphs, the client may hesitate or ask for clarification before booking.',
+            ],
+          },
+          {
+            heading: 'Compare packages on the same criteria',
+            paragraphs: [
+              'The easiest package pages use the same structure for each offer. This makes comparison faster and lowers the risk that clients choose the wrong fit.',
+              'The goal is not to oversimplify the service, but to make the decision readable.',
+            ],
+            bullets: [
+              'Who the package is for.',
+              'What goal or situation it supports.',
+              'How many sessions are included.',
+              'Recommended rhythm between sessions.',
+              'What happens after the package ends.',
+            ],
+          },
+          {
+            heading: 'Avoid naming packages only by size',
+            paragraphs: [
+              'Names like small, medium, and large are easy internally but not always useful for clients. A name connected to the client goal often works better.',
+              'For example, a puppy start package, a recall focus package, or a home routine package tells the client why the option exists.',
+            ],
+          },
+          {
+            heading: 'Keep a path for unsure clients',
+            paragraphs: [
+              'Some clients will not know which package fits. Give them a simple fallback: book an assessment, request guidance, or choose a first session before committing.',
+              'That keeps uncertainty from blocking the booking entirely.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'expliquer-forfaits-page-reservation-education-canine',
+        category: 'Reservation',
+        title: 'Comment expliquer ses forfaits sur une page de reservation',
+        description:
+          'Une structure pratique pour presenter clairement les forfaits afin que les clients comprennent les differences avant de reserver.',
+        excerpt:
+          'Les forfaits se vendent mieux lorsque les clients comparent objectifs, rythme et engagement sans decoder un mur de texte.',
+        tags: ['Forfaits', 'Reservation', 'Clarte'],
+        coverImage: {
+          src: '/blog/covers/package-page.svg',
+          alt: 'Trois cartes de forfaits d education canine sur une page de reservation',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Rendre les forfaits plus faciles a choisir',
+        ctaDescription:
+          'MagicHango aide les educateurs a presenter services et options de reservation de maniere vraiment actionnable.',
+        ctaLabel: 'Clarifier les services',
+        sections: [
+          {
+            heading: 'Une page forfait doit reduire l effort de comparaison',
+            paragraphs: [
+              'Lorsque les clients voient plusieurs forfaits, ils cherchent ce qui change : nombre de seances, rythme, accompagnement, prix et resultat attendu.',
+              'Si ces differences sont cachees dans de longs paragraphes, le client hesite ou demande une clarification avant de reserver.',
+            ],
+          },
+          {
+            heading: 'Comparer les forfaits avec les memes criteres',
+            paragraphs: [
+              'Les pages les plus simples utilisent la meme structure pour chaque offre. La comparaison devient plus rapide et le risque de mauvais choix diminue.',
+              'L objectif n est pas de simplifier a l exces, mais de rendre la decision lisible.',
+            ],
+            bullets: [
+              'A qui s adresse le forfait.',
+              'Quel objectif ou quelle situation il accompagne.',
+              'Combien de seances sont incluses.',
+              'Quel rythme est recommande entre les seances.',
+              'Ce qui se passe apres la fin du forfait.',
+            ],
+          },
+          {
+            heading: 'Eviter les noms bases seulement sur la taille',
+            paragraphs: [
+              'Des noms comme petit, moyen et grand sont simples en interne, mais pas toujours utiles pour les clients. Un nom relie a l objectif fonctionne souvent mieux.',
+              'Par exemple, forfait demarrage chiot, forfait rappel ou forfait routine a domicile explique pourquoi l option existe.',
+            ],
+          },
+          {
+            heading: 'Garder un chemin pour les clients indecis',
+            paragraphs: [
+              'Certains clients ne sauront pas quel forfait choisir. Donnez-leur une sortie simple : reserver un bilan, demander un conseil ou choisir une premiere seance avant de s engager.',
+              'Cela evite que l incertitude bloque completement la reservation.',
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: 'school-holiday-planning',
+    publishedAt: '2026-05-14',
+    readingMinutes: 6,
+    translations: {
+      en: {
+        slug: 'dog-trainer-school-holiday-planning',
+        category: 'Planning',
+        title: 'How dog trainers can prepare their calendar for school holidays',
+        description:
+          'A practical planning guide for handling shifting family routines, travel constraints, and demand changes during school holidays.',
+        excerpt:
+          'School holidays change client availability quickly. A little preparation keeps the calendar readable instead of reactive.',
+        tags: ['Holidays', 'Planning', 'Availability'],
+        coverImage: {
+          src: '/blog/covers/school-holidays.svg',
+          alt: 'School holiday planning calendar for dog training sessions',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Keep holiday weeks under control',
+        ctaDescription:
+          'MagicHango helps trainers adjust availability and booking choices when normal weekly routines change.',
+        ctaLabel: 'Plan holiday availability',
+        sections: [
+          {
+            heading: 'Holiday weeks do not behave like normal weeks',
+            paragraphs: [
+              'During school holidays, clients may be away, children may be home, traffic patterns may change, and some families suddenly have more flexibility than usual. The same availability rules can create a very different week.',
+              'Preparing early helps you decide which slots should stay open, which should be protected, and which clients may need a different rhythm.',
+            ],
+          },
+          {
+            heading: 'Separate stable clients from flexible clients',
+            paragraphs: [
+              'Some clients want to keep their usual rhythm during holidays. Others prefer a temporary change because family routines are different. Treating both groups the same can create unnecessary rescheduling.',
+              'A simple check-in before the holiday period lets you preserve the reliable appointments and use flexibility where it actually helps.',
+            ],
+            bullets: [
+              'Ask repeat clients whether their usual time still works.',
+              'Offer flexible clients a short list of stronger holiday slots.',
+              'Protect travel-heavy days from last-minute scattered bookings.',
+              'Close weak gaps before they become awkward appointments.',
+            ],
+          },
+          {
+            heading: 'Use holidays to clean the route',
+            paragraphs: [
+              'Holiday periods can be a chance to rebuild the week around better clusters. If several clients are more flexible, guide them toward days and zones that reduce travel.',
+              'This keeps the business available without letting the calendar become random.',
+            ],
+          },
+          {
+            heading: 'Communicate the temporary rules clearly',
+            paragraphs: [
+              'Clients usually accept temporary holiday rules when they are visible and simple. Explain whether availability is reduced, expanded, or grouped differently.',
+              'The goal is to make the change feel planned, not like the calendar is suddenly harder to access.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'planning-vacances-scolaires-educateur-canin',
+        category: 'Planning',
+        title: 'Comment preparer son planning pendant les vacances scolaires',
+        description:
+          'Un guide pratique pour gerer les routines familiales qui changent, les contraintes de trajet et les variations de demande pendant les vacances.',
+        excerpt:
+          'Les vacances scolaires changent vite les disponibilites des clients. Un peu de preparation garde le planning lisible au lieu de le subir.',
+        tags: ['Vacances', 'Planning', 'Disponibilites'],
+        coverImage: {
+          src: '/blog/covers/school-holidays.svg',
+          alt: 'Calendrier de vacances scolaires pour seances d education canine',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Garder les semaines de vacances sous controle',
+        ctaDescription:
+          'MagicHango aide les educateurs a ajuster les disponibilites et les choix de reservation lorsque les routines changent.',
+        ctaLabel: 'Planifier les vacances',
+        sections: [
+          {
+            heading: 'Les vacances ne ressemblent pas aux semaines normales',
+            paragraphs: [
+              'Pendant les vacances scolaires, les clients peuvent etre absents, les enfants peuvent etre a la maison, les trajets changent et certaines familles deviennent soudain plus flexibles. Les memes regles de disponibilite peuvent produire une semaine tres differente.',
+              'Preparer la periode en avance aide a decider quels creneaux garder ouverts, lesquels proteger et quels clients peuvent avoir besoin d un rythme different.',
+            ],
+          },
+          {
+            heading: 'Distinguer les clients stables des clients flexibles',
+            paragraphs: [
+              'Certains clients veulent garder leur rythme habituel pendant les vacances. D autres preferent un changement temporaire parce que la routine familiale bouge. Traiter les deux groupes pareil cree souvent des reports inutiles.',
+              'Un simple point avant les vacances permet de conserver les rendez-vous fiables et d utiliser la flexibilite la ou elle aide vraiment.',
+            ],
+            bullets: [
+              'Demander aux clients reguliers si leur horaire habituel fonctionne encore.',
+              'Proposer aux clients flexibles une courte selection de bons creneaux.',
+              'Proteger les jours avec beaucoup de trajet contre les reservations dispersees.',
+              'Fermer les trous faibles avant qu ils deviennent des rendez-vous difficiles.',
+            ],
+          },
+          {
+            heading: 'Utiliser les vacances pour nettoyer la tournee',
+            paragraphs: [
+              'Les vacances peuvent etre l occasion de reconstruire la semaine autour de meilleurs regroupements. Si plusieurs clients sont plus flexibles, orientez-les vers les jours et zones qui reduisent les trajets.',
+              'L activite reste disponible sans laisser le planning devenir aleatoire.',
+            ],
+          },
+          {
+            heading: 'Communiquer clairement les regles temporaires',
+            paragraphs: [
+              'Les clients acceptent bien les regles temporaires lorsqu elles sont visibles et simples. Expliquez si les disponibilites sont reduites, elargies ou regroupees autrement.',
+              'L objectif est que le changement paraisse organise, pas comme un agenda soudainement plus difficile a utiliser.',
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: 'maintenance-sessions',
+    publishedAt: '2026-04-28',
+    readingMinutes: 5,
+    translations: {
+      en: {
+        slug: 'dog-training-maintenance-sessions',
+        category: 'Client experience',
+        title: 'When should you offer maintenance sessions after a training goal is reached?',
+        description:
+          'A practical way to propose light follow-up sessions that protect progress without making clients feel locked into endless training.',
+        excerpt:
+          'Maintenance sessions work best when they are framed as support for progress, not as proof that the client is never finished.',
+        tags: ['Follow-up', 'Retention', 'Progress'],
+        coverImage: {
+          src: '/blog/covers/maintenance-sessions.svg',
+          alt: 'Circular follow-up flow for dog training maintenance sessions',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Keep follow-up gentle and organized',
+        ctaDescription:
+          'MagicHango helps trainers structure follow-up bookings without turning the calendar into manual reminders.',
+        ctaLabel: 'Plan follow-up sessions',
+        sections: [
+          {
+            heading: 'Maintenance should feel supportive',
+            paragraphs: [
+              'After a client reaches an important goal, it can feel awkward to suggest another session. The key is to frame maintenance as a way to protect progress, answer new questions, and adjust before small issues grow.',
+              'That tone matters. Clients should not feel that they failed because they still need occasional support.',
+            ],
+          },
+          {
+            heading: 'Choose moments where follow-up is useful',
+            paragraphs: [
+              'Maintenance sessions are most helpful when the dog routine is likely to change or when the client is entering a new stage.',
+              'Instead of offering follow-up to everyone in the same way, connect it to a real trigger in the client life.',
+            ],
+            bullets: [
+              'A puppy entering adolescence.',
+              'A move, holiday, new baby, or new household routine.',
+              'A client preparing for travel or visitors.',
+              'A skill that works at home but needs proofing outside.',
+            ],
+          },
+          {
+            heading: 'Make the format lighter than the initial plan',
+            paragraphs: [
+              'A maintenance appointment does not always need the same length or intensity as an early session. It may be a shorter check-in, a targeted walk, or a single adjustment visit.',
+              'A lighter format makes the offer easier to accept and keeps the relationship active without pressure.',
+            ],
+          },
+          {
+            heading: 'Book the next review before the need becomes urgent',
+            paragraphs: [
+              'The best follow-up often happens before the client feels stuck again. A suggested review window gives them a simple path back.',
+              'This is useful for the trainer too: predictable follow-up is easier to plan than surprise urgent requests.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'seances-entretien-education-canine',
+        category: 'Experience client',
+        title: 'Quand proposer des seances d entretien apres un objectif atteint',
+        description:
+          'Une methode pratique pour proposer des suivis legers qui protegent les progres sans donner au client l impression d etre enferme dans un accompagnement sans fin.',
+        excerpt:
+          'Les seances d entretien fonctionnent mieux lorsqu elles soutiennent les progres, pas lorsqu elles donnent l impression que le client n a jamais termine.',
+        tags: ['Suivi', 'Fidelisation', 'Progres'],
+        coverImage: {
+          src: '/blog/covers/maintenance-sessions.svg',
+          alt: 'Boucle de suivi pour seances d entretien en education canine',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Garder un suivi doux et organise',
+        ctaDescription:
+          'MagicHango aide les educateurs a structurer les suivis sans transformer le planning en rappels manuels permanents.',
+        ctaLabel: 'Planifier les suivis',
+        sections: [
+          {
+            heading: 'L entretien doit paraitre soutenant',
+            paragraphs: [
+              'Apres un objectif important, proposer une nouvelle seance peut sembler delicat. L idee est de presenter l entretien comme une maniere de proteger les progres, repondre aux nouvelles questions et ajuster avant que les petits sujets grossissent.',
+              'Le ton compte beaucoup. Le client ne doit pas avoir l impression d avoir echoue parce qu il a encore besoin d un soutien ponctuel.',
+            ],
+          },
+          {
+            heading: 'Choisir les moments ou le suivi est utile',
+            paragraphs: [
+              'Les seances d entretien sont les plus utiles lorsque la routine du chien risque de changer ou lorsque le client entre dans une nouvelle etape.',
+              'Au lieu de proposer le meme suivi a tout le monde, reliez-le a un vrai declencheur dans la vie du client.',
+            ],
+            bullets: [
+              'Un chiot qui entre dans l adolescence.',
+              'Un demenagement, des vacances, un bebe ou une nouvelle routine familiale.',
+              'Un client qui prepare un voyage ou la venue d invites.',
+              'Un apprentissage acquis a la maison mais a generaliser dehors.',
+            ],
+          },
+          {
+            heading: 'Rendre le format plus leger que le plan initial',
+            paragraphs: [
+              'Une seance d entretien n a pas toujours besoin de la meme duree ou intensite qu une premiere phase. Cela peut etre un point plus court, une promenade ciblee ou une visite d ajustement.',
+              'Un format leger rend l offre plus facile a accepter et garde la relation active sans pression.',
+            ],
+          },
+          {
+            heading: 'Prevoir la prochaine revue avant l urgence',
+            paragraphs: [
+              'Le meilleur suivi arrive souvent avant que le client se sente bloque a nouveau. Une fenetre de revue proposee lui donne un chemin simple pour revenir.',
+              'C est aussi utile pour l educateur : les suivis previsibles sont plus faciles a organiser que les demandes urgentes surprises.',
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: 'first-session-slot-choice',
+    publishedAt: '2026-04-27',
+    readingMinutes: 5,
+    translations: {
+      en: {
+        slug: 'best-first-session-time-slots-dog-training',
+        category: 'Booking',
+        title: 'Which time slots work best for first dog training sessions?',
+        description:
+          'A practical guide to choosing first-session slots that leave enough energy, context, and travel margin for a strong client start.',
+        excerpt:
+          'A first session is not just another appointment. The slot you offer can shape the quality of the whole relationship.',
+        tags: ['First session', 'Booking', 'Planning'],
+        coverImage: {
+          src: '/blog/covers/first-session-slots.svg',
+          alt: 'Three recommended first-session time slots for dog training',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Offer better first-session slots',
+        ctaDescription:
+          'MagicHango helps trainers guide clients toward appointment options that fit the real shape of the day.',
+        ctaLabel: 'Improve first bookings',
+        sections: [
+          {
+            heading: 'First sessions need more space',
+            paragraphs: [
+              'A first appointment carries more uncertainty than a routine follow-up. The dog may need observation, the family may have a long story, and the trainer may need time to understand the home context.',
+              'That makes the slot choice important. A fragile gap may be fine for a quick follow-up, but it can make a first session feel rushed.',
+            ],
+          },
+          {
+            heading: 'Avoid the most compressed parts of the day',
+            paragraphs: [
+              'First sessions usually work better when the trainer has enough buffer before and after the visit. This protects arrival time, note-taking, and the mental reset needed before the next appointment.',
+              'Offering only the weakest gaps can create a poor first impression even if the trainer is highly skilled.',
+            ],
+            bullets: [
+              'Avoid placing first sessions between two tight travel blocks.',
+              'Prefer slots with a clear arrival margin.',
+              'Protect enough time afterward for notes and follow-up.',
+              'Consider whether household routines make the time calmer or harder.',
+            ],
+          },
+          {
+            heading: 'Match the slot to the client context',
+            paragraphs: [
+              'A puppy consultation may work well at a different time than a reactive-dog session. A family session may need a window where the right people are home and not rushing.',
+              'The best slot is not only available. It gives the session the conditions it needs to succeed.',
+            ],
+          },
+          {
+            heading: 'Guide clients instead of showing everything',
+            paragraphs: [
+              'Clients may not know which time is operationally strong. A short list of good first-session options helps them choose without needing to understand the full calendar.',
+              'This keeps the first step simple while protecting the trainer ability to deliver a calm, thoughtful appointment.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'meilleurs-creneaux-premiere-seance-education-canine',
+        category: 'Reservation',
+        title: 'Quels creneaux fonctionnent le mieux pour une premiere seance',
+        description:
+          'Un guide pratique pour choisir des creneaux de premiere seance qui laissent assez d energie, de contexte et de marge de trajet.',
+        excerpt:
+          'Une premiere seance n est pas un rendez-vous comme les autres. Le creneau propose peut influencer toute la relation client.',
+        tags: ['Premiere seance', 'Reservation', 'Planning'],
+        coverImage: {
+          src: '/blog/covers/first-session-slots.svg',
+          alt: 'Trois creneaux recommandes pour une premiere seance canine',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Proposer de meilleurs creneaux de premiere seance',
+        ctaDescription:
+          'MagicHango aide les educateurs a guider les clients vers des options qui respectent la vraie forme de la journee.',
+        ctaLabel: 'Ameliorer les premieres reservations',
+        sections: [
+          {
+            heading: 'Les premieres seances demandent plus d espace',
+            paragraphs: [
+              'Un premier rendez-vous contient plus d incertitude qu un suivi habituel. Le chien doit parfois etre observe, la famille a souvent beaucoup de contexte a partager et l educateur doit comprendre l environnement.',
+              'Le choix du creneau compte donc beaucoup. Un petit trou peut suffire pour un suivi rapide, mais rendre une premiere seance trop pressee.',
+            ],
+          },
+          {
+            heading: 'Eviter les moments les plus compresses',
+            paragraphs: [
+              'Les premieres seances fonctionnent souvent mieux lorsque l educateur dispose d une marge avant et apres. Cela protege l arrivee, la prise de notes et le temps mental necessaire avant le rendez-vous suivant.',
+              'Proposer seulement les trous les moins pratiques peut creer une mauvaise premiere impression, meme avec une excellente qualite de service.',
+            ],
+            bullets: [
+              'Eviter les premieres seances entre deux blocs de trajet serres.',
+              'Preferer les creneaux avec une vraie marge d arrivee.',
+              'Proteger assez de temps apres pour les notes et le suivi.',
+              'Verifier si la routine du foyer rend ce moment plus calme ou plus difficile.',
+            ],
+          },
+          {
+            heading: 'Adapter le creneau au contexte client',
+            paragraphs: [
+              'Une consultation chiot ne demande pas toujours le meme moment qu une seance avec un chien reactif. Une seance familiale peut avoir besoin d une fenetre ou les bonnes personnes sont presentes et disponibles.',
+              'Le meilleur creneau n est pas seulement libre. Il donne a la seance les conditions pour bien commencer.',
+            ],
+          },
+          {
+            heading: 'Guider les clients au lieu de tout montrer',
+            paragraphs: [
+              'Les clients ne savent pas toujours quel horaire est solide d un point de vue operationnel. Une courte selection de bons creneaux de premiere seance les aide a choisir sans comprendre tout le planning.',
+              'Le premier pas reste simple, tout en protegeant la capacite de l educateur a livrer un rendez-vous calme et attentif.',
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
     id: 'urgent-request-qualification',
     publishedAt: '2026-05-13',
     readingMinutes: 6,
