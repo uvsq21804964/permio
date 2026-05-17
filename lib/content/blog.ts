@@ -77,6 +77,722 @@ type BlogUiCopy = {
 
 const BLOG_ENTRIES: BlogEntry[] = [
   {
+    id: 'referral-client-onboarding',
+    publishedAt: '2026-05-17',
+    readingMinutes: 5,
+    translations: {
+      en: {
+        slug: 'dog-training-referral-client-onboarding',
+        category: 'Client experience',
+        title: 'How to onboard a new client who comes from a referral',
+        description:
+          'A practical way to welcome referred dog training clients while still collecting the right context and setting clear expectations.',
+        excerpt:
+          'A referral creates trust before the first message. The onboarding still needs structure so the new client starts with the right information.',
+        tags: ['Referrals', 'Onboarding', 'Client experience'],
+        coverImage: {
+          src: '/blog/covers/referral-onboarding.svg',
+          alt: 'Referral onboarding flow connecting an existing client to a new dog training client',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Turn referrals into clearer bookings',
+        ctaDescription:
+          'MagicHango helps trainers keep intake, booking, and follow-up organized even when clients arrive through word of mouth.',
+        ctaLabel: 'Organize referral bookings',
+        sections: [
+          {
+            heading: 'A referral is warm, but it is still a new client',
+            paragraphs: [
+              'When a new client comes through a recommendation, the relationship often starts with more trust. That is valuable, but it can also make the trainer skip steps that are still important.',
+              'The new client needs the same clarity as anyone else: service fit, address, dog context, pricing, booking rules, and what happens next.',
+            ],
+          },
+          {
+            heading: 'Acknowledge the connection without assuming the need',
+            paragraphs: [
+              'It is helpful to mention the referral source, but the trainer should still ask the right questions. Two clients can know each other and have completely different dogs, constraints, and expectations.',
+              'A short intake keeps the warm start while protecting the quality of the first session.',
+            ],
+            bullets: [
+              'Thank the client for reaching out through the recommendation.',
+              'Ask what prompted them to book now.',
+              'Collect the same safety and address details as usual.',
+              'Avoid promising the same format before understanding the case.',
+            ],
+          },
+          {
+            heading: 'Keep the booking path consistent',
+            paragraphs: [
+              'Referrals can become messy when they happen entirely through messages. The trainer may forget to send a policy, miss an address detail, or offer a slot that does not fit the route.',
+              'Putting referred clients through the same booking path keeps the experience professional without making it feel impersonal.',
+            ],
+          },
+          {
+            heading: 'Close the loop with the referrer when appropriate',
+            paragraphs: [
+              'If the original client made the introduction directly, a short thank-you can reinforce the relationship. Keep it discreet and never share private details about the new client.',
+              'This makes referrals feel appreciated while preserving professional boundaries.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'accueillir-client-recommande-education-canine',
+        category: 'Experience client',
+        title: 'Comment accueillir un nouveau client venu par recommandation',
+        description:
+          'Une methode pratique pour accueillir les clients recommandes tout en collectant le bon contexte et en posant des attentes claires.',
+        excerpt:
+          'Une recommandation cree de la confiance avant le premier message. L onboarding doit quand meme rester structure pour bien commencer.',
+        tags: ['Recommandation', 'Onboarding', 'Experience client'],
+        coverImage: {
+          src: '/blog/covers/referral-onboarding.svg',
+          alt: 'Parcours de recommandation reliant un client existant a un nouveau client',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Transformer les recommandations en reservations claires',
+        ctaDescription:
+          'MagicHango aide les educateurs a garder intake, reservation et suivi organises meme lorsque les clients arrivent par bouche-a-oreille.',
+        ctaLabel: 'Organiser les recommandations',
+        sections: [
+          {
+            heading: 'Une recommandation est chaleureuse, mais reste un nouveau client',
+            paragraphs: [
+              'Quand un nouveau client arrive par recommandation, la relation commence souvent avec plus de confiance. C est précieux, mais cela peut aussi pousser l educateur a sauter des etapes importantes.',
+              'Le nouveau client a besoin de la meme clarte que les autres : service adapte, adresse, contexte du chien, tarif, regles de reservation et prochaines etapes.',
+            ],
+          },
+          {
+            heading: 'Reconnaître le lien sans supposer le besoin',
+            paragraphs: [
+              'Il est utile de mentionner la personne qui recommande, mais il faut quand meme poser les bonnes questions. Deux clients peuvent se connaitre tout en ayant des chiens, contraintes et attentes tres differentes.',
+              'Un court intake garde le depart chaleureux tout en protegeant la qualite de la premiere seance.',
+            ],
+            bullets: [
+              'Remercier le client d etre venu par recommandation.',
+              'Demander ce qui le pousse a reserver maintenant.',
+              'Collecter les memes details de securite et d adresse que d habitude.',
+              'Eviter de promettre le meme format avant de comprendre le cas.',
+            ],
+          },
+          {
+            heading: 'Garder un parcours de reservation coherent',
+            paragraphs: [
+              'Les recommandations peuvent devenir floues lorsqu elles se passent uniquement par messages. L educateur peut oublier une regle, manquer un detail d adresse ou proposer un creneau incoherent avec la tournee.',
+              'Faire passer les clients recommandes par le meme parcours de reservation garde une experience professionnelle sans la rendre froide.',
+            ],
+          },
+          {
+            heading: 'Boucler avec la personne qui recommande si pertinent',
+            paragraphs: [
+              'Si le client initial a fait l introduction directement, un court merci peut renforcer la relation. Restez discret et ne partagez jamais de details prives sur le nouveau client.',
+              'La recommandation est ainsi valorisee tout en gardant des limites professionnelles.',
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: 'repeated-cancellations',
+    publishedAt: '2026-05-17',
+    readingMinutes: 6,
+    translations: {
+      en: {
+        slug: 'repeated-cancellations-dog-training-clients',
+        category: 'Operations',
+        title: 'How to handle clients who cancel repeatedly',
+        description:
+          'A calm framework for dog trainers to distinguish occasional life events from patterns that hurt capacity and client progress.',
+        excerpt:
+          'Repeated cancellations need a different response from a single emergency. The goal is to protect the calendar without turning the relationship cold.',
+        tags: ['Cancellations', 'Policies', 'Planning'],
+        coverImage: {
+          src: '/blog/covers/repeated-cancellations.svg',
+          alt: 'Repeated cancellation cards with clear policy markers',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Protect capacity without losing clarity',
+        ctaDescription:
+          'MagicHango helps trainers keep booking rules and reminders visible before cancellation patterns become stressful.',
+        ctaLabel: 'Clarify cancellation rules',
+        sections: [
+          {
+            heading: 'One cancellation is not a pattern',
+            paragraphs: [
+              'Clients have real life events. A single cancellation does not need to become a conflict. The problem starts when cancellations become frequent enough to affect progress, income, and route planning.',
+              'Naming the pattern early helps keep the conversation practical instead of emotional.',
+            ],
+          },
+          {
+            heading: 'Separate empathy from availability',
+            paragraphs: [
+              'You can understand the client situation and still protect your calendar. Those two things do not contradict each other.',
+              'A calm policy makes it easier to stay kind while explaining what needs to change before more sessions are booked.',
+            ],
+            bullets: [
+              'Track how often sessions are cancelled or moved.',
+              'Remind the client of the booking rule before applying a consequence.',
+              'Offer a different rhythm if the current one is unrealistic.',
+              'Pause future bookings if the pattern continues.',
+            ],
+          },
+          {
+            heading: 'Use a reset conversation',
+            paragraphs: [
+              'After repeated cancellations, a short reset message can help: confirm whether the client still wants to continue, ask what rhythm is realistic, and explain how future bookings will be handled.',
+              'This gives the client a chance to re-engage without pretending the pattern is invisible.',
+            ],
+          },
+          {
+            heading: 'Protect progress as well as revenue',
+            paragraphs: [
+              'Frequent cancellations do not only affect the trainer schedule. They also slow the dog progress and can make the client feel like training is not working.',
+              'Framing the conversation around progress often feels more constructive than focusing only on lost time.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'annulations-repetees-clients-education-canine',
+        category: 'Organisation',
+        title: 'Comment gerer les clients qui annulent trop souvent',
+        description:
+          'Un cadre calme pour distinguer les imprevus ponctuels des habitudes qui abiment la capacite et la progression du client.',
+        excerpt:
+          'Les annulations repetees demandent une autre reponse qu une urgence ponctuelle. L objectif est de proteger le planning sans refroidir la relation.',
+        tags: ['Annulations', 'Regles', 'Planning'],
+        coverImage: {
+          src: '/blog/covers/repeated-cancellations.svg',
+          alt: 'Cartes d annulations repetees avec marqueurs de regles claires',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Proteger la capacite sans perdre la clarte',
+        ctaDescription:
+          'MagicHango aide les educateurs a rendre regles de reservation et rappels visibles avant que les annulations deviennent stressantes.',
+        ctaLabel: 'Clarifier les annulations',
+        sections: [
+          {
+            heading: 'Une annulation ne fait pas une habitude',
+            paragraphs: [
+              'Les clients ont de vrais imprevus. Une seule annulation ne doit pas devenir un conflit. Le probleme commence lorsque les annulations deviennent assez frequentes pour toucher la progression, le revenu et la tournee.',
+              'Nommer la tendance tot permet de garder une conversation pratique plutot qu emotionnelle.',
+            ],
+          },
+          {
+            heading: 'Separer empathie et disponibilite',
+            paragraphs: [
+              'Vous pouvez comprendre la situation du client tout en protegeant votre planning. Les deux ne sont pas contradictoires.',
+              'Une regle calme aide a rester bienveillant tout en expliquant ce qui doit changer avant de reserver davantage.',
+            ],
+            bullets: [
+              'Suivre la frequence des annulations ou reports.',
+              'Rappeler la regle avant d appliquer une consequence.',
+              'Proposer un autre rythme si le rythme actuel est irrealiste.',
+              'Mettre les prochaines reservations en pause si la tendance continue.',
+            ],
+          },
+          {
+            heading: 'Utiliser une conversation de remise a plat',
+            paragraphs: [
+              'Apres plusieurs annulations, un court message de remise a plat peut aider : confirmer si le client souhaite continuer, demander quel rythme est realiste et expliquer comment les prochaines reservations seront gerees.',
+              'Cela donne au client une chance de se reengager sans faire comme si la tendance etait invisible.',
+            ],
+          },
+          {
+            heading: 'Proteger les progres autant que le revenu',
+            paragraphs: [
+              'Les annulations frequentes ne touchent pas seulement le planning. Elles ralentissent aussi les progres du chien et peuvent donner au client l impression que le travail ne fonctionne pas.',
+              'Cadrer la discussion autour des progres parait souvent plus constructif que de parler uniquement du temps perdu.',
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: 'progress-review-session',
+    publishedAt: '2026-05-17',
+    readingMinutes: 5,
+    translations: {
+      en: {
+        slug: 'dog-training-progress-review-session',
+        category: 'Planning',
+        title: 'How to run a progress review session with a dog training client',
+        description:
+          'A practical structure for reviewing progress, deciding what changes next, and turning scattered observations into a clear follow-up plan.',
+        excerpt:
+          'Progress reviews help clients see what changed, what still needs work, and why the next step matters.',
+        tags: ['Progress', 'Follow-up', 'Client experience'],
+        coverImage: {
+          src: '/blog/covers/progress-review.svg',
+          alt: 'Progress review chart for dog training follow-up sessions',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Make progress easier to follow',
+        ctaDescription:
+          'MagicHango helps trainers keep sessions, follow-ups, and client context connected over time.',
+        ctaLabel: 'Plan progress reviews',
+        sections: [
+          {
+            heading: 'Clients need to see progress, not only feel it',
+            paragraphs: [
+              'Dog training progress can be uneven. Some weeks feel better, others reveal new situations. A review session helps the client understand what has actually changed and what still needs support.',
+              'This is especially useful after several sessions, before renewing a package, or when the client confidence drops.',
+            ],
+          },
+          {
+            heading: 'Review the original goal first',
+            paragraphs: [
+              'Start with the reason the client booked in the first place. Then compare that starting point with what happens today.',
+              'This keeps the conversation grounded and prevents the review from becoming a loose list of complaints.',
+            ],
+            bullets: [
+              'What was the original concern?',
+              'What situations are easier now?',
+              'What still creates stress?',
+              'What changed in the client routine?',
+              'Which next step would create the most value?',
+            ],
+          },
+          {
+            heading: 'Separate training progress from management progress',
+            paragraphs: [
+              'Sometimes the dog behavior has changed. Sometimes the family has become better at preventing difficult situations. Both are progress, but they lead to different next steps.',
+              'Naming the difference helps clients understand why some routines still matter even when things feel better.',
+            ],
+          },
+          {
+            heading: 'End with a short plan',
+            paragraphs: [
+              'A review should finish with a clear plan: what to continue, what to adjust, and when to check again.',
+              'The client leaves with a sense of direction instead of a vague feeling that more training may be needed.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'bilan-progression-education-canine',
+        category: 'Planning',
+        title: 'Comment mener un bilan de progression avec un client',
+        description:
+          'Une structure pratique pour relire les progres, decider de la suite et transformer les observations dispersees en plan clair.',
+        excerpt:
+          'Un bilan aide le client a voir ce qui a change, ce qui reste a travailler et pourquoi la prochaine etape compte.',
+        tags: ['Progres', 'Suivi', 'Experience client'],
+        coverImage: {
+          src: '/blog/covers/progress-review.svg',
+          alt: 'Graphique de progression pour bilan de suivi en education canine',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Rendre les progres plus faciles a suivre',
+        ctaDescription:
+          'MagicHango aide les educateurs a garder seances, suivis et contexte client connectes dans le temps.',
+        ctaLabel: 'Planifier les bilans',
+        sections: [
+          {
+            heading: 'Les clients ont besoin de voir les progres',
+            paragraphs: [
+              'Les progres en education canine ne sont pas toujours lineaires. Certaines semaines semblent meilleures, d autres revelent de nouvelles situations. Un bilan aide le client a comprendre ce qui a vraiment change et ce qui demande encore du soutien.',
+              'C est particulierement utile apres plusieurs seances, avant de renouveler un forfait ou lorsque la confiance du client baisse.',
+            ],
+          },
+          {
+            heading: 'Repartir de l objectif initial',
+            paragraphs: [
+              'Commencez par la raison pour laquelle le client a reserve au depart. Comparez ensuite ce point de depart avec ce qui se passe aujourd hui.',
+              'Cela garde la conversation ancree et evite que le bilan devienne une liste vague de problemes.',
+            ],
+            bullets: [
+              'Quel etait le sujet initial ?',
+              'Quelles situations sont plus simples maintenant ?',
+              'Qu est-ce qui cree encore du stress ?',
+              'Qu est-ce qui a change dans la routine du client ?',
+              'Quelle prochaine etape apporterait le plus de valeur ?',
+            ],
+          },
+          {
+            heading: 'Distinguer progres d apprentissage et progres de gestion',
+            paragraphs: [
+              'Parfois le comportement du chien a change. Parfois la famille gere mieux les situations difficiles. Les deux sont des progres, mais ils ne menent pas aux memes prochaines etapes.',
+              'Nommer cette difference aide le client a comprendre pourquoi certaines routines restent importantes meme quand tout semble aller mieux.',
+            ],
+          },
+          {
+            heading: 'Terminer par un plan court',
+            paragraphs: [
+              'Un bilan doit finir avec un plan clair : quoi continuer, quoi ajuster et quand refaire le point.',
+              'Le client repart avec une direction concrete plutot qu avec l impression vague qu il faudrait peut-etre encore travailler.',
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: 'multi-dog-household',
+    publishedAt: '2026-05-17',
+    readingMinutes: 6,
+    translations: {
+      en: {
+        slug: 'multi-dog-household-training-session',
+        category: 'Client experience',
+        title: 'How to prepare a session for a household with multiple dogs',
+        description:
+          'A practical framework for dog trainers when several dogs live in the same home and the session needs structure before it starts.',
+        excerpt:
+          'Multi-dog homes need more preparation than a standard visit. The session works better when roles, spaces, and priorities are clear.',
+        tags: ['Multi-dog', 'Preparation', 'Client experience'],
+        coverImage: {
+          src: '/blog/covers/multi-dog-household.svg',
+          alt: 'Three cards showing grouped dogs in a multi-dog household training plan',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Prepare complex households with clarity',
+        ctaDescription:
+          'MagicHango helps trainers keep client context and practical session details visible before the appointment.',
+        ctaLabel: 'Prepare complex sessions',
+        sections: [
+          {
+            heading: 'Multi-dog sessions need a plan before arrival',
+            paragraphs: [
+              'When several dogs live in the same home, the first minutes can become noisy and unclear very quickly. The trainer may need to observe interactions, separate dogs, or focus on one priority before working with the group.',
+              'A little preparation before the visit helps the client understand that not every dog needs to be involved at the same time.',
+            ],
+          },
+          {
+            heading: 'Ask which dog is the priority',
+            paragraphs: [
+              'Clients often describe the household as one problem, but the session usually needs a starting point. One dog may trigger the others, one may need management, or one may simply be the easiest entry into the work.',
+              'Choosing a priority does not ignore the other dogs. It gives the appointment enough structure to begin well.',
+            ],
+            bullets: [
+              'Which dog is the main concern today?',
+              'Which dog changes the energy of the room most quickly?',
+              'Can the dogs be separated safely if needed?',
+              'Who in the household handles each dog most often?',
+            ],
+          },
+          {
+            heading: 'Prepare spaces and transitions',
+            paragraphs: [
+              'Multi-dog work often depends on doors, rooms, baby gates, crates, gardens, or leashes. If those options are not ready, the session can lose time before the training begins.',
+              'A preparation message can ask the client to make separation options available without making the home feel judged.',
+            ],
+          },
+          {
+            heading: 'End with a realistic next step',
+            paragraphs: [
+              'A single session may not solve every household dynamic. It should leave the client with a clear first routine and a plan for which dog or situation comes next.',
+              'That makes the work feel progressive instead of overwhelming.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'seance-foyer-plusieurs-chiens-education-canine',
+        category: 'Experience client',
+        title: 'Comment preparer une seance dans un foyer avec plusieurs chiens',
+        description:
+          'Un cadre pratique pour les educateurs canins lorsqu il y a plusieurs chiens dans le meme foyer et que la seance doit etre structuree avant de commencer.',
+        excerpt:
+          'Les foyers avec plusieurs chiens demandent plus de preparation qu une visite classique. La seance fonctionne mieux lorsque roles, espaces et priorites sont clairs.',
+        tags: ['Plusieurs chiens', 'Preparation', 'Experience client'],
+        coverImage: {
+          src: '/blog/covers/multi-dog-household.svg',
+          alt: 'Trois cartes montrant des chiens regroupes dans un plan de seance multi-chiens',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Preparer les foyers complexes avec clarte',
+        ctaDescription:
+          'MagicHango aide les educateurs a garder contexte client et details pratiques visibles avant le rendez-vous.',
+        ctaLabel: 'Preparer les seances complexes',
+        sections: [
+          {
+            heading: 'Les seances multi-chiens demandent un plan avant l arrivee',
+            paragraphs: [
+              'Quand plusieurs chiens vivent dans le meme foyer, les premieres minutes peuvent devenir bruyantes et floues tres vite. L educateur peut devoir observer les interactions, separer les chiens ou travailler une priorite avant le groupe.',
+              'Un peu de preparation avant la visite aide le client a comprendre que tous les chiens n ont pas besoin de participer en meme temps.',
+            ],
+          },
+          {
+            heading: 'Demander quel chien est prioritaire',
+            paragraphs: [
+              'Les clients decrivent souvent le foyer comme un seul probleme, mais la seance a besoin d un point de depart. Un chien peut declencher les autres, un autre demander de la gestion, ou un autre offrir l entree la plus simple dans le travail.',
+              'Choisir une priorite ne revient pas a ignorer les autres chiens. Cela donne assez de structure au rendez-vous pour bien commencer.',
+            ],
+            bullets: [
+              'Quel chien est le sujet principal aujourd hui ?',
+              'Quel chien change le plus vite l energie de la piece ?',
+              'Les chiens peuvent-ils etre separes en securite si besoin ?',
+              'Qui gere le plus souvent chaque chien dans le foyer ?',
+            ],
+          },
+          {
+            heading: 'Preparer les espaces et les transitions',
+            paragraphs: [
+              'Le travail avec plusieurs chiens depend souvent des portes, pieces, barrieres, caisses, jardin ou laisses. Si ces options ne sont pas pretes, la seance perd du temps avant meme de commencer.',
+              'Un message de preparation peut demander au client de rendre ces options disponibles sans donner l impression de juger le logement.',
+            ],
+          },
+          {
+            heading: 'Terminer avec une prochaine etape realiste',
+            paragraphs: [
+              'Une seule seance ne resout pas toujours toute la dynamique du foyer. Elle doit laisser au client une premiere routine claire et un plan pour le chien ou la situation suivante.',
+              'Le travail parait alors progressif au lieu d etre ecrasant.',
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: 'late-client-policy',
+    publishedAt: '2026-05-16',
+    readingMinutes: 5,
+    translations: {
+      en: {
+        slug: 'handle-late-clients-dog-training',
+        category: 'Booking',
+        title: 'How to handle late clients without making the relationship tense',
+        description:
+          'A practical way to set late-arrival rules for dog training appointments while keeping the client relationship calm and fair.',
+        excerpt:
+          'Late arrivals are easier to handle when the rule is visible before anyone is late.',
+        tags: ['Booking', 'Policies', 'Client experience'],
+        coverImage: {
+          src: '/blog/covers/late-clients.svg',
+          alt: 'Clock and booking policy cards for late dog training clients',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Make time rules easier to apply',
+        ctaDescription:
+          'MagicHango helps trainers make booking expectations visible in confirmations and reminders.',
+        ctaLabel: 'Clarify appointment rules',
+        sections: [
+          {
+            heading: 'Late arrivals affect more than one session',
+            paragraphs: [
+              'A client who arrives ten or fifteen minutes late may not realize that the delay can affect the next appointment, travel time, or the trainer ability to finish notes calmly.',
+              'That is why late-arrival rules should be framed as a way to protect the whole day, not as a punishment.',
+            ],
+          },
+          {
+            heading: 'Write the rule before you need it',
+            paragraphs: [
+              'A late policy feels harsher when it appears after the client is already late. It feels fairer when it is visible in the booking flow and repeated in the reminder.',
+              'The wording can stay simple and human.',
+            ],
+            bullets: [
+              'Explain when the session still ends at the planned time.',
+              'Clarify when a session may need to be rescheduled.',
+              'Include the best contact method if the client is delayed.',
+              'Keep the same rule in confirmations and reminders.',
+            ],
+          },
+          {
+            heading: 'Decide what can be adapted',
+            paragraphs: [
+              'Some delays can be absorbed. Others cannot. A short local follow-up may tolerate a few minutes, while a first session before a long route may need stricter boundaries.',
+              'Having rules does not remove judgment. It gives judgment a stable frame.',
+            ],
+          },
+          {
+            heading: 'Keep the tone steady',
+            paragraphs: [
+              'The best late policy sounds practical, not irritated. Clients should understand the constraint without feeling attacked.',
+              'A calm tone makes the rule easier to apply when the situation actually happens.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'gerer-retards-clients-education-canine',
+        category: 'Reservation',
+        title: 'Comment gerer les retards clients sans tendre la relation',
+        description:
+          'Une methode pratique pour poser des regles de retard en education canine tout en gardant une relation client calme et juste.',
+        excerpt:
+          'Les retards sont plus faciles a gerer lorsque la regle est visible avant que quelqu un soit en retard.',
+        tags: ['Reservation', 'Regles', 'Experience client'],
+        coverImage: {
+          src: '/blog/covers/late-clients.svg',
+          alt: 'Horloge et cartes de regles de reservation pour les retards clients',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Rendre les regles horaires plus faciles a appliquer',
+        ctaDescription:
+          'MagicHango aide les educateurs a rendre les attentes de reservation visibles dans les confirmations et rappels.',
+        ctaLabel: 'Clarifier les regles de rendez-vous',
+        sections: [
+          {
+            heading: 'Un retard touche plus qu une seule seance',
+            paragraphs: [
+              'Un client qui arrive avec dix ou quinze minutes de retard ne voit pas toujours que cela peut toucher le rendez-vous suivant, le trajet ou la capacite de l educateur a finir ses notes calmement.',
+              'C est pourquoi les regles de retard doivent etre presentees comme une protection de toute la journee, pas comme une sanction.',
+            ],
+          },
+          {
+            heading: 'Ecrire la regle avant d en avoir besoin',
+            paragraphs: [
+              'Une regle de retard parait plus dure lorsqu elle apparait apres le retard. Elle parait plus juste lorsqu elle est visible dans le parcours de reservation et repetee dans le rappel.',
+              'La formulation peut rester simple et humaine.',
+            ],
+            bullets: [
+              'Expliquer quand la seance se termine quand meme a l heure prevue.',
+              'Clarifier quand une seance peut devoir etre reportee.',
+              'Indiquer le meilleur moyen de contact en cas de retard.',
+              'Garder la meme regle dans les confirmations et rappels.',
+            ],
+          },
+          {
+            heading: 'Decider ce qui peut etre adapte',
+            paragraphs: [
+              'Certains retards peuvent etre absorbes. D autres non. Un suivi local court peut tolerer quelques minutes, tandis qu une premiere seance avant une longue tournee demande plus de limites.',
+              'Avoir des regles ne retire pas le jugement. Cela lui donne un cadre stable.',
+            ],
+          },
+          {
+            heading: 'Garder un ton stable',
+            paragraphs: [
+              'La meilleure regle de retard sonne pratique, pas agacee. Les clients doivent comprendre la contrainte sans se sentir attaques.',
+              'Un ton calme rend la regle plus facile a appliquer lorsque la situation arrive vraiment.',
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
+    id: 'prepaid-session-expiry',
+    publishedAt: '2026-05-15',
+    readingMinutes: 5,
+    translations: {
+      en: {
+        slug: 'prepaid-dog-training-session-expiry',
+        category: 'Operations',
+        title: 'Should prepaid dog training sessions have an expiry date?',
+        description:
+          'A practical guide to setting fair expiry rules for prepaid sessions so clients stay motivated and trainers protect capacity.',
+        excerpt:
+          'Expiry rules can feel fair when they protect planning, keep progress moving, and are explained before payment.',
+        tags: ['Packages', 'Policies', 'Planning'],
+        coverImage: {
+          src: '/blog/covers/prepaid-expiry.svg',
+          alt: 'Prepaid dog training session cards with confirmed expiry milestones',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Keep prepaid sessions easier to track',
+        ctaDescription:
+          'MagicHango helps trainers structure packages, follow-ups, and booking expectations more clearly.',
+        ctaLabel: 'Organize prepaid sessions',
+        sections: [
+          {
+            heading: 'Expiry dates are about planning, not pressure',
+            paragraphs: [
+              'A prepaid package without any timing rule can drift for months. The client loses momentum, the trainer carries unfinished capacity, and the training goal becomes harder to maintain.',
+              'An expiry date can be fair when it is explained as a way to keep progress active and the schedule predictable.',
+            ],
+          },
+          {
+            heading: 'Choose a rule that matches the package',
+            paragraphs: [
+              'A short puppy package may need a tighter window than a flexible maintenance plan. The rule should support the training goal rather than copy a generic business policy.',
+              'Clients accept timing rules more easily when they understand why the rhythm matters.',
+            ],
+            bullets: [
+              'Short goal-focused package: tighter expiry window.',
+              'Longer behavior plan: wider window with planned milestones.',
+              'Maintenance sessions: flexible but reviewed regularly.',
+              'Medical or family exceptions: clear approval path.',
+            ],
+          },
+          {
+            heading: 'Make the rule visible before payment',
+            paragraphs: [
+              'The expiry rule should not appear after the client has paid. Put it near the package description, in the confirmation, and in follow-up reminders.',
+              'Visibility prevents surprise and makes the package feel more professional.',
+            ],
+          },
+          {
+            heading: 'Send reminders before sessions expire',
+            paragraphs: [
+              'A fair expiry rule should include a reminder before the deadline. The goal is not to catch clients out. The goal is to help them use what they purchased.',
+              'A simple reminder can recover progress and reduce awkward conversations later.',
+            ],
+          },
+        ],
+      },
+      fr: {
+        slug: 'expiration-seances-prepayees-education-canine',
+        category: 'Organisation',
+        title: 'Faut-il mettre une date d expiration aux seances prepayees',
+        description:
+          'Un guide pratique pour poser des regles justes sur les seances prepayees afin de garder les clients motives et de proteger la capacite.',
+        excerpt:
+          'Une date d expiration peut etre juste lorsqu elle protege le planning, maintient les progres et est expliquee avant le paiement.',
+        tags: ['Forfaits', 'Regles', 'Planning'],
+        coverImage: {
+          src: '/blog/covers/prepaid-expiry.svg',
+          alt: 'Cartes de seances prepayees avec jalons d expiration confirmes',
+          width: 1600,
+          height: 900,
+        },
+        ctaTitle: 'Mieux suivre les seances prepayees',
+        ctaDescription:
+          'MagicHango aide les educateurs a structurer forfaits, suivis et attentes de reservation plus clairement.',
+        ctaLabel: 'Organiser les seances prepayees',
+        sections: [
+          {
+            heading: 'Une expiration sert le planning, pas la pression',
+            paragraphs: [
+              'Un forfait prepaye sans regle de temps peut trainer pendant des mois. Le client perd son elan, l educateur garde une capacite inachevee et l objectif devient plus difficile a maintenir.',
+              'Une date d expiration peut etre juste lorsqu elle est expliquee comme un moyen de garder les progres actifs et le planning previsible.',
+            ],
+          },
+          {
+            heading: 'Choisir une regle adaptee au forfait',
+            paragraphs: [
+              'Un petit forfait chiot peut demander une fenetre plus courte qu un suivi d entretien flexible. La regle doit soutenir l objectif d education, pas copier une politique generique.',
+              'Les clients acceptent mieux les regles de temps lorsqu ils comprennent pourquoi le rythme compte.',
+            ],
+            bullets: [
+              'Forfait court et cible : fenetre d expiration plus serree.',
+              'Plan comportemental plus long : fenetre plus large avec jalons prevus.',
+              'Seances d entretien : souplesse avec revue reguliere.',
+              'Exceptions medicales ou familiales : chemin d approbation clair.',
+            ],
+          },
+          {
+            heading: 'Rendre la regle visible avant le paiement',
+            paragraphs: [
+              'La regle d expiration ne doit pas apparaitre apres le paiement. Placez-la pres de la description du forfait, dans la confirmation et dans les rappels de suivi.',
+              'Cette visibilite evite la surprise et rend le forfait plus professionnel.',
+            ],
+          },
+          {
+            heading: 'Envoyer un rappel avant expiration',
+            paragraphs: [
+              'Une regle juste doit inclure un rappel avant la date limite. L objectif n est pas de pieger les clients. L objectif est de les aider a utiliser ce qu ils ont achete.',
+              'Un simple rappel peut relancer les progres et reduire les conversations inconfortables plus tard.',
+            ],
+          },
+        ],
+      },
+    },
+  },
+  {
     id: 'outdoor-session-prep',
     publishedAt: '2026-05-14',
     readingMinutes: 5,

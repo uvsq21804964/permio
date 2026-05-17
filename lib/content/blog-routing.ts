@@ -2,6 +2,30 @@ import type { Locale } from '@/src/lib/i18n';
 
 const BLOG_SLUGS = [
   {
+    en: 'dog-training-referral-client-onboarding',
+    fr: 'accueillir-client-recommande-education-canine',
+  },
+  {
+    en: 'repeated-cancellations-dog-training-clients',
+    fr: 'annulations-repetees-clients-education-canine',
+  },
+  {
+    en: 'dog-training-progress-review-session',
+    fr: 'bilan-progression-education-canine',
+  },
+  {
+    en: 'multi-dog-household-training-session',
+    fr: 'seance-foyer-plusieurs-chiens-education-canine',
+  },
+  {
+    en: 'handle-late-clients-dog-training',
+    fr: 'gerer-retards-clients-education-canine',
+  },
+  {
+    en: 'prepaid-dog-training-session-expiry',
+    fr: 'expiration-seances-prepayees-education-canine',
+  },
+  {
     en: 'prepare-outdoor-dog-training-session',
     fr: 'preparer-seance-exterieur-education-canine',
   },
