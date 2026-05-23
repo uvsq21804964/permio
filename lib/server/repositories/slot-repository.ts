@@ -1,5 +1,7 @@
 import { sql } from '@/lib/db';
 
+let ensureSlotPricingSchemaPromise: Promise<void> | null = null;
+
 export type SlotRecord = {
   id: number;
   dogsitterUserId: string;
@@ -9,6 +11,18 @@ export type SlotRecord = {
   startTime: string;
   endTime: string;
   durationMinutes: number;
+  effectivePriceCents?: number | null;
+};
+
+export type SlotSmartPricingSnapshot = {
+  enabled: boolean;
+  visibility: 'visible' | 'hidden' | 'available_on_request';
+  base_price_cents: number;
+  final_price_cents: number;
+  travel_charge_cents?: number;
+  smart_adjustment_cents: number;
+  smart_pricing_label: string;
+  smart_pricing_explanation_key: string;
 };
 
 export type SlotCancellationDetails = {
@@ -74,6 +88,26 @@ export type ClientBookingExportRow = {
   country: string | null;
 };
 
+export async function ensureSlotPricingSchema(): Promise<void> {
+  if (!ensureSlotPricingSchemaPromise) {
+    ensureSlotPricingSchemaPromise = (async () => {
+      await sql`
+        ALTER TABLE IF EXISTS "Slot"
+        ADD COLUMN IF NOT EXISTS smart_pricing_snapshot jsonb
+      `;
+      await sql`
+        ALTER TABLE IF EXISTS "Slot"
+        ADD COLUMN IF NOT EXISTS effective_price_cents integer
+      `;
+    })().catch((error) => {
+      ensureSlotPricingSchemaPromise = null;
+      throw error;
+    });
+  }
+
+  await ensureSlotPricingSchemaPromise;
+}
+
 export async function listSlotsForUser(userId: string): Promise<SlotRecord[]> {
   const rows = await sql`
     SELECT
@@ -103,7 +137,11 @@ export async function insertSlot(params: {
   endTime: string;
   durationMinutes: number;
   addressSource: SlotAddressSource;
+  effectivePriceCents?: number | null;
+  smartPricingSnapshot?: SlotSmartPricingSnapshot | null;
 }): Promise<SlotRecord> {
+  await ensureSlotPricingSchema();
+
   const {
     instructorUserId,
     clientUserId,
@@ -113,6 +151,8 @@ export async function insertSlot(params: {
     endTime,
     durationMinutes,
     addressSource,
+    effectivePriceCents,
+    smartPricingSnapshot,
   } = params;
 
   const [created] = await sql`
@@ -136,7 +176,9 @@ export async function insertSlot(params: {
       google_place_id,
       raw_input,
       address_label,
-      is_primary
+      is_primary,
+      effective_price_cents,
+      smart_pricing_snapshot
     )
     VALUES (
       ${instructorUserId},
@@ -158,7 +200,9 @@ export async function insertSlot(params: {
       ${addressSource.google_place_id},
       ${addressSource.raw_input},
       ${addressSource.address_label},
-      ${addressSource.is_primary}
+      ${addressSource.is_primary},
+      ${effectivePriceCents ?? null},
+      ${smartPricingSnapshot ? JSON.stringify(smartPricingSnapshot) : null}::jsonb
     )
     RETURNING
       id,
@@ -168,7 +212,8 @@ export async function insertSlot(params: {
       "date"::date::text AS "date",
       "startTime",
       "endTime",
-      "durationMinutes"
+      "durationMinutes",
+      effective_price_cents AS "effectivePriceCents"
   `;
 
   return created as SlotRecord;
@@ -210,6 +255,8 @@ export async function listClientBookingExportRows(params: {
   agencyId: string;
   clientUserId: string;
 }): Promise<ClientBookingExportRow[]> {
+  await ensureSlotPricingSchema();
+
   const rows = await sql`
     SELECT
       s.id AS "slotId",
@@ -218,7 +265,11 @@ export async function listClientBookingExportRows(params: {
       s."endTime" AS "endTime",
       s."durationMinutes" AS "durationMinutes",
       sp."name" AS "serviceName",
-      sp."price"::text AS "servicePrice",
+      COALESCE(
+        s.effective_price_cents::numeric / 100.0,
+        NULLIF(s.smart_pricing_snapshot ->> 'final_price_cents', '')::numeric / 100.0,
+        sp."price"
+      )::text AS "servicePrice",
       instructor."name" AS "instructorName",
       s.formatted_address AS "formattedAddress",
       s.postal_code AS "postalCode",

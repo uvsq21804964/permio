@@ -13,6 +13,8 @@
     "loadAgendaApi": "We could not retrieve your dog trainer's availability.",
     "generateSlots": "An error occurred while computing suggested time slots.",
     "slotAlreadyBooked": "This time slot has just been booked by someone else. Please pick another one.",
+    "slotNotAvailableAnymore": "This time is no longer available. Please refresh and choose another one.",
+    "smartPriceChanged": "The price for this time changed. Please refresh the available times.",
     "createBooking": "We could not create your booking. Please try again.",
     "genericSelectedService": "We could not find the selected service. Please try again.",
     "noBookingAddress": "We could not retrieve your address to compute suggested time slots."
@@ -34,15 +36,15 @@
   "suggestions": {
     "title": "Suggested times right now",
     "subtitle": "A short list, with the full schedule still one tap away.",
-    "loading": "Computing suggestions…",
+    "loading": "Computing suggestions...",
     "empty": "No recommended time right now. You can still browse the full schedule.",
     "badgeLead": "Current suggestion",
     "badge": "Suggested",
     "dateLabel": "{date}"
   },
   "booking": {
-    "noticeSuccess": "Time slot booked successfully ✅",
-    "loading": "Booking…",
+    "noticeSuccess": "Time slot booked successfully.",
+    "loading": "Booking...",
     "button": "Choose"
   },
   "confirm": {
@@ -69,5 +71,24 @@
     "dayFlow": "Keeps the day feeling smoother",
     "fitSchedule": "Fits well into the schedule",
     "smoothOption": "Smoothest option"
+  },
+  "smartPricing": {
+    "labels": {
+      "best_route_price": "Best route price",
+      "smart_discount": "Smart discount",
+      "standard_price": "Standard price",
+      "flexible_slot": "Flexible slot",
+      "available_on_request": "Available on request"
+    },
+    "explanations": {
+      "best_route_price": "This time fits perfectly with the trainer's route.",
+      "smart_discount": "Save by choosing a time that reduces travel.",
+      "standard_price": "This time works normally.",
+      "flexible_slot": "This time requires extra travel.",
+      "available_on_request": "This time may require manual confirmation."
+    },
+    "badges": {
+      "flexible": "Flexible"
+    }
   }
 }

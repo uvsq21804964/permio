@@ -1,33 +1,33 @@
 {
   "plans": {
-    "heading": "Ne payez que pour les leads générés",
-    "subheading": "MagicHango répond par SMS, qualifie la demande et transforme les appels manqués en vraies opportunités pour votre tournée.",
+    "heading": "Demarrer avec la reservation compatible tournee",
+    "subheading": "MagicHango aide les clients a reserver leurs seances tout en les guidant vers les horaires qui protegent votre tournee, vos marges et votre capacite hebdomadaire.",
     "banner": {
-      "label": "Tarification à la performance",
-      "text": "Vous payez uniquement pour la valeur obtenue : 1 dollar par lead généré, avec un plafond strict de 35 dollars par mois."
+      "label": "Pense pour educateurs canins mobiles",
+      "text": "Utilisez le parcours de reservation pour transformer la demande client en seances mieux placees, moins de trous genants et des prix plus clairs."
     },
-    "badge": "Spécial toiletteurs mobiles",
+    "badge": "Plan reservation tournee",
     "perMonth": "/mois",
     "priceDisplay": "1 $",
     "priceSuffix": "/lead",
-    "note": "Vous payez seulement quand un lead est généré.",
-    "capNote": "Plafond mensuel : 35 $. Aucun surcoût si le volume augmente.",
+    "note": "Vous payez seulement quand un lead est genere.",
+    "capNote": "Plafond mensuel : 35 $. Aucun surcout si le volume augmente.",
     "ctaPrimary": "Commencer avec MagicHango",
-    "ctaSecondary": "Passer à cette formule",
-    "disclaimer": "Vous ne payez que pour les leads générés, avec un plafond de 35 $ par mois.",
+    "ctaSecondary": "Passer a cette formule",
+    "disclaimer": "Vous ne payez que pour les leads generes, avec un plafond de 35 $ par mois.",
     "plan": {
       "title": "Full Magic",
       "features": [
-        "Relance SMS après appel manqué",
-        "Collecte de l’animal, du service, de l’adresse et des préférences",
-        "Suggestions de créneaux compatibles avec la tournée",
-        "Validation avant confirmation",
-        "1 dollar par lead généré",
-        "Facturation plafonnée à 35 dollars"
+        "Reservation client pour seances d'education canine",
+        "Collecte du service, de l'adresse, de la duree et des preferences",
+        "Suggestions de creneaux compatibles avec la tournee",
+        "Reductions et extras de prix intelligents",
+        "Prix qui prend en compte les frais de trajet",
+        "Facturation plafonnee a 35 dollars"
       ]
     },
-    "alreadySubscribed": "Votre facturation est déjà active",
-    "cancellationScheduled": "La modification de votre formule est programmée.",
-    "manageSubscription": "Gérer la facturation"
+    "alreadySubscribed": "Votre facturation est deja active",
+    "cancellationScheduled": "La modification de votre formule est programmee.",
+    "manageSubscription": "Gerer la facturation"
   }
 }

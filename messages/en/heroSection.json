@@ -5,47 +5,47 @@
   },
   "hero": {
     "titlePrefix": "Turn",
-    "highlight1": "missed grooming calls",
+    "highlight1": "dog training bookings",
     "titleMiddle": "into",
-    "highlight2": "route-friendly bookings",
+    "highlight2": "route-friendly revenue",
     "titleSuffix": "with",
-    "subtitlePrefix": "MagicHango texts missed callers, qualifies the pet request, and suggests appointment times that fit your route",
+    "subtitlePrefix": "MagicHango helps clients book sessions while nudging them toward times that protect your route, your margins, and your day",
     "subtitleEmphasis": "without endless back-and-forth.",
-    "ctaPrimary": "Try the missed-call workflow",
-    "ctaSecondary": "Sign in",
+    "ctaPrimary": "Try the booking workflow",
+    "ctaSecondary": "See the route demo",
     "imageAlt": "Preview of the MagicHango workflow",
-    "imageCaption": "Missed-call follow-up, booking suggestions, and route context in one place."
+    "imageCaption": "Booking suggestions, smart prices, and route context in one place."
   },
   "preview": {
     "badgeSchedule": "Workflow",
     "badgeRoute": "Route fit",
-    "caption": "Preview: missed-call follow-up plus route-friendly booking suggestions.",
+    "caption": "Preview: route-friendly booking suggestions and weekly schedule control.",
     "altSchedule": "MagicHango workflow preview",
     "altRoute": "Preview of a route-friendly booking suggestion"
   },
   "conversation": {
-    "eyebrow": "What happens after a missed call",
-    "title": "MagicHango follows up by text, qualifies the request, and hands you a slot worth approving.",
+    "eyebrow": "What happens before a booking",
+    "title": "MagicHango shows clients bookable options while protecting the route quality behind the scenes.",
     "steps": [
       {
-        "label": "Missed call",
-        "title": "New missed call from Jessica",
-        "body": "You keep grooming instead of stopping the appointment to answer."
+        "label": "Client intent",
+        "title": "Jessica wants an in-home dog training session.",
+        "body": "She can start from the booking flow instead of sending a vague message."
       },
       {
-        "label": "SMS sent",
-        "title": "Hi, this is Bella's Mobile Grooming. I'm with a dog right now, but I can help you book by text. What breed and service do you need?",
-        "body": "The caller gets a reply right away instead of waiting hours for a callback."
+        "label": "Context captured",
+        "title": "Address, service, session length, and client constraints are collected before slot selection.",
+        "body": "The trainer gets better booking context without extra admin."
       },
       {
-        "label": "Qualified request",
-        "title": "Golden retriever, full groom, 70 lbs, mild matting, Boca Raton, prefers next week.",
-        "body": "Pet details, service, address, and preferences arrive in one request."
+        "label": "Smart slots",
+        "title": "Slots near existing sessions can be highlighted with a better route price.",
+        "body": "Clients are guided toward choices that keep the day compact."
       },
       {
-        "label": "Groomer approval",
-        "title": "Best slot: Thursday 11:30 AM — 12 min from your previous appointment. Approve?",
-        "body": "You stay in control before anything is confirmed."
+        "label": "Trainer control",
+        "title": "Awkward slots can stay standard, cost more, or be hidden from the public view.",
+        "body": "The client sees simple prices; the trainer keeps operational control."
       }
     ]
   }

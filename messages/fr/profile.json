@@ -35,7 +35,7 @@
     "educatorCode": {
       "label": "URL d'association client",
       "copy": "Copier",
-      "copied": "Copie ✓",
+      "copied": "Copie",
       "copyTitle": "Copier l'URL d'association",
       "help": "Partagez cette URL avec vos clients pour qu'ils puissent vous trouver et reserver."
     }
@@ -70,6 +70,46 @@
       "label": "Carte",
       "loading": "Chargement de la carte...",
       "noCoords": "Aucune adresse geolocalisee pour l'instant."
+    }
+  },
+  "smartPricing": {
+    "title": "Tarification intelligente",
+    "subtitle": "Ajustez les prix de reservation cote serveur selon la qualite de la tournee et l'insertion dans le planning.",
+    "enabled": {
+      "label": "Activer la tarification intelligente",
+      "help": "Affichez des prix plus adaptes aux tournees sans exposer le score interne."
+    },
+    "fields": {
+      "mode": "Mode de tarification",
+      "roundToNearest": "Arrondir le prix au montant le plus proche (EUR)",
+      "trainerHourlyValue": "Valeur horaire du moniteur (EUR)",
+      "costPerKm": "Cout de deplacement par km (EUR)",
+      "passThroughRate": "Taux repercute (%)",
+      "maxDiscount": "Reduction maximale (%)",
+      "maxSurcharge": "Supplement maximal (%)"
+    },
+    "modes": {
+      "rank_only": "Classement uniquement",
+      "discount_only": "Reductions uniquement",
+      "discount_and_surcharge": "Reductions et supplements"
+    },
+    "advancedNote": "Les poids et seuils avances conservent pour l'instant leurs valeurs par defaut.",
+    "actions": {
+      "save": "Enregistrer la tarification intelligente",
+      "saving": "Enregistrement de la tarification intelligente..."
+    },
+    "success": {
+      "saved": "Parametres de tarification intelligente enregistres."
+    },
+    "errors": {
+      "load": "Impossible de charger les parametres de tarification intelligente.",
+      "save": "Impossible d'enregistrer les parametres de tarification intelligente.",
+      "invalidHourlyValue": "La valeur horaire du moniteur doit etre positive ou nulle.",
+      "invalidKmCost": "Le cout par kilometre doit etre positif ou nul.",
+      "invalidPassThrough": "Le taux repercute doit etre compris entre 0 et 100.",
+      "invalidMaxDiscount": "La reduction maximale doit etre comprise entre 0 et 100.",
+      "invalidMaxSurcharge": "Le supplement maximal doit etre compris entre 0 et 100.",
+      "invalidRounding": "Le montant d'arrondi doit etre superieur a zero."
     }
   },
   "modals": {

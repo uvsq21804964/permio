@@ -8,6 +8,7 @@
     "clean:next": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\"",
     "dev": "next dev",
     "lint": "next lint",
+    "test": "node --test --experimental-strip-types lib/pricing/smartSlotPricing.test.ts",
     "start": "next start",
     "email:dev": "email dev --dir src/emails",
     "email:export": "react-email export --dir src/emails",

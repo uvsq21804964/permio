@@ -3,6 +3,10 @@ import type {
   DayAvailability,
   DefaultAvailability,
 } from '@/types/availability';
+import type {
+  ExactBookableSlot,
+  SmartPricingClientPayload,
+} from '@/lib/shared/bookable-slots';
 
 export type BookingAddressPayload = {
   formattedAddress: string;
@@ -43,6 +47,7 @@ export type AgendaClientSlot = {
   travelAfterMinutes: number;
   fromLabel: string;
   toLabel: string;
+  smartPricing?: SmartPricingClientPayload;
 };
 
 export type AgendaBookedSlot = {
@@ -61,6 +66,7 @@ export type InstructorAgendaResponse = {
   exceptions?: DayAvailability[];
   bookedSlots?: AgendaBookedSlot[];
   clientSlotsByDate: Record<string, AgendaClientSlot[]>;
+  exactClientSlotsByDate?: Record<string, ExactBookableSlot[]>;
 };
 
 type BookingErrorBody = {
@@ -74,6 +80,7 @@ type AgendaQuery = {
   isRemote?: boolean;
   bookingAddress?: BookingAddressPayload | null;
   clientUserId?: string | null;
+  serviceId?: number | null;
 };
 
 export type CreateBookingSlotInput = {
@@ -84,6 +91,9 @@ export type CreateBookingSlotInput = {
   bookingAddress?: BookingAddressPayload;
   clientUserId?: string | null;
   locale?: 'fr' | 'en';
+  smartPricing?: {
+    expectedFinalPriceCents?: number | null;
+  };
 };
 
 function normalizeLocale(locale?: string | null): 'fr' | 'en' {
@@ -98,6 +108,10 @@ function buildAgendaUrl(path: string, query: AgendaQuery): string {
 
   if (query.clientUserId) {
     params.set('clientUserId', query.clientUserId);
+  }
+
+  if (query.serviceId != null && Number.isFinite(query.serviceId)) {
+    params.set('serviceId', String(query.serviceId));
   }
 
   if (query.isRemote) {

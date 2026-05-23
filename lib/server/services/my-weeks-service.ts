@@ -4,6 +4,7 @@ import {
   minutesToTime,
   timeToMinutes,
 } from '@/lib/server/domain/time-ranges';
+import { ensureSlotPricingSchema } from '@/lib/server/repositories/slot-repository';
 import {
   sortTimedSlots,
 } from '@/lib/server/services/agenda-slot-utils';
@@ -131,6 +132,8 @@ async function listStudentWeekDays(
   userId: string,
   weekShown: string,
 ): Promise<WeekDay[]> {
+  await ensureSlotPricingSchema();
+
   const rows = await sql`
     WITH params AS (
       SELECT ${weekShown}::date AS week_start
@@ -150,7 +153,11 @@ async function listStudentWeekDays(
         s."endTime" AS "endTime",
         instr."name" AS "instructorName",
         sp."name" AS "serviceName",
-        sp."price" AS "servicePrice",
+        COALESCE(
+          s.effective_price_cents::numeric / 100.0,
+          NULLIF(s.smart_pricing_snapshot ->> 'final_price_cents', '')::numeric / 100.0,
+          sp."price"
+        ) AS "servicePrice",
         s."formatted_address" AS "formattedAddress",
         s."lat" AS "lat",
         s."lng" AS "lng"
@@ -206,6 +213,8 @@ async function listInstructorWeekDays(
   userId: string,
   weekShown: string,
 ): Promise<WeekDay[]> {
+  await ensureSlotPricingSchema();
+
   const rows = await sql`
     WITH params AS (
       SELECT ${weekShown}::date AS week_start
@@ -226,7 +235,11 @@ async function listInstructorWeekDays(
         cli."id" AS "studentId",
         cli."name" AS "studentName",
         sp."name" AS "serviceName",
-        sp."price" AS "servicePrice",
+        COALESCE(
+          s.effective_price_cents::numeric / 100.0,
+          NULLIF(s.smart_pricing_snapshot ->> 'final_price_cents', '')::numeric / 100.0,
+          sp."price"
+        ) AS "servicePrice",
         s."formatted_address" AS "formattedAddress",
         s."lat" AS "lat",
         s."lng" AS "lng"

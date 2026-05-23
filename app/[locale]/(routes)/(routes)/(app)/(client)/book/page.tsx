@@ -13,12 +13,58 @@ import {
   formatShortDateFromISO,
   formatTimeForLocale,
 } from '@/components/booking/booking-page-shared';
+import {
+  formatBookingPriceFromCents,
+  getSmartPricingLabelKey,
+  getSlotFinalPriceCents,
+  getSlotReferencePriceCents,
+} from '@/components/booking/booking-proposals-shared';
+import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { trackButtonClick } from '@/lib/client/button-tracking';
 import { useBookPageState } from '@/lib/client/hooks/useBookPageState';
+import type { SmartSlotLabel } from '@/lib/pricing/smartSlotPricing';
+import {
+  hasDiscountedSmartPrice,
+  hasSurchargedSmartPrice,
+} from '@/lib/shared/bookable-slots';
 import { type Locale, withLocale } from '@/src/lib/i18n';
+
+function getSelectionPricingBadgeClasses(label?: SmartSlotLabel | null) {
+  switch (label) {
+    case 'best_route_price':
+    case 'smart_discount':
+      return 'border-emerald-300/70 bg-emerald-50 text-emerald-800';
+    case 'flexible_slot':
+      return 'border-amber-300/70 bg-amber-50 text-amber-900';
+    default:
+      return 'border-slate-200 bg-slate-50 text-slate-700';
+  }
+}
+
+function getSelectionAdjustmentCopy(params: {
+  adjustmentCents: number;
+  locale: string;
+  t: (key: string, values?: Record<string, string | number | Date>) => string;
+}) {
+  const { adjustmentCents, locale, t } = params;
+
+  if (adjustmentCents < 0) {
+    return t('selection.summarySaveAmount', {
+      amount: formatBookingPriceFromCents(Math.abs(adjustmentCents), locale),
+    });
+  }
+
+  if (adjustmentCents > 0) {
+    return t('selection.summaryExtraAmount', {
+      amount: formatBookingPriceFromCents(adjustmentCents, locale),
+    });
+  }
+
+  return t('selection.summaryNoAdjustment');
+}
 
 export default function BookPage() {
   const router = useRouter();
@@ -81,6 +127,36 @@ export default function BookPage() {
         end: formatTimeForLocale(selectedSlot.serviceEndTime, locale),
       })
     : null;
+  const selectedSlotPriceLabel =
+    selectedSlot && selectedService
+      ? formatBookingPriceFromCents(
+          getSlotFinalPriceCents(selectedSlot, selectedService.price),
+          locale,
+        )
+      : null;
+  const selectedSlotBasePriceLabel =
+    selectedSlot && selectedService
+      ? formatBookingPriceFromCents(
+          getSlotReferencePriceCents(selectedSlot, selectedService.price),
+          locale,
+        )
+      : null;
+  const selectedSlotPricingLabelKey = selectedSlot?.smartPricing
+    ? getSmartPricingLabelKey(selectedSlot.smartPricing.label)
+    : null;
+  const selectedSlotExplanation = selectedSlot?.smartPricing?.explanationKey
+    ? t(selectedSlot.smartPricing.explanationKey)
+    : null;
+  const selectedSlotHasDiscount = hasDiscountedSmartPrice(selectedSlot?.smartPricing);
+  const selectedSlotHasSurcharge = hasSurchargedSmartPrice(selectedSlot?.smartPricing);
+  const selectedSlotAdjustmentCents =
+    selectedSlot?.smartPricing?.adjustmentCents ?? 0;
+  const selectedSlotTravelTotalMinutes = selectedSlot
+    ? selectedSlot.travelBeforeMinutes + selectedSlot.travelAfterMinutes
+    : 0;
+  const selectedSlotIsRecommended = selectedSlot
+    ? recommendedSlotIds.has(selectedSlot.id)
+    : false;
 
   const handleTrackedRequestBooking = () => {
     trackButtonClick({
@@ -288,6 +364,7 @@ export default function BookPage() {
                 recommendedSlotIds={recommendedSlotIds}
                 selectedDateLabel={getSelectedWindowLabel(selectedWindow.date, locale)}
                 selectedSlotId={selectedSlot ? `${selectedSlot.date}-${selectedSlot.serviceStartTime}-${selectedSlot.serviceEndTime}` : null}
+                servicePrice={selectedService?.price ?? 0}
                 slots={selectedWindowExactSlots}
                 t={bookingTranslator}
               />
@@ -308,15 +385,76 @@ export default function BookPage() {
 
                 {selectedSlot ? (
                   <>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {selectedSlotIsRecommended ? (
+                        <Badge className="border-amber-300 bg-amber-100/90 text-amber-900">
+                          {t('selection.recommended')}
+                        </Badge>
+                      ) : null}
+                      {selectedSlotPricingLabelKey ? (
+                        <Badge
+                          variant="outline"
+                          className={getSelectionPricingBadgeClasses(
+                            selectedSlot?.smartPricing?.label,
+                          )}
+                        >
+                          {t(selectedSlotPricingLabelKey)}
+                        </Badge>
+                      ) : null}
+                    </div>
+
                     <h2 className="text-lg font-semibold">
                       {getSelectedWindowLabel(selectedSlot.date, locale)}
                     </h2>
                     <p className="text-sm text-muted-foreground">{selectedSlotTimeLabel}</p>
-                    {currentSuggestedSlot && recommendedSlotIds.has(currentSuggestedSlot.id) ? (
-                      <span className="inline-flex rounded-full border border-amber-300 bg-amber-100/80 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.16em] text-amber-900">
-                        {t('selection.recommended')}
-                      </span>
+
+                    <div className="pt-1">
+                      {selectedSlotHasDiscount || selectedSlotHasSurcharge ? (
+                        <p className="text-xs text-muted-foreground line-through">
+                          {selectedSlotBasePriceLabel}
+                        </p>
+                      ) : null}
+                      {selectedSlotPriceLabel ? (
+                        <p className="text-lg font-semibold text-foreground">
+                          {selectedSlotPriceLabel}
+                        </p>
+                      ) : null}
+                      {(selectedSlotHasDiscount || selectedSlotHasSurcharge) && (
+                        <p
+                          className={`mt-1 text-xs ${
+                            selectedSlotHasDiscount
+                              ? 'text-emerald-700'
+                              : 'text-amber-900'
+                          }`}
+                        >
+                          {getSelectionAdjustmentCopy({
+                            adjustmentCents: selectedSlotAdjustmentCents,
+                            locale,
+                            t,
+                          })}
+                        </p>
+                      )}
+                    </div>
+
+                    {selectedSlotExplanation ? (
+                      <p className="text-sm text-muted-foreground">
+                        {selectedSlotExplanation}
+                      </p>
                     ) : null}
+
+                    <div className="flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
+                      <span>
+                        {t('timePicker.windowLabel', {
+                          start: formatTimeForLocale(selectedSlot.windowStartTime, locale),
+                          end: formatTimeForLocale(selectedSlot.windowEndTime, locale),
+                        })}
+                      </span>
+                      <span className="inline-flex rounded-full border border-black/10 px-2 py-0.5">
+                        {t('timePicker.travelTotal', {
+                          minutes: selectedSlotTravelTotalMinutes,
+                        })}
+                      </span>
+                    </div>
                   </>
                 ) : (
                   <p className="text-sm text-muted-foreground">
@@ -348,6 +486,18 @@ export default function BookPage() {
                   {getSelectedWindowLabel(selectedSlot.date, locale)}
                 </p>
                 <p className="truncate text-xs text-muted-foreground">{selectedSlotTimeLabel}</p>
+                {selectedSlotPriceLabel ? (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="truncate text-xs font-medium text-foreground">
+                      {selectedSlotPriceLabel}
+                    </p>
+                    {selectedSlotPricingLabelKey ? (
+                      <span className="inline-flex rounded-full border border-black/10 bg-white/80 px-2 py-0.5 text-[10px] text-muted-foreground">
+                        {t(selectedSlotPricingLabelKey)}
+                      </span>
+                    ) : null}
+                  </div>
+                ) : null}
               </div>
 
               <Button

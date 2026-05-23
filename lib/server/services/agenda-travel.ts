@@ -6,7 +6,12 @@ export type TravelPoint = {
   formatted_address: string | null;
 };
 
-export type TravelDurationCache = Map<string, number | null>;
+export type TravelMetrics = {
+  minutes: number;
+  km: number;
+};
+
+export type TravelDurationCache = Map<string, TravelMetrics | null>;
 
 function roundUpTo5(minutes: number): number {
   if (minutes <= 0) return 0;
@@ -25,14 +30,19 @@ function pointKey(point: TravelPoint): string {
 }
 
 export function createTravelDurationCache(): TravelDurationCache {
-  return new Map<string, number | null>();
+  return new Map<string, TravelMetrics | null>();
 }
 
-export async function getTravelDurationMinutesWithCache(
+function roundKm(meters: number) {
+  if (meters <= 0) return 0;
+  return Math.round((meters / 1000) * 10) / 10;
+}
+
+export async function getTravelMetricsWithCache(
   origin: TravelPoint,
   destination: TravelPoint,
   cache: TravelDurationCache,
-): Promise<number | null> {
+): Promise<TravelMetrics | null> {
   const apiKey =
     process.env.GOOGLE_MAPS_API_KEY ??
     process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -53,7 +63,7 @@ export async function getTravelDurationMinutesWithCache(
   const cacheKey = `${pointKey(origin)}|${pointKey(destination)}`;
   if (cache.has(cacheKey)) {
     const cached = cache.get(cacheKey) ?? null;
-    devLogger.log('[DISTANCE] cache hit', { key: cacheKey, minutes: cached });
+    devLogger.log('[DISTANCE] cache hit', { key: cacheKey, metrics: cached });
     return cached;
   }
 
@@ -89,7 +99,11 @@ export async function getTravelDurationMinutesWithCache(
     }
 
     const element = data.rows?.[0]?.elements?.[0];
-    if (element?.status !== 'OK' || !element.duration?.value) {
+    if (
+      element?.status !== 'OK' ||
+      !element.duration?.value ||
+      !element.distance?.value
+    ) {
       devLogger.error('[DISTANCE] element status error', {
         elementStatus: element?.status,
       });
@@ -99,19 +113,35 @@ export async function getTravelDurationMinutesWithCache(
 
     const seconds = Number(element.duration.value) || 0;
     const minutes = roundUpTo5(Math.round(seconds / 60));
+    const meters = Number(element.distance.value) || 0;
+    const metrics = {
+      minutes,
+      km: roundKm(meters),
+    } satisfies TravelMetrics;
 
     devLogger.log('[DISTANCE] success', {
       origin: originParam,
       destination: destinationParam,
       seconds,
       minutes,
+      meters,
+      km: metrics.km,
     });
 
-    cache.set(cacheKey, minutes);
-    return minutes;
+    cache.set(cacheKey, metrics);
+    return metrics;
   } catch (error) {
     devLogger.error('[DISTANCE] fetch error', error);
     cache.set(cacheKey, null);
     return null;
   }
+}
+
+export async function getTravelDurationMinutesWithCache(
+  origin: TravelPoint,
+  destination: TravelPoint,
+  cache: TravelDurationCache,
+): Promise<number | null> {
+  const metrics = await getTravelMetricsWithCache(origin, destination, cache);
+  return metrics?.minutes ?? null;
 }

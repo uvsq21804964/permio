@@ -14,6 +14,7 @@ type UseInstructorProposalAgendaOptions = {
   isRemote?: boolean;
   bookingAddress?: BookingAddressPayload | null;
   clientUserId?: string | null;
+  serviceId?: number | null;
   loadErrorMessage?: string;
 };
 
@@ -34,6 +35,7 @@ export function useInstructorProposalAgenda(
     isRemote,
     bookingAddress,
     clientUserId,
+    serviceId,
     loadErrorMessage = 'Failed to fetch instructor proposal agenda',
   } = options;
 
@@ -58,6 +60,7 @@ export function useInstructorProposalAgenda(
           isRemote,
           bookingAddress,
           clientUserId,
+          serviceId,
         },
         {
           fallbackMessage: loadErrorMessage,
@@ -79,6 +82,7 @@ export function useInstructorProposalAgenda(
     enabled,
     isRemote,
     loadErrorMessage,
+    serviceId,
     weekStart,
   ]);
 

@@ -3,9 +3,11 @@ import type { InstructorAgendaResponse } from '@/lib/client/api/booking-client';
 import {
   formatTimeForLocale,
   getExactBookableSlotsForDate,
+  getVisibleExactBookableSlotsForDate,
   type ExactBookableSlot,
 } from '@/components/booking/booking-page-shared';
 import { getEarliestAllowedDateTime } from '@/lib/client/utils/booking';
+import type { SmartSlotLabel } from '@/lib/pricing/smartSlotPricing';
 
 export type SuggestedBookingSlot = ExactBookableSlot & {
   hasBookingsToday?: boolean;
@@ -31,6 +33,47 @@ export function formatBookingPrice(price: number | string, locale: string): stri
   }
 }
 
+export function toPriceCents(price: number | string | null | undefined) {
+  const num = Number(price);
+  if (!Number.isFinite(num)) {
+    return 0;
+  }
+
+  return Math.max(0, Math.round(num * 100));
+}
+
+export function formatBookingPriceFromCents(priceCents: number, locale: string) {
+  return formatBookingPrice(priceCents / 100, locale);
+}
+
+export function getSmartPricingLabelKey(label: SmartSlotLabel) {
+  return `smartPricing.labels.${label}`;
+}
+
+export function getSlotBasePriceCents(
+  slot: SuggestedBookingSlot,
+  fallbackServicePrice: number | string,
+) {
+  return slot.smartPricing?.basePriceCents ?? toPriceCents(fallbackServicePrice);
+}
+
+export function getSlotFinalPriceCents(
+  slot: SuggestedBookingSlot,
+  fallbackServicePrice: number | string,
+) {
+  return slot.smartPricing?.finalPriceCents ?? toPriceCents(fallbackServicePrice);
+}
+
+export function getSlotReferencePriceCents(
+  slot: SuggestedBookingSlot,
+  fallbackServicePrice: number | string,
+) {
+  return (
+    getSlotBasePriceCents(slot, fallbackServicePrice) +
+    (slot.smartPricing?.travelChargeCents ?? 0)
+  );
+}
+
 export function formatSuggestionDate(dateIso: string, locale: string): string {
   try {
     const [y, m, d] = dateIso.split('-').map(Number);
@@ -50,6 +93,13 @@ function scoreSlot(slot: SuggestedBookingSlot, earliestAllowed: Date): number {
   const after = slot.travelAfterMinutes ?? 0;
   const totalTravel = before + after;
   const hasBookingsToday = !!slot.hasBookingsToday;
+  const pricePreference = slot.smartPricing
+    ? slot.smartPricing.adjustmentCents < 0
+      ? 1
+      : slot.smartPricing.adjustmentCents > 0
+        ? 0.15
+        : 0.55
+    : 0.45;
 
   const dayGroupScore = hasBookingsToday ? 1 : 0.45;
   const travelScore = 1 - Math.min(totalTravel, 60) / 60;
@@ -86,10 +136,11 @@ function scoreSlot(slot: SuggestedBookingSlot, earliestAllowed: Date): number {
   }
 
   return (
-    dayGroupScore * 0.38 +
-    continuityScore * 0.32 +
-    travelScore * 0.2 +
-    proximityScore * 0.1
+    dayGroupScore * 0.28 +
+    continuityScore * 0.26 +
+    travelScore * 0.16 +
+    proximityScore * 0.1 +
+    pricePreference * 0.2
   );
 }
 
@@ -117,10 +168,20 @@ export function computeScoredBookingOptionsFromAgenda(
       serviceDuration: dur,
       earliestAllowed,
     });
+    const exactSlotsForDate =
+      agenda.exactClientSlotsByDate?.[date] != null
+        ? getVisibleExactBookableSlotsForDate({
+            dateIso: date,
+            rawSlots: agenda.clientSlotsByDate[date] || [],
+            rawExactSlots: agenda.exactClientSlotsByDate[date] ?? [],
+            serviceDuration: dur,
+            earliestAllowed,
+          })
+        : exactSlots;
 
     const hasBookingsToday = bookedSlots.some((slot) => slot.date === date);
 
-    for (const exactSlot of exactSlots) {
+    for (const exactSlot of exactSlotsForDate) {
       const suggestion: SuggestedBookingSlot = {
         ...exactSlot,
         hasBookingsToday,
@@ -137,9 +198,16 @@ export function computeScoredBookingOptionsFromAgenda(
     }
   }
 
-  return Array.from(exactSlotsById.values()).sort(
-    (left, right) => (right.score ?? 0) - (left.score ?? 0)
-  );
+  return Array.from(exactSlotsById.values()).sort((left, right) => {
+    const leftPrice = left.smartPricing?.finalPriceCents ?? Number.MAX_SAFE_INTEGER;
+    const rightPrice = right.smartPricing?.finalPriceCents ?? Number.MAX_SAFE_INTEGER;
+
+    if (leftPrice !== rightPrice) {
+      return leftPrice - rightPrice;
+    }
+
+    return (right.score ?? 0) - (left.score ?? 0);
+  });
 }
 
 export function computeSuggestionsFromAgenda(
@@ -195,6 +263,10 @@ export function buildSuggestionReason(
   slot: SuggestedBookingSlot,
   t: SuggestionTranslator,
 ) {
+  if (slot.smartPricing?.explanationKey) {
+    return t(slot.smartPricing.explanationKey);
+  }
+
   const before = slot.travelBeforeMinutes ?? 0;
   const after = slot.travelAfterMinutes ?? 0;
   const totalTravel = before + after;

@@ -1,7 +1,7 @@
-// app/api/slots/week/route.ts
-
 import { NextRequest, NextResponse } from 'next/server';
+
 import { sql } from '@/lib/db';
+import { ensureSlotPricingSchema } from '@/lib/server/repositories/slot-repository';
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -11,6 +11,8 @@ export async function GET(req: NextRequest) {
   if (!from || !to) {
     return NextResponse.json({ error: 'Missing from/to' }, { status: 400 });
   }
+
+  await ensureSlotPricingSchema();
 
   const rows = await sql/* sql */ `
     SELECT
@@ -35,18 +37,14 @@ export async function GET(req: NextRequest) {
       s.google_place_id,
       s.raw_input,
       s.address_label,
-
-      -- 🔵 nom du client (User.name)
-      u_client.name     AS "clientName",
-
-      -- 🔵 nom du dogsitter (User.name)
-      u_dogsitter.name  AS "dogsitterName",
-
-      -- 🔵 libellé du service
-      sp.name           AS "serviceName",
-
-      -- 💰 prix du service
-      sp.price          AS "servicePrice"
+      u_client.name AS "clientName",
+      u_dogsitter.name AS "dogsitterName",
+      sp.name AS "serviceName",
+      COALESCE(
+        s.effective_price_cents::numeric / 100.0,
+        NULLIF(s.smart_pricing_snapshot ->> 'final_price_cents', '')::numeric / 100.0,
+        sp.price
+      ) AS "servicePrice"
     FROM "Slot" s
     LEFT JOIN "User" u_client
       ON u_client.id = s."clientUserId"

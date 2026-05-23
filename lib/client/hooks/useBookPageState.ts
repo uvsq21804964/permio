@@ -11,8 +11,8 @@ import {
   computeDisabledDays,
   dateToISO,
   END_HOUR,
-  getExactBookableSlotsForWindow,
-  getExactBookableSlotsForDate,
+  getVisibleExactBookableSlotsForDate,
+  getVisibleExactBookableSlotsForWindow,
   PIXELS_PER_HOUR,
   START_HOUR,
   startOfWeekMondayISO,
@@ -46,6 +46,7 @@ type SelectedBookingWindow = {
 
 function toSelectedBookingSlot(slot: SuggestedBookingSlot): SelectedBookingSlot {
   return {
+    id: slot.id,
     date: slot.date,
     windowStartTime: slot.windowStartTime,
     windowEndTime: slot.windowEndTime,
@@ -56,6 +57,7 @@ function toSelectedBookingSlot(slot: SuggestedBookingSlot): SelectedBookingSlot 
     fromLabel: slot.fromLabel,
     toLabel: slot.toLabel,
     alignment: 'start',
+    smartPricing: slot.smartPricing,
   };
 }
 
@@ -65,7 +67,10 @@ function getSelectedSlotId(slot: SelectedBookingSlot | null) {
 }
 
 function findFirstBookableDate(params: {
-  agenda: Pick<WeeklyAgendaResponse, 'clientSlotsByDate'> | null;
+  agenda: Pick<
+    WeeklyAgendaResponse,
+    'clientSlotsByDate' | 'exactClientSlotsByDate'
+  > | null;
   serviceDuration: number | null | undefined;
   earliestAllowed: Date;
 }): string | null {
@@ -74,9 +79,10 @@ function findFirstBookableDate(params: {
 
   const dates = Object.keys(agenda.clientSlotsByDate).sort();
   for (const dateIso of dates) {
-    const exactSlots = getExactBookableSlotsForDate({
+    const exactSlots = getVisibleExactBookableSlotsForDate({
       dateIso,
       rawSlots: agenda.clientSlotsByDate[dateIso] ?? [],
+      rawExactSlots: agenda.exactClientSlotsByDate?.[dateIso] ?? null,
       serviceDuration,
       earliestAllowed,
     });
@@ -182,6 +188,7 @@ export function useBookPageState() {
     isRemote: selectedService?.isRemote ?? false,
     bookingAddress: selectedService?.isRemote ? null : bookingAddress,
     clientUserId: targetClientUserId,
+    serviceId: selectedService?.id ?? null,
     loadErrorMessage: t('errors.loadAgendaApi'),
   });
 
@@ -234,13 +241,14 @@ export function useBookPageState() {
     }
 
     setServiceError(null);
-    setSelectedService({
-      id: service.id,
-      name: service.name,
-      categoryName: service.category_name,
-      durationMinutes: service.duration_minutes,
-      isRemote: !!service.is_remote,
-    });
+      setSelectedService({
+        id: service.id,
+        name: service.name,
+        categoryName: service.category_name,
+        durationMinutes: service.duration_minutes,
+        isRemote: !!service.is_remote,
+        price: service.price,
+      });
   }, [
     locale,
     router,
@@ -309,6 +317,7 @@ export function useBookPageState() {
               ? null
               : toBookingAddressPayload(bookingAddress),
             clientUserId: targetClientUserId,
+            serviceId: selectedService?.id ?? null,
           },
           {
             fallbackMessage: t('errors.loadAgendaApi'),
@@ -393,7 +402,8 @@ export function useBookPageState() {
       data?.bookedSlots?.some((slot) => slot.date === selectedWindow.date),
     );
 
-    return getExactBookableSlotsForWindow({
+    return getVisibleExactBookableSlotsForWindow({
+      rawExactSlots: data?.exactClientSlotsByDate?.[selectedWindow.date] ?? null,
       dateIso: selectedWindow.date,
       rawSlot: selectedWindow.slot,
       serviceDuration: selectedService?.durationMinutes,
@@ -528,6 +538,11 @@ export function useBookPageState() {
           ? undefined
           : toBookingAddressPayload(bookingAddress),
         clientUserId: targetClientUserId,
+        smartPricing: slot.smartPricing
+          ? {
+              expectedFinalPriceCents: slot.smartPricing.finalPriceCents,
+            }
+          : undefined,
       });
 
       toast.success(t('alerts.bookingSuccess'));
@@ -544,6 +559,26 @@ export function useBookPageState() {
         nextError.data?.error === 'SLOT_ALREADY_EXISTS'
       ) {
         toast.error(t('errors.slotAlreadyBooked'));
+        return;
+      }
+
+      if (
+        isHttpError<{ error?: string }>(nextError) &&
+        nextError.status === 409 &&
+        nextError.data?.error === 'SMART_PRICE_CHANGED'
+      ) {
+        toast.error(t('errors.smartPriceChanged'));
+        await reloadAgenda();
+        return;
+      }
+
+      if (
+        isHttpError<{ error?: string }>(nextError) &&
+        nextError.status === 409 &&
+        nextError.data?.error === 'SLOT_NOT_AVAILABLE_ANYMORE'
+      ) {
+        toast.error(t('errors.slotNotAvailableAnymore'));
+        await reloadAgenda();
         return;
       }
 

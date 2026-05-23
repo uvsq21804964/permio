@@ -25,20 +25,20 @@ import {
 } from '@/lib/server/repositories/instructor-agenda-repository';
 import {
   createTravelDurationCache,
-  getTravelDurationMinutesWithCache,
+  getTravelMetricsWithCache,
   type TravelPoint,
 } from '@/lib/server/services/agenda-travel';
 import { sortTimedSlots } from '@/lib/server/services/agenda-slot-utils';
 import { devLogger } from '@/lib/shared/dev-logger';
-
-type ClientSlot = {
-  startTime: string;
-  endTime: string;
-  travelBeforeMinutes: number;
-  travelAfterMinutes: number;
-  fromLabel: string;
-  toLabel: string;
-};
+import {
+  getExactBookableSlotsForWindow,
+  type ClientBookingSlot,
+  type ExactBookableSlot,
+  type SmartPricingClientPayload,
+} from '@/lib/shared/bookable-slots';
+import { getServicePricingByIdForUser } from '@/lib/server/repositories/service-repository';
+import { getSmartPricingSettings } from '@/lib/server/pricing/getSmartPricingSettings';
+import { computeSmartSlotPricing } from '@/lib/pricing/smartSlotPricing';
 
 type AgendaResponseUser = {
   id: string;
@@ -67,7 +67,8 @@ export type InstructorAgendaPayload = {
   defaults: InstructorAgendaDefaultAvailability[];
   exceptions: InstructorAgendaDayException[];
   bookedSlots: InstructorAgendaBookedSlot[];
-  clientSlotsByDate: Record<string, ClientSlot[]>;
+  clientSlotsByDate: Record<string, ClientBookingSlot[]>;
+  exactClientSlotsByDate: Record<string, ExactBookableSlot[]>;
 };
 
 type AgendaServiceResult =
@@ -191,6 +192,110 @@ function findNextBookedSlot(
   return null;
 }
 
+function combineDateAndTime(dateIso: string, time: string) {
+  return `${dateIso}T${time.length === 5 ? `${time}:00` : time}`;
+}
+
+function centsFromServicePrice(price: string | number | null | undefined) {
+  const numeric = Number(price);
+  if (!Number.isFinite(numeric)) {
+    return null;
+  }
+
+  return Math.max(0, Math.round(numeric * 100));
+}
+
+function toPricingSession(
+  dateIso: string,
+  slot: InstructorAgendaBookedSlot,
+): {
+  id: string;
+  start: string;
+  end: string;
+  lat: number | null;
+  lng: number | null;
+  address?: string | null;
+} {
+  return {
+    id: slot.id,
+    start: combineDateAndTime(dateIso, slot.startTime),
+    end: combineDateAndTime(dateIso, slot.endTime),
+    lat: slot.lat,
+    lng: slot.lng,
+    address: slot.formatted_address ?? slot.city ?? null,
+  };
+}
+
+function buildSmartPricingPayload(
+  enabled: boolean,
+  result: ReturnType<typeof computeSmartSlotPricing>,
+): SmartPricingClientPayload {
+  return {
+    enabled,
+    visibility: result.visibility,
+    basePriceCents: result.basePriceCents,
+    finalPriceCents: result.finalPriceCents,
+    travelChargeCents: result.travelChargeCents,
+    adjustmentCents: result.adjustmentCents,
+    adjustmentPct: result.adjustmentPct,
+    label: result.label,
+    explanationKey: result.explanationKey,
+  };
+}
+
+function computePrimeTimeScore(startTime: string) {
+  const minutes = timeToMinutes(startTime);
+  if (minutes >= 17 * 60 && minutes <= 20 * 60) {
+    return 1;
+  }
+
+  if (minutes >= 12 * 60 && minutes < 17 * 60) {
+    return 0.55;
+  }
+
+  if (minutes >= 9 * 60 && minutes < 12 * 60) {
+    return 0.35;
+  }
+
+  return 0.2;
+}
+
+function computeDaysUntilSlot(dateIso: string, startTime: string) {
+  const candidateDate = new Date(combineDateAndTime(dateIso, startTime));
+  const diffMs = candidateDate.getTime() - Date.now();
+  return Math.max(0, Math.ceil(diffMs / (24 * 60 * 60 * 1000)));
+}
+
+function computeWeeklyFillRate(bookedSlots: InstructorAgendaBookedSlot[]) {
+  const weeklyTargetSessions = 20;
+  return Math.min(1, bookedSlots.length / weeklyTargetSessions);
+}
+
+const BOUNDARY_SLOT_DISCOUNT_CENTS = 100;
+
+function getBoundaryDiscountedSlotIds(params: {
+  candidateExactSlots: ExactBookableSlot[];
+  previousSlot: InstructorAgendaBookedSlot | null;
+  nextSlot: InstructorAgendaBookedSlot | null;
+}) {
+  const { candidateExactSlots, nextSlot, previousSlot } = params;
+  if (!candidateExactSlots.length || (!previousSlot && !nextSlot)) {
+    return new Set<string>();
+  }
+
+  const discountedSlotIds = new Set<string>();
+
+  if (previousSlot) {
+    discountedSlotIds.add(candidateExactSlots[0].id);
+  }
+
+  if (nextSlot) {
+    discountedSlotIds.add(candidateExactSlots[candidateExactSlots.length - 1].id);
+  }
+
+  return discountedSlotIds;
+}
+
 async function buildClientSlotsByDate(params: {
   startDate: string;
   endDate: string;
@@ -200,7 +305,16 @@ async function buildClientSlotsByDate(params: {
   instructor: InstructorAgendaUserRow;
   client: InstructorAgendaUserRow;
   isRemote: boolean;
-}): Promise<Record<string, ClientSlot[]>> {
+  serviceDurationMinutes?: number | null;
+  serviceBasePriceCents?: number | null;
+  serviceIsRemote?: boolean;
+  serviceIncludesTransport?: boolean;
+  smartPricingEnabled: boolean;
+  smartPricingParams?: Awaited<ReturnType<typeof getSmartPricingSettings>> | null;
+}): Promise<{
+  clientSlotsByDate: Record<string, ClientBookingSlot[]>;
+  exactClientSlotsByDate: Record<string, ExactBookableSlot[]>;
+}> {
   const {
     startDate,
     endDate,
@@ -210,10 +324,17 @@ async function buildClientSlotsByDate(params: {
     instructor,
     client,
     isRemote,
+    serviceDurationMinutes,
+    serviceBasePriceCents,
+    serviceIsRemote,
+    serviceIncludesTransport,
+    smartPricingEnabled,
+    smartPricingParams,
   } = params;
 
   const cache = createTravelDurationCache();
-  const result: Record<string, ClientSlot[]> = {};
+  const clientSlotsByDate: Record<string, ClientBookingSlot[]> = {};
+  const exactClientSlotsByDate: Record<string, ExactBookableSlot[]> = {};
   const instructorPoint = toTravelPoint({
     lat: instructor.lat,
     lng: instructor.lng,
@@ -258,7 +379,12 @@ async function buildClientSlotsByDate(params: {
     );
     devLogger.log('[DAY] freeSlots', freeSlots);
 
-    const clientSlotsForDay: ClientSlot[] = [];
+    const clientSlotsForDay: ClientBookingSlot[] = [];
+    const exactClientSlotsForDay: ExactBookableSlot[] = [];
+    const weeklyFillRate = computeWeeklyFillRate(bookedSlots);
+    const daySessionsForPricing = bookedForDay.map((slot) =>
+      toPricingSession(dateIso, slot),
+    );
 
     for (const freeSlot of freeSlots) {
       const freeStartMinutes = timeToMinutes(freeSlot.startTime);
@@ -272,20 +398,45 @@ async function buildClientSlotsByDate(params: {
         : instructorPoint;
       const nextPoint = nextSlot ? buildNeighborPoint(nextSlot) : instructorPoint;
 
-      const travelBefore = isRemote
-        ? 0
-        : ((await getTravelDurationMinutesWithCache(
-            previousPoint,
-            clientPoint,
-            cache,
-          )) ?? 0);
-      const travelAfter = isRemote
-        ? 0
-        : ((await getTravelDurationMinutesWithCache(
-            clientPoint,
-            nextPoint,
-            cache,
-          )) ?? 0);
+      const travelBeforeMetrics = isRemote
+        ? { minutes: 0, km: 0 }
+        : ((await getTravelMetricsWithCache(previousPoint, clientPoint, cache)) ?? {
+            minutes: 0,
+            km: 0,
+          });
+      const travelAfterMetrics = isRemote
+        ? { minutes: 0, km: 0 }
+        : ((await getTravelMetricsWithCache(clientPoint, nextPoint, cache)) ?? {
+            minutes: 0,
+            km: 0,
+          });
+      const previousToNextMetrics =
+        isRemote || !previousSlot || !nextSlot
+          ? null
+          : await getTravelMetricsWithCache(previousPoint, nextPoint, cache);
+      const homeToCandidateMetrics = isRemote
+        ? { minutes: 0, km: 0 }
+        : ((await getTravelMetricsWithCache(instructorPoint, clientPoint, cache)) ?? {
+            minutes: 0,
+            km: 0,
+          });
+      const homeToNextMetrics =
+        isRemote || !nextSlot
+          ? null
+          : await getTravelMetricsWithCache(instructorPoint, nextPoint, cache);
+      const candidateToHomeMetrics = isRemote
+        ? { minutes: 0, km: 0 }
+        : ((await getTravelMetricsWithCache(clientPoint, instructorPoint, cache)) ?? {
+            minutes: 0,
+            km: 0,
+          });
+      const previousLastSessionToHomeMetrics =
+        isRemote || !previousSlot || nextSlot
+          ? null
+          : await getTravelMetricsWithCache(previousPoint, instructorPoint, cache);
+
+      const travelBefore = travelBeforeMetrics.minutes ?? 0;
+      const travelAfter = travelAfterMetrics.minutes ?? 0;
 
       const totalTravel = travelBefore + travelAfter;
       const clientStartMinutes = freeStartMinutes + travelBefore;
@@ -344,7 +495,7 @@ async function buildClientSlotsByDate(params: {
         continue;
       }
 
-      const finalSlot: ClientSlot = {
+      const finalSlot: ClientBookingSlot = {
         startTime: minutesToTime(clientStartMinutes),
         endTime: minutesToTime(clientEndMinutes),
         travelBeforeMinutes: travelBefore,
@@ -363,6 +514,150 @@ async function buildClientSlotsByDate(params: {
             'Domicile du moniteur',
       };
 
+      let visibleExactSlotsForWindow: ExactBookableSlot[] | null = null;
+
+      if (
+        serviceDurationMinutes != null &&
+        serviceDurationMinutes > 0 &&
+        serviceBasePriceCents != null &&
+        smartPricingParams
+      ) {
+        const candidateExactSlots = getExactBookableSlotsForWindow({
+          dateIso,
+          rawSlot: finalSlot,
+          serviceDuration: serviceDurationMinutes,
+          earliestAllowed: new Date(0),
+        });
+        const boundaryDiscountedSlotIds = getBoundaryDiscountedSlotIds({
+          candidateExactSlots,
+          previousSlot,
+          nextSlot,
+        });
+
+        visibleExactSlotsForWindow = candidateExactSlots.reduce<ExactBookableSlot[]>(
+          (visibleSlots, slot) => {
+            const pricingResult = computeSmartSlotPricing({
+              basePriceCents: serviceBasePriceCents,
+              serviceDurationMinutes,
+              candidate: {
+                start: combineDateAndTime(dateIso, slot.serviceStartTime),
+                end: combineDateAndTime(dateIso, slot.serviceEndTime),
+                lat: client.lat,
+                lng: client.lng,
+                address: client.formatted_address ?? client.city ?? null,
+              },
+              previousSession: previousSlot
+                ? toPricingSession(dateIso, previousSlot)
+                : null,
+              nextSession: nextSlot ? toPricingSession(dateIso, nextSlot) : null,
+              daySessions: daySessionsForPricing,
+              trainerHome: {
+                lat: instructor.lat,
+                lng: instructor.lng,
+                address: instructor.formatted_address ?? instructor.city ?? null,
+              },
+              travel: {
+                previousToCandidateMinutes: travelBeforeMetrics.minutes,
+                candidateToNextMinutes: travelAfterMetrics.minutes,
+                previousToNextMinutes: previousToNextMetrics?.minutes ?? null,
+                previousToCandidateKm: travelBeforeMetrics.km,
+                candidateToNextKm: travelAfterMetrics.km,
+                previousToNextKm: previousToNextMetrics?.km ?? null,
+                homeToCandidateMinutes: homeToCandidateMetrics.minutes,
+                candidateToHomeMinutes: candidateToHomeMetrics.minutes,
+                homeToNextMinutes: homeToNextMetrics?.minutes ?? null,
+                previousLastSessionToHomeMinutes:
+                  previousLastSessionToHomeMetrics?.minutes ?? null,
+                homeToCandidateKm: homeToCandidateMetrics.km,
+                candidateToHomeKm: candidateToHomeMetrics.km,
+                homeToNextKm: homeToNextMetrics?.km ?? null,
+                previousLastSessionToHomeKm:
+                  previousLastSessionToHomeMetrics?.km ?? null,
+              },
+              businessContext: {
+                daysUntilSlot: computeDaysUntilSlot(dateIso, slot.serviceStartTime),
+                weeklyFillRate,
+                dailySessionCount: bookedForDay.length,
+                dailyTargetSessions: 5,
+                primeTimeScore: computePrimeTimeScore(slot.serviceStartTime),
+                localDemandDensity: weeklyFillRate,
+                probabilityOfBetterBooking:
+                  weeklyFillRate > 0.8 ? 0.75 : weeklyFillRate > 0.5 ? 0.45 : 0.2,
+                expectedBetterBookingMarginCents: Math.round(
+                  serviceBasePriceCents * 0.18,
+                ),
+                isRecurringClientLikely: false,
+                recurringClientExpectedValueCents: 0,
+                boundarySlotDiscountCents:
+                  boundaryDiscountedSlotIds.has(slot.id)
+                    ? BOUNDARY_SLOT_DISCOUNT_CENTS
+                    : 0,
+              },
+              riskContext: {
+                latenessPenaltyCents: 1800,
+                downstreamSessionsCount: nextSlot
+                  ? bookedForDay.filter(
+                      (bookedSlot) =>
+                        timeToMinutes(bookedSlot.startTime) >=
+                        timeToMinutes(slot.serviceEndTime),
+                    ).length
+                  : 0,
+                overrunProbability: nextSlot ? 0.2 : 0,
+                cancellationProbability: 0,
+                replacementDifficulty: weeklyFillRate,
+              },
+              weatherContext: {
+                enabled: false,
+              },
+              fatigueContext: {
+                cumulativeDriveMinutesBeforeSlot: previousSlot ? travelBefore : 0,
+                cumulativeSessionMinutesBeforeSlot: bookedForDay
+                  .filter(
+                    (bookedSlot) =>
+                      timeToMinutes(bookedSlot.endTime) <=
+                      timeToMinutes(slot.serviceStartTime),
+                  )
+                  .reduce(
+                    (sum, bookedSlot) =>
+                      sum +
+                      (timeToMinutes(bookedSlot.endTime) -
+                        timeToMinutes(bookedSlot.startTime)),
+                    0,
+                  ),
+                consecutiveSessionsBeforeSlot: previousSlot ? 1 : 0,
+                difficultSessionSequenceScore: 0,
+              },
+              serviceContext: {
+                isRemote: serviceIsRemote ?? isRemote,
+                includesTransport: serviceIncludesTransport ?? true,
+              },
+              params: smartPricingParams,
+            });
+
+            if (pricingResult.visibility !== 'visible') {
+              return visibleSlots;
+            }
+
+            visibleSlots.push({
+              ...slot,
+              smartPricing: buildSmartPricingPayload(
+                smartPricingEnabled,
+                pricingResult,
+              ),
+            });
+
+            return visibleSlots;
+          },
+          [],
+        );
+
+        exactClientSlotsForDay.push(...visibleExactSlotsForWindow);
+      }
+
+      if (visibleExactSlotsForWindow && visibleExactSlotsForWindow.length === 0) {
+        continue;
+      }
+
       devLogger.log('[SLOT DEBUG] accepted', {
         date: dateIso,
         finalSlot,
@@ -371,13 +666,17 @@ async function buildClientSlotsByDate(params: {
       clientSlotsForDay.push(finalSlot);
     }
 
-    result[dateIso] = clientSlotsForDay;
+    clientSlotsByDate[dateIso] = clientSlotsForDay;
+    exactClientSlotsByDate[dateIso] = exactClientSlotsForDay;
     devLogger.log('[DAY] clientSlotsForDay', dateIso, clientSlotsForDay);
 
     cursor.setDate(cursor.getDate() + 1);
   }
 
-  return result;
+  return {
+    clientSlotsByDate,
+    exactClientSlotsByDate,
+  };
 }
 
 function applyClientAddressOverride(params: {
@@ -507,6 +806,7 @@ export async function buildInstructorAgenda(params: {
   clientFormattedParam: string | null;
   isRemote: boolean;
   targetClientUserId?: string | null;
+  serviceId?: number | null;
 }): Promise<AgendaServiceResult> {
   const me = await getAgendaUserById(params.userId);
   if (!me) {
@@ -546,16 +846,35 @@ export async function buildInstructorAgenda(params: {
     ),
   ]);
 
-  const clientSlotsByDate = await buildClientSlotsByDate({
-    startDate: params.startDate,
-    endDate: params.endDate,
-    defaults,
-    exceptions,
-    bookedSlots,
-    instructor: participants.instructor,
-    client: clientForAgenda,
-    isRemote: params.isRemote,
-  });
+  const serviceDetails =
+    params.serviceId != null
+      ? await getServicePricingByIdForUser({
+          serviceId: params.serviceId,
+          userId: participants.instructor.id,
+        })
+      : null;
+  const resolvedIsRemote = serviceDetails?.is_remote ?? params.isRemote;
+  const smartPricingParams = await getSmartPricingSettings(
+    participants.instructor.id,
+  );
+
+  const { clientSlotsByDate, exactClientSlotsByDate } =
+    await buildClientSlotsByDate({
+      startDate: params.startDate,
+      endDate: params.endDate,
+      defaults,
+      exceptions,
+      bookedSlots,
+      instructor: participants.instructor,
+      client: clientForAgenda,
+      isRemote: resolvedIsRemote,
+      serviceDurationMinutes: serviceDetails?.duration_minutes ?? null,
+      serviceBasePriceCents: centsFromServicePrice(serviceDetails?.price),
+      serviceIsRemote: serviceDetails?.is_remote ?? resolvedIsRemote,
+      serviceIncludesTransport: serviceDetails?.includes_transport ?? true,
+      smartPricingEnabled: smartPricingParams.enabled,
+      smartPricingParams,
+    });
 
   return {
     ok: true,
@@ -568,6 +887,7 @@ export async function buildInstructorAgenda(params: {
       exceptions,
       bookedSlots,
       clientSlotsByDate,
+      exactClientSlotsByDate,
     },
   };
 }

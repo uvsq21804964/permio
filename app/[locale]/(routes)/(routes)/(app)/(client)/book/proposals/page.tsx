@@ -74,6 +74,7 @@ export default function ProposalsPage() {
     isRemote: selectedService?.is_remote ?? false,
     bookingAddress: selectedService?.is_remote ? null : bookingAddress,
     clientUserId,
+    serviceId: selectedService?.id ?? null,
     loadErrorMessage: t('errors.loadAgendaApi'),
   });
 
@@ -113,6 +114,11 @@ export default function ProposalsPage() {
           ? undefined
           : toBookingAddressPayload(bookingAddress),
         clientUserId,
+        smartPricing: slot.smartPricing
+          ? {
+              expectedFinalPriceCents: slot.smartPricing.finalPriceCents,
+            }
+          : undefined,
       });
 
       toast.success(t('booking.noticeSuccess'));
@@ -127,6 +133,24 @@ export default function ProposalsPage() {
         e.data?.error === 'SLOT_ALREADY_EXISTS'
       ) {
         toast.error(t('errors.slotAlreadyBooked'));
+        return;
+      }
+
+      if (
+        isHttpError<{ error?: string }>(e) &&
+        e.status === 409 &&
+        e.data?.error === 'SMART_PRICE_CHANGED'
+      ) {
+        toast.error(t('errors.smartPriceChanged'));
+        return;
+      }
+
+      if (
+        isHttpError<{ error?: string }>(e) &&
+        e.status === 409 &&
+        e.data?.error === 'SLOT_NOT_AVAILABLE_ANYMORE'
+      ) {
+        toast.error(t('errors.slotNotAvailableAnymore'));
         return;
       }
 

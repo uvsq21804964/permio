@@ -14,6 +14,7 @@ import Plans from '@/components/home/PlansSansSimulation';
 import HeroSection from '@/components/home/HeroSection';
 import Comparison from '@/components/home/Comparison';
 import FAQ from '@/components/home/FAQ';
+import AcquisitionGrowthSection from '@/components/home/AcquisitionGrowthSection';
 import { BrandWordmark } from '@/components/brand/BrandWordmark';
 import { LocaleSwitcher } from '@/app/[locale]/_components/LocaleSwitcher';
 import { trackButtonClick } from '@/lib/client/button-tracking';
@@ -155,6 +156,7 @@ export default function HomePage() {
 
       <main className="pt-[calc(4rem+env(safe-area-inset-top))] md:pt-20">
         <HeroSection />
+        <AcquisitionGrowthSection />
         <HowItWorks />
         <Plans withTrial />
         <Comparison />

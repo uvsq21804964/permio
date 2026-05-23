@@ -4,5 +4,41 @@
     "magicHango": "See how it works",
     "login": "Sign in",
     "tryFree": "Try 1 month, no card"
+  },
+  "growthSection": {
+    "eyebrow": "For mobile dog trainers",
+    "title": "Turn booking demand into better-paid, route-friendly days.",
+    "subtitle": "MagicHango is positioned for trainers who already get demand, but lose margin through scattered appointments, manual scheduling, and clients choosing times that break the route.",
+    "metrics": [
+      {
+        "value": "+1 slot",
+        "label": "A simple target: recover one extra useful session per week."
+      },
+      {
+        "value": "Less dead time",
+        "label": "Guide clients toward edge slots that reduce tiny agenda gaps."
+      },
+      {
+        "value": "Smart price",
+        "label": "Show the right price for travel, route fit, and schedule friction."
+      }
+    ],
+    "cards": {
+      "step": "GTM pillar {number}",
+      "booking": {
+        "title": "Lead with client self-booking",
+        "body": "The acquisition hook is not another calendar. It is a booking flow that helps clients choose times the trainer can actually profit from."
+      },
+      "route": {
+        "title": "Make route quality visible",
+        "body": "Route-friendly slots get a small incentive, while awkward slots can stay standard, cost more, or disappear from the client view."
+      },
+      "pricing": {
+        "title": "Connect pricing to operations",
+        "body": "Travel fees, smart discounts, and surcharges turn the trainer's real constraints into a simple client-facing price."
+      }
+    },
+    "ctaPrimary": "Start with the booking flow",
+    "ctaSecondary": "See the route demo"
   }
 }

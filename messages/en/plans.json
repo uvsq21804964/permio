@@ -1,12 +1,12 @@
 {
   "plans": {
-    "heading": "Pay only for the leads you generate",
-    "subheading": "MagicHango follows up by SMS, qualifies the request, and turns missed calls into real opportunities for your route.",
+    "heading": "Start with route-friendly booking",
+    "subheading": "MagicHango helps clients book sessions while guiding them toward times that protect your route, margins, and weekly capacity.",
     "banner": {
-      "label": "Performance-based pricing",
-      "text": "You pay only for value obtained: $1 per generated lead, with a hard cap at $35."
+      "label": "Built for mobile dog trainers",
+      "text": "Use the booking flow to turn client demand into better placed sessions, fewer awkward gaps, and clearer prices."
     },
-    "badge": "Made for mobile pet groomers",
+    "badge": "Route-friendly booking plan",
     "perMonth": "/month",
     "priceDisplay": "$1",
     "priceSuffix": "/lead",
@@ -18,11 +18,11 @@
     "plan": {
       "title": "Full Magic",
       "features": [
-        "SMS follow-up after missed calls",
-        "Pet, service, address, and preference intake",
+        "Client self-booking for dog training sessions",
+        "Service, address, duration, and preference intake",
         "Route-friendly appointment suggestions",
-        "Approval before confirmation",
-        "$1 per generated lead",
+        "Smart slot discounts and surcharges",
+        "Travel-cost aware pricing",
         "Billing capped at $35"
       ]
     },

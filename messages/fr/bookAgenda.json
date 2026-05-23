@@ -1,107 +1,155 @@
 {
-  "loadingSession": "Chargement de votre session…",
-  "mustBeSignedIn": "Vous devez être connecté pour consulter les horaires de votre éducateur canin.",
+  "loadingSession": "Chargement de votre session...",
+  "mustBeSignedIn": "Vous devez etre connecte pour consulter les horaires de votre educateur canin.",
   "header": {
     "eyebrow": "Tous les horaires",
     "title": "Choisissez l'horaire qui vous convient",
     "subtitle": "Choisissez une plage, puis l'heure exacte.",
     "badges": {
       "serviceDuration": "{duration} min",
-      "remote": "À distance"
+      "remote": "A distance"
     }
   },
   "buttons": {
-    "backToSuggestions": "← Retour aux suggestions",
-    "prevWeek": "← Semaine précédente",
-    "nextWeek": "Semaine suivante →",
-    "placeBooking": "Réserver ce créneau",
-    "bookingInProgress": "Réservation en cours…",
+    "backToSuggestions": "Retour aux suggestions",
+    "prevWeek": "Semaine precedente",
+    "nextWeek": "Semaine suivante",
+    "placeBooking": "Reserver ce creneau",
+    "bookingInProgress": "Reservation en cours...",
     "cancel": "Annuler",
-    "confirm": "Réserver",
+    "confirm": "Reserver",
     "close": "Fermer"
   },
   "alerts": {
-    "bookingSuccess": "Créneau réservé avec succès ✅"
+    "bookingSuccess": "Creneau reserve avec succes."
   },
   "errors": {
-    "loadAgendaApi": "Impossible de récupérer les disponibilités de votre éducateur canin.",
+    "loadAgendaApi": "Impossible de recuperer les disponibilites de votre educateur canin.",
     "loadAgendaGeneric": "Une erreur est survenue pendant le chargement du planning.",
-    "loadServicesApi": "Impossible de récupérer la liste des services.",
-    "selectedServiceLoad": "Impossible de récupérer le service sélectionné.",
-    "invalidServiceUrl": "Le service indiqué dans l'URL est invalide.",
-    "serviceNotAvailable": "Le service sélectionné n'existe pas ou n'est plus disponible.",
+    "loadServicesApi": "Impossible de recuperer la liste des services.",
+    "selectedServiceLoad": "Impossible de recuperer le service selectionne.",
+    "invalidServiceUrl": "Le service indique dans l'URL est invalide.",
+    "serviceNotAvailable": "Le service selectionne n'existe pas ou n'est plus disponible.",
     "noServiceSelected": "Veuillez d'abord choisir un service.",
-    "noSlotSelected": "Veuillez sélectionner un créneau précis.",
-    "invalidSlot": "Le créneau sélectionné n'est pas valide. Veuillez en choisir un autre.",
-    "slotAlreadyBooked": "Ce créneau vient d'être réservé. Veuillez en choisir un autre.",
-    "createBooking": "Impossible de créer la réservation. Veuillez réessayer.",
-    "createBookingGeneric": "Une erreur est survenue pendant la réservation. Veuillez réessayer."
+    "noSlotSelected": "Veuillez selectionner un creneau precis.",
+    "invalidSlot": "Le creneau selectionne n'est pas valide. Veuillez en choisir un autre.",
+    "slotAlreadyBooked": "Ce creneau vient d'etre reserve. Veuillez en choisir un autre.",
+    "slotNotAvailableAnymore": "Ce creneau n'est plus disponible. Veuillez actualiser et en choisir un autre.",
+    "smartPriceChanged": "Le prix de ce creneau a change. Veuillez actualiser les disponibilites.",
+    "createBooking": "Impossible de creer la reservation. Veuillez reessayer.",
+    "createBookingGeneric": "Une erreur est survenue pendant la reservation. Veuillez reessayer."
   },
   "agenda": {
     "title": "Planning complet",
     "weekLabel": "Semaine du {start} au {end}.",
     "help": "Touchez une plage pour voir les horaires possibles.",
     "hourColumn": "Heure",
-    "loadingSlots": "Chargement des disponibilités…",
+    "loadingSlots": "Chargement des disponibilites...",
     "slotTooltip": {
-      "slot": "Plage disponible chez vous : {start}–{end}",
+      "slot": "Plage disponible chez vous : {start}-{end}",
       "travelBefore": "Trajet avant : {minutes} min depuis {label}",
-      "travelAfter": "Trajet après : {minutes} min vers {label}"
+      "travelAfter": "Trajet apres : {minutes} min vers {label}"
     },
     "suggestedCount": "{count} sugg.",
-    "badgeSelected": "Créneau choisi",
+    "badgeSelected": "Creneau choisi",
     "badgeAvailable": "Disponible",
     "badgeOpenWindow": "Plage ouverte"
   },
   "selection": {
-    "eyebrow": "Étape 1",
+    "eyebrow": "Etape 1",
     "title": "Commencez par une plage disponible",
     "description": "Ouvrez une plage pour choisir votre heure.",
-    "summaryEyebrow": "Votre sélection",
+    "summaryEyebrow": "Votre selection",
     "summaryTime": "{start} - {end}",
     "recommended": "Suggestion fluide",
-    "empty": "Aucun créneau précis choisi pour le moment.",
-    "helper": "Tous les créneaux affichés restent disponibles.",
-    "readyTitle": "Prêt à réserver",
-    "readyDescription": "Votre horaire est prêt."
+    "empty": "Aucun creneau precis choisi pour le moment.",
+    "helper": "Tous les creneaux affiches restent disponibles.",
+    "readyTitle": "Pret a reserver",
+    "readyDescription": "Votre horaire est pret.",
+    "summaryPriceLabel": "Prix final",
+    "summaryWindowLabel": "Choisi dans cette plage",
+    "summaryTravelLabel": "Deplacements autour de la visite",
+    "summaryWhyLabel": "Pourquoi ce creneau",
+    "summarySaveAmount": "Vous economisez {amount}",
+    "summaryExtraAmount": "{amount} en plus pour le trajet",
+    "summaryNoAdjustment": "Aucun ajustement de prix"
   },
   "timePicker": {
-    "eyebrow": "Étape 2",
+    "eyebrow": "Etape 2",
     "help": "Choisissez l'heure qui vous convient.",
+    "detailsHint": "Chaque carte montre l'heure exacte, le prix final et l'impact sur les deplacements.",
     "recommended": "Suggestion",
     "windowLabel": "Plage disponible : {start} - {end}",
     "selected": "Choisi",
     "count": "{count} horaires possibles",
     "recommendedCount": "{count} suggestion(s) dans cette plage",
-    "empty": "Aucun horaire précis n'est encore disponible dans cette plage. Essayez-en une autre.",
-    "quickTravel": "Déplacements allégés"
+    "empty": "Aucun horaire precis n'est encore disponible dans cette plage. Essayez-en une autre.",
+    "quickTravel": "Deplacements alleges",
+    "legendSuggestedTitle": "Suggestion",
+    "legendSuggestedBody": "Les horaires suggeres s'integrent generalement plus facilement dans la journee.",
+    "legendDiscountTitle": "Prix du creneau",
+    "legendDiscountBody": "Un prix ajuste peut recompenser un creneau qui limite les deplacements.",
+    "legendTravelTitle": "Contexte trajet",
+    "legendTravelBody": "Vous voyez le temps avant et apres la visite pour mieux comprendre le creneau.",
+    "whyThisSlot": "Pourquoi ce creneau",
+    "priceLabel": "Prix du creneau",
+    "basePriceLabel": "Prix standard : {amount}",
+    "priceSaved": "Economisez {amount}",
+    "priceExtra": "{amount} en plus",
+    "priceNoChange": "Prix standard conserve",
+    "windowTitle": "Dans cette plage disponible",
+    "travelTitle": "Deplacements autour",
+    "travelBefore": "Avant {minutes} min",
+    "travelAfter": "Apres {minutes} min",
+    "travelTotal": "{minutes} min au total",
+    "fromLabel": "Depuis {label}",
+    "toLabel": "Puis vers {label}"
   },
   "progress": {
     "stepTwoTitle": "Choisissez l'heure exacte",
-    "stepThreeEyebrow": "Étape 3",
+    "stepThreeEyebrow": "Etape 3",
     "stepThreeTitle": "Confirmez sereinement",
-    "stepThreeDescription": "Réservez dès que l'horaire vous convient."
+    "stepThreeDescription": "Reservez des que l'horaire vous convient."
   },
   "context": {
-    "title": "Repères de réservation",
+    "title": "Reperes de reservation",
     "service": "Service",
-    "duration": "Durée",
+    "duration": "Duree",
     "address": "Lieu du rendez-vous",
-    "remote": "À distance"
+    "remote": "A distance"
   },
   "nudge": {
-    "title": "Une option proche peut être encore plus fluide",
-    "body": "Ce créneau {current} fonctionne très bien. Il y en a un à {alternative} qui s'intègre encore un peu mieux au planning — voulez-vous changer ?",
-    "fallback": "Une autre option proche s'intègre un peu mieux au planning. Souhaitez-vous la choisir ?",
+    "title": "Une option proche peut etre encore plus fluide",
+    "body": "Ce creneau {current} fonctionne tres bien. Il y en a un a {alternative} qui s'integre encore un peu mieux au planning - voulez-vous changer ?",
+    "fallback": "Une autre option proche s'integre un peu mieux au planning. Souhaitez-vous la choisir ?",
     "keepChoice": "Garder mon choix",
     "switchChoice": "Choisir {time}",
     "switchDefault": "Choisir cette alternative"
   },
   "reason": {
-    "fluidVisit": "Recommandé pour une visite plus fluide",
-    "reduceTravel": "Réduit les déplacements",
-    "dayFlow": "Aide la journée à rester fluide",
-    "fitSchedule": "S'intègre bien au planning",
+    "fluidVisit": "Recommande pour une visite plus fluide",
+    "reduceTravel": "Reduit les deplacements",
+    "dayFlow": "Aide la journee a rester fluide",
+    "fitSchedule": "S'integre bien au planning",
     "smoothOption": "Option la plus fluide"
+  },
+  "smartPricing": {
+    "labels": {
+      "best_route_price": "Meilleur prix de tournee",
+      "smart_discount": "Reduction intelligente",
+      "standard_price": "Prix standard",
+      "flexible_slot": "Creneau flexible",
+      "available_on_request": "Sur demande"
+    },
+    "explanations": {
+      "best_route_price": "Ce creneau s'integre parfaitement dans la tournee.",
+      "smart_discount": "Economisez en choisissant un creneau qui limite les deplacements.",
+      "standard_price": "Ce creneau fonctionne normalement.",
+      "flexible_slot": "Ce creneau demande un deplacement supplementaire.",
+      "available_on_request": "Ce creneau peut necessiter une confirmation manuelle."
+    },
+    "badges": {
+      "flexible": "Flexible"
+    }
   }
 }

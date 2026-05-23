@@ -8,9 +8,17 @@ import {
   buildSuggestionReason,
   buildSuggestionTimeRange,
   formatBookingPrice,
+  formatBookingPriceFromCents,
   formatSuggestionDate,
+  getSmartPricingLabelKey,
+  getSlotFinalPriceCents,
+  getSlotReferencePriceCents,
   type SuggestedBookingSlot,
 } from '@/components/booking/booking-proposals-shared';
+import {
+  hasDiscountedSmartPrice,
+  hasSurchargedSmartPrice,
+} from '@/lib/shared/bookable-slots';
 
 type BookingSuggestionsGridProps = {
   bookingAddress: BookingAddress | null;
@@ -149,55 +157,101 @@ export function BookingSuggestionsGrid({
         {suggestions.length ? (
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
             {suggestions.slice(0, 4).map((slot, index) => (
-              <button
-                key={slot.id}
-                type="button"
-                onClick={() => {
-                  trackButtonClick({
-                    buttonKey: 'booking_suggestion_book_slot',
-                    buttonLabel: t('booking.button'),
-                    buttonContext: 'booking_suggestions',
-                    locale,
-                    metadata: {
-                      serviceId: selectedService.id,
-                      serviceName: selectedService.name,
-                      slotId: slot.id,
-                      slotDate: slot.date,
-                      slotRank: index + 1,
-                    },
-                  });
-                  onBookSlot(slot);
-                }}
-                disabled={bookingLoading}
-                className="group flex min-h-[220px] cursor-pointer flex-col justify-between rounded-[1.5rem] border border-black/10 bg-card p-4 text-left shadow-sm ring-1 ring-transparent transition hover:-translate-y-1 hover:border-black/20 hover:ring-black/5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <div className="space-y-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="inline-flex rounded-full border border-black/10 bg-black/[0.04] px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.16em] text-foreground/80">
-                      {index === 0 ? t('suggestions.badgeLead') : t('suggestions.badge')}
-                    </span>
-                    <span className="text-xs text-muted-foreground">
-                      {formatSuggestionDate(slot.date, locale)}
-                    </span>
-                  </div>
+              (() => {
+                const referencePriceCents = getSlotReferencePriceCents(
+                  slot,
+                  selectedService.price,
+                );
+                const finalPriceCents = getSlotFinalPriceCents(slot, selectedService.price);
+                const hasDiscount = hasDiscountedSmartPrice(slot.smartPricing);
+                const hasSurcharge = hasSurchargedSmartPrice(slot.smartPricing);
+                const pricingLabelKey = slot.smartPricing
+                  ? getSmartPricingLabelKey(slot.smartPricing.label)
+                  : null;
 
-                  <div className="space-y-2">
-                    <p className="text-xl font-semibold tracking-tight">
-                      {buildSuggestionTimeRange(slot, locale)}
-                    </p>
-                    <p className="text-sm leading-6 text-muted-foreground">
-                      {buildSuggestionReason(slot, t)}
-                    </p>
-                  </div>
-                </div>
+                return (
+                  <button
+                    key={slot.id}
+                    type="button"
+                    onClick={() => {
+                      trackButtonClick({
+                        buttonKey: 'booking_suggestion_book_slot',
+                        buttonLabel: t('booking.button'),
+                        buttonContext: 'booking_suggestions',
+                        locale,
+                        metadata: {
+                          serviceId: selectedService.id,
+                          serviceName: selectedService.name,
+                          slotId: slot.id,
+                          slotDate: slot.date,
+                          slotRank: index + 1,
+                        },
+                      });
+                      onBookSlot(slot);
+                    }}
+                    disabled={bookingLoading}
+                    className="group flex min-h-[220px] cursor-pointer flex-col justify-between rounded-[1.5rem] border border-black/10 bg-card p-4 text-left shadow-sm ring-1 ring-transparent transition hover:-translate-y-1 hover:border-black/20 hover:ring-black/5 hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 disabled:cursor-not-allowed disabled:opacity-60"
+                  >
+                    <div className="space-y-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <span className="inline-flex rounded-full border border-black/10 bg-black/[0.04] px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.16em] text-foreground/80">
+                          {index === 0 ? t('suggestions.badgeLead') : t('suggestions.badge')}
+                        </span>
+                        <span className="text-xs text-muted-foreground">
+                          {formatSuggestionDate(slot.date, locale)}
+                        </span>
+                      </div>
 
-                <div className="mt-5 flex items-center justify-end">
-                  <span className="inline-flex items-center gap-1 rounded-full border border-black/10 bg-black/[0.04] px-3 py-1 text-xs font-semibold text-foreground transition group-hover:border-black/20 group-hover:bg-black/[0.07]">
-                    {bookingLoading ? t('booking.loading') : t('booking.button')}
-                    <ChevronRight className="size-3.5" />
-                  </span>
-                </div>
-              </button>
+                      <div className="space-y-2">
+                        <p className="text-xl font-semibold tracking-tight">
+                          {buildSuggestionTimeRange(slot, locale)}
+                        </p>
+                        <p className="text-sm leading-6 text-muted-foreground">
+                          {buildSuggestionReason(slot, t)}
+                        </p>
+                      </div>
+
+                      <div className="rounded-2xl border border-black/5 bg-black/[0.03] p-3">
+                        <div className="flex items-end justify-between gap-3">
+                          <div>
+                            {pricingLabelKey ? (
+                              <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                                {t(pricingLabelKey)}
+                              </p>
+                            ) : null}
+                            <div className="mt-1 flex items-baseline gap-2">
+                              {hasDiscount ? (
+                                <span className="text-xs text-muted-foreground line-through">
+                                  {formatBookingPriceFromCents(
+                                    referencePriceCents,
+                                    locale,
+                                  )}
+                                </span>
+                              ) : null}
+                              <span className="text-lg font-semibold">
+                                {formatBookingPriceFromCents(finalPriceCents, locale)}
+                              </span>
+                            </div>
+                          </div>
+
+                          {hasSurcharge ? (
+                            <span className="rounded-full border border-black/10 bg-white/80 px-2 py-1 text-[10px] font-medium text-muted-foreground">
+                              {t('smartPricing.badges.flexible')}
+                            </span>
+                          ) : null}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-5 flex items-center justify-end">
+                      <span className="inline-flex items-center gap-1 rounded-full border border-black/10 bg-black/[0.04] px-3 py-1 text-xs font-semibold text-foreground transition group-hover:border-black/20 group-hover:bg-black/[0.07]">
+                        {bookingLoading ? t('booking.loading') : t('booking.button')}
+                        <ChevronRight className="size-3.5" />
+                      </span>
+                    </div>
+                  </button>
+                );
+              })()
             ))}
           </div>
         ) : null}

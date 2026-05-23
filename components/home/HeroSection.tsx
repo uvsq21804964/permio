@@ -127,8 +127,8 @@ export default function HeroSection() {
               </TrackedButton>
 
               <TrackedButton
-                href={`/${locale}/sign-in`}
-                trackingKey="home_hero_sign_in"
+                href={`/${locale}/demo`}
+                trackingKey="home_hero_demo"
                 trackingLabel={t('hero.ctaSecondary')}
                 trackingContext="home_hero"
                 trackingMetadata={{ locale }}

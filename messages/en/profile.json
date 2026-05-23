@@ -35,7 +35,7 @@
     "educatorCode": {
       "label": "Client association URL",
       "copy": "Copy",
-      "copied": "Copied ✓",
+      "copied": "Copied",
       "copyTitle": "Copy association URL",
       "help": "Share this URL with clients so they can find you and book."
     }
@@ -70,6 +70,46 @@
       "label": "Map",
       "loading": "Loading map...",
       "noCoords": "No geocoded address yet."
+    }
+  },
+  "smartPricing": {
+    "title": "Smart pricing",
+    "subtitle": "Adjust booking prices server-side based on route quality and schedule fit.",
+    "enabled": {
+      "label": "Enable smart pricing",
+      "help": "Show route-friendly prices to clients without exposing the internal scoring."
+    },
+    "fields": {
+      "mode": "Pricing mode",
+      "roundToNearest": "Round price to nearest amount (EUR)",
+      "trainerHourlyValue": "Trainer hourly value (EUR)",
+      "costPerKm": "Travel cost per km (EUR)",
+      "passThroughRate": "Pass-through rate (%)",
+      "maxDiscount": "Max discount (%)",
+      "maxSurcharge": "Max surcharge (%)"
+    },
+    "modes": {
+      "rank_only": "Rank only",
+      "discount_only": "Discounts only",
+      "discount_and_surcharge": "Discounts and surcharges"
+    },
+    "advancedNote": "Advanced weights and thresholds keep their safe defaults for now.",
+    "actions": {
+      "save": "Save smart pricing",
+      "saving": "Saving smart pricing..."
+    },
+    "success": {
+      "saved": "Smart pricing settings saved."
+    },
+    "errors": {
+      "load": "Could not load smart pricing settings.",
+      "save": "Could not save smart pricing settings.",
+      "invalidHourlyValue": "Trainer hourly value must be zero or more.",
+      "invalidKmCost": "Travel cost per km must be zero or more.",
+      "invalidPassThrough": "Pass-through rate must be between 0 and 100.",
+      "invalidMaxDiscount": "Max discount must be between 0 and 100.",
+      "invalidMaxSurcharge": "Max surcharge must be between 0 and 100.",
+      "invalidRounding": "Rounding amount must be greater than zero."
     }
   },
   "modals": {

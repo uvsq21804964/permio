@@ -89,15 +89,23 @@ export async function listServicePricingByUserId(
 export async function getServicePricingByIdForUser(params: {
   serviceId: number;
   userId: string;
-}): Promise<Pick<ServicePricingRecord, 'id' | 'is_remote'> | null> {
+}): Promise<
+  Pick<
+    ServicePricingRecord,
+    'id' | 'is_remote' | 'includes_transport' | 'duration_minutes' | 'price'
+  > | null
+> {
   const rows = await sql`
-    SELECT id, is_remote
+    SELECT id, is_remote, includes_transport, duration_minutes, price
     FROM services_pricing
     WHERE id = ${params.serviceId} AND user_id = ${params.userId}
     LIMIT 1
   `;
 
-  return (rows[0] ?? null) as Pick<ServicePricingRecord, 'id' | 'is_remote'> | null;
+  return (rows[0] ?? null) as Pick<
+    ServicePricingRecord,
+    'id' | 'is_remote' | 'includes_transport' | 'duration_minutes' | 'price'
+  > | null;
 }
 
 export async function getAgencyJoinCodeByUserId(userId: string) {

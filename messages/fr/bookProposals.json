@@ -1,54 +1,56 @@
 {
   "noServiceSelected": {
-    "title": "Aucun service sélectionné.",
-    "button": "Retour à la sélection de services"
+    "title": "Aucun service selectionne.",
+    "button": "Retour a la selection de services"
   },
   "noAddress": {
-    "title": "Impossible de retrouver votre adresse pour calculer les créneaux proposés.",
-    "button": "Revenir à l'étape adresse"
+    "title": "Impossible de retrouver votre adresse pour calculer les creneaux proposes.",
+    "button": "Revenir a l'etape adresse"
   },
   "errors": {
-    "loadServicesApi": "Impossible de récupérer les services de votre éducateur canin.",
-    "loadServicesGeneric": "Erreur lors du chargement des services de votre éducateur canin.",
-    "loadAgendaApi": "Impossible de récupérer les disponibilités de votre éducateur canin.",
-    "generateSlots": "Erreur lors de la génération des créneaux proposés.",
-    "slotAlreadyBooked": "Ce créneau a déjà été réservé entre-temps. Veuillez en choisir un autre.",
-    "createBooking": "Impossible de créer la réservation. Veuillez réessayer.",
-    "genericSelectedService": "Impossible de retrouver le service sélectionné. Veuillez réessayer.",
-    "noBookingAddress": "Impossible de retrouver votre adresse pour calculer les créneaux proposés."
+    "loadServicesApi": "Impossible de recuperer les services de votre educateur canin.",
+    "loadServicesGeneric": "Erreur lors du chargement des services de votre educateur canin.",
+    "loadAgendaApi": "Impossible de recuperer les disponibilites de votre educateur canin.",
+    "generateSlots": "Erreur lors de la generation des creneaux proposes.",
+    "slotAlreadyBooked": "Ce creneau a deja ete reserve entre-temps. Veuillez en choisir un autre.",
+    "slotNotAvailableAnymore": "Ce creneau n'est plus disponible. Veuillez actualiser et en choisir un autre.",
+    "smartPriceChanged": "Le prix de ce creneau a change. Veuillez actualiser les disponibilites.",
+    "createBooking": "Impossible de creer la reservation. Veuillez reessayer.",
+    "genericSelectedService": "Impossible de retrouver le service selectionne. Veuillez reessayer.",
+    "noBookingAddress": "Impossible de retrouver votre adresse pour calculer les creneaux proposes."
   },
   "header": {
     "eyebrow": "Shortlist intelligente",
-    "title": "Quelques horaires simples à choisir",
+    "title": "Quelques horaires simples a choisir",
     "subtitle": "Quelques suggestions pour choisir vite. Le planning complet reste disponible.",
     "seeAll": "Voir tous les horaires",
     "trustNote": "Suggestion uniquement."
   },
   "serviceSection": {
-    "label": "Service sélectionné",
+    "label": "Service selectionne",
     "duration": "{duration} min"
   },
   "addressSection": {
-    "label": "Adresse utilisée"
+    "label": "Adresse utilisee"
   },
   "suggestions": {
     "title": "Nos suggestions du moment",
-    "subtitle": "Une sélection courte, sans bloquer l'accès au planning complet.",
-    "loading": "Calcul des suggestions…",
-    "empty": "Aucun créneau recommandé pour le moment. Vous pouvez consulter l'ensemble des horaires disponibles.",
+    "subtitle": "Une selection courte, sans bloquer l'acces au planning complet.",
+    "loading": "Calcul des suggestions...",
+    "empty": "Aucun creneau recommande pour le moment. Vous pouvez consulter l'ensemble des horaires disponibles.",
     "badgeLead": "Suggestion du moment",
     "badge": "Suggestion",
     "dateLabel": "{date}"
   },
   "booking": {
-    "noticeSuccess": "Créneau réservé avec succès ✅",
-    "loading": "Réservation en cours…",
+    "noticeSuccess": "Creneau reserve avec succes.",
+    "loading": "Reservation en cours...",
     "button": "Choisir"
   },
   "confirm": {
-    "title": "Confirmer ce créneau ?",
-    "body": "Vous allez réserver le {date} à {time}.",
-    "fallback": "Voulez-vous confirmer ce créneau ?",
+    "title": "Confirmer ce creneau ?",
+    "body": "Vous allez reserver le {date} a {time}.",
+    "fallback": "Voulez-vous confirmer ce creneau ?",
     "cancel": "Annuler",
     "confirm": "Confirmer"
   },
@@ -56,18 +58,37 @@
     "seeAll": "Voir tous les horaires"
   },
   "journey": {
-    "stepOneLabel": "1. Repérez vite",
-    "stepOne": "Commencez par quelques horaires simples à comparer.",
+    "stepOneLabel": "1. Reperez vite",
+    "stepOne": "Commencez par quelques horaires simples a comparer.",
     "stepTwoLabel": "2. Choisissez librement",
-    "stepTwo": "La recommandation reste facultative et tous les créneaux restent accessibles.",
+    "stepTwo": "La recommandation reste facultative et tous les creneaux restent accessibles.",
     "stepThreeLabel": "3. Gardez la main",
     "stepThree": "Si besoin, vous pouvez toujours ouvrir le planning complet."
   },
   "reason": {
-    "fluidVisit": "Recommandé pour une visite plus fluide",
-    "reduceTravel": "Réduit les déplacements",
-    "dayFlow": "Aide la journée à rester fluide",
-    "fitSchedule": "S'intègre bien au planning",
+    "fluidVisit": "Recommande pour une visite plus fluide",
+    "reduceTravel": "Reduit les deplacements",
+    "dayFlow": "Aide la journee a rester fluide",
+    "fitSchedule": "S'integre bien au planning",
     "smoothOption": "Option la plus fluide"
+  },
+  "smartPricing": {
+    "labels": {
+      "best_route_price": "Meilleur prix de tournee",
+      "smart_discount": "Reduction intelligente",
+      "standard_price": "Prix standard",
+      "flexible_slot": "Creneau flexible",
+      "available_on_request": "Sur demande"
+    },
+    "explanations": {
+      "best_route_price": "Ce creneau s'integre parfaitement dans la tournee.",
+      "smart_discount": "Economisez en choisissant un creneau qui limite les deplacements.",
+      "standard_price": "Ce creneau fonctionne normalement.",
+      "flexible_slot": "Ce creneau demande un deplacement supplementaire.",
+      "available_on_request": "Ce creneau peut necessiter une confirmation manuelle."
+    },
+    "badges": {
+      "flexible": "Flexible"
+    }
   }
 }

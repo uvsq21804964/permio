@@ -1,5 +1,10 @@
 'use client';
 
+import {
+  captureMarketingAttribution,
+  getMarketingAttributionMetadata,
+} from '@/lib/client/marketing-attribution';
+
 export type ButtonTrackingMetadata = Record<string, string | number | boolean | null>;
 
 export type TrackButtonClickPayload = {
@@ -29,6 +34,13 @@ export function trackButtonClick(payload: TrackButtonClickPayload) {
     return;
   }
 
+  captureMarketingAttribution();
+
+  const metadata = {
+    ...getMarketingAttributionMetadata(),
+    ...(payload.metadata ?? {}),
+  };
+
   const body = JSON.stringify({
     buttonKey: normalizeText(payload.buttonKey, 160),
     buttonLabel: normalizeText(payload.buttonLabel, 255),
@@ -38,7 +50,7 @@ export function trackButtonClick(payload: TrackButtonClickPayload) {
     pagePath: normalizeText(payload.pagePath ?? window.location.pathname, 500),
     targetHref: normalizeText(payload.targetHref, 1000),
     locale: normalizeText(payload.locale, 20),
-    metadata: payload.metadata ?? null,
+    metadata,
     referrer: normalizeText(payload.referrer ?? document.referrer, 1000),
   });
 

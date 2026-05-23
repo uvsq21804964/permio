@@ -4,6 +4,7 @@ import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 
 import { trackButtonClick } from '@/lib/client/button-tracking';
+import { captureMarketingAttribution } from '@/lib/client/marketing-attribution';
 
 type UserJourneyTrackerProps = {
   locale: string;
@@ -24,6 +25,8 @@ export function UserJourneyTracker({ locale }: UserJourneyTrackerProps) {
 
     const previousPage = currentPageRef.current;
     const currentTime = nowMs();
+
+    captureMarketingAttribution();
 
     if (previousPage && previousPage.path !== pathname) {
       trackButtonClick({

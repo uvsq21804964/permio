@@ -22,28 +22,28 @@ const LOCALIZED_METADATA: Record<
   }
 > = {
   en: {
-    title: 'Missed-call booking workflow for mobile pet groomers',
+    title: 'Route-friendly booking software for mobile dog trainers',
     description:
-      'MagicHango helps mobile pet groomers turn missed calls into qualified, route-friendly bookings with SMS follow-up, pet intake, and approval-first scheduling.',
+      'MagicHango helps mobile dog trainers let clients book sessions while guiding them toward route-friendly slots, smart prices, and more profitable schedules.',
     keywords: [
-      'mobile pet groomer booking',
-      'mobile dog grooming software',
-      'missed call sms follow up',
-      'route friendly bookings',
-      'pet grooming scheduling',
+      'dog trainer booking software',
+      'mobile dog trainer scheduling',
+      'route friendly booking',
+      'dog training appointment software',
+      'smart slot pricing',
     ],
     openGraphLocale: 'en_US',
   },
   fr: {
-    title: 'Workflow d’appels manqués pour toiletteurs mobiles',
+    title: 'Logiciel de reservation rentable pour educateurs canins mobiles',
     description:
-      'MagicHango aide les toiletteurs mobiles à transformer les appels manqués en rendez-vous qualifiés et compatibles avec leur tournée grâce au SMS, à la qualification client et à la validation avant confirmation.',
+      'MagicHango aide les educateurs canins mobiles a laisser les clients reserver tout en les guidant vers des creneaux compatibles avec la tournee, le trajet et la rentabilite.',
     keywords: [
-      'logiciel toiletteur mobile',
-      'toilettage mobile appels manqués',
-      'suivi sms appels manqués',
-      'rendez-vous compatibles tournée',
-      'prise de rendez-vous toilettage mobile',
+      'logiciel educateur canin',
+      'reservation educateur canin',
+      'planning educateur canin mobile',
+      'tournee educateur canin',
+      'prix intelligent creneaux',
     ],
     openGraphLocale: 'fr_FR',
   },

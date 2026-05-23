@@ -9,6 +9,7 @@ import {
   insertSlot,
   type SlotAddressSource,
   type SlotRecord,
+  type SlotSmartPricingSnapshot,
 } from '@/lib/server/repositories/slot-repository';
 import {
   getFirstAgencyInstructor,
@@ -16,6 +17,7 @@ import {
   type AppUserRecord,
 } from '@/lib/server/repositories/user-repository';
 import { getServicePricingByIdForUser } from '@/lib/server/repositories/service-repository';
+import { buildInstructorAgenda } from '@/lib/server/services/instructor-agenda-service';
 import { devLogger } from '@/lib/shared/dev-logger';
 
 export type BookingAddressPayload = {
@@ -39,12 +41,24 @@ export type CreateSlotInput = {
   bookingAddress?: BookingAddressPayload;
   clientUserId?: string | null;
   locale?: 'fr' | 'en';
+  smartPricing?: {
+    expectedFinalPriceCents?: number | null;
+  };
 };
 
 type BookingLocale = 'fr' | 'en';
 
 function toBookingLocale(locale?: string | null): BookingLocale {
   return locale?.toLowerCase().startsWith('en') ? 'en' : 'fr';
+}
+
+function toPriceCents(value: string | number | null | undefined): number | null {
+  const amount = Number(value);
+  if (!Number.isFinite(amount)) {
+    return null;
+  }
+
+  return Math.max(0, Math.round(amount * 100));
 }
 
 type SlotBookingEventPayload = {
@@ -70,7 +84,7 @@ type CreateSlotServiceResult =
   | { ok: false; status: 400; body: { error: string } }
   | { ok: false; status: 403; body: { error: string } }
   | { ok: false; status: 404; body: { error: string } }
-  | { ok: false; status: 409; body: { error: string } }
+  | { ok: false; status: 409; body: { error: string; detail?: string } }
   | { ok: false; status: 500; body: { error: string; detail?: string } };
 
 type ValidateCreateSlotInputResult =
@@ -124,6 +138,7 @@ function validateCreateSlotInput(body: unknown): ValidateCreateSlotInputResult {
         payload.clientUserId.trim().length > 0
           ? payload.clientUserId.trim()
           : null,
+      smartPricing: payload.smartPricing,
       durationMinutes,
     },
   };
@@ -183,6 +198,36 @@ function buildRemoteAddressSource(): SlotAddressSource {
     raw_input: null,
     address_label: null,
     is_primary: false,
+  };
+}
+
+function buildSmartPricingSnapshot(
+  exactSlot: {
+    smartPricing?: {
+      enabled: boolean;
+      visibility: 'visible' | 'hidden' | 'available_on_request';
+      basePriceCents: number;
+      finalPriceCents: number;
+      travelChargeCents?: number;
+      adjustmentCents: number;
+      label: string;
+      explanationKey: string;
+    };
+  },
+): SlotSmartPricingSnapshot | null {
+  if (!exactSlot.smartPricing) {
+    return null;
+  }
+
+  return {
+    enabled: exactSlot.smartPricing.enabled,
+    visibility: exactSlot.smartPricing.visibility,
+    base_price_cents: exactSlot.smartPricing.basePriceCents,
+    final_price_cents: exactSlot.smartPricing.finalPriceCents,
+    travel_charge_cents: exactSlot.smartPricing.travelChargeCents ?? 0,
+    smart_adjustment_cents: exactSlot.smartPricing.adjustmentCents,
+    smart_pricing_label: exactSlot.smartPricing.label,
+    smart_pricing_explanation_key: exactSlot.smartPricing.explanationKey,
   };
 }
 
@@ -348,6 +393,7 @@ export async function createSlotBooking(params: {
     bookingAddress,
     clientUserId,
     durationMinutes,
+    smartPricing,
   } = validation.value;
 
   const actor = await getUserById(userId);
@@ -385,6 +431,61 @@ export async function createSlotBooking(params: {
     ? buildRemoteAddressSource()
     : buildAddressSource(client, bookingAddress);
 
+  const currentAgenda = await buildInstructorAgenda({
+    userId: actor.id,
+    startDate: date,
+    endDate: date,
+    clientLatParam: bookingAddress ? String(bookingAddress.lat) : null,
+    clientLngParam: bookingAddress ? String(bookingAddress.lng) : null,
+    clientFormattedParam: bookingAddress?.formattedAddress ?? null,
+    isRemote: service.is_remote,
+    targetClientUserId: clientUserId ?? null,
+    serviceId,
+  });
+
+  if (!currentAgenda.ok) {
+    return {
+      ok: false,
+      status: 409,
+      body: { error: 'SLOT_NOT_AVAILABLE_ANYMORE' },
+    };
+  }
+
+  const exactSlot = (
+    currentAgenda.payload.exactClientSlotsByDate[date] ?? []
+  ).find(
+    (slot) =>
+      slot.serviceStartTime === startTime && slot.serviceEndTime === endTime,
+  );
+
+  if (!exactSlot) {
+    return {
+      ok: false,
+      status: 409,
+      body: { error: 'SLOT_NOT_AVAILABLE_ANYMORE' },
+    };
+  }
+
+  const expectedFinalPriceCents = smartPricing?.expectedFinalPriceCents ?? null;
+  const actualFinalPriceCents = exactSlot.smartPricing?.finalPriceCents ?? null;
+  const persistedEffectivePriceCents =
+    actualFinalPriceCents ?? toPriceCents(service.price);
+  const pricingToleranceCents = 100;
+  if (
+    expectedFinalPriceCents != null &&
+    actualFinalPriceCents != null &&
+    Math.abs(expectedFinalPriceCents - actualFinalPriceCents) > pricingToleranceCents
+  ) {
+    return {
+      ok: false,
+      status: 409,
+      body: {
+        error: 'SMART_PRICE_CHANGED',
+        detail: 'This slot price changed. Please refresh the available slots.',
+      },
+    };
+  }
+
   try {
     const slot = await insertSlot({
       instructorUserId: instructor.id,
@@ -395,6 +496,8 @@ export async function createSlotBooking(params: {
       endTime,
       durationMinutes,
       addressSource,
+      effectivePriceCents: persistedEffectivePriceCents,
+      smartPricingSnapshot: buildSmartPricingSnapshot(exactSlot),
     });
 
     const events = buildBookingEventPayload({

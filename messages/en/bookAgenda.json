@@ -1,5 +1,5 @@
 {
-  "loadingSession": "Loading your session…",
+  "loadingSession": "Loading your session...",
   "mustBeSignedIn": "You must be signed in to view your dog trainer's availability.",
   "header": {
     "eyebrow": "All time slots",
@@ -11,17 +11,17 @@
     }
   },
   "buttons": {
-    "backToSuggestions": "← Back to suggestions",
-    "prevWeek": "← Previous week",
-    "nextWeek": "Next week →",
+    "backToSuggestions": "Back to suggestions",
+    "prevWeek": "Previous week",
+    "nextWeek": "Next week",
     "placeBooking": "Book this time",
-    "bookingInProgress": "Booking…",
+    "bookingInProgress": "Booking...",
     "cancel": "Cancel",
     "confirm": "Book",
     "close": "Close"
   },
   "alerts": {
-    "bookingSuccess": "Time slot booked successfully ✅"
+    "bookingSuccess": "Time slot booked successfully."
   },
   "errors": {
     "loadAgendaApi": "Unable to fetch your dog trainer's availability.",
@@ -34,6 +34,8 @@
     "noSlotSelected": "Please select a precise time slot.",
     "invalidSlot": "The selected time slot is invalid. Please choose another one.",
     "slotAlreadyBooked": "This time slot has just been booked. Please choose another one.",
+    "slotNotAvailableAnymore": "This time is no longer available. Please refresh and choose another one.",
+    "smartPriceChanged": "The price for this time changed. Please refresh the available times.",
     "createBooking": "Unable to create the booking. Please try again.",
     "createBookingGeneric": "An error occurred while creating the booking. Please try again."
   },
@@ -42,9 +44,9 @@
     "weekLabel": "Week from {start} to {end}.",
     "help": "Tap a window to see the possible times.",
     "hourColumn": "Time",
-    "loadingSlots": "Loading available windows…",
+    "loadingSlots": "Loading available windows...",
     "slotTooltip": {
-      "slot": "Available window at your place: {start}–{end}",
+      "slot": "Available window at your place: {start}-{end}",
       "travelBefore": "Travel before: {minutes} min from {label}",
       "travelAfter": "Travel after: {minutes} min to {label}"
     },
@@ -63,18 +65,45 @@
     "empty": "No exact time selected yet.",
     "helper": "Every displayed time remains available.",
     "readyTitle": "Ready to book",
-    "readyDescription": "Your time is ready."
+    "readyDescription": "Your time is ready.",
+    "summaryPriceLabel": "Final price",
+    "summaryWindowLabel": "Selected inside this window",
+    "summaryTravelLabel": "Travel around this visit",
+    "summaryWhyLabel": "Why this slot",
+    "summarySaveAmount": "You save {amount}",
+    "summaryExtraAmount": "{amount} extra for travel",
+    "summaryNoAdjustment": "No price adjustment"
   },
   "timePicker": {
     "eyebrow": "Step 2",
     "help": "Choose the time that suits you.",
+    "detailsHint": "Each card shows the exact time, the final price, and the travel impact around the visit.",
     "recommended": "Suggested",
     "windowLabel": "Available window: {start} - {end}",
     "selected": "Selected",
     "count": "{count} possible times",
     "recommendedCount": "{count} suggested in this window",
     "empty": "No exact time is currently available in this window. Try another one.",
-    "quickTravel": "Lighter travel"
+    "quickTravel": "Lighter travel",
+    "legendSuggestedTitle": "Suggested",
+    "legendSuggestedBody": "Suggested times usually fit more smoothly into the trainer's day.",
+    "legendDiscountTitle": "Slot price",
+    "legendDiscountBody": "An adjusted price can reward a time that reduces travel.",
+    "legendTravelTitle": "Travel context",
+    "legendTravelBody": "You can see the time before and after the visit to understand the slot more clearly.",
+    "whyThisSlot": "Why this slot",
+    "priceLabel": "Slot price",
+    "basePriceLabel": "Standard price: {amount}",
+    "priceSaved": "Save {amount}",
+    "priceExtra": "{amount} extra",
+    "priceNoChange": "Standard price kept",
+    "windowTitle": "Inside this available window",
+    "travelTitle": "Travel around it",
+    "travelBefore": "Before {minutes} min",
+    "travelAfter": "After {minutes} min",
+    "travelTotal": "{minutes} min total",
+    "fromLabel": "From {label}",
+    "toLabel": "Then to {label}"
   },
   "progress": {
     "stepTwoTitle": "Choose the exact time",
@@ -91,7 +120,7 @@
   },
   "nudge": {
     "title": "A nearby option could feel even smoother",
-    "body": "This {current} slot works very well. There is one at {alternative} that fits the schedule a little better — would you like to switch?",
+    "body": "This {current} slot works very well. There is one at {alternative} that fits the schedule a little better - would you like to switch?",
     "fallback": "Another nearby option fits the schedule a little better. Would you like to choose it?",
     "keepChoice": "Keep my choice",
     "switchChoice": "Choose {time}",
@@ -103,5 +132,24 @@
     "dayFlow": "Keeps the day feeling smoother",
     "fitSchedule": "Fits well into the schedule",
     "smoothOption": "Smoothest option"
+  },
+  "smartPricing": {
+    "labels": {
+      "best_route_price": "Best route price",
+      "smart_discount": "Smart discount",
+      "standard_price": "Standard price",
+      "flexible_slot": "Flexible slot",
+      "available_on_request": "Available on request"
+    },
+    "explanations": {
+      "best_route_price": "This time fits perfectly with the trainer's route.",
+      "smart_discount": "Save by choosing a time that reduces travel.",
+      "standard_price": "This time works normally.",
+      "flexible_slot": "This time requires extra travel.",
+      "available_on_request": "This time may require manual confirmation."
+    },
+    "badges": {
+      "flexible": "Flexible"
+    }
   }
 }

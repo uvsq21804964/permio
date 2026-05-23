@@ -5,47 +5,47 @@
   },
   "hero": {
     "titlePrefix": "Transformez",
-    "highlight1": "les appels de toilettage manqués",
+    "highlight1": "les reservations d'education canine",
     "titleMiddle": "en",
-    "highlight2": "rendez-vous compatibles avec votre tournée",
+    "highlight2": "tournees plus rentables",
     "titleSuffix": "avec",
-    "subtitlePrefix": "MagicHango répond par SMS aux appels manqués, qualifie la demande client et propose des créneaux qui respectent vos trajets",
-    "subtitleEmphasis": "sans échanges interminables.",
-    "ctaPrimary": "Tester le workflow d’appel manqué",
-    "ctaSecondary": "Me connecter",
-    "imageAlt": "Aperçu du workflow MagicHango",
-    "imageCaption": "Suivi des appels manqués, suggestions de créneaux et contexte de tournée au même endroit."
+    "subtitlePrefix": "MagicHango aide les clients a reserver leurs seances tout en les guidant vers les horaires qui protegent votre tournee, vos marges et votre journee",
+    "subtitleEmphasis": "sans echanges interminables.",
+    "ctaPrimary": "Tester le parcours de reservation",
+    "ctaSecondary": "Voir la demo tournee",
+    "imageAlt": "Apercu du workflow MagicHango",
+    "imageCaption": "Suggestions de reservation, prix intelligents et contexte de tournee au meme endroit."
   },
   "preview": {
     "badgeSchedule": "Workflow",
-    "badgeRoute": "Tournée",
-    "caption": "Aperçu : suivi des appels manqués et suggestions de rendez-vous compatibles avec la tournée.",
-    "altSchedule": "Aperçu du workflow MagicHango",
-    "altRoute": "Aperçu d’une suggestion de rendez-vous compatible avec la tournée"
+    "badgeRoute": "Tournee",
+    "caption": "Apercu : suggestions de reservation compatibles avec la tournee et controle du planning.",
+    "altSchedule": "Apercu du workflow MagicHango",
+    "altRoute": "Apercu d'une suggestion de reservation compatible avec la tournee"
   },
   "conversation": {
-    "eyebrow": "Ce qui se passe après un appel manqué",
-    "title": "MagicHango relance par SMS, qualifie la demande et vous remet un créneau qui vaut la peine d’être validé.",
+    "eyebrow": "Ce qui se passe avant une reservation",
+    "title": "MagicHango montre des options reservables au client tout en protegeant la qualite de tournee en coulisses.",
     "steps": [
       {
-        "label": "Appel manqué",
-        "title": "Nouvel appel manqué de Jessica",
-        "body": "Vous continuez le toilettage au lieu d’interrompre le rendez-vous pour répondre."
+        "label": "Intention client",
+        "title": "Jessica veut reserver une seance d'education canine a domicile.",
+        "body": "Elle peut commencer dans le parcours de reservation au lieu d'envoyer un message flou."
       },
       {
-        "label": "SMS envoyé",
-        "title": "Bonjour, ici Bella’s Mobile Grooming. Je suis avec un chien en ce moment, mais je peux vous aider à réserver par SMS. Quelle race et quel service vous faut-il ?",
-        "body": "L’appelant reçoit une réponse immédiate au lieu d’attendre un rappel plus tard."
+        "label": "Contexte capture",
+        "title": "Adresse, service, duree et contraintes client sont collectes avant le choix du creneau.",
+        "body": "L'educateur obtient un meilleur contexte sans ajouter d'admin."
       },
       {
-        "label": "Demande qualifiée",
-        "title": "Golden retriever, toilettage complet, 32 kg, bourres légères, Boca Raton, préfère la semaine prochaine.",
-        "body": "Les infos animal, service, adresse et préférences arrivent dans une seule demande."
+        "label": "Creneaux intelligents",
+        "title": "Les creneaux proches des seances existantes peuvent etre mis en avant avec un meilleur prix de tournee.",
+        "body": "Les clients sont guides vers les choix qui compactent la journee."
       },
       {
-        "label": "Validation groomer",
-        "title": "Meilleur créneau : jeudi 11 h 30 — à 12 min du rendez-vous précédent. Valider ?",
-        "body": "Vous gardez la main avant toute confirmation."
+        "label": "Controle educateur",
+        "title": "Les creneaux penibles peuvent rester standards, couter plus cher ou etre caches de la vue client.",
+        "body": "Le client voit des prix simples; l'educateur garde le controle operationnel."
       }
     ]
   }

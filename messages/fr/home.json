@@ -4,5 +4,41 @@
     "magicHango": "Voir le fonctionnement",
     "login": "Connexion",
     "tryFree": "Essayer 1 mois, sans carte"
+  },
+  "growthSection": {
+    "eyebrow": "Pour educateurs canins mobiles",
+    "title": "Transformer la demande client en journees mieux payees et plus coherentes.",
+    "subtitle": "MagicHango s'adresse aux educateurs qui ont deja de la demande, mais perdent de la marge avec des rendez-vous disperses, de la planification manuelle et des clients qui choisissent des horaires qui cassent la tournee.",
+    "metrics": [
+      {
+        "value": "+1 creneau",
+        "label": "Objectif simple : recuperer une seance utile de plus par semaine."
+      },
+      {
+        "value": "Moins de trous",
+        "label": "Guider les clients vers les extremites de creneaux pour limiter les mini-trous."
+      },
+      {
+        "value": "Prix malin",
+        "label": "Afficher le bon prix selon trajet, coherence de tournee et friction planning."
+      }
+    ],
+    "cards": {
+      "step": "Pilier GTM {number}",
+      "booking": {
+        "title": "Vendre d'abord la reservation client",
+        "body": "Le hook d'acquisition n'est pas un calendrier de plus. C'est un parcours de reservation qui aide le client a choisir un horaire rentable pour l'educateur."
+      },
+      "route": {
+        "title": "Rendre la qualite de tournee visible",
+        "body": "Les bons creneaux peuvent etre legerement encourages, tandis que les creneaux penibles restent standards, coutent plus cher ou ne sont pas montres."
+      },
+      "pricing": {
+        "title": "Relier le prix aux contraintes terrain",
+        "body": "Frais de trajet, reductions intelligentes et extras transforment les vraies contraintes de l'educateur en prix simple cote client."
+      }
+    },
+    "ctaPrimary": "Demarrer avec la reservation",
+    "ctaSecondary": "Voir la demo tournee"
   }
 }

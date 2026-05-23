@@ -7,8 +7,10 @@ import { ProfileAddressModal } from '@/components/profile/ProfileAddressModal';
 import { ProfileIdentityCard } from '@/components/profile/ProfileIdentityCard';
 import { ProfileNameModal } from '@/components/profile/ProfileNameModal';
 import { ProfilePhoneModal } from '@/components/profile/ProfilePhoneModal';
+import { ProfileSmartPricingCard } from '@/components/profile/ProfileSmartPricingCard';
 import GooglePlacesScript from '@/components/shared/GooglePlacesScript';
 import { useProfilePageState } from '@/lib/client/hooks/useProfilePageState';
+import { useSmartPricingSettings } from '@/lib/client/hooks/useSmartPricingSettings';
 
 function formatDate(value: string | null, locale: string) {
   if (!value) {
@@ -70,6 +72,9 @@ export default function ProfilePage() {
     translator,
     handleSavePhone,
   } = useProfilePageState();
+  const smartPricing = useSmartPricingSettings({
+    enabled: profile?.role === 'instructor',
+  });
 
   const googleScript = (
     <GooglePlacesScript
@@ -186,6 +191,19 @@ export default function ProfilePage() {
                 profile={profile}
                 t={translator}
               />
+
+              {profile.role === 'instructor' ? (
+                <ProfileSmartPricingCard
+                  error={smartPricing.error}
+                  form={smartPricing.form}
+                  loading={smartPricing.loading}
+                  onSave={smartPricing.save}
+                  saving={smartPricing.saving}
+                  t={translator}
+                  updateField={smartPricing.updateField}
+                  validationError={smartPricing.validationError}
+                />
+              ) : null}
             </div>
           </div>
         </div>

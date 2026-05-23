@@ -6,89 +6,89 @@
     "tryFree": "Essayer 1 mois, sans carte"
   },
   "hero": {
-    "title": "Transformez les appels manqués en rendez-vous compatibles avec votre tournée",
+    "title": "Transformez les reservations d'education canine en tournees plus rentables",
     "cta": "Voir le fonctionnement"
   },
   "conversationPreview": {
     "eyebrow": "La valeur",
-    "title": "Moins d'admin. Réponses rapides. Meilleures tournées.",
-    "subtitle": "MagicHango vous aide à gagner plus de clients sans ajouter de travail de bureau. Vous payez uniquement les leads générés : 1 $ par lead, plafonné à 35 $.",
+    "title": "Moins d'admin. Meilleures tournees. Prix plus intelligents.",
+    "subtitle": "MagicHango aide les educateurs canins mobiles a transformer la demande client en meilleures reservations sans ajouter de travail de planning. Le point d'entree : reservation client, guidage tournee et prix intelligent.",
     "items": [
       "Moins d'admin",
-      "Réponses rapides",
-      "Moins de trajets",
-      "Plus de clients",
-      "1 $/lead. Plafond 35 $"
+      "Meilleures tournees",
+      "Prix intelligent",
+      "Reservations plus utiles",
+      "Reservation client autonome"
     ]
   },
   "smsDemo": {
-    "eyebrow": "Workflow d'appel manqué",
-    "title": "De l'appel manqué au créneau à valider",
-    "subtitle": "L'amélioration de la tournée commence par une réponse SMS rapide et une demande qualifiée.",
+    "eyebrow": "Workflow de reservation",
+    "title": "De la demande client au creneau compatible avec la tournee",
+    "subtitle": "L'amelioration de la tournee commence quand le client voit des options qui respectent deja votre planning.",
     "steps": [
       {
-        "label": "Appel manqué",
-        "title": "Nouvel appel manqué de Jessica",
-        "body": "Vous restez concentré sur l'animal en face de vous au lieu d'interrompre le toilettage."
+        "label": "Demande client",
+        "title": "Jessica veut reserver une seance d'education canine a domicile.",
+        "body": "Le client commence dans un parcours structure au lieu d'un fil de messages flou."
       },
       {
-        "label": "SMS envoyé",
-        "title": "Bonjour, ici Bella's Mobile Grooming. Je suis avec un chien en ce moment, mais je peux vous aider à réserver par SMS. Quelle race et quel service vous faut-il ?",
-        "body": "MagicHango répond tout de suite au lieu de laisser refroidir la demande."
+        "label": "Contexte capture",
+        "title": "Adresse, service, duree et contraintes client sont collectes avant le choix du creneau.",
+        "body": "MagicHango donne a l'educateur un contexte utile sans ajouter d'admin."
       },
       {
-        "label": "Demande qualifiée",
-        "title": "Golden retriever, toilettage complet, 32 kg, bourres légères, Boca Raton, préfère la semaine prochaine.",
-        "body": "Les infos animal, service, adresse et préférences arrivent dans une seule demande."
+        "label": "Creneaux intelligents",
+        "title": "Les creneaux qui respectent la tournee peuvent avoir un meilleur prix; les creneaux penibles peuvent rester standards ou couter plus cher.",
+        "body": "Le client voit des choix simples pendant que l'educateur protege sa journee."
       },
       {
-        "label": "Validation groomer",
-        "title": "Meilleur créneau : jeudi 11 h 30 - à 12 min du rendez-vous précédent. Valider ?",
-        "body": "Vous relisez l'option compatible avec la tournée avant toute confirmation."
+        "label": "Controle educateur",
+        "title": "Meilleure option : jeudi 11 h 30 - a 12 min de la seance precedente.",
+        "body": "Vous gardez le controle de la tournee et des regles de reservation."
       }
     ]
   },
   "simple": {
-    "eyebrow": "Workflow d’appel manqué",
-    "subtitle": "Quand vous êtes occupé avec un animal, MagicHango répond par SMS aux appels manqués, récupère les informations client et propose des créneaux adaptés à vos trajets.",
+    "eyebrow": "Workflow de reservation compatible avec la tournee",
+    "subtitle": "Quand les clients reservent, MagicHango collecte le bon contexte et propose des horaires qui respectent vraiment vos trajets.",
     "labels": {
-      "service": "toilettage",
+      "service": "seance",
       "travel": "trajet",
       "gap": "trou",
-      "recommended": "créneau validé"
+      "recommended": "creneau malin"
     },
     "before": {
       "title": "Avant MagicHango",
-      "subtitle": "Les rappels tardifs créent de mauvais rendez-vous, plus de route et une journée cassée.",
-      "footer": "Chaque appel manqué traité trop tard augmente le risque d’accepter le mauvais créneau. La journée semble remplie, mais trop de temps part dans les trajets et les trous inutiles.",
+      "subtitle": "Des reservations dispersees creent plus de route, des trous genants et une journee cassee.",
+      "footer": "Chaque reservation mal placee augmente le risque de perdre de la marge. La journee semble remplie, mais trop de temps part dans les trajets et les trous inutiles.",
       "slots": {
         "rideFromHome": {
           "title": "Trajet depuis chez vous",
           "meta": ""
         },
         "sessionOne": {
-          "title": "Toilettage 1",
-          "meta": "Bella - coupe doodle"
+          "title": "Seance 1",
+          "meta": "Bella - marche en laisse"
         },
         "longDriveOne": {
           "title": "Trajet",
           "meta": ""
         },
         "sessionTwo": {
-          "title": "Toilettage 2",
-          "meta": "Max - bain et brossage"
+          "title": "Seance 2",
+          "meta": "Max - reactivite"
         },
         "idleGap": {
-          "title": "Trou gênant",
-          "meta": "Trop tard pour bien le remplir, trop tôt pour finir"
+          "title": "Trou genant",
+          "meta": "Trop tard pour bien le remplir, trop tot pour finir"
         },
         "longDriveTwo": {
           "title": "Trajet",
           "meta": ""
         },
         "sessionThree": {
-          "title": "Toilettage 3",
-          "meta": "Luna - toilettage complet"
+          "title": "Seance 3",
+          "meta": "Luna - rappel"
         },
         "longTripHome": {
           "title": "Retour",
@@ -97,45 +97,45 @@
       }
     },
     "after": {
-      "title": "Après MagicHango",
-      "subtitle": "Les demandes qualifiées donnent une tournée plus propre, de meilleurs créneaux et un rendez-vous en plus.",
-      "footer": "MagicHango ne réserve pas à l’aveugle. Il prépare la demande, suggère les meilleurs créneaux compatibles avec la tournée et vous laisse valider avant confirmation.",
+      "title": "Apres MagicHango",
+      "subtitle": "De meilleurs choix de creneaux donnent une tournee plus propre, moins de trous et une reservation utile en plus.",
+      "footer": "MagicHango ne reserve pas a l'aveugle. Il prepare la demande, suggere les meilleurs creneaux compatibles avec la tournee et laisse l'educateur garder le controle.",
       "slots": {
         "rideFromHome": {
           "title": "Trajet depuis chez vous",
           "meta": ""
         },
         "sessionOne": {
-          "title": "Toilettage 1",
-          "meta": "Poppy - coupe griffes"
+          "title": "Seance 1",
+          "meta": "Poppy - bases chiot"
         },
         "optimizedDriveOne": {
           "title": "Trajet court",
           "meta": ""
         },
         "sessionTwo": {
-          "title": "Toilettage 2",
-          "meta": "Bella - coupe doodle"
+          "title": "Seance 2",
+          "meta": "Bella - marche en laisse"
         },
         "optimizedDriveTwo": {
           "title": "Trajet court",
           "meta": ""
         },
         "sessionThree": {
-          "title": "Toilettage 3",
-          "meta": "Charlie - bain et brossage"
+          "title": "Seance 3",
+          "meta": "Charlie - rappel"
         },
         "realBreak": {
           "title": "Vraie pause",
-          "meta": "Déjeuner, reset ou admin"
+          "meta": "Dejeuner, reset ou admin"
         },
         "shortDrive": {
           "title": "Trajet court",
           "meta": ""
         },
         "sessionFour": {
-          "title": "Toilettage 4",
-          "meta": "Max - toilettage complet"
+          "title": "Seance 4",
+          "meta": "Max - reactivite"
         },
         "shortTripHome": {
           "title": "Retour",
@@ -145,42 +145,42 @@
     }
   },
   "animation": {
-    "eyebrow": "Voir la tournée s’améliorer",
-    "helper": "Bascule entre les deux états pour voir comment un meilleur ordre de rendez-vous compacte la journée.",
+    "eyebrow": "Voir la tournee s'ameliorer",
+    "helper": "Bascule entre les deux etats pour voir comment un meilleur ordre de reservations compacte la journee.",
     "beforeState": "Avant MagicHango",
-    "afterState": "Après MagicHango",
-    "toBefore": "Voir la journée cassée",
-    "toAfter": "Voir la meilleure tournée",
+    "afterState": "Apres MagicHango",
+    "toBefore": "Voir la journee cassee",
+    "toAfter": "Voir la meilleure tournee",
     "whyLabel": "Ce qui change",
     "impactLabel": "Impact business",
     "mapsOpenInDesktop": "Cliquer pour ouvrir dans",
     "mapsOpenInMobile": "Ouvrir dans",
     "mapsHint": "Cliquer pour ouvrir dans Google Maps",
-    "beforeReasonOne": "Quand un appelant manqué attend trop longtemps, vous acceptez souvent le premier créneau possible au lieu du bon créneau pour la tournée.",
-    "beforeReasonTwo": "Cela crée des longs trajets, des trous gênants et une dernière étape loin du domicile.",
-    "beforeReasonThree": "La journée semble remplie, mais trop de revenu part dans la route et les frictions évitables.",
-    "afterReasonOne": "MagicHango envoie vite un SMS à l’appel manqué et récupère l’animal, le service et l’adresse dès le départ.",
-    "afterReasonTwo": "Cela permet de proposer des créneaux qui respectent la tournée au lieu de casser la journée autour d’un mauvais rendez-vous.",
-    "afterReasonThree": "Vous validez la meilleure option avant confirmation, ce qui donne de meilleures tournées et moins d’allers-retours."
+    "beforeReasonOne": "Quand les clients peuvent choisir n'importe quel creneau libre, ils prennent souvent un horaire qui marche techniquement mais affaiblit la tournee.",
+    "beforeReasonTwo": "Cela cree des longs trajets, des trous genants et une derniere etape loin du domicile.",
+    "beforeReasonThree": "La journee semble remplie, mais trop de revenu part dans la route et les frictions evitables.",
+    "afterReasonOne": "MagicHango collecte le service, l'adresse et le contexte horaire avant de montrer les options.",
+    "afterReasonTwo": "Cela permet de proposer des creneaux qui respectent la tournee au lieu de casser la journee autour d'une mauvaise reservation.",
+    "afterReasonThree": "Les prix intelligents guident les clients vers de meilleurs choix, ce qui donne de meilleures tournees et moins d'allers-retours."
   },
   "comparison": {
-    "title": "Comparaison sur une journée type",
-    "note": "Toutes les statistiques ci-dessous sont basées sur un exemple de journée de toilettage mobile.",
-    "assumption": "L'estimation du coût carburant est calculée sur la base de 247,8 km contre 110,6 km, d'un prix moyen français du SP95-E10 à 2,002 EUR/L et d'un véhicule consommant 9,4 L/100 km.",
+    "title": "Comparaison sur une journee type",
+    "note": "Toutes les statistiques ci-dessous sont basees sur un exemple de journee d'education canine mobile.",
+    "assumption": "L'estimation du cout carburant est calculee sur la base de 247,8 km contre 110,6 km, d'un prix moyen francais du SP95-E10 a 2,002 EUR/L et d'un vehicule consommant 9,4 L/100 km.",
     "headers": {
       "before": "Sans MagicHango",
       "after": "Avec MagicHango",
       "gain": "Gain"
     },
     "rows": {
-      "sessions": "Rendez-vous confirmés",
-      "billable": "Temps de toilettage",
+      "sessions": "Rendez-vous confirmes",
+      "billable": "Temps de seance",
       "travel": "Temps de route",
       "distance": "Distance parcourue",
-      "fuel": "Coût carburant",
+      "fuel": "Cout carburant",
       "deadTime": "Trous subis",
-      "returnTime": "Fin de journée",
-      "endQuality": "Dernière étape"
+      "returnTime": "Fin de journee",
+      "endQuality": "Derniere etape"
     },
     "before": {
       "sessions": "3",
@@ -202,75 +202,75 @@
       "sessions": "+1 rendez-vous",
       "billable": "+33%",
       "travel": "-1h25",
-      "deadTime": "Journée plus fluide",
-      "returnTime": "Fin plus tôt",
+      "deadTime": "Journee plus fluide",
+      "returnTime": "Fin plus tot",
       "endQuality": "Moins de fatigue"
     }
   },
   "routeCards": {
     "totalLabel": "Trajet total",
     "before": {
-      "title": "Exemple de tournée sans MagicHango",
+      "title": "Exemple de tournee sans MagicHango",
       "total": "2h45",
-      "caption": "Des rappels tardifs et des décisions dispersées transforment une journée en trop de route."
+      "caption": "Des decisions de reservation dispersees transforment une journee en trop de route."
     },
     "after": {
-      "title": "Exemple de tournée avec MagicHango",
+      "title": "Exemple de tournee avec MagicHango",
       "total": "1h20",
-      "caption": "Les demandes qualifiées et les créneaux compatibles avec la tournée rendent la journée plus compacte et plus simple à valider."
+      "caption": "Les suggestions de creneaux compatibles avec la tournee rendent la journee plus compacte et plus simple a valider."
     }
   },
   "pain": {
-    "eyebrow": "Le problème",
-    "title": "Chaque appel manqué peut devenir un rendez-vous perdu",
-    "body": "Et chaque mauvais créneau peut créer plus de route, des trous dans la journée, des rappels tardifs, des SMS interminables et du chiffre d’affaires qui ne rentre jamais."
+    "eyebrow": "Le probleme",
+    "title": "Chaque reservation mal placee peut devenir de la marge perdue",
+    "body": "Et chaque mauvais creneau peut creer plus de route, des trous dans la journee, des SMS interminables et du chiffre d'affaires qui ne rentre jamais."
   },
   "workflow": {
-    "eyebrow": "Comment ça marche",
-    "title": "Appel manqué d’abord. Meilleur rendez-vous ensuite.",
-    "subtitle": "MagicHango garde le flow simple : répondre vite, qualifier la demande, suggérer de meilleurs créneaux et vous laisser la main.",
-    "stepLabel": "Étape {number}",
+    "eyebrow": "Comment ca marche",
+    "title": "Reservation client d'abord. Meilleure tournee ensuite.",
+    "subtitle": "MagicHango garde le flow simple : collecter la demande, suggerer de meilleurs creneaux et laisser l'educateur garder la main.",
+    "stepLabel": "Etape {number}",
     "steps": [
       {
-        "title": "Un client appelle pendant un toilettage",
-        "body": "Vous manquez l’appel parce que vous êtes avec un animal, pas derrière un bureau."
+        "title": "Un client veut reserver une seance",
+        "body": "Il a besoin d'un chemin simple pour reserver sans vous enfermer dans une conversation par messages."
       },
       {
-        "title": "MagicHango répond automatiquement par SMS",
-        "body": "L’appelant reçoit une réponse rapide au lieu d’attendre votre rappel du soir."
+        "title": "MagicHango collecte le contexte utile",
+        "body": "Service, adresse, duree et preferences client sont regroupes avant le choix du creneau."
       },
       {
-        "title": "Le client partage l’animal, le service et l’adresse",
-        "body": "Race, taille, service demandé, adresse et préférences sont regroupés dans une demande structurée."
+        "title": "Le client voit des options compatibles avec la tournee",
+        "body": "Les meilleurs creneaux peuvent etre moins chers, les creneaux penibles peuvent couter plus cher et les impossibles restent caches."
       },
       {
-        "title": "Vous validez des options compatibles avec la tournée",
-        "body": "MagicHango suggère les créneaux adaptés à votre route, puis vous validez avant toute confirmation."
+        "title": "Vous gardez le controle tournee et prix",
+        "body": "MagicHango suggere des creneaux adaptes a votre route, pendant que vos regles restent la source de verite."
       }
     ]
   },
   "differentiation": {
-    "eyebrow": "Pourquoi c’est différent",
-    "title": "Pas seulement un lien de réservation. Pas seulement une réceptionniste IA.",
-    "body": "MagicHango est pensé pour les toiletteurs mobiles qui ont besoin de rendez-vous cohérents sur la route, pas simplement d’un créneau libre.",
+    "eyebrow": "Pourquoi c'est different",
+    "title": "Pas seulement un lien de reservation. Pas seulement un calendrier.",
+    "body": "MagicHango est pense pour les educateurs canins mobiles qui ont besoin de rendez-vous coherents sur la route, pas simplement d'un creneau libre.",
     "cards": {
       "route": {
-        "title": "Des rendez-vous qui tiennent dans la journée",
-        "body": "MagicHango comprend qu’un seul mauvais rendez-vous peut créer plus de route, des trous et une tournée pénible."
+        "title": "Des rendez-vous qui tiennent dans la journee",
+        "body": "MagicHango comprend qu'un seul mauvais rendez-vous peut creer plus de route, des trous et une tournee penible."
       },
       "control": {
-        "title": "Vous gardez le contrôle",
-        "body": "MagicHango ne réserve pas à l’aveugle. Il prépare la demande, suggère les meilleurs créneaux et vous laisse valider avant confirmation."
+        "title": "Vous gardez le controle",
+        "body": "MagicHango ne reserve pas a l'aveugle. Il prepare la demande, suggere les meilleurs creneaux et vous laisse valider avant confirmation."
       }
     }
   },
   "cta": {
-    "eyebrow": "Prêt à en faire votre workflow par défaut",
-    "title": "Récupérez les appels manqués. Remplissez de meilleures tournées.",
-    "subtitle": "Démarrez avec un workflow qui répond par SMS, qualifie la demande et vous aide à valider de meilleurs rendez-vous avant que la journée ne se casse.",
-    "requestDemo": "Demander une démo",
-    "demoMailSubject": "Demande de démo personnalisée MagicHango",
-    "demoMailBody": "Bonjour Tom,%0D%0A%0D%0AJe souhaite voir le workflow d’appel manqué pour le toilettage mobile.%0D%0A%0D%0AMon nom :%0D%0AMon entreprise :%0D%0AMa ville :%0D%0AMes disponibilités :%0D%0A%0D%0AMerci,",
+    "eyebrow": "Pret a en faire votre parcours de reservation par defaut",
+    "title": "Remplissez de meilleurs creneaux. Protegez la tournee.",
+    "subtitle": "Demarrez avec un workflow qui collecte la demande et aide les clients a choisir de meilleurs creneaux avant que la journee ne se casse.",
+    "requestDemo": "Demander une demo",
+    "demoMailSubject": "Demande de demo personnalisee MagicHango",
+    "demoMailBody": "Bonjour Tom,%0D%0A%0D%0AJe souhaite voir le workflow de reservation compatible avec la tournee pour educateurs canins mobiles.%0D%0A%0D%0AMon nom :%0D%0AMon entreprise :%0D%0AMa ville :%0D%0AMes disponibilites :%0D%0A%0D%0AMerci,",
     "noCardRequired": "Essai gratuit, sans carte bancaire.",
     "openApp": "Ouvrir l'app",
     "startTrial": "Commencer avec MagicHango",
